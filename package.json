@@ -1,5 +1,8 @@
 {
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "gen": "pnpm gen:idls && pnpm gen:clients && pnpm gen:docs",
+    "gen:idls": "./infra/generate-clients.sh",
+    "gen:clients": "./infra/generate-clients.sh",
+    "gen:docs": "./infra/generate-docs.sh"
   }
 }
