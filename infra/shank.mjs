@@ -5,10 +5,10 @@ import { generateIdl } from "@lorisleiva/shank-js";
 // const binaryInstallDir = path.join(__dirname, ".crates");
 
 generateIdl({
-  idlGenerator: "anchor",
+  generator: "anchor",
   programName: "candy_guard",
   programId: "Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g",
-  idlDir: "../idls",
-  binaryInstallDir: "../.crates",
-  programDir: "../programs/candy-guard",
+  idlDir: "./idls",
+  binaryInstallDir: "./.crates",
+  programDir: "./programs/candy-guard",
 });

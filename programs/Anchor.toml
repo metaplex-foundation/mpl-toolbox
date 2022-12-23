@@ -10,5 +10,7 @@ wallet = "~/.config/solana/devnet.json"
 
 [workspace]
 members = [
-  "program",
+  "candy-guard",
+  "candy-machine-core",
+  "macro"
 ]
