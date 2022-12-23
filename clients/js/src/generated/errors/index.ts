@@ -7,3 +7,4 @@
  */
 
 export * from './candyGuard';
+export * from './candyMachineCore';

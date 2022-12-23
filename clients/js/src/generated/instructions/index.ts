@@ -6,11 +6,19 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
+export * from './addConfigLines';
 export * from './initialize';
+export * from './initialize';
+export * from './mint';
 export * from './mint';
 export * from './route';
 export * from './setAuthority';
+export * from './setAuthority';
+export * from './setCollection';
+export * from './setMintAuthority';
 export * from './unwrap';
 export * from './update';
+export * from './update';
+export * from './withdraw';
 export * from './withdraw';
 export * from './wrap';

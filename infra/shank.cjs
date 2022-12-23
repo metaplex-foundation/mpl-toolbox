@@ -1,4 +1,5 @@
 const { generateIdl } = require("@lorisleiva/shank-js");
+
 const idlDir = `${__dirname}/../idls`;
 const binaryInstallDir = `${__dirname}/../.crates`;
 const programDir = `${__dirname}/../programs`;
