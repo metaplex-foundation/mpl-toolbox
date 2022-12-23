@@ -1,8 +1,9 @@
+const path = require("path");
 const { generateIdl } = require("@lorisleiva/shank-js");
 
-const idlDir = `${__dirname}/../idls`;
-const binaryInstallDir = `${__dirname}/../.crates`;
-const programDir = `${__dirname}/../programs`;
+const idlDir = path.join(__dirname, "..", "idls");
+const binaryInstallDir = path.join(__dirname, "..", ".crates");
+const programDir = path.join(__dirname, "..", "programs");
 
 generateIdl({
   generator: "anchor",
@@ -10,7 +11,7 @@ generateIdl({
   programId: "CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR",
   idlDir,
   binaryInstallDir,
-  programDir: `${programDir}/candy-machine-core`,
+  programDir: path.join(programDir, "candy-machine-core"),
 });
 
 generateIdl({
@@ -19,5 +20,5 @@ generateIdl({
   programId: "Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g",
   idlDir,
   binaryInstallDir,
-  programDir: `${programDir}/candy-guard`,
+  programDir: path.join(programDir, "candy-guard"),
 });

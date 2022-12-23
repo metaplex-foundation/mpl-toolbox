@@ -7,8 +7,8 @@
     "gen:idls": "./infra/generate-clients.sh",
     "gen:clients": "./infra/generate-clients.sh",
     "gen:docs": "./infra/generate-docs.sh",
-    "validator:start": "...",
-    "validator:end": "..."
+    "validator:start": "amman start ./infra/validator.cjs",
+    "validator:end": "amman stop"
   },
   "devDependencies": {
     "@lorisleiva/kinobi": "^0.0.5",

@@ -1,19 +1,12 @@
-// @ts-check
-"use strict";
 const path = require("path");
-
-const localDeployDir = path.join(path.dirname(__dirname), "target", "deploy");
 const { LOCALHOST, tmpLedgerDir } = require("@metaplex-foundation/amman");
 
-function localDeployPath(programName) {
-  return path.join(localDeployDir, `${programName}.so`);
-}
-
+const deployDir = path.join(__dirname, "..", "target", "deploy");
 const programs = {
   candy_guard: {
     label: "Candy Guard",
     programId: "Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g",
-    deployPath: localDeployPath("mpl_candy_guard"),
+    deployPath: path.join(deployDir, "mpl_candy_guard.so"),
   },
 };
 
