@@ -4,5 +4,9 @@
     "gen:idls": "./infra/generate-clients.sh",
     "gen:clients": "./infra/generate-clients.sh",
     "gen:docs": "./infra/generate-docs.sh"
+  },
+  "devDependencies": {
+    "@lorisleiva/kinobi": "^0.0.3",
+    "@lorisleiva/shank-js": "^0.0.1"
   }
 }
