@@ -4,7 +4,7 @@
     "build:programs": "...",
     "build:clients": "...",
     "gen": "pnpm gen:idls && pnpm gen:clients && pnpm gen:docs",
-    "gen:idls": "./infra/generate-clients.sh",
+    "gen:idls": "./infra/generate-idls.sh",
     "gen:clients": "./infra/generate-clients.sh",
     "gen:docs": "./infra/generate-docs.sh",
     "validator:start": "amman start ./infra/validator.cjs",
