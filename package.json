@@ -1,9 +1,14 @@
 {
   "scripts": {
+    "build": "...",
+    "build:programs": "...",
+    "build:clients": "...",
     "gen": "pnpm gen:idls && pnpm gen:clients && pnpm gen:docs",
     "gen:idls": "./infra/generate-clients.sh",
     "gen:clients": "./infra/generate-clients.sh",
-    "gen:docs": "./infra/generate-docs.sh"
+    "gen:docs": "./infra/generate-docs.sh",
+    "validator:start": "...",
+    "validator:end": "..."
   },
   "devDependencies": {
     "@lorisleiva/kinobi": "^0.0.3",
