@@ -1,16 +1,16 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  extends: ['airbnb-base', 'airbnb-typescript/base', 'prettier'],
+  plugins: ['prettier'],
+  overrides: [],
   parserOptions: {
-    ecmaFeatures: {
-      ecmaVersion: 2020,
-      sourceType: 'module',
-    },
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: './tsconfig.json',
   },
-  extends: ['plugin:@typescript-eslint/recommended', 'prettier', 'plugin:prettier/recommended'],
   rules: {
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
-    '@typescript-eslint/ban-types': ['error', { extendDefaults: true, types: { '{}': false } }],
-    '@typescript-eslint/ban-ts-comment': 'off',
+    'import/no-cycle': 'off',
+    'import/prefer-default-export': 'off',
+    'class-methods-use-this': 'off',
+    'no-underscore-dangle': 'off',
   },
 };
