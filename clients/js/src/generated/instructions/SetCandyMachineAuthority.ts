@@ -56,7 +56,7 @@ export function setCandyMachineAuthority(
   // Program ID.
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
-    'candyMachineCore',
+    'mplCandyMachineCore',
     'CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR'
   );
 

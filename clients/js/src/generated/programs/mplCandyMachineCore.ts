@@ -8,23 +8,23 @@
 
 import { Context, Program } from '@lorisleiva/js-core';
 import {
-  getCandyMachineCoreErrorFromCode,
-  getCandyMachineCoreErrorFromName,
+  getMplCandyMachineCoreErrorFromCode,
+  getMplCandyMachineCoreErrorFromName,
 } from '../errors';
 
-export function getCandyMachineCoreProgram(
+export function getMplCandyMachineCoreProgram(
   context: Pick<Context, 'eddsa'>
 ): Program {
   return {
-    name: 'candyMachineCore',
+    name: 'mplCandyMachineCore',
     address: context.eddsa.createPublicKey(
       'CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR'
     ),
     getErrorFromCode(code: number, cause?: Error) {
-      return getCandyMachineCoreErrorFromCode(code, this, cause);
+      return getMplCandyMachineCoreErrorFromCode(code, this, cause);
     },
     getErrorFromName(name: string, cause?: Error) {
-      return getCandyMachineCoreErrorFromName(name, this, cause);
+      return getMplCandyMachineCoreErrorFromName(name, this, cause);
     },
     isOnCluster(cluster) {
       return true;

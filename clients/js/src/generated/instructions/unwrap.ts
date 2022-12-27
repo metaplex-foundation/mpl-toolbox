@@ -40,7 +40,7 @@ export function unwrap(
   // Program ID.
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
-    'candyGuard',
+    'mplCandyGuard',
     'Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g'
   );
 

@@ -19,6 +19,8 @@ const kinobi = new Kinobi(idlPaths);
 kinobi.update(
   new RenameNodesVisitor({
     candyMachineCore: {
+      name: "mplCandyMachineCore",
+      prefix: "Cm",
       instructions: {
         Initialize: "InitializeCandyMachine",
         Update: "UpdateCandyMachine",
@@ -26,28 +28,16 @@ kinobi.update(
         SetAuthority: "SetCandyMachineAuthority",
         Withdraw: "DeleteCandyMachine",
       },
-      errors: {
-        IncorrectOwner: "CmIncorrectOwner",
-        Uninitialized: "CmUninitialized",
-        NumericalOverflowError: "CmNumericalOverflowError",
-        CandyMachineEmpty: "CmCandyMachineEmpty",
-        CollectionKeyMismatch: "CmCollectionKeyMismatch",
-      },
     },
     candyGuard: {
+      name: "mplCandyGuard",
+      prefix: "Cg",
       instructions: {
         Initialize: "InitializeCandyGuard",
         Update: "UpdateCandyGuard",
         Mint: "MintFromCandyGuard",
         SetAuthority: "SetCandyGuardAuthority",
         Withdraw: "DeleteCandyGuard",
-      },
-      errors: {
-        IncorrectOwner: "CgIncorrectOwner",
-        Uninitialized: "CgUninitialized",
-        NumericalOverflowError: "CgNumericalOverflowError",
-        CandyMachineEmpty: "CgCandyMachineEmpty",
-        CollectionKeyMismatch: "CgCollectionKeyMismatch",
       },
     },
   })

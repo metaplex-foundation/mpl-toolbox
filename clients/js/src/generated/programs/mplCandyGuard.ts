@@ -8,21 +8,23 @@
 
 import { Context, Program } from '@lorisleiva/js-core';
 import {
-  getCandyGuardErrorFromCode,
-  getCandyGuardErrorFromName,
+  getMplCandyGuardErrorFromCode,
+  getMplCandyGuardErrorFromName,
 } from '../errors';
 
-export function getCandyGuardProgram(context: Pick<Context, 'eddsa'>): Program {
+export function getMplCandyGuardProgram(
+  context: Pick<Context, 'eddsa'>
+): Program {
   return {
-    name: 'candyGuard',
+    name: 'mplCandyGuard',
     address: context.eddsa.createPublicKey(
       'Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g'
     ),
     getErrorFromCode(code: number, cause?: Error) {
-      return getCandyGuardErrorFromCode(code, this, cause);
+      return getMplCandyGuardErrorFromCode(code, this, cause);
     },
     getErrorFromName(name: string, cause?: Error) {
-      return getCandyGuardErrorFromName(name, this, cause);
+      return getMplCandyGuardErrorFromName(name, this, cause);
     },
     isOnCluster(cluster) {
       return true;

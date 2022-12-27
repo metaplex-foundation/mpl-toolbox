@@ -6,5 +6,5 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-export * from './candyGuard';
-export * from './candyMachineCore';
+export * from './mplCandyGuard';
+export * from './mplCandyMachineCore';
