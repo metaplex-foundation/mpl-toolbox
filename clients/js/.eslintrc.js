@@ -5,12 +5,15 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: './tsconfig.json',
+    project: './clients/js/tsconfig.json',
   },
   rules: {
+    '@typescript-eslint/no-use-before-define': 'off',
+    'class-methods-use-this': 'off',
     'import/no-cycle': 'off',
     'import/prefer-default-export': 'off',
-    'class-methods-use-this': 'off',
     'no-underscore-dangle': 'off',
+    'max-classes-per-file': 'off',
   },
+  ignorePatterns: ['dist/**', '.eslintrc.js'],
 };

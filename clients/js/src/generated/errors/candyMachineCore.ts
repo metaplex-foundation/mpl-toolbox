@@ -21,7 +21,9 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
  */
 class CmIncorrectOwnerError extends ProgramError {
   readonly name: string = 'CmIncorrectOwner';
+
   readonly code: number = 0x1770; // 6000
+
   constructor(program: Program, cause?: Error) {
     super('Account does not have correct owner', program, cause);
   }
@@ -35,7 +37,9 @@ nameToErrorMap.set('CmIncorrectOwner', CmIncorrectOwnerError);
  */
 class CmUninitializedError extends ProgramError {
   readonly name: string = 'CmUninitialized';
+
   readonly code: number = 0x1771; // 6001
+
   constructor(program: Program, cause?: Error) {
     super('Account is not initialized', program, cause);
   }
@@ -49,7 +53,9 @@ nameToErrorMap.set('CmUninitialized', CmUninitializedError);
  */
 class MintMismatchError extends ProgramError {
   readonly name: string = 'MintMismatch';
+
   readonly code: number = 0x1772; // 6002
+
   constructor(program: Program, cause?: Error) {
     super('Mint Mismatch', program, cause);
   }
@@ -63,7 +69,9 @@ nameToErrorMap.set('MintMismatch', MintMismatchError);
  */
 class IndexGreaterThanLengthError extends ProgramError {
   readonly name: string = 'IndexGreaterThanLength';
+
   readonly code: number = 0x1773; // 6003
+
   constructor(program: Program, cause?: Error) {
     super('Index greater than length', program, cause);
   }
@@ -77,7 +85,9 @@ nameToErrorMap.set('IndexGreaterThanLength', IndexGreaterThanLengthError);
  */
 class CmNumericalOverflowErrorError extends ProgramError {
   readonly name: string = 'CmNumericalOverflowError';
+
   readonly code: number = 0x1774; // 6004
+
   constructor(program: Program, cause?: Error) {
     super('Numerical overflow error', program, cause);
   }
@@ -91,7 +101,9 @@ nameToErrorMap.set('CmNumericalOverflowError', CmNumericalOverflowErrorError);
  */
 class TooManyCreatorsError extends ProgramError {
   readonly name: string = 'TooManyCreators';
+
   readonly code: number = 0x1775; // 6005
+
   constructor(program: Program, cause?: Error) {
     super(
       'Can only provide up to 4 creators to candy machine (because candy machine is one)',
@@ -109,7 +121,9 @@ nameToErrorMap.set('TooManyCreators', TooManyCreatorsError);
  */
 class CmCandyMachineEmptyError extends ProgramError {
   readonly name: string = 'CmCandyMachineEmpty';
+
   readonly code: number = 0x1776; // 6006
+
   constructor(program: Program, cause?: Error) {
     super('Candy machine is empty', program, cause);
   }
@@ -123,7 +137,9 @@ nameToErrorMap.set('CmCandyMachineEmpty', CmCandyMachineEmptyError);
  */
 class HiddenSettingsDoNotHaveConfigLinesError extends ProgramError {
   readonly name: string = 'HiddenSettingsDoNotHaveConfigLines';
+
   readonly code: number = 0x1777; // 6007
+
   constructor(program: Program, cause?: Error) {
     super(
       'Candy machines using hidden uris do not have config lines, they have a single hash representing hashed order',
@@ -144,7 +160,9 @@ nameToErrorMap.set(
  */
 class CannotChangeNumberOfLinesError extends ProgramError {
   readonly name: string = 'CannotChangeNumberOfLines';
+
   readonly code: number = 0x1778; // 6008
+
   constructor(program: Program, cause?: Error) {
     super(
       'Cannot change number of lines unless is a hidden config',
@@ -162,7 +180,9 @@ nameToErrorMap.set('CannotChangeNumberOfLines', CannotChangeNumberOfLinesError);
  */
 class CannotSwitchToHiddenSettingsError extends ProgramError {
   readonly name: string = 'CannotSwitchToHiddenSettings';
+
   readonly code: number = 0x1779; // 6009
+
   constructor(program: Program, cause?: Error) {
     super(
       'Cannot switch to hidden settings after items available is greater than 0',
@@ -183,7 +203,9 @@ nameToErrorMap.set(
  */
 class IncorrectCollectionAuthorityError extends ProgramError {
   readonly name: string = 'IncorrectCollectionAuthority';
+
   readonly code: number = 0x177a; // 6010
+
   constructor(program: Program, cause?: Error) {
     super('Incorrect collection NFT authority', program, cause);
   }
@@ -200,7 +222,9 @@ nameToErrorMap.set(
  */
 class MetadataAccountMustBeEmptyError extends ProgramError {
   readonly name: string = 'MetadataAccountMustBeEmpty';
+
   readonly code: number = 0x177b; // 6011
+
   constructor(program: Program, cause?: Error) {
     super(
       'The metadata account has data in it, and this must be empty to mint a new NFT',
@@ -221,7 +245,9 @@ nameToErrorMap.set(
  */
 class NoChangingCollectionDuringMintError extends ProgramError {
   readonly name: string = 'NoChangingCollectionDuringMint';
+
   readonly code: number = 0x177c; // 6012
+
   constructor(program: Program, cause?: Error) {
     super(
       "Can't change collection settings after items have begun to be minted",
@@ -242,7 +268,9 @@ nameToErrorMap.set(
  */
 class ExceededLengthErrorError extends ProgramError {
   readonly name: string = 'ExceededLengthError';
+
   readonly code: number = 0x177d; // 6013
+
   constructor(program: Program, cause?: Error) {
     super('Value longer than expected maximum value', program, cause);
   }
@@ -256,7 +284,9 @@ nameToErrorMap.set('ExceededLengthError', ExceededLengthErrorError);
  */
 class MissingConfigLinesSettingsError extends ProgramError {
   readonly name: string = 'MissingConfigLinesSettings';
+
   readonly code: number = 0x177e; // 6014
+
   constructor(program: Program, cause?: Error) {
     super('Missing config lines settings', program, cause);
   }
@@ -273,7 +303,9 @@ nameToErrorMap.set(
  */
 class CannotIncreaseLengthError extends ProgramError {
   readonly name: string = 'CannotIncreaseLength';
+
   readonly code: number = 0x177f; // 6015
+
   constructor(program: Program, cause?: Error) {
     super(
       'Cannot increase the length in config lines settings',
@@ -291,7 +323,9 @@ nameToErrorMap.set('CannotIncreaseLength', CannotIncreaseLengthError);
  */
 class CannotSwitchFromHiddenSettingsError extends ProgramError {
   readonly name: string = 'CannotSwitchFromHiddenSettings';
+
   readonly code: number = 0x1780; // 6016
+
   constructor(program: Program, cause?: Error) {
     super('Cannot switch from hidden settings', program, cause);
   }
@@ -308,7 +342,9 @@ nameToErrorMap.set(
  */
 class CannotChangeSequentialIndexGenerationError extends ProgramError {
   readonly name: string = 'CannotChangeSequentialIndexGeneration';
+
   readonly code: number = 0x1781; // 6017
+
   constructor(program: Program, cause?: Error) {
     super(
       'Cannot change sequential index generation after items have begun to be minted',
@@ -329,7 +365,9 @@ nameToErrorMap.set(
  */
 class CmCollectionKeyMismatchError extends ProgramError {
   readonly name: string = 'CmCollectionKeyMismatch';
+
   readonly code: number = 0x1782; // 6018
+
   constructor(program: Program, cause?: Error) {
     super('Collection public key mismatch', program, cause);
   }
@@ -343,7 +381,9 @@ nameToErrorMap.set('CmCollectionKeyMismatch', CmCollectionKeyMismatchError);
  */
 class CouldNotRetrieveConfigLineDataError extends ProgramError {
   readonly name: string = 'CouldNotRetrieveConfigLineData';
+
   readonly code: number = 0x1783; // 6019
+
   constructor(program: Program, cause?: Error) {
     super('Could not retrive config line data', program, cause);
   }
@@ -360,7 +400,9 @@ nameToErrorMap.set(
  */
 class NotFullyLoadedError extends ProgramError {
   readonly name: string = 'NotFullyLoaded';
+
   readonly code: number = 0x1784; // 6020
+
   constructor(program: Program, cause?: Error) {
     super(
       'Not all config lines were added to the candy machine',

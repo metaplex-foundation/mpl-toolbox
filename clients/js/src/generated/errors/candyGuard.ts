@@ -21,7 +21,9 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
  */
 class InvalidAccountSizeError extends ProgramError {
   readonly name: string = 'InvalidAccountSize';
+
   readonly code: number = 0x1770; // 6000
+
   constructor(program: Program, cause?: Error) {
     super('Could not save guard to account', program, cause);
   }
@@ -35,7 +37,9 @@ nameToErrorMap.set('InvalidAccountSize', InvalidAccountSizeError);
  */
 class DeserializationErrorError extends ProgramError {
   readonly name: string = 'DeserializationError';
+
   readonly code: number = 0x1771; // 6001
+
   constructor(program: Program, cause?: Error) {
     super('Could not deserialize guard', program, cause);
   }
@@ -49,7 +53,9 @@ nameToErrorMap.set('DeserializationError', DeserializationErrorError);
  */
 class PublicKeyMismatchError extends ProgramError {
   readonly name: string = 'PublicKeyMismatch';
+
   readonly code: number = 0x1772; // 6002
+
   constructor(program: Program, cause?: Error) {
     super('Public key mismatch', program, cause);
   }
@@ -63,7 +69,9 @@ nameToErrorMap.set('PublicKeyMismatch', PublicKeyMismatchError);
  */
 class DataIncrementLimitExceededError extends ProgramError {
   readonly name: string = 'DataIncrementLimitExceeded';
+
   readonly code: number = 0x1773; // 6003
+
   constructor(program: Program, cause?: Error) {
     super('Exceeded account increase limit', program, cause);
   }
@@ -80,7 +88,9 @@ nameToErrorMap.set(
  */
 class CgIncorrectOwnerError extends ProgramError {
   readonly name: string = 'CgIncorrectOwner';
+
   readonly code: number = 0x1774; // 6004
+
   constructor(program: Program, cause?: Error) {
     super('Account does not have correct owner', program, cause);
   }
@@ -94,7 +104,9 @@ nameToErrorMap.set('CgIncorrectOwner', CgIncorrectOwnerError);
  */
 class CgUninitializedError extends ProgramError {
   readonly name: string = 'CgUninitialized';
+
   readonly code: number = 0x1775; // 6005
+
   constructor(program: Program, cause?: Error) {
     super('Account is not initialized', program, cause);
   }
@@ -108,7 +120,9 @@ nameToErrorMap.set('CgUninitialized', CgUninitializedError);
  */
 class MissingRemainingAccountError extends ProgramError {
   readonly name: string = 'MissingRemainingAccount';
+
   readonly code: number = 0x1776; // 6006
+
   constructor(program: Program, cause?: Error) {
     super('Missing expected remaining account', program, cause);
   }
@@ -122,7 +136,9 @@ nameToErrorMap.set('MissingRemainingAccount', MissingRemainingAccountError);
  */
 class CgNumericalOverflowErrorError extends ProgramError {
   readonly name: string = 'CgNumericalOverflowError';
+
   readonly code: number = 0x1777; // 6007
+
   constructor(program: Program, cause?: Error) {
     super('Numerical overflow error', program, cause);
   }
@@ -136,7 +152,9 @@ nameToErrorMap.set('CgNumericalOverflowError', CgNumericalOverflowErrorError);
  */
 class RequiredGroupLabelNotFoundError extends ProgramError {
   readonly name: string = 'RequiredGroupLabelNotFound';
+
   readonly code: number = 0x1778; // 6008
+
   constructor(program: Program, cause?: Error) {
     super('Missing required group label', program, cause);
   }
@@ -153,7 +171,9 @@ nameToErrorMap.set(
  */
 class GroupNotFoundError extends ProgramError {
   readonly name: string = 'GroupNotFound';
+
   readonly code: number = 0x1779; // 6009
+
   constructor(program: Program, cause?: Error) {
     super('Group not found', program, cause);
   }
@@ -167,7 +187,9 @@ nameToErrorMap.set('GroupNotFound', GroupNotFoundError);
  */
 class ExceededLengthError extends ProgramError {
   readonly name: string = 'ExceededLength';
+
   readonly code: number = 0x177a; // 6010
+
   constructor(program: Program, cause?: Error) {
     super('Value exceeded maximum length', program, cause);
   }
@@ -181,7 +203,9 @@ nameToErrorMap.set('ExceededLength', ExceededLengthError);
  */
 class CgCandyMachineEmptyError extends ProgramError {
   readonly name: string = 'CgCandyMachineEmpty';
+
   readonly code: number = 0x177b; // 6011
+
   constructor(program: Program, cause?: Error) {
     super('Candy machine is empty', program, cause);
   }
@@ -195,7 +219,9 @@ nameToErrorMap.set('CgCandyMachineEmpty', CgCandyMachineEmptyError);
  */
 class InstructionNotFoundError extends ProgramError {
   readonly name: string = 'InstructionNotFound';
+
   readonly code: number = 0x177c; // 6012
+
   constructor(program: Program, cause?: Error) {
     super('No instruction was found', program, cause);
   }
@@ -209,7 +235,9 @@ nameToErrorMap.set('InstructionNotFound', InstructionNotFoundError);
  */
 class CgCollectionKeyMismatchError extends ProgramError {
   readonly name: string = 'CgCollectionKeyMismatch';
+
   readonly code: number = 0x177d; // 6013
+
   constructor(program: Program, cause?: Error) {
     super('Collection public key mismatch', program, cause);
   }
@@ -223,7 +251,9 @@ nameToErrorMap.set('CgCollectionKeyMismatch', CgCollectionKeyMismatchError);
  */
 class MissingCollectionAccountsError extends ProgramError {
   readonly name: string = 'MissingCollectionAccounts';
+
   readonly code: number = 0x177e; // 6014
+
   constructor(program: Program, cause?: Error) {
     super('Missing collection accounts', program, cause);
   }
@@ -237,7 +267,9 @@ nameToErrorMap.set('MissingCollectionAccounts', MissingCollectionAccountsError);
  */
 class CollectionUpdateAuthorityKeyMismatchError extends ProgramError {
   readonly name: string = 'CollectionUpdateAuthorityKeyMismatch';
+
   readonly code: number = 0x177f; // 6015
+
   constructor(program: Program, cause?: Error) {
     super('Collection update authority public key mismatch', program, cause);
   }
@@ -254,7 +286,9 @@ nameToErrorMap.set(
  */
 class MintNotLastTransactionError extends ProgramError {
   readonly name: string = 'MintNotLastTransaction';
+
   readonly code: number = 0x1780; // 6016
+
   constructor(program: Program, cause?: Error) {
     super(
       'Mint must be the last instructions of the transaction',
@@ -272,7 +306,9 @@ nameToErrorMap.set('MintNotLastTransaction', MintNotLastTransactionError);
  */
 class MintNotLiveError extends ProgramError {
   readonly name: string = 'MintNotLive';
+
   readonly code: number = 0x1781; // 6017
+
   constructor(program: Program, cause?: Error) {
     super('Mint is not live', program, cause);
   }
@@ -286,7 +322,9 @@ nameToErrorMap.set('MintNotLive', MintNotLiveError);
  */
 class NotEnoughSOLError extends ProgramError {
   readonly name: string = 'NotEnoughSOL';
+
   readonly code: number = 0x1782; // 6018
+
   constructor(program: Program, cause?: Error) {
     super('Not enough SOL to pay for the mint', program, cause);
   }
@@ -300,7 +338,9 @@ nameToErrorMap.set('NotEnoughSOL', NotEnoughSOLError);
  */
 class TokenBurnFailedError extends ProgramError {
   readonly name: string = 'TokenBurnFailed';
+
   readonly code: number = 0x1783; // 6019
+
   constructor(program: Program, cause?: Error) {
     super('Token burn failed', program, cause);
   }
@@ -314,7 +354,9 @@ nameToErrorMap.set('TokenBurnFailed', TokenBurnFailedError);
  */
 class NotEnoughTokensError extends ProgramError {
   readonly name: string = 'NotEnoughTokens';
+
   readonly code: number = 0x1784; // 6020
+
   constructor(program: Program, cause?: Error) {
     super('Not enough tokens on the account', program, cause);
   }
@@ -328,7 +370,9 @@ nameToErrorMap.set('NotEnoughTokens', NotEnoughTokensError);
  */
 class TokenTransferFailedError extends ProgramError {
   readonly name: string = 'TokenTransferFailed';
+
   readonly code: number = 0x1785; // 6021
+
   constructor(program: Program, cause?: Error) {
     super('Token transfer failed', program, cause);
   }
@@ -342,7 +386,9 @@ nameToErrorMap.set('TokenTransferFailed', TokenTransferFailedError);
  */
 class MissingRequiredSignatureError extends ProgramError {
   readonly name: string = 'MissingRequiredSignature';
+
   readonly code: number = 0x1786; // 6022
+
   constructor(program: Program, cause?: Error) {
     super('A signature was required but not found', program, cause);
   }
@@ -356,7 +402,9 @@ nameToErrorMap.set('MissingRequiredSignature', MissingRequiredSignatureError);
  */
 class GatewayTokenInvalidError extends ProgramError {
   readonly name: string = 'GatewayTokenInvalid';
+
   readonly code: number = 0x1787; // 6023
+
   constructor(program: Program, cause?: Error) {
     super('Gateway token is not valid', program, cause);
   }
@@ -370,7 +418,9 @@ nameToErrorMap.set('GatewayTokenInvalid', GatewayTokenInvalidError);
  */
 class AfterEndDateError extends ProgramError {
   readonly name: string = 'AfterEndDate';
+
   readonly code: number = 0x1788; // 6024
+
   constructor(program: Program, cause?: Error) {
     super('Current time is after the set end date', program, cause);
   }
@@ -384,7 +434,9 @@ nameToErrorMap.set('AfterEndDate', AfterEndDateError);
  */
 class InvalidMintTimeError extends ProgramError {
   readonly name: string = 'InvalidMintTime';
+
   readonly code: number = 0x1789; // 6025
+
   constructor(program: Program, cause?: Error) {
     super('Current time is not within the allowed mint time', program, cause);
   }
@@ -398,7 +450,9 @@ nameToErrorMap.set('InvalidMintTime', InvalidMintTimeError);
  */
 class AddressNotFoundInAllowedListError extends ProgramError {
   readonly name: string = 'AddressNotFoundInAllowedList';
+
   readonly code: number = 0x178a; // 6026
+
   constructor(program: Program, cause?: Error) {
     super('Address not found on the allowed list', program, cause);
   }
@@ -415,7 +469,9 @@ nameToErrorMap.set(
  */
 class MissingAllowedListProofError extends ProgramError {
   readonly name: string = 'MissingAllowedListProof';
+
   readonly code: number = 0x178b; // 6027
+
   constructor(program: Program, cause?: Error) {
     super('Missing allowed list proof', program, cause);
   }
@@ -429,7 +485,9 @@ nameToErrorMap.set('MissingAllowedListProof', MissingAllowedListProofError);
  */
 class AllowedListNotEnabledError extends ProgramError {
   readonly name: string = 'AllowedListNotEnabled';
+
   readonly code: number = 0x178c; // 6028
+
   constructor(program: Program, cause?: Error) {
     super('Allow list guard is not enabled', program, cause);
   }
@@ -443,7 +501,9 @@ nameToErrorMap.set('AllowedListNotEnabled', AllowedListNotEnabledError);
  */
 class AllowedMintLimitReachedError extends ProgramError {
   readonly name: string = 'AllowedMintLimitReached';
+
   readonly code: number = 0x178d; // 6029
+
   constructor(program: Program, cause?: Error) {
     super('The maximum number of allowed mints was reached', program, cause);
   }
@@ -457,7 +517,9 @@ nameToErrorMap.set('AllowedMintLimitReached', AllowedMintLimitReachedError);
  */
 class InvalidNftCollectionError extends ProgramError {
   readonly name: string = 'InvalidNftCollection';
+
   readonly code: number = 0x178e; // 6030
+
   constructor(program: Program, cause?: Error) {
     super('Invalid NFT collection', program, cause);
   }
@@ -471,7 +533,9 @@ nameToErrorMap.set('InvalidNftCollection', InvalidNftCollectionError);
  */
 class MissingNftError extends ProgramError {
   readonly name: string = 'MissingNft';
+
   readonly code: number = 0x178f; // 6031
+
   constructor(program: Program, cause?: Error) {
     super('Missing NFT on the account', program, cause);
   }
@@ -485,7 +549,9 @@ nameToErrorMap.set('MissingNft', MissingNftError);
  */
 class MaximumRedeemedAmountError extends ProgramError {
   readonly name: string = 'MaximumRedeemedAmount';
+
   readonly code: number = 0x1790; // 6032
+
   constructor(program: Program, cause?: Error) {
     super(
       'Current redemeed items is at the set maximum amount',
@@ -503,7 +569,9 @@ nameToErrorMap.set('MaximumRedeemedAmount', MaximumRedeemedAmountError);
  */
 class AddressNotAuthorizedError extends ProgramError {
   readonly name: string = 'AddressNotAuthorized';
+
   readonly code: number = 0x1791; // 6033
+
   constructor(program: Program, cause?: Error) {
     super('Address not authorized', program, cause);
   }
@@ -517,7 +585,9 @@ nameToErrorMap.set('AddressNotAuthorized', AddressNotAuthorizedError);
  */
 class MissingFreezeInstructionError extends ProgramError {
   readonly name: string = 'MissingFreezeInstruction';
+
   readonly code: number = 0x1792; // 6034
+
   constructor(program: Program, cause?: Error) {
     super('Missing freeze instruction data', program, cause);
   }
@@ -531,7 +601,9 @@ nameToErrorMap.set('MissingFreezeInstruction', MissingFreezeInstructionError);
  */
 class FreezeGuardNotEnabledError extends ProgramError {
   readonly name: string = 'FreezeGuardNotEnabled';
+
   readonly code: number = 0x1793; // 6035
+
   constructor(program: Program, cause?: Error) {
     super('Freeze guard must be enabled', program, cause);
   }
@@ -545,7 +617,9 @@ nameToErrorMap.set('FreezeGuardNotEnabled', FreezeGuardNotEnabledError);
  */
 class FreezeNotInitializedError extends ProgramError {
   readonly name: string = 'FreezeNotInitialized';
+
   readonly code: number = 0x1794; // 6036
+
   constructor(program: Program, cause?: Error) {
     super('Freeze must be initialized', program, cause);
   }
@@ -559,7 +633,9 @@ nameToErrorMap.set('FreezeNotInitialized', FreezeNotInitializedError);
  */
 class MissingFreezePeriodError extends ProgramError {
   readonly name: string = 'MissingFreezePeriod';
+
   readonly code: number = 0x1795; // 6037
+
   constructor(program: Program, cause?: Error) {
     super('Missing freeze period', program, cause);
   }
@@ -573,7 +649,9 @@ nameToErrorMap.set('MissingFreezePeriod', MissingFreezePeriodError);
  */
 class FreezeEscrowAlreadyExistsError extends ProgramError {
   readonly name: string = 'FreezeEscrowAlreadyExists';
+
   readonly code: number = 0x1796; // 6038
+
   constructor(program: Program, cause?: Error) {
     super('The freeze escrow account already exists', program, cause);
   }
@@ -587,7 +665,9 @@ nameToErrorMap.set('FreezeEscrowAlreadyExists', FreezeEscrowAlreadyExistsError);
  */
 class ExceededMaximumFreezePeriodError extends ProgramError {
   readonly name: string = 'ExceededMaximumFreezePeriod';
+
   readonly code: number = 0x1797; // 6039
+
   constructor(program: Program, cause?: Error) {
     super('Maximum freeze period exceeded', program, cause);
   }
@@ -604,7 +684,9 @@ nameToErrorMap.set(
  */
 class ThawNotEnabledError extends ProgramError {
   readonly name: string = 'ThawNotEnabled';
+
   readonly code: number = 0x1798; // 6040
+
   constructor(program: Program, cause?: Error) {
     super('Thaw is not enabled', program, cause);
   }
@@ -618,7 +700,9 @@ nameToErrorMap.set('ThawNotEnabled', ThawNotEnabledError);
  */
 class UnlockNotEnabledError extends ProgramError {
   readonly name: string = 'UnlockNotEnabled';
+
   readonly code: number = 0x1799; // 6041
+
   constructor(program: Program, cause?: Error) {
     super('Unlock is not enabled (not all NFTs are thawed)', program, cause);
   }
@@ -632,7 +716,9 @@ nameToErrorMap.set('UnlockNotEnabled', UnlockNotEnabledError);
  */
 class DuplicatedGroupLabelError extends ProgramError {
   readonly name: string = 'DuplicatedGroupLabel';
+
   readonly code: number = 0x179a; // 6042
+
   constructor(program: Program, cause?: Error) {
     super('Duplicated group label', program, cause);
   }
@@ -646,7 +732,9 @@ nameToErrorMap.set('DuplicatedGroupLabel', DuplicatedGroupLabelError);
  */
 class DuplicatedMintLimitIdError extends ProgramError {
   readonly name: string = 'DuplicatedMintLimitId';
+
   readonly code: number = 0x179b; // 6043
+
   constructor(program: Program, cause?: Error) {
     super('Duplicated mint limit id', program, cause);
   }
@@ -660,7 +748,9 @@ nameToErrorMap.set('DuplicatedMintLimitId', DuplicatedMintLimitIdError);
  */
 class UnauthorizedProgramFoundError extends ProgramError {
   readonly name: string = 'UnauthorizedProgramFound';
+
   readonly code: number = 0x179c; // 6044
+
   constructor(program: Program, cause?: Error) {
     super(
       'An unauthorized program was found in the transaction',
@@ -678,7 +768,9 @@ nameToErrorMap.set('UnauthorizedProgramFound', UnauthorizedProgramFoundError);
  */
 class ExceededProgramListSizeError extends ProgramError {
   readonly name: string = 'ExceededProgramListSize';
+
   readonly code: number = 0x179d; // 6045
+
   constructor(program: Program, cause?: Error) {
     super(
       'Exceeded the maximum number of programs in the additional list',
@@ -696,7 +788,9 @@ nameToErrorMap.set('ExceededProgramListSize', ExceededProgramListSizeError);
  */
 class AllocationNotInitializedError extends ProgramError {
   readonly name: string = 'AllocationNotInitialized';
+
   readonly code: number = 0x179e; // 6046
+
   constructor(program: Program, cause?: Error) {
     super('Allocation PDA not initialized', program, cause);
   }
@@ -710,7 +804,9 @@ nameToErrorMap.set('AllocationNotInitialized', AllocationNotInitializedError);
  */
 class AllocationLimitReachedError extends ProgramError {
   readonly name: string = 'AllocationLimitReached';
+
   readonly code: number = 0x179f; // 6047
+
   constructor(program: Program, cause?: Error) {
     super('Allocation limit was reached', program, cause);
   }
@@ -724,7 +820,9 @@ nameToErrorMap.set('AllocationLimitReached', AllocationLimitReachedError);
  */
 class AllocationGuardNotEnabledError extends ProgramError {
   readonly name: string = 'AllocationGuardNotEnabled';
+
   readonly code: number = 0x17a0; // 6048
+
   constructor(program: Program, cause?: Error) {
     super('Allocation guard must be enabled', program, cause);
   }
