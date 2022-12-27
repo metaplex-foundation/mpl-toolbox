@@ -26,7 +26,7 @@ export function getMplCandyGuardProgram(
     getErrorFromName(name: string, cause?: Error) {
       return getMplCandyGuardErrorFromName(name, this, cause);
     },
-    isOnCluster(cluster) {
+    isOnCluster() {
       return true;
     },
   };

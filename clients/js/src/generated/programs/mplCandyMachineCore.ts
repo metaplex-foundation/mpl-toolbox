@@ -26,7 +26,7 @@ export function getMplCandyMachineCoreProgram(
     getErrorFromName(name: string, cause?: Error) {
       return getMplCandyMachineCoreErrorFromName(name, this, cause);
     },
-    isOnCluster(cluster) {
+    isOnCluster() {
       return true;
     },
   };
