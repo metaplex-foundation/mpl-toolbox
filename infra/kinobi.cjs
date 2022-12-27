@@ -1,5 +1,9 @@
 const path = require("path");
-const { Kinobi, RenderJavaScriptVisitor } = require("@lorisleiva/kinobi");
+const {
+  Kinobi,
+  RenderJavaScriptVisitor,
+  ValidateNodesVisitor,
+} = require("@lorisleiva/kinobi");
 
 // Paths.
 const clientDir = path.join(__dirname, "..", "clients");
@@ -11,6 +15,7 @@ const idlPaths = [
 
 // Instantiate Kinobi.
 const kinobi = new Kinobi(idlPaths);
+kinobi.accept(new ValidateNodesVisitor());
 
 // Generate JavaScript client.
 const jsDir = path.join(clientDir, "js", "src", "generated");
