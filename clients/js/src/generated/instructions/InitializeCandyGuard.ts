@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -28,15 +29,36 @@ export type InitializeCandyGuardInstructionAccounts = {
 // Arguments.
 export type InitializeCandyGuardInstructionArgs = { data: Uint8Array };
 
+// Discriminator.
+export type InitializeCandyGuardInstructionDiscriminator = Array<number>;
+export function getInitializeCandyGuardInstructionDiscriminator(): InitializeCandyGuardInstructionDiscriminator {
+  return [175, 175, 109, 31, 13, 152, 155, 237];
+}
+
 // Data.
-type InitializeCandyGuardInstructionData = InitializeCandyGuardInstructionArgs;
+type InitializeCandyGuardInstructionData =
+  InitializeCandyGuardInstructionArgs & {
+    discriminator: InitializeCandyGuardInstructionDiscriminator;
+  };
 export function getInitializeCandyGuardInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<InitializeCandyGuardInstructionArgs> {
   const s = context.serializer;
-  return s.struct<InitializeCandyGuardInstructionData>(
-    [['data', s.bytes]],
-    'InitializeCandyGuardInstructionData'
+  const discriminator = getInitializeCandyGuardInstructionDiscriminator();
+  const serializer: Serializer<InitializeCandyGuardInstructionData> =
+    s.struct<InitializeCandyGuardInstructionData>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['data', s.bytes],
+      ],
+      'InitializeCandyGuardInstructionData'
+    );
+  return mapSerializer(
+    serializer,
+    (value: InitializeCandyGuardInstructionArgs) => ({
+      ...value,
+      discriminator,
+    })
   );
 }
 

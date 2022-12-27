@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -27,15 +28,32 @@ export type UpdateCandyGuardInstructionAccounts = {
 // Arguments.
 export type UpdateCandyGuardInstructionArgs = { data: Uint8Array };
 
+// Discriminator.
+export type UpdateCandyGuardInstructionDiscriminator = Array<number>;
+export function getUpdateCandyGuardInstructionDiscriminator(): UpdateCandyGuardInstructionDiscriminator {
+  return [219, 200, 88, 176, 158, 63, 253, 127];
+}
+
 // Data.
-type UpdateCandyGuardInstructionData = UpdateCandyGuardInstructionArgs;
+type UpdateCandyGuardInstructionData = UpdateCandyGuardInstructionArgs & {
+  discriminator: UpdateCandyGuardInstructionDiscriminator;
+};
 export function getUpdateCandyGuardInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<UpdateCandyGuardInstructionArgs> {
   const s = context.serializer;
-  return s.struct<UpdateCandyGuardInstructionData>(
-    [['data', s.bytes]],
-    'UpdateCandyGuardInstructionData'
+  const discriminator = getUpdateCandyGuardInstructionDiscriminator();
+  const serializer: Serializer<UpdateCandyGuardInstructionData> =
+    s.struct<UpdateCandyGuardInstructionData>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['data', s.bytes],
+      ],
+      'UpdateCandyGuardInstructionData'
+    );
+  return mapSerializer(
+    serializer,
+    (value: UpdateCandyGuardInstructionArgs) => ({ ...value, discriminator })
   );
 }
 

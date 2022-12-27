@@ -15,6 +15,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -46,18 +47,33 @@ export type MintFromCandyGuardInstructionArgs = {
   label: Option<string>;
 };
 
+// Discriminator.
+export type MintFromCandyGuardInstructionDiscriminator = Array<number>;
+export function getMintFromCandyGuardInstructionDiscriminator(): MintFromCandyGuardInstructionDiscriminator {
+  return [51, 57, 225, 47, 182, 146, 137, 166];
+}
+
 // Data.
-type MintFromCandyGuardInstructionData = MintFromCandyGuardInstructionArgs;
+type MintFromCandyGuardInstructionData = MintFromCandyGuardInstructionArgs & {
+  discriminator: MintFromCandyGuardInstructionDiscriminator;
+};
 export function getMintFromCandyGuardInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<MintFromCandyGuardInstructionArgs> {
   const s = context.serializer;
-  return s.struct<MintFromCandyGuardInstructionData>(
-    [
-      ['mintArgs', s.bytes],
-      ['label', s.option(s.string)],
-    ],
-    'MintFromCandyGuardInstructionData'
+  const discriminator = getMintFromCandyGuardInstructionDiscriminator();
+  const serializer: Serializer<MintFromCandyGuardInstructionData> =
+    s.struct<MintFromCandyGuardInstructionData>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['mintArgs', s.bytes],
+        ['label', s.option(s.string)],
+      ],
+      'MintFromCandyGuardInstructionData'
+    );
+  return mapSerializer(
+    serializer,
+    (value: MintFromCandyGuardInstructionArgs) => ({ ...value, discriminator })
   );
 }
 

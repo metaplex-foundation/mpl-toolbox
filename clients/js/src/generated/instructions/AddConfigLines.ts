@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -33,30 +34,45 @@ export type AddConfigLinesInstructionArgs = {
   }>;
 };
 
+// Discriminator.
+export type AddConfigLinesInstructionDiscriminator = Array<number>;
+export function getAddConfigLinesInstructionDiscriminator(): AddConfigLinesInstructionDiscriminator {
+  return [223, 50, 224, 227, 151, 8, 115, 106];
+}
+
 // Data.
-type AddConfigLinesInstructionData = AddConfigLinesInstructionArgs;
+type AddConfigLinesInstructionData = AddConfigLinesInstructionArgs & {
+  discriminator: AddConfigLinesInstructionDiscriminator;
+};
 export function getAddConfigLinesInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<AddConfigLinesInstructionArgs> {
   const s = context.serializer;
-  return s.struct<AddConfigLinesInstructionData>(
-    [
-      ['index', s.u32],
+  const discriminator = getAddConfigLinesInstructionDiscriminator();
+  const serializer: Serializer<AddConfigLinesInstructionData> =
+    s.struct<AddConfigLinesInstructionData>(
       [
-        'configLines',
-        s.vec(
-          s.struct<any>(
-            [
-              ['name', s.string],
-              ['uri', s.string],
-            ],
-            'ConfigLine'
-          )
-        ),
+        ['discriminator', s.array(s.u8, 8)],
+        ['index', s.u32],
+        [
+          'configLines',
+          s.vec(
+            s.struct<any>(
+              [
+                ['name', s.string],
+                ['uri', s.string],
+              ],
+              'ConfigLine'
+            )
+          ),
+        ],
       ],
-    ],
-    'AddConfigLinesInstructionData'
-  );
+      'AddConfigLinesInstructionData'
+    );
+  return mapSerializer(serializer, (value: AddConfigLinesInstructionArgs) => ({
+    ...value,
+    discriminator,
+  }));
 }
 
 // Instruction.

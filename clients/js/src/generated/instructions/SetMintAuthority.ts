@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -21,6 +23,29 @@ export type SetMintAuthorityInstructionAccounts = {
   authority: Signer;
   mintAuthority: Signer;
 };
+
+// Discriminator.
+export type SetMintAuthorityInstructionDiscriminator = Array<number>;
+export function getSetMintAuthorityInstructionDiscriminator(): SetMintAuthorityInstructionDiscriminator {
+  return [67, 127, 155, 187, 100, 174, 103, 121];
+}
+
+// Data.
+type SetMintAuthorityInstructionData = {
+  discriminator: SetMintAuthorityInstructionDiscriminator;
+};
+export function getSetMintAuthorityInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<{}> {
+  const s = context.serializer;
+  const discriminator = getSetMintAuthorityInstructionDiscriminator();
+  const serializer: Serializer<SetMintAuthorityInstructionData> =
+    s.struct<SetMintAuthorityInstructionData>(
+      [['discriminator', s.array(s.u8, 8)]],
+      'SetMintAuthorityInstructionData'
+    );
+  return mapSerializer(serializer, () => ({ discriminator }));
+}
 
 // Instruction.
 export function setMintAuthority(
@@ -61,7 +86,9 @@ export function setMintAuthority(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getSetMintAuthorityInstructionDataSerializer(context).serialize(
+    {}
+  );
 
   return {
     instruction: { keys, programId, data },

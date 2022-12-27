@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -27,16 +28,36 @@ export type SetCandyMachineAuthorityInstructionArgs = {
   newAuthority: PublicKey;
 };
 
+// Discriminator.
+export type SetCandyMachineAuthorityInstructionDiscriminator = Array<number>;
+export function getSetCandyMachineAuthorityInstructionDiscriminator(): SetCandyMachineAuthorityInstructionDiscriminator {
+  return [133, 250, 37, 21, 110, 163, 26, 121];
+}
+
 // Data.
 type SetCandyMachineAuthorityInstructionData =
-  SetCandyMachineAuthorityInstructionArgs;
+  SetCandyMachineAuthorityInstructionArgs & {
+    discriminator: SetCandyMachineAuthorityInstructionDiscriminator;
+  };
 export function getSetCandyMachineAuthorityInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<SetCandyMachineAuthorityInstructionArgs> {
   const s = context.serializer;
-  return s.struct<SetCandyMachineAuthorityInstructionData>(
-    [['newAuthority', s.publicKey]],
-    'SetCandyMachineAuthorityInstructionData'
+  const discriminator = getSetCandyMachineAuthorityInstructionDiscriminator();
+  const serializer: Serializer<SetCandyMachineAuthorityInstructionData> =
+    s.struct<SetCandyMachineAuthorityInstructionData>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['newAuthority', s.publicKey],
+      ],
+      'SetCandyMachineAuthorityInstructionData'
+    );
+  return mapSerializer(
+    serializer,
+    (value: SetCandyMachineAuthorityInstructionArgs) => ({
+      ...value,
+      discriminator,
+    })
   );
 }
 

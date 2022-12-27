@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 import { CandyMachineData, getCandyMachineDataSerializer } from '../types';
 
@@ -26,15 +27,32 @@ export type UpdateCandyMachineInstructionAccounts = {
 // Arguments.
 export type UpdateCandyMachineInstructionArgs = { data: CandyMachineData };
 
+// Discriminator.
+export type UpdateCandyMachineInstructionDiscriminator = Array<number>;
+export function getUpdateCandyMachineInstructionDiscriminator(): UpdateCandyMachineInstructionDiscriminator {
+  return [219, 200, 88, 176, 158, 63, 253, 127];
+}
+
 // Data.
-type UpdateCandyMachineInstructionData = UpdateCandyMachineInstructionArgs;
+type UpdateCandyMachineInstructionData = UpdateCandyMachineInstructionArgs & {
+  discriminator: UpdateCandyMachineInstructionDiscriminator;
+};
 export function getUpdateCandyMachineInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<UpdateCandyMachineInstructionArgs> {
   const s = context.serializer;
-  return s.struct<UpdateCandyMachineInstructionData>(
-    [['data', getCandyMachineDataSerializer(context)]],
-    'UpdateCandyMachineInstructionData'
+  const discriminator = getUpdateCandyMachineInstructionDiscriminator();
+  const serializer: Serializer<UpdateCandyMachineInstructionData> =
+    s.struct<UpdateCandyMachineInstructionData>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['data', getCandyMachineDataSerializer(context)],
+      ],
+      'UpdateCandyMachineInstructionData'
+    );
+  return mapSerializer(
+    serializer,
+    (value: UpdateCandyMachineInstructionArgs) => ({ ...value, discriminator })
   );
 }
 

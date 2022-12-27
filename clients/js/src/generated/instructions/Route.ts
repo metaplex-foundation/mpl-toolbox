@@ -15,6 +15,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 import { GuardType, getGuardTypeSerializer } from '../types';
 
@@ -34,20 +35,35 @@ export type RouteInstructionArgs = {
   label: Option<string>;
 };
 
+// Discriminator.
+export type RouteInstructionDiscriminator = Array<number>;
+export function getRouteInstructionDiscriminator(): RouteInstructionDiscriminator {
+  return [229, 23, 203, 151, 122, 227, 173, 42];
+}
+
 // Data.
-type RouteInstructionData = RouteInstructionArgs;
+type RouteInstructionData = RouteInstructionArgs & {
+  discriminator: RouteInstructionDiscriminator;
+};
 export function getRouteInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<RouteInstructionArgs> {
   const s = context.serializer;
-  return s.struct<RouteInstructionData>(
-    [
-      ['guard', getGuardTypeSerializer(context)],
-      ['data', s.bytes],
-      ['label', s.option(s.string)],
-    ],
-    'RouteInstructionData'
-  );
+  const discriminator = getRouteInstructionDiscriminator();
+  const serializer: Serializer<RouteInstructionData> =
+    s.struct<RouteInstructionData>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['guard', getGuardTypeSerializer(context)],
+        ['data', s.bytes],
+        ['label', s.option(s.string)],
+      ],
+      'RouteInstructionData'
+    );
+  return mapSerializer(serializer, (value: RouteInstructionArgs) => ({
+    ...value,
+    discriminator,
+  }));
 }
 
 // Instruction.

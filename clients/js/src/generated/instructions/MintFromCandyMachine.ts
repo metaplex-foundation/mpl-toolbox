@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -35,6 +37,29 @@ export type MintFromCandyMachineInstructionAccounts = {
   systemProgram?: PublicKey;
   recentSlothashes: PublicKey;
 };
+
+// Discriminator.
+export type MintFromCandyMachineInstructionDiscriminator = Array<number>;
+export function getMintFromCandyMachineInstructionDiscriminator(): MintFromCandyMachineInstructionDiscriminator {
+  return [51, 57, 225, 47, 182, 146, 137, 166];
+}
+
+// Data.
+type MintFromCandyMachineInstructionData = {
+  discriminator: MintFromCandyMachineInstructionDiscriminator;
+};
+export function getMintFromCandyMachineInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<{}> {
+  const s = context.serializer;
+  const discriminator = getMintFromCandyMachineInstructionDiscriminator();
+  const serializer: Serializer<MintFromCandyMachineInstructionData> =
+    s.struct<MintFromCandyMachineInstructionData>(
+      [['discriminator', s.array(s.u8, 8)]],
+      'MintFromCandyMachineInstructionData'
+    );
+  return mapSerializer(serializer, () => ({ discriminator }));
+}
 
 // Instruction.
 export function mintFromCandyMachine(
@@ -174,7 +199,9 @@ export function mintFromCandyMachine(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getMintFromCandyMachineInstructionDataSerializer(
+    context
+  ).serialize({});
 
   return {
     instruction: { keys, programId, data },

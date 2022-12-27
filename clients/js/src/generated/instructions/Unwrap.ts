@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -23,6 +25,27 @@ export type UnwrapInstructionAccounts = {
   candyMachineAuthority: Signer;
   candyMachineProgram: PublicKey;
 };
+
+// Discriminator.
+export type UnwrapInstructionDiscriminator = Array<number>;
+export function getUnwrapInstructionDiscriminator(): UnwrapInstructionDiscriminator {
+  return [126, 175, 198, 14, 212, 69, 50, 44];
+}
+
+// Data.
+type UnwrapInstructionData = { discriminator: UnwrapInstructionDiscriminator };
+export function getUnwrapInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<{}> {
+  const s = context.serializer;
+  const discriminator = getUnwrapInstructionDiscriminator();
+  const serializer: Serializer<UnwrapInstructionData> =
+    s.struct<UnwrapInstructionData>(
+      [['discriminator', s.array(s.u8, 8)]],
+      'UnwrapInstructionData'
+    );
+  return mapSerializer(serializer, () => ({ discriminator }));
+}
 
 // Instruction.
 export function unwrap(
@@ -73,7 +96,7 @@ export function unwrap(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getUnwrapInstructionDataSerializer(context).serialize({});
 
   return {
     instruction: { keys, programId, data },

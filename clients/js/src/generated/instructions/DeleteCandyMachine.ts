@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -20,6 +22,29 @@ export type DeleteCandyMachineInstructionAccounts = {
   candyMachine: PublicKey;
   authority: Signer;
 };
+
+// Discriminator.
+export type DeleteCandyMachineInstructionDiscriminator = Array<number>;
+export function getDeleteCandyMachineInstructionDiscriminator(): DeleteCandyMachineInstructionDiscriminator {
+  return [183, 18, 70, 156, 148, 109, 161, 34];
+}
+
+// Data.
+type DeleteCandyMachineInstructionData = {
+  discriminator: DeleteCandyMachineInstructionDiscriminator;
+};
+export function getDeleteCandyMachineInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<{}> {
+  const s = context.serializer;
+  const discriminator = getDeleteCandyMachineInstructionDiscriminator();
+  const serializer: Serializer<DeleteCandyMachineInstructionData> =
+    s.struct<DeleteCandyMachineInstructionData>(
+      [['discriminator', s.array(s.u8, 8)]],
+      'DeleteCandyMachineInstructionData'
+    );
+  return mapSerializer(serializer, () => ({ discriminator }));
+}
 
 // Instruction.
 export function deleteCandyMachine(
@@ -52,7 +77,9 @@ export function deleteCandyMachine(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getDeleteCandyMachineInstructionDataSerializer(
+    context
+  ).serialize({});
 
   return {
     instruction: { keys, programId, data },

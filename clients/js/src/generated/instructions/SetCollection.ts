@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -32,6 +34,29 @@ export type SetCollectionInstructionAccounts = {
   tokenMetadataProgram: PublicKey;
   systemProgram?: PublicKey;
 };
+
+// Discriminator.
+export type SetCollectionInstructionDiscriminator = Array<number>;
+export function getSetCollectionInstructionDiscriminator(): SetCollectionInstructionDiscriminator {
+  return [192, 254, 206, 76, 168, 182, 59, 223];
+}
+
+// Data.
+type SetCollectionInstructionData = {
+  discriminator: SetCollectionInstructionDiscriminator;
+};
+export function getSetCollectionInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<{}> {
+  const s = context.serializer;
+  const discriminator = getSetCollectionInstructionDiscriminator();
+  const serializer: Serializer<SetCollectionInstructionData> =
+    s.struct<SetCollectionInstructionData>(
+      [['discriminator', s.array(s.u8, 8)]],
+      'SetCollectionInstructionData'
+    );
+  return mapSerializer(serializer, () => ({ discriminator }));
+}
 
 // Instruction.
 export function setCollection(
@@ -152,7 +177,7 @@ export function setCollection(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getSetCollectionInstructionDataSerializer(context).serialize({});
 
   return {
     instruction: { keys, programId, data },
