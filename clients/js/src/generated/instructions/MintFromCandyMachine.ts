@@ -9,7 +9,6 @@
 import {
   AccountMeta,
   Context,
-  Option,
   PublicKey,
   Serializer,
   Signer,
@@ -18,15 +17,14 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type mintInstructionAccounts = {
-  candyGuard: PublicKey;
-  candyMachineProgram: PublicKey;
+export type MintFromCandyMachineInstructionAccounts = {
   candyMachine: PublicKey;
-  candyMachineAuthorityPda: PublicKey;
+  authorityPda: PublicKey;
+  mintAuthority: Signer;
   payer: Signer;
-  nftMetadata: PublicKey;
   nftMint: PublicKey;
   nftMintAuthority: Signer;
+  nftMetadata: PublicKey;
   nftMasterEdition: PublicKey;
   collectionAuthorityRecord: PublicKey;
   collectionMint: PublicKey;
@@ -37,39 +35,16 @@ export type mintInstructionAccounts = {
   tokenProgram?: PublicKey;
   systemProgram?: PublicKey;
   recentSlothashes: PublicKey;
-  instructionSysvarAccount: PublicKey;
 };
-
-// Arguments.
-export type mintInstructionArgs = {
-  mintArgs: Uint8Array;
-  label: Option<string>;
-};
-
-// Data.
-type mintInstructionData = mintInstructionArgs;
-export function getmintInstructionDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
-): Serializer<mintInstructionArgs> {
-  const s = context.serializer;
-  return s.struct<mintInstructionData>(
-    [
-      ['mintArgs', s.bytes],
-      ['label', s.option(s.string)],
-    ],
-    'mintInstructionData'
-  );
-}
 
 // Instruction.
-export function mint(
+export function mintFromCandyMachine(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  accounts: mintInstructionAccounts,
-  args: mintInstructionArgs
+  input: MintFromCandyMachineInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -77,109 +52,91 @@ export function mint(
   // Program ID.
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
-    'candyGuard',
-    'Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g'
+    'candyMachineCore',
+    'CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR'
   );
 
-  // Candy Guard.
-  keys.push({
-    pubkey: accounts.candyGuard,
-    isSigner: false,
-    isWritable: false,
-  });
-
-  // Candy Machine Program.
-  keys.push({
-    pubkey: accounts.candyMachineProgram,
-    isSigner: false,
-    isWritable: false,
-  });
-
   // Candy Machine.
-  keys.push({
-    pubkey: accounts.candyMachine,
-    isSigner: false,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
 
-  // Candy Machine Authority Pda.
+  // Authority Pda.
+  keys.push({ pubkey: input.authorityPda, isSigner: false, isWritable: false });
+
+  // Mint Authority.
+  signers.push(input.mintAuthority);
   keys.push({
-    pubkey: accounts.candyMachineAuthorityPda,
-    isSigner: false,
+    pubkey: input.mintAuthority.publicKey,
+    isSigner: true,
     isWritable: false,
   });
 
   // Payer.
-  signers.push(accounts.payer);
+  signers.push(input.payer);
   keys.push({
-    pubkey: accounts.payer.publicKey,
+    pubkey: input.payer.publicKey,
+    isSigner: true,
+    isWritable: false,
+  });
+
+  // Nft Mint.
+  keys.push({ pubkey: input.nftMint, isSigner: false, isWritable: false });
+
+  // Nft Mint Authority.
+  signers.push(input.nftMintAuthority);
+  keys.push({
+    pubkey: input.nftMintAuthority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Nft Metadata.
-  keys.push({
-    pubkey: accounts.nftMetadata,
-    isSigner: false,
-    isWritable: false,
-  });
-
-  // Nft Mint.
-  keys.push({ pubkey: accounts.nftMint, isSigner: false, isWritable: false });
-
-  // Nft Mint Authority.
-  signers.push(accounts.nftMintAuthority);
-  keys.push({
-    pubkey: accounts.nftMintAuthority.publicKey,
-    isSigner: true,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.nftMetadata, isSigner: false, isWritable: false });
 
   // Nft Master Edition.
   keys.push({
-    pubkey: accounts.nftMasterEdition,
+    pubkey: input.nftMasterEdition,
     isSigner: false,
     isWritable: false,
   });
 
   // Collection Authority Record.
   keys.push({
-    pubkey: accounts.collectionAuthorityRecord,
+    pubkey: input.collectionAuthorityRecord,
     isSigner: false,
     isWritable: false,
   });
 
   // Collection Mint.
   keys.push({
-    pubkey: accounts.collectionMint,
+    pubkey: input.collectionMint,
     isSigner: false,
     isWritable: false,
   });
 
   // Collection Metadata.
   keys.push({
-    pubkey: accounts.collectionMetadata,
+    pubkey: input.collectionMetadata,
     isSigner: false,
     isWritable: false,
   });
 
   // Collection Master Edition.
   keys.push({
-    pubkey: accounts.collectionMasterEdition,
+    pubkey: input.collectionMasterEdition,
     isSigner: false,
     isWritable: false,
   });
 
   // Collection Update Authority.
   keys.push({
-    pubkey: accounts.collectionUpdateAuthority,
+    pubkey: input.collectionUpdateAuthority,
     isSigner: false,
     isWritable: false,
   });
 
   // Token Metadata Program.
   keys.push({
-    pubkey: accounts.tokenMetadataProgram,
+    pubkey: input.tokenMetadataProgram,
     isSigner: false,
     isWritable: false,
   });
@@ -187,7 +144,7 @@ export function mint(
   // Token Program.
   keys.push({
     pubkey:
-      accounts.tokenProgram ??
+      input.tokenProgram ??
       getProgramAddressWithFallback(
         context,
         'splToken',
@@ -200,7 +157,7 @@ export function mint(
   // System Program.
   keys.push({
     pubkey:
-      accounts.systemProgram ??
+      input.systemProgram ??
       getProgramAddressWithFallback(
         context,
         'splSystem',
@@ -212,20 +169,13 @@ export function mint(
 
   // Recent Slothashes.
   keys.push({
-    pubkey: accounts.recentSlothashes,
-    isSigner: false,
-    isWritable: false,
-  });
-
-  // Instruction Sysvar Account.
-  keys.push({
-    pubkey: accounts.instructionSysvarAccount,
+    pubkey: input.recentSlothashes,
     isSigner: false,
     isWritable: false,
   });
 
   // Data.
-  const data = getmintInstructionDataSerializer(context).serialize(args);
+  const data = new Uint8Array();
 
   return {
     instruction: { keys, programId, data },

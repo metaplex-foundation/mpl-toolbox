@@ -15,7 +15,7 @@ export enum FreezeInstruction {
 }
 
 export function getFreezeInstructionSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<FreezeInstruction> {
   const s = context.serializer;
   return s.enum<FreezeInstruction>(FreezeInstruction, 'FreezeInstruction');

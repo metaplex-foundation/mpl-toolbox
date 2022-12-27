@@ -33,7 +33,7 @@ export enum GuardType {
 }
 
 export function getGuardTypeSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<GuardType> {
   const s = context.serializer;
   return s.enum<GuardType>(GuardType, 'GuardType');

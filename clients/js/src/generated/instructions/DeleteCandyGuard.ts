@@ -17,35 +17,19 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type setAuthorityInstructionAccounts = {
+export type DeleteCandyGuardInstructionAccounts = {
   candyGuard: PublicKey;
   authority: Signer;
 };
 
-// Arguments.
-export type setAuthorityInstructionArgs = { newAuthority: PublicKey };
-
-// Data.
-type setAuthorityInstructionData = setAuthorityInstructionArgs;
-export function getsetAuthorityInstructionDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
-): Serializer<setAuthorityInstructionArgs> {
-  const s = context.serializer;
-  return s.struct<setAuthorityInstructionData>(
-    [['newAuthority', s.publicKey(context)]],
-    'setAuthorityInstructionData'
-  );
-}
-
 // Instruction.
-export function setAuthority(
+export function deleteCandyGuard(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  accounts: setAuthorityInstructionAccounts,
-  args: setAuthorityInstructionArgs
+  input: DeleteCandyGuardInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -58,23 +42,18 @@ export function setAuthority(
   );
 
   // Candy Guard.
-  keys.push({
-    pubkey: accounts.candyGuard,
-    isSigner: false,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.candyGuard, isSigner: false, isWritable: false });
 
   // Authority.
-  signers.push(accounts.authority);
+  signers.push(input.authority);
   keys.push({
-    pubkey: accounts.authority.publicKey,
+    pubkey: input.authority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Data.
-  const data =
-    getsetAuthorityInstructionDataSerializer(context).serialize(args);
+  const data = new Uint8Array();
 
   return {
     instruction: { keys, programId, data },

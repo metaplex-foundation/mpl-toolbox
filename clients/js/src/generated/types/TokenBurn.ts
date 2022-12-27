@@ -21,13 +21,13 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type TokenBurn = { amount: bigint; mint: PublicKey };
 
 export function getTokenBurnSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<TokenBurn> {
   const s = context.serializer;
   return s.struct<TokenBurn>(
     [
       ['amount', s.u64],
-      ['mint', s.publicKey(context)],
+      ['mint', s.publicKey],
     ],
     'TokenBurn'
   );

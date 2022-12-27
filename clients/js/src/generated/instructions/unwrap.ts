@@ -17,7 +17,7 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type unwrapInstructionAccounts = {
+export type UnwrapInstructionAccounts = {
   candyGuard: PublicKey;
   authority: Signer;
   candyMachine: PublicKey;
@@ -32,7 +32,7 @@ export function unwrap(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  accounts: unwrapInstructionAccounts
+  input: UnwrapInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -45,38 +45,30 @@ export function unwrap(
   );
 
   // Candy Guard.
-  keys.push({
-    pubkey: accounts.candyGuard,
-    isSigner: false,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.candyGuard, isSigner: false, isWritable: false });
 
   // Authority.
-  signers.push(accounts.authority);
+  signers.push(input.authority);
   keys.push({
-    pubkey: accounts.authority.publicKey,
+    pubkey: input.authority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Candy Machine.
-  keys.push({
-    pubkey: accounts.candyMachine,
-    isSigner: false,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
 
   // Candy Machine Authority.
-  signers.push(accounts.candyMachineAuthority);
+  signers.push(input.candyMachineAuthority);
   keys.push({
-    pubkey: accounts.candyMachineAuthority.publicKey,
+    pubkey: input.candyMachineAuthority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Candy Machine Program.
   keys.push({
-    pubkey: accounts.candyMachineProgram,
+    pubkey: input.candyMachineProgram,
     isSigner: false,
     isWritable: false,
   });

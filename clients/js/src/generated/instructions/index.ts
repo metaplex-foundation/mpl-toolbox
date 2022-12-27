@@ -6,19 +6,19 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-export * from './addConfigLines';
-export * from './initialize';
-export * from './initialize';
-export * from './mint';
-export * from './mint';
-export * from './route';
-export * from './setAuthority';
-export * from './setAuthority';
-export * from './setCollection';
-export * from './setMintAuthority';
-export * from './unwrap';
-export * from './update';
-export * from './update';
-export * from './withdraw';
-export * from './withdraw';
-export * from './wrap';
+export * from './AddConfigLines';
+export * from './DeleteCandyGuard';
+export * from './DeleteCandyMachine';
+export * from './InitializeCandyGuard';
+export * from './InitializeCandyMachine';
+export * from './MintFromCandyGuard';
+export * from './MintFromCandyMachine';
+export * from './Route';
+export * from './SetCandyGuardAuthority';
+export * from './SetCandyMachineAuthority';
+export * from './SetCollection';
+export * from './SetMintAuthority';
+export * from './Unwrap';
+export * from './UpdateCandyGuard';
+export * from './UpdateCandyMachine';
+export * from './Wrap';

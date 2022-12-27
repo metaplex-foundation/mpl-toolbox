@@ -9,55 +9,44 @@
 import {
   AccountMeta,
   Context,
-  Option,
   PublicKey,
   Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
-import { GuardType, getGuardTypeSerializer } from '../types';
+import { CandyMachineData, getCandyMachineDataSerializer } from '../types';
 
 // Accounts.
-export type RouteInstructionAccounts = {
-  candyGuard: PublicKey;
+export type UpdateCandyMachineInstructionAccounts = {
   candyMachine: PublicKey;
-  payer: Signer;
+  authority: Signer;
 };
 
 // Arguments.
-export type RouteInstructionArgs = {
-  /** The target guard type. */
-  guard: GuardType;
-  /** Arguments for the guard instruction. */
-  data: Uint8Array;
-  label: Option<string>;
-};
+export type UpdateCandyMachineInstructionArgs = { data: CandyMachineData };
 
 // Data.
-type RouteInstructionData = RouteInstructionArgs;
-export function getRouteInstructionDataSerializer(
+type UpdateCandyMachineInstructionData = UpdateCandyMachineInstructionArgs;
+export function getUpdateCandyMachineInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<RouteInstructionArgs> {
+): Serializer<UpdateCandyMachineInstructionArgs> {
   const s = context.serializer;
-  return s.struct<RouteInstructionData>(
-    [
-      ['guard', getGuardTypeSerializer(context)],
-      ['data', s.bytes],
-      ['label', s.option(s.string)],
-    ],
-    'RouteInstructionData'
+  return s.struct<UpdateCandyMachineInstructionData>(
+    [['data', getCandyMachineDataSerializer(context)]],
+    'UpdateCandyMachineInstructionData'
   );
 }
 
 // Instruction.
-export function route(
+export function updateCandyMachine(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: RouteInstructionAccounts & RouteInstructionArgs
+  input: UpdateCandyMachineInstructionAccounts &
+    UpdateCandyMachineInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -65,26 +54,24 @@ export function route(
   // Program ID.
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
-    'candyGuard',
-    'Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g'
+    'candyMachineCore',
+    'CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR'
   );
-
-  // Candy Guard.
-  keys.push({ pubkey: input.candyGuard, isSigner: false, isWritable: false });
 
   // Candy Machine.
   keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
 
-  // Payer.
-  signers.push(input.payer);
+  // Authority.
+  signers.push(input.authority);
   keys.push({
-    pubkey: input.payer.publicKey,
+    pubkey: input.authority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Data.
-  const data = getRouteInstructionDataSerializer(context).serialize(input);
+  const data =
+    getUpdateCandyMachineInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

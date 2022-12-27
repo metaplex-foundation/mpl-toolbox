@@ -26,7 +26,7 @@ export type MintLimit = {
 };
 
 export function getMintLimitSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<MintLimit> {
   const s = context.serializer;
   return s.struct<MintLimit>(

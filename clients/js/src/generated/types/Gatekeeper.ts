@@ -30,12 +30,12 @@ export type Gatekeeper = {
 };
 
 export function getGatekeeperSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<Gatekeeper> {
   const s = context.serializer;
   return s.struct<Gatekeeper>(
     [
-      ['gatekeeperNetwork', s.publicKey(context)],
+      ['gatekeeperNetwork', s.publicKey],
       ['expireOnUse', s.bool],
     ],
     'Gatekeeper'

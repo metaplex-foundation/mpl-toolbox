@@ -23,7 +23,7 @@ export type AllowList = {
 };
 
 export function getAllowListSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<AllowList> {
   const s = context.serializer;
   return s.struct<AllowList>([['merkleRoot', s.bytes]], 'AllowList');

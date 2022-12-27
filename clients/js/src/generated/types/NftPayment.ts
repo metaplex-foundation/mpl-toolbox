@@ -28,13 +28,13 @@ export type NftPayment = {
 };
 
 export function getNftPaymentSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<NftPayment> {
   const s = context.serializer;
   return s.struct<NftPayment>(
     [
-      ['requiredCollection', s.publicKey(context)],
-      ['destination', s.publicKey(context)],
+      ['requiredCollection', s.publicKey],
+      ['destination', s.publicKey],
     ],
     'NftPayment'
   );

@@ -16,27 +16,25 @@ import {
   deserializeAccount,
 } from '@lorisleiva/js-core';
 
-export type CandyGuard = Account<CandyGuardData>;
-
-export type CandyGuardData = {
+export type CandyGuard = {
   base: PublicKey;
   bump: number;
   authority: PublicKey;
 };
 
 export async function fetchCandyGuard(
-  context: Pick<Context, 'serializer' | 'eddsa' | 'rpc'>,
+  context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<CandyGuard> {
+): Promise<Account<CandyGuard>> {
   const maybeAccount = await context.rpc.getAccount(address);
   assertAccountExists(maybeAccount, 'CandyGuard');
   return deserializeCandyGuard(context, maybeAccount);
 }
 
 export async function safeFetchCandyGuard(
-  context: Pick<Context, 'serializer' | 'eddsa' | 'rpc'>,
+  context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<CandyGuard | null> {
+): Promise<Account<CandyGuard> | null> {
   const maybeAccount = await context.rpc.getAccount(address);
   return maybeAccount.exists
     ? deserializeCandyGuard(context, maybeAccount)
@@ -44,21 +42,21 @@ export async function safeFetchCandyGuard(
 }
 
 export function deserializeCandyGuard(
-  context: Pick<Context, 'serializer' | 'eddsa'>,
+  context: Pick<Context, 'serializer'>,
   rawAccount: RpcAccount
-): CandyGuard {
-  return deserializeAccount(rawAccount, getCandyGuardDataSerializer(context));
+): Account<CandyGuard> {
+  return deserializeAccount(rawAccount, getCandyGuardSerializer(context));
 }
 
-export function getCandyGuardDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
-): Serializer<CandyGuardData> {
+export function getCandyGuardSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<CandyGuard> {
   const s = context.serializer;
-  return s.struct<CandyGuardData>(
+  return s.struct<CandyGuard>(
     [
-      ['base', s.publicKey(context)],
+      ['base', s.publicKey],
       ['bump', s.u8],
-      ['authority', s.publicKey(context)],
+      ['authority', s.publicKey],
     ],
     'CandyGuard'
   );

@@ -29,14 +29,14 @@ export type FreezeTokenPayment = {
 };
 
 export function getFreezeTokenPaymentSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<FreezeTokenPayment> {
   const s = context.serializer;
   return s.struct<FreezeTokenPayment>(
     [
       ['amount', s.u64],
-      ['mint', s.publicKey(context)],
-      ['destinationAta', s.publicKey(context)],
+      ['mint', s.publicKey],
+      ['destinationAta', s.publicKey],
     ],
     'FreezeTokenPayment'
   );

@@ -15,33 +15,48 @@ import {
   WrappedInstruction,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
+import { CandyMachineData, getCandyMachineDataSerializer } from '../types';
 
 // Accounts.
-export type SetCollectionInstructionAccounts = {
+export type InitializeCandyMachineInstructionAccounts = {
   candyMachine: PublicKey;
-  authority: Signer;
   authorityPda: PublicKey;
+  authority: PublicKey;
   payer: Signer;
-  collectionMint: PublicKey;
   collectionMetadata: PublicKey;
+  collectionMint: PublicKey;
+  collectionMasterEdition: PublicKey;
+  collectionUpdateAuthority: Signer;
   collectionAuthorityRecord: PublicKey;
-  newCollectionUpdateAuthority: Signer;
-  newCollectionMetadata: PublicKey;
-  newCollectionMint: PublicKey;
-  newCollectionMasterEdition: PublicKey;
-  newCollectionAuthorityRecord: PublicKey;
   tokenMetadataProgram: PublicKey;
   systemProgram?: PublicKey;
 };
 
+// Arguments.
+export type InitializeCandyMachineInstructionArgs = { data: CandyMachineData };
+
+// Data.
+type InitializeCandyMachineInstructionData =
+  InitializeCandyMachineInstructionArgs;
+export function getInitializeCandyMachineInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<InitializeCandyMachineInstructionArgs> {
+  const s = context.serializer;
+  return s.struct<InitializeCandyMachineInstructionData>(
+    [['data', getCandyMachineDataSerializer(context)]],
+    'InitializeCandyMachineInstructionData'
+  );
+}
+
 // Instruction.
-export function setCollection(
+export function initializeCandyMachine(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: SetCollectionInstructionAccounts
+  input: InitializeCandyMachineInstructionAccounts &
+    InitializeCandyMachineInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -56,29 +71,17 @@ export function setCollection(
   // Candy Machine.
   keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
 
-  // Authority.
-  signers.push(input.authority);
-  keys.push({
-    pubkey: input.authority.publicKey,
-    isSigner: true,
-    isWritable: false,
-  });
-
   // Authority Pda.
   keys.push({ pubkey: input.authorityPda, isSigner: false, isWritable: false });
+
+  // Authority.
+  keys.push({ pubkey: input.authority, isSigner: false, isWritable: false });
 
   // Payer.
   signers.push(input.payer);
   keys.push({
     pubkey: input.payer.publicKey,
     isSigner: true,
-    isWritable: false,
-  });
-
-  // Collection Mint.
-  keys.push({
-    pubkey: input.collectionMint,
-    isSigner: false,
     isWritable: false,
   });
 
@@ -89,45 +92,31 @@ export function setCollection(
     isWritable: false,
   });
 
-  // Collection Authority Record.
+  // Collection Mint.
   keys.push({
-    pubkey: input.collectionAuthorityRecord,
+    pubkey: input.collectionMint,
     isSigner: false,
     isWritable: false,
   });
 
-  // New Collection Update Authority.
-  signers.push(input.newCollectionUpdateAuthority);
+  // Collection Master Edition.
   keys.push({
-    pubkey: input.newCollectionUpdateAuthority.publicKey,
+    pubkey: input.collectionMasterEdition,
+    isSigner: false,
+    isWritable: false,
+  });
+
+  // Collection Update Authority.
+  signers.push(input.collectionUpdateAuthority);
+  keys.push({
+    pubkey: input.collectionUpdateAuthority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
-  // New Collection Metadata.
+  // Collection Authority Record.
   keys.push({
-    pubkey: input.newCollectionMetadata,
-    isSigner: false,
-    isWritable: false,
-  });
-
-  // New Collection Mint.
-  keys.push({
-    pubkey: input.newCollectionMint,
-    isSigner: false,
-    isWritable: false,
-  });
-
-  // New Collection Master Edition.
-  keys.push({
-    pubkey: input.newCollectionMasterEdition,
-    isSigner: false,
-    isWritable: false,
-  });
-
-  // New Collection Authority Record.
-  keys.push({
-    pubkey: input.newCollectionAuthorityRecord,
+    pubkey: input.collectionAuthorityRecord,
     isSigner: false,
     isWritable: false,
   });
@@ -153,7 +142,10 @@ export function setCollection(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data =
+    getInitializeCandyMachineInstructionDataSerializer(context).serialize(
+      input
+    );
 
   return {
     instruction: { keys, programId, data },

@@ -23,7 +23,7 @@ export type ConfigLineSettings = {
 };
 
 export function getConfigLineSettingsSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<ConfigLineSettings> {
   const s = context.serializer;
   return s.struct<ConfigLineSettings>(

@@ -16,7 +16,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 export type RedeemedAmount = { maximum: bigint };
 
 export function getRedeemedAmountSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<RedeemedAmount> {
   const s = context.serializer;
   return s.struct<RedeemedAmount>([['maximum', s.u64]], 'RedeemedAmount');

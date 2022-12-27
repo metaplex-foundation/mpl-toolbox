@@ -1,6 +1,7 @@
 const path = require("path");
 const {
   Kinobi,
+  RenameNodesVisitor,
   RenderJavaScriptVisitor,
   ValidateNodesVisitor,
 } = require("@lorisleiva/kinobi");
@@ -13,8 +14,44 @@ const idlPaths = [
   path.join(idlDir, "candy_guard.json"),
 ];
 
-// Instantiate Kinobi.
+// Instantiate and transform Kinobi.
 const kinobi = new Kinobi(idlPaths);
+kinobi.update(
+  new RenameNodesVisitor({
+    candyMachineCore: {
+      instructions: {
+        Initialize: "InitializeCandyMachine",
+        Update: "UpdateCandyMachine",
+        Mint: "MintFromCandyMachine",
+        SetAuthority: "SetCandyMachineAuthority",
+        Withdraw: "DeleteCandyMachine",
+      },
+      errors: {
+        IncorrectOwner: "CmIncorrectOwner",
+        Uninitialized: "CmUninitialized",
+        NumericalOverflowError: "CmNumericalOverflowError",
+        CandyMachineEmpty: "CmCandyMachineEmpty",
+        CollectionKeyMismatch: "CmCollectionKeyMismatch",
+      },
+    },
+    candyGuard: {
+      instructions: {
+        Initialize: "InitializeCandyGuard",
+        Update: "UpdateCandyGuard",
+        Mint: "MintFromCandyGuard",
+        SetAuthority: "SetCandyGuardAuthority",
+        Withdraw: "DeleteCandyGuard",
+      },
+      errors: {
+        IncorrectOwner: "CgIncorrectOwner",
+        Uninitialized: "CgUninitialized",
+        NumericalOverflowError: "CgNumericalOverflowError",
+        CandyMachineEmpty: "CgCandyMachineEmpty",
+        CollectionKeyMismatch: "CgCollectionKeyMismatch",
+      },
+    },
+  })
+);
 kinobi.accept(new ValidateNodesVisitor());
 
 // Generate JavaScript client.

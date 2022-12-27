@@ -23,11 +23,8 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type NftBurn = { requiredCollection: PublicKey };
 
 export function getNftBurnSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<NftBurn> {
   const s = context.serializer;
-  return s.struct<NftBurn>(
-    [['requiredCollection', s.publicKey(context)]],
-    'NftBurn'
-  );
+  return s.struct<NftBurn>([['requiredCollection', s.publicKey]], 'NftBurn');
 }

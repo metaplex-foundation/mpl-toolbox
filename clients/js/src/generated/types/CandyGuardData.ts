@@ -15,7 +15,7 @@ export type CandyGuardData = {
 };
 
 export function getCandyGuardDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<CandyGuardData> {
   const s = context.serializer;
   return s.struct<CandyGuardData>(

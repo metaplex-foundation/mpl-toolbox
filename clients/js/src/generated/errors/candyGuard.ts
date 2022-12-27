@@ -78,29 +78,29 @@ nameToErrorMap.set(
  * IncorrectOwner: 'Account does not have correct owner'
  * @category Errors
  */
-class IncorrectOwnerError extends ProgramError {
-  readonly name: string = 'IncorrectOwner';
+class CgIncorrectOwnerError extends ProgramError {
+  readonly name: string = 'CgIncorrectOwner';
   readonly code: number = 0x1774; // 6004
   constructor(program: Program, cause?: Error) {
     super('Account does not have correct owner', program, cause);
   }
 }
-codeToErrorMap.set(0x1774, IncorrectOwnerError);
-nameToErrorMap.set('IncorrectOwner', IncorrectOwnerError);
+codeToErrorMap.set(0x1774, CgIncorrectOwnerError);
+nameToErrorMap.set('CgIncorrectOwner', CgIncorrectOwnerError);
 
 /**
  * Uninitialized: 'Account is not initialized'
  * @category Errors
  */
-class UninitializedError extends ProgramError {
-  readonly name: string = 'Uninitialized';
+class CgUninitializedError extends ProgramError {
+  readonly name: string = 'CgUninitialized';
   readonly code: number = 0x1775; // 6005
   constructor(program: Program, cause?: Error) {
     super('Account is not initialized', program, cause);
   }
 }
-codeToErrorMap.set(0x1775, UninitializedError);
-nameToErrorMap.set('Uninitialized', UninitializedError);
+codeToErrorMap.set(0x1775, CgUninitializedError);
+nameToErrorMap.set('CgUninitialized', CgUninitializedError);
 
 /**
  * MissingRemainingAccount: 'Missing expected remaining account'
@@ -120,15 +120,15 @@ nameToErrorMap.set('MissingRemainingAccount', MissingRemainingAccountError);
  * NumericalOverflowError: 'Numerical overflow error'
  * @category Errors
  */
-class NumericalOverflowErrorError extends ProgramError {
-  readonly name: string = 'NumericalOverflowError';
+class CgNumericalOverflowErrorError extends ProgramError {
+  readonly name: string = 'CgNumericalOverflowError';
   readonly code: number = 0x1777; // 6007
   constructor(program: Program, cause?: Error) {
     super('Numerical overflow error', program, cause);
   }
 }
-codeToErrorMap.set(0x1777, NumericalOverflowErrorError);
-nameToErrorMap.set('NumericalOverflowError', NumericalOverflowErrorError);
+codeToErrorMap.set(0x1777, CgNumericalOverflowErrorError);
+nameToErrorMap.set('CgNumericalOverflowError', CgNumericalOverflowErrorError);
 
 /**
  * RequiredGroupLabelNotFound: 'Missing required group label'
@@ -179,15 +179,15 @@ nameToErrorMap.set('ExceededLength', ExceededLengthError);
  * CandyMachineEmpty: 'Candy machine is empty'
  * @category Errors
  */
-class CandyMachineEmptyError extends ProgramError {
-  readonly name: string = 'CandyMachineEmpty';
+class CgCandyMachineEmptyError extends ProgramError {
+  readonly name: string = 'CgCandyMachineEmpty';
   readonly code: number = 0x177b; // 6011
   constructor(program: Program, cause?: Error) {
     super('Candy machine is empty', program, cause);
   }
 }
-codeToErrorMap.set(0x177b, CandyMachineEmptyError);
-nameToErrorMap.set('CandyMachineEmpty', CandyMachineEmptyError);
+codeToErrorMap.set(0x177b, CgCandyMachineEmptyError);
+nameToErrorMap.set('CgCandyMachineEmpty', CgCandyMachineEmptyError);
 
 /**
  * InstructionNotFound: 'No instruction was found'
@@ -207,15 +207,15 @@ nameToErrorMap.set('InstructionNotFound', InstructionNotFoundError);
  * CollectionKeyMismatch: 'Collection public key mismatch'
  * @category Errors
  */
-class CollectionKeyMismatchError extends ProgramError {
-  readonly name: string = 'CollectionKeyMismatch';
+class CgCollectionKeyMismatchError extends ProgramError {
+  readonly name: string = 'CgCollectionKeyMismatch';
   readonly code: number = 0x177d; // 6013
   constructor(program: Program, cause?: Error) {
     super('Collection public key mismatch', program, cause);
   }
 }
-codeToErrorMap.set(0x177d, CollectionKeyMismatchError);
-nameToErrorMap.set('CollectionKeyMismatch', CollectionKeyMismatchError);
+codeToErrorMap.set(0x177d, CgCollectionKeyMismatchError);
+nameToErrorMap.set('CgCollectionKeyMismatch', CgCollectionKeyMismatchError);
 
 /**
  * MissingCollectionAccounts: 'Missing collection accounts'

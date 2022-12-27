@@ -17,9 +17,7 @@ import {
   deserializeAccount,
 } from '@lorisleiva/js-core';
 
-export type FreezeEscrow = Account<FreezeEscrowData>;
-
-export type FreezeEscrowData = {
+export type FreezeEscrow = {
   /** Candy guard address associated with this escrow. */
   candyGuard: PublicKey;
   /** Candy machine address associated with this escrow. */
@@ -47,18 +45,18 @@ export type FreezeEscrowData = {
 };
 
 export async function fetchFreezeEscrow(
-  context: Pick<Context, 'serializer' | 'eddsa' | 'rpc'>,
+  context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<FreezeEscrow> {
+): Promise<Account<FreezeEscrow>> {
   const maybeAccount = await context.rpc.getAccount(address);
   assertAccountExists(maybeAccount, 'FreezeEscrow');
   return deserializeFreezeEscrow(context, maybeAccount);
 }
 
 export async function safeFetchFreezeEscrow(
-  context: Pick<Context, 'serializer' | 'eddsa' | 'rpc'>,
+  context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<FreezeEscrow | null> {
+): Promise<Account<FreezeEscrow> | null> {
   const maybeAccount = await context.rpc.getAccount(address);
   return maybeAccount.exists
     ? deserializeFreezeEscrow(context, maybeAccount)
@@ -66,25 +64,25 @@ export async function safeFetchFreezeEscrow(
 }
 
 export function deserializeFreezeEscrow(
-  context: Pick<Context, 'serializer' | 'eddsa'>,
+  context: Pick<Context, 'serializer'>,
   rawAccount: RpcAccount
-): FreezeEscrow {
-  return deserializeAccount(rawAccount, getFreezeEscrowDataSerializer(context));
+): Account<FreezeEscrow> {
+  return deserializeAccount(rawAccount, getFreezeEscrowSerializer(context));
 }
 
-export function getFreezeEscrowDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
-): Serializer<FreezeEscrowData> {
+export function getFreezeEscrowSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<FreezeEscrow> {
   const s = context.serializer;
-  return s.struct<FreezeEscrowData>(
+  return s.struct<FreezeEscrow>(
     [
-      ['candyGuard', s.publicKey(context)],
-      ['candyMachine', s.publicKey(context)],
+      ['candyGuard', s.publicKey],
+      ['candyMachine', s.publicKey],
       ['frozenCount', s.u64],
       ['firstMintTime', s.option(s.i64)],
       ['freezePeriod', s.i64],
-      ['destination', s.publicKey(context)],
-      ['authority', s.publicKey(context)],
+      ['destination', s.publicKey],
+      ['authority', s.publicKey],
     ],
     'FreezeEscrow'
   );

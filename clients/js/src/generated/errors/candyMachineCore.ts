@@ -19,29 +19,29 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
  * IncorrectOwner: 'Account does not have correct owner'
  * @category Errors
  */
-class IncorrectOwnerError extends ProgramError {
-  readonly name: string = 'IncorrectOwner';
+class CmIncorrectOwnerError extends ProgramError {
+  readonly name: string = 'CmIncorrectOwner';
   readonly code: number = 0x1770; // 6000
   constructor(program: Program, cause?: Error) {
     super('Account does not have correct owner', program, cause);
   }
 }
-codeToErrorMap.set(0x1770, IncorrectOwnerError);
-nameToErrorMap.set('IncorrectOwner', IncorrectOwnerError);
+codeToErrorMap.set(0x1770, CmIncorrectOwnerError);
+nameToErrorMap.set('CmIncorrectOwner', CmIncorrectOwnerError);
 
 /**
  * Uninitialized: 'Account is not initialized'
  * @category Errors
  */
-class UninitializedError extends ProgramError {
-  readonly name: string = 'Uninitialized';
+class CmUninitializedError extends ProgramError {
+  readonly name: string = 'CmUninitialized';
   readonly code: number = 0x1771; // 6001
   constructor(program: Program, cause?: Error) {
     super('Account is not initialized', program, cause);
   }
 }
-codeToErrorMap.set(0x1771, UninitializedError);
-nameToErrorMap.set('Uninitialized', UninitializedError);
+codeToErrorMap.set(0x1771, CmUninitializedError);
+nameToErrorMap.set('CmUninitialized', CmUninitializedError);
 
 /**
  * MintMismatch: 'Mint Mismatch'
@@ -75,15 +75,15 @@ nameToErrorMap.set('IndexGreaterThanLength', IndexGreaterThanLengthError);
  * NumericalOverflowError: 'Numerical overflow error'
  * @category Errors
  */
-class NumericalOverflowErrorError extends ProgramError {
-  readonly name: string = 'NumericalOverflowError';
+class CmNumericalOverflowErrorError extends ProgramError {
+  readonly name: string = 'CmNumericalOverflowError';
   readonly code: number = 0x1774; // 6004
   constructor(program: Program, cause?: Error) {
     super('Numerical overflow error', program, cause);
   }
 }
-codeToErrorMap.set(0x1774, NumericalOverflowErrorError);
-nameToErrorMap.set('NumericalOverflowError', NumericalOverflowErrorError);
+codeToErrorMap.set(0x1774, CmNumericalOverflowErrorError);
+nameToErrorMap.set('CmNumericalOverflowError', CmNumericalOverflowErrorError);
 
 /**
  * TooManyCreators: 'Can only provide up to 4 creators to candy machine (because candy machine is one)'
@@ -107,15 +107,15 @@ nameToErrorMap.set('TooManyCreators', TooManyCreatorsError);
  * CandyMachineEmpty: 'Candy machine is empty'
  * @category Errors
  */
-class CandyMachineEmptyError extends ProgramError {
-  readonly name: string = 'CandyMachineEmpty';
+class CmCandyMachineEmptyError extends ProgramError {
+  readonly name: string = 'CmCandyMachineEmpty';
   readonly code: number = 0x1776; // 6006
   constructor(program: Program, cause?: Error) {
     super('Candy machine is empty', program, cause);
   }
 }
-codeToErrorMap.set(0x1776, CandyMachineEmptyError);
-nameToErrorMap.set('CandyMachineEmpty', CandyMachineEmptyError);
+codeToErrorMap.set(0x1776, CmCandyMachineEmptyError);
+nameToErrorMap.set('CmCandyMachineEmpty', CmCandyMachineEmptyError);
 
 /**
  * HiddenSettingsDoNotHaveConfigLines: 'Candy machines using hidden uris do not have config lines, they have a single hash representing hashed order'
@@ -327,15 +327,15 @@ nameToErrorMap.set(
  * CollectionKeyMismatch: 'Collection public key mismatch'
  * @category Errors
  */
-class CollectionKeyMismatchError extends ProgramError {
-  readonly name: string = 'CollectionKeyMismatch';
+class CmCollectionKeyMismatchError extends ProgramError {
+  readonly name: string = 'CmCollectionKeyMismatch';
   readonly code: number = 0x1782; // 6018
   constructor(program: Program, cause?: Error) {
     super('Collection public key mismatch', program, cause);
   }
 }
-codeToErrorMap.set(0x1782, CollectionKeyMismatchError);
-nameToErrorMap.set('CollectionKeyMismatch', CollectionKeyMismatchError);
+codeToErrorMap.set(0x1782, CmCollectionKeyMismatchError);
+nameToErrorMap.set('CmCollectionKeyMismatch', CmCollectionKeyMismatchError);
 
 /**
  * CouldNotRetrieveConfigLineData: 'Could not retrive config line data'

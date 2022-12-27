@@ -17,9 +17,7 @@ import {
 } from '@lorisleiva/js-core';
 import { CandyMachineData, getCandyMachineDataSerializer } from '../types';
 
-export type CandyMachine = Account<CandyMachineData>;
-
-export type CandyMachineData = {
+export type CandyMachine = {
   /** Features versioning flags. */
   features: bigint;
   /** Authority address. */
@@ -35,18 +33,18 @@ export type CandyMachineData = {
 };
 
 export async function fetchCandyMachine(
-  context: Pick<Context, 'serializer' | 'eddsa' | 'rpc'>,
+  context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<CandyMachine> {
+): Promise<Account<CandyMachine>> {
   const maybeAccount = await context.rpc.getAccount(address);
   assertAccountExists(maybeAccount, 'CandyMachine');
   return deserializeCandyMachine(context, maybeAccount);
 }
 
 export async function safeFetchCandyMachine(
-  context: Pick<Context, 'serializer' | 'eddsa' | 'rpc'>,
+  context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<CandyMachine | null> {
+): Promise<Account<CandyMachine> | null> {
   const maybeAccount = await context.rpc.getAccount(address);
   return maybeAccount.exists
     ? deserializeCandyMachine(context, maybeAccount)
@@ -54,22 +52,22 @@ export async function safeFetchCandyMachine(
 }
 
 export function deserializeCandyMachine(
-  context: Pick<Context, 'serializer' | 'eddsa'>,
+  context: Pick<Context, 'serializer'>,
   rawAccount: RpcAccount
-): CandyMachine {
-  return deserializeAccount(rawAccount, getCandyMachineDataSerializer(context));
+): Account<CandyMachine> {
+  return deserializeAccount(rawAccount, getCandyMachineSerializer(context));
 }
 
-export function getCandyMachineDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
-): Serializer<CandyMachineData> {
+export function getCandyMachineSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<CandyMachine> {
   const s = context.serializer;
-  return s.struct<CandyMachineData>(
+  return s.struct<CandyMachine>(
     [
       ['features', s.u64],
-      ['authority', s.publicKey(context)],
-      ['mintAuthority', s.publicKey(context)],
-      ['collectionMint', s.publicKey(context)],
+      ['authority', s.publicKey],
+      ['mintAuthority', s.publicKey],
+      ['collectionMint', s.publicKey],
       ['itemsRedeemed', s.u64],
       ['data', getCandyMachineDataSerializer(context)],
     ],

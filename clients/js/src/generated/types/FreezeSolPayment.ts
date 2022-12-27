@@ -22,13 +22,13 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type FreezeSolPayment = { lamports: bigint; destination: PublicKey };
 
 export function getFreezeSolPaymentSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<FreezeSolPayment> {
   const s = context.serializer;
   return s.struct<FreezeSolPayment>(
     [
       ['lamports', s.u64],
-      ['destination', s.publicKey(context)],
+      ['destination', s.publicKey],
     ],
     'FreezeSolPayment'
   );

@@ -37,7 +37,7 @@ export type CandyMachineData = {
 };
 
 export function getCandyMachineDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<CandyMachineData> {
   const s = context.serializer;
   return s.struct<CandyMachineData>(

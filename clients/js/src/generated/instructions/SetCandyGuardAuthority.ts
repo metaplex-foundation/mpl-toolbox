@@ -9,55 +9,44 @@
 import {
   AccountMeta,
   Context,
-  Option,
   PublicKey,
   Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
-import { GuardType, getGuardTypeSerializer } from '../types';
 
 // Accounts.
-export type RouteInstructionAccounts = {
+export type SetCandyGuardAuthorityInstructionAccounts = {
   candyGuard: PublicKey;
-  candyMachine: PublicKey;
-  payer: Signer;
+  authority: Signer;
 };
 
 // Arguments.
-export type RouteInstructionArgs = {
-  /** The target guard type. */
-  guard: GuardType;
-  /** Arguments for the guard instruction. */
-  data: Uint8Array;
-  label: Option<string>;
-};
+export type SetCandyGuardAuthorityInstructionArgs = { newAuthority: PublicKey };
 
 // Data.
-type RouteInstructionData = RouteInstructionArgs;
-export function getRouteInstructionDataSerializer(
+type SetCandyGuardAuthorityInstructionData =
+  SetCandyGuardAuthorityInstructionArgs;
+export function getSetCandyGuardAuthorityInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<RouteInstructionArgs> {
+): Serializer<SetCandyGuardAuthorityInstructionArgs> {
   const s = context.serializer;
-  return s.struct<RouteInstructionData>(
-    [
-      ['guard', getGuardTypeSerializer(context)],
-      ['data', s.bytes],
-      ['label', s.option(s.string)],
-    ],
-    'RouteInstructionData'
+  return s.struct<SetCandyGuardAuthorityInstructionData>(
+    [['newAuthority', s.publicKey]],
+    'SetCandyGuardAuthorityInstructionData'
   );
 }
 
 // Instruction.
-export function route(
+export function setCandyGuardAuthority(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: RouteInstructionAccounts & RouteInstructionArgs
+  input: SetCandyGuardAuthorityInstructionAccounts &
+    SetCandyGuardAuthorityInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -72,19 +61,19 @@ export function route(
   // Candy Guard.
   keys.push({ pubkey: input.candyGuard, isSigner: false, isWritable: false });
 
-  // Candy Machine.
-  keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
-
-  // Payer.
-  signers.push(input.payer);
+  // Authority.
+  signers.push(input.authority);
   keys.push({
-    pubkey: input.payer.publicKey,
+    pubkey: input.authority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Data.
-  const data = getRouteInstructionDataSerializer(context).serialize(input);
+  const data =
+    getSetCandyGuardAuthorityInstructionDataSerializer(context).serialize(
+      input
+    );
 
   return {
     instruction: { keys, programId, data },

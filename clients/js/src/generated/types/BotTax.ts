@@ -21,7 +21,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 export type BotTax = { lamports: bigint; lastInstruction: boolean };
 
 export function getBotTaxSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<BotTax> {
   const s = context.serializer;
   return s.struct<BotTax>(

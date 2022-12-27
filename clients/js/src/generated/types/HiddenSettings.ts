@@ -19,7 +19,7 @@ export type HiddenSettings = {
 };
 
 export function getHiddenSettingsSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<HiddenSettings> {
   const s = context.serializer;
   return s.struct<HiddenSettings>(

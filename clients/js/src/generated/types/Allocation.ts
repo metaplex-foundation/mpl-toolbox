@@ -26,7 +26,7 @@ export type Allocation = {
 };
 
 export function getAllocationSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<Allocation> {
   const s = context.serializer;
   return s.struct<Allocation>(

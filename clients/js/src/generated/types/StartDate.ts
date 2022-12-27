@@ -12,7 +12,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 export type StartDate = { date: bigint };
 
 export function getStartDateSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<StartDate> {
   const s = context.serializer;
   return s.struct<StartDate>([['date', s.i64]], 'StartDate');

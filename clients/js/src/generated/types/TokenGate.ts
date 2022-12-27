@@ -19,13 +19,13 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type TokenGate = { amount: bigint; mint: PublicKey };
 
 export function getTokenGateSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<TokenGate> {
   const s = context.serializer;
   return s.struct<TokenGate>(
     [
       ['amount', s.u64],
-      ['mint', s.publicKey(context)],
+      ['mint', s.publicKey],
     ],
     'TokenGate'
   );

@@ -24,14 +24,14 @@ export type TokenPayment = {
 };
 
 export function getTokenPaymentSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<TokenPayment> {
   const s = context.serializer;
   return s.struct<TokenPayment>(
     [
       ['amount', s.u64],
-      ['mint', s.publicKey(context)],
-      ['destinationAta', s.publicKey(context)],
+      ['mint', s.publicKey],
+      ['destinationAta', s.publicKey],
     ],
     'TokenPayment'
   );

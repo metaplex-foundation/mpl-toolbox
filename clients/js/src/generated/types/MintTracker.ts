@@ -12,7 +12,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 export type MintTracker = { count: number };
 
 export function getMintTrackerSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<MintTracker> {
   const s = context.serializer;
   return s.struct<MintTracker>([['count', s.u32]], 'MintTracker');

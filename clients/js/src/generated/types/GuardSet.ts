@@ -95,7 +95,7 @@ export type GuardSet = {
 };
 
 export function getGuardSetSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<GuardSet> {
   const s = context.serializer;
   return s.struct<GuardSet>(

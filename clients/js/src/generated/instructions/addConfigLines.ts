@@ -17,13 +17,13 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type addConfigLinesInstructionAccounts = {
+export type AddConfigLinesInstructionAccounts = {
   candyMachine: PublicKey;
   authority: Signer;
 };
 
 // Arguments.
-export type addConfigLinesInstructionArgs = {
+export type AddConfigLinesInstructionArgs = {
   index: number;
   configLines: Array<{
     /** Name of the asset. */
@@ -34,12 +34,12 @@ export type addConfigLinesInstructionArgs = {
 };
 
 // Data.
-type addConfigLinesInstructionData = addConfigLinesInstructionArgs;
-export function getaddConfigLinesInstructionDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
-): Serializer<addConfigLinesInstructionArgs> {
+type AddConfigLinesInstructionData = AddConfigLinesInstructionArgs;
+export function getAddConfigLinesInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<AddConfigLinesInstructionArgs> {
   const s = context.serializer;
-  return s.struct<addConfigLinesInstructionData>(
+  return s.struct<AddConfigLinesInstructionData>(
     [
       ['index', s.u32],
       [
@@ -55,7 +55,7 @@ export function getaddConfigLinesInstructionDataSerializer(
         ),
       ],
     ],
-    'addConfigLinesInstructionData'
+    'AddConfigLinesInstructionData'
   );
 }
 
@@ -66,8 +66,7 @@ export function addConfigLines(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  accounts: addConfigLinesInstructionAccounts,
-  args: addConfigLinesInstructionArgs
+  input: AddConfigLinesInstructionAccounts & AddConfigLinesInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -80,23 +79,19 @@ export function addConfigLines(
   );
 
   // Candy Machine.
-  keys.push({
-    pubkey: accounts.candyMachine,
-    isSigner: false,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
 
   // Authority.
-  signers.push(accounts.authority);
+  signers.push(input.authority);
   keys.push({
-    pubkey: accounts.authority.publicKey,
+    pubkey: input.authority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Data.
   const data =
-    getaddConfigLinesInstructionDataSerializer(context).serialize(args);
+    getAddConfigLinesInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

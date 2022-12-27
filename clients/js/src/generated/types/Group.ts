@@ -17,7 +17,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 export type Group = { label: string; guards: GuardSet };
 
 export function getGroupSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<Group> {
   const s = context.serializer;
   return s.struct<Group>(

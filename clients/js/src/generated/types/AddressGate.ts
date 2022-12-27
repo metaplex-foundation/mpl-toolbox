@@ -12,11 +12,8 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type AddressGate = { address: PublicKey };
 
 export function getAddressGateSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<AddressGate> {
   const s = context.serializer;
-  return s.struct<AddressGate>(
-    [['address', s.publicKey(context)]],
-    'AddressGate'
-  );
+  return s.struct<AddressGate>([['address', s.publicKey]], 'AddressGate');
 }

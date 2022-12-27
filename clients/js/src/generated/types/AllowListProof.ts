@@ -12,7 +12,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 export type AllowListProof = { timestamp: bigint };
 
 export function getAllowListProofSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<AllowListProof> {
   const s = context.serializer;
   return s.struct<AllowListProof>([['timestamp', s.i64]], 'AllowListProof');

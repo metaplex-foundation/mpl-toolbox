@@ -17,12 +17,12 @@ export type Creator = {
 };
 
 export function getCreatorSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<Creator> {
   const s = context.serializer;
   return s.struct<Creator>(
     [
-      ['address', s.publicKey(context)],
+      ['address', s.publicKey],
       ['verified', s.bool],
       ['percentageShare', s.u8],
     ],

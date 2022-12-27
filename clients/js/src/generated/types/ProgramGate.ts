@@ -16,11 +16,11 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type ProgramGate = { additional: Array<PublicKey> };
 
 export function getProgramGateSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<ProgramGate> {
   const s = context.serializer;
   return s.struct<ProgramGate>(
-    [['additional', s.vec(s.publicKey(context))]],
+    [['additional', s.vec(s.publicKey)]],
     'ProgramGate'
   );
 }

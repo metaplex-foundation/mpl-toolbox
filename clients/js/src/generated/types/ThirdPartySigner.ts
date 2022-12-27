@@ -19,11 +19,11 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type ThirdPartySigner = { signerKey: PublicKey };
 
 export function getThirdPartySignerSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<ThirdPartySigner> {
   const s = context.serializer;
   return s.struct<ThirdPartySigner>(
-    [['signerKey', s.publicKey(context)]],
+    [['signerKey', s.publicKey]],
     'ThirdPartySigner'
   );
 }

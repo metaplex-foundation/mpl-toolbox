@@ -17,7 +17,7 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type setMintAuthorityInstructionAccounts = {
+export type SetMintAuthorityInstructionAccounts = {
   candyMachine: PublicKey;
   authority: Signer;
   mintAuthority: Signer;
@@ -30,7 +30,7 @@ export function setMintAuthority(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  accounts: setMintAuthorityInstructionAccounts
+  input: SetMintAuthorityInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -43,24 +43,20 @@ export function setMintAuthority(
   );
 
   // Candy Machine.
-  keys.push({
-    pubkey: accounts.candyMachine,
-    isSigner: false,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
 
   // Authority.
-  signers.push(accounts.authority);
+  signers.push(input.authority);
   keys.push({
-    pubkey: accounts.authority.publicKey,
+    pubkey: input.authority.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
   // Mint Authority.
-  signers.push(accounts.mintAuthority);
+  signers.push(input.mintAuthority);
   keys.push({
-    pubkey: accounts.mintAuthority.publicKey,
+    pubkey: input.mintAuthority.publicKey,
     isSigner: true,
     isWritable: false,
   });

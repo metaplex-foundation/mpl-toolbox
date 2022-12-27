@@ -20,11 +20,8 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
 export type NftGate = { requiredCollection: PublicKey };
 
 export function getNftGateSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
+  context: Pick<Context, 'serializer'>
 ): Serializer<NftGate> {
   const s = context.serializer;
-  return s.struct<NftGate>(
-    [['requiredCollection', s.publicKey(context)]],
-    'NftGate'
-  );
+  return s.struct<NftGate>([['requiredCollection', s.publicKey]], 'NftGate');
 }

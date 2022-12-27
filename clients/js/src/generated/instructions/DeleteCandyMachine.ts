@@ -17,19 +17,19 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type withdrawInstructionAccounts = {
-  candyGuard: PublicKey;
+export type DeleteCandyMachineInstructionAccounts = {
+  candyMachine: PublicKey;
   authority: Signer;
 };
 
 // Instruction.
-export function withdraw(
+export function deleteCandyMachine(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  accounts: withdrawInstructionAccounts
+  input: DeleteCandyMachineInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -37,21 +37,17 @@ export function withdraw(
   // Program ID.
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
-    'candyGuard',
-    'Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g'
+    'candyMachineCore',
+    'CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR'
   );
 
-  // Candy Guard.
-  keys.push({
-    pubkey: accounts.candyGuard,
-    isSigner: false,
-    isWritable: false,
-  });
+  // Candy Machine.
+  keys.push({ pubkey: input.candyMachine, isSigner: false, isWritable: false });
 
   // Authority.
-  signers.push(accounts.authority);
+  signers.push(input.authority);
   keys.push({
-    pubkey: accounts.authority.publicKey,
+    pubkey: input.authority.publicKey,
     isSigner: true,
     isWritable: false,
   });

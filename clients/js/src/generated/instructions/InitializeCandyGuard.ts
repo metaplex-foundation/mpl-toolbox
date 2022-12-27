@@ -17,37 +17,38 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type updateInstructionAccounts = {
+export type InitializeCandyGuardInstructionAccounts = {
   candyGuard: PublicKey;
-  authority: Signer;
+  base: Signer;
+  authority: PublicKey;
   payer: Signer;
   systemProgram?: PublicKey;
 };
 
 // Arguments.
-export type updateInstructionArgs = { data: Uint8Array };
+export type InitializeCandyGuardInstructionArgs = { data: Uint8Array };
 
 // Data.
-type updateInstructionData = updateInstructionArgs;
-export function getupdateInstructionDataSerializer(
-  context: Pick<Context, 'serializer' | 'eddsa'>
-): Serializer<updateInstructionArgs> {
+type InitializeCandyGuardInstructionData = InitializeCandyGuardInstructionArgs;
+export function getInitializeCandyGuardInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<InitializeCandyGuardInstructionArgs> {
   const s = context.serializer;
-  return s.struct<updateInstructionData>(
+  return s.struct<InitializeCandyGuardInstructionData>(
     [['data', s.bytes]],
-    'updateInstructionData'
+    'InitializeCandyGuardInstructionData'
   );
 }
 
 // Instruction.
-export function update(
+export function initializeCandyGuard(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  accounts: updateInstructionAccounts,
-  args: updateInstructionArgs
+  input: InitializeCandyGuardInstructionAccounts &
+    InitializeCandyGuardInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -60,24 +61,23 @@ export function update(
   );
 
   // Candy Guard.
-  keys.push({
-    pubkey: accounts.candyGuard,
-    isSigner: false,
-    isWritable: false,
-  });
+  keys.push({ pubkey: input.candyGuard, isSigner: false, isWritable: false });
 
-  // Authority.
-  signers.push(accounts.authority);
+  // Base.
+  signers.push(input.base);
   keys.push({
-    pubkey: accounts.authority.publicKey,
+    pubkey: input.base.publicKey,
     isSigner: true,
     isWritable: false,
   });
 
+  // Authority.
+  keys.push({ pubkey: input.authority, isSigner: false, isWritable: false });
+
   // Payer.
-  signers.push(accounts.payer);
+  signers.push(input.payer);
   keys.push({
-    pubkey: accounts.payer.publicKey,
+    pubkey: input.payer.publicKey,
     isSigner: true,
     isWritable: false,
   });
@@ -85,7 +85,7 @@ export function update(
   // System Program.
   keys.push({
     pubkey:
-      accounts.systemProgram ??
+      input.systemProgram ??
       getProgramAddressWithFallback(
         context,
         'splSystem',
@@ -96,7 +96,8 @@ export function update(
   });
 
   // Data.
-  const data = getupdateInstructionDataSerializer(context).serialize(args);
+  const data =
+    getInitializeCandyGuardInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },
