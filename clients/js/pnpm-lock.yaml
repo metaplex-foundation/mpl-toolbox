@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@lorisleiva/js-core': ^0.0.14
+  '@lorisleiva/js-core': ^0.0.17
   '@types/debug': ^4.1.7
   '@types/tape': ^4.13.2
   '@typescript-eslint/eslint-plugin': ^5.0.0
@@ -20,7 +20,7 @@ specifiers:
   typescript: ^4.6.2
 
 dependencies:
-  '@lorisleiva/js-core': 0.0.14
+  '@lorisleiva/js-core': 0.0.17
 
 devDependencies:
   '@types/debug': 4.1.7
@@ -79,8 +79,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@lorisleiva/js-core/0.0.14:
-    resolution: {integrity: sha512-k7u4tbB+15u+lrqaTndAS8I2gTTID7tViJH+5V4mI+OEvPLYVVsm0XK1cFK+xBIVixW/8k47MChxHeiZ/vjbqg==}
+  /@lorisleiva/js-core/0.0.17:
+    resolution: {integrity: sha512-Qd/zEd0Ub2ooGEeJ1Jj4KDBPqJhVRsWFfTXj7TMCjUlfDGmt1O0U/JJ5kq1uw+FFDYNDosBXKE564nipPs28VA==}
     dev: false
 
   /@nodelib/fs.scandir/2.1.5:

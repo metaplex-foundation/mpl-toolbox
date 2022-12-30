@@ -41,7 +41,7 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@lorisleiva/js-core": "^0.0.14"
+    "@lorisleiva/js-core": "^0.0.17"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
