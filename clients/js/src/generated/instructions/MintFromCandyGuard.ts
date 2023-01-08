@@ -47,6 +47,7 @@ export type MintFromCandyGuardInstructionData = {
   mintArgs: Uint8Array;
   label: Option<string>;
 };
+
 export type MintFromCandyGuardInstructionArgs = {
   mintArgs: Uint8Array;
   label: Option<string>;

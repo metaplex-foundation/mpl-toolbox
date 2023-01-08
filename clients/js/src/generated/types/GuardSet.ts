@@ -103,6 +103,7 @@ export type GuardSet = {
   /** Allocation guard (specify the maximum number of mints in a group). */
   allocation: Option<Allocation>;
 };
+
 export type GuardSetArgs = {
   /** Last instruction check and bot tax (penalty for invalid transactions). */
   botTax: Option<BotTaxArgs>;

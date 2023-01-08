@@ -14,6 +14,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
  */
 
 export type RedeemedAmount = { maximum: bigint };
+
 export type RedeemedAmountArgs = { maximum: number | bigint };
 
 export function getRedeemedAmountSerializer(

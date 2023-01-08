@@ -18,7 +18,9 @@ import {
   mapSerializer,
 } from '@lorisleiva/js-core';
 
-export type FreezeEscrow = {
+export type FreezeEscrow = Account<FreezeEscrowAccountData>;
+
+export type FreezeEscrowAccountData = {
   discriminator: Array<number>;
   /** Candy guard address associated with this escrow. */
   candyGuard: PublicKey;
@@ -45,7 +47,8 @@ export type FreezeEscrow = {
    */
   authority: PublicKey;
 };
-export type FreezeEscrowArgs = {
+
+export type FreezeEscrowAccountArgs = {
   /** Candy guard address associated with this escrow. */
   candyGuard: PublicKey;
   /** Candy machine address associated with this escrow. */
@@ -75,7 +78,7 @@ export type FreezeEscrowArgs = {
 export async function fetchFreezeEscrow(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<Account<FreezeEscrow>> {
+): Promise<FreezeEscrow> {
   const maybeAccount = await context.rpc.getAccount(address);
   assertAccountExists(maybeAccount, 'FreezeEscrow');
   return deserializeFreezeEscrow(context, maybeAccount);
@@ -84,7 +87,7 @@ export async function fetchFreezeEscrow(
 export async function safeFetchFreezeEscrow(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<Account<FreezeEscrow> | null> {
+): Promise<FreezeEscrow | null> {
   const maybeAccount = await context.rpc.getAccount(address);
   return maybeAccount.exists
     ? deserializeFreezeEscrow(context, maybeAccount)
@@ -94,16 +97,23 @@ export async function safeFetchFreezeEscrow(
 export function deserializeFreezeEscrow(
   context: Pick<Context, 'serializer'>,
   rawAccount: RpcAccount
-): Account<FreezeEscrow> {
-  return deserializeAccount(rawAccount, getFreezeEscrowSerializer(context));
+): FreezeEscrow {
+  return deserializeAccount(
+    rawAccount,
+    getFreezeEscrowAccountDataSerializer(context)
+  );
 }
 
-export function getFreezeEscrowSerializer(
+export function getFreezeEscrowAccountDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<FreezeEscrowArgs, FreezeEscrow> {
+): Serializer<FreezeEscrowAccountArgs, FreezeEscrowAccountData> {
   const s = context.serializer;
-  return mapSerializer<FreezeEscrowArgs, FreezeEscrow, FreezeEscrow>(
-    s.struct<FreezeEscrow>(
+  return mapSerializer<
+    FreezeEscrowAccountArgs,
+    FreezeEscrowAccountData,
+    FreezeEscrowAccountData
+  >(
+    s.struct<FreezeEscrowAccountData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['candyGuard', s.publicKey],
@@ -120,6 +130,6 @@ export function getFreezeEscrowSerializer(
       ({
         discriminator: [100, 4, 61, 102, 0, 123, 141, 187],
         ...value,
-      } as FreezeEscrow)
-  ) as Serializer<FreezeEscrowArgs, FreezeEscrow>;
+      } as FreezeEscrowAccountData)
+  ) as Serializer<FreezeEscrowAccountArgs, FreezeEscrowAccountData>;
 }

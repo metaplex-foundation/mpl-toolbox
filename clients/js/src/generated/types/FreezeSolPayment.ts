@@ -20,6 +20,7 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type FreezeSolPayment = { lamports: bigint; destination: PublicKey };
+
 export type FreezeSolPaymentArgs = {
   lamports: number | bigint;
   destination: PublicKey;

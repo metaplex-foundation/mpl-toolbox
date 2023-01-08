@@ -17,13 +17,16 @@ import {
   mapSerializer,
 } from '@lorisleiva/js-core';
 
-export type CandyGuard = {
+export type CandyGuard = Account<CandyGuardAccountData>;
+
+export type CandyGuardAccountData = {
   discriminator: Array<number>;
   base: PublicKey;
   bump: number;
   authority: PublicKey;
 };
-export type CandyGuardArgs = {
+
+export type CandyGuardAccountArgs = {
   base: PublicKey;
   bump: number;
   authority: PublicKey;
@@ -32,7 +35,7 @@ export type CandyGuardArgs = {
 export async function fetchCandyGuard(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<Account<CandyGuard>> {
+): Promise<CandyGuard> {
   const maybeAccount = await context.rpc.getAccount(address);
   assertAccountExists(maybeAccount, 'CandyGuard');
   return deserializeCandyGuard(context, maybeAccount);
@@ -41,7 +44,7 @@ export async function fetchCandyGuard(
 export async function safeFetchCandyGuard(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<Account<CandyGuard> | null> {
+): Promise<CandyGuard | null> {
   const maybeAccount = await context.rpc.getAccount(address);
   return maybeAccount.exists
     ? deserializeCandyGuard(context, maybeAccount)
@@ -51,16 +54,23 @@ export async function safeFetchCandyGuard(
 export function deserializeCandyGuard(
   context: Pick<Context, 'serializer'>,
   rawAccount: RpcAccount
-): Account<CandyGuard> {
-  return deserializeAccount(rawAccount, getCandyGuardSerializer(context));
+): CandyGuard {
+  return deserializeAccount(
+    rawAccount,
+    getCandyGuardAccountDataSerializer(context)
+  );
 }
 
-export function getCandyGuardSerializer(
+export function getCandyGuardAccountDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CandyGuardArgs, CandyGuard> {
+): Serializer<CandyGuardAccountArgs, CandyGuardAccountData> {
   const s = context.serializer;
-  return mapSerializer<CandyGuardArgs, CandyGuard, CandyGuard>(
-    s.struct<CandyGuard>(
+  return mapSerializer<
+    CandyGuardAccountArgs,
+    CandyGuardAccountData,
+    CandyGuardAccountData
+  >(
+    s.struct<CandyGuardAccountData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['base', s.publicKey],
@@ -73,6 +83,6 @@ export function getCandyGuardSerializer(
       ({
         discriminator: [95, 25, 33, 117, 164, 206, 9, 250],
         ...value,
-      } as CandyGuard)
-  ) as Serializer<CandyGuardArgs, CandyGuard>;
+      } as CandyGuardAccountData)
+  ) as Serializer<CandyGuardAccountArgs, CandyGuardAccountData>;
 }

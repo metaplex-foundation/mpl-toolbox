@@ -10,6 +10,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 
 /** Guard that sets a specific date for the mint to stop. */
 export type EndDate = { date: bigint };
+
 export type EndDateArgs = { date: number | bigint };
 
 export function getEndDateSerializer(

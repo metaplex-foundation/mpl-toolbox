@@ -27,6 +27,7 @@ export type FreezeTokenPayment = {
   mint: PublicKey;
   destinationAta: PublicKey;
 };
+
 export type FreezeTokenPaymentArgs = {
   amount: number | bigint;
   mint: PublicKey;

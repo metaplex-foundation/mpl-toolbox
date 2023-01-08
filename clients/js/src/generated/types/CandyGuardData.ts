@@ -20,6 +20,7 @@ export type CandyGuardData = {
   default: GuardSet;
   groups: Option<Array<Group>>;
 };
+
 export type CandyGuardDataArgs = {
   default: GuardSetArgs;
   groups: Option<Array<GroupArgs>>;

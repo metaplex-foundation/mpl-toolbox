@@ -28,6 +28,7 @@ export type WrapInstructionAccounts = {
 
 // Arguments.
 export type WrapInstructionData = { discriminator: Array<number> };
+
 export type WrapInstructionArgs = {};
 
 export function getWrapInstructionDataSerializer(

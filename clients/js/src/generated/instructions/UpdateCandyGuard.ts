@@ -30,6 +30,7 @@ export type UpdateCandyGuardInstructionData = {
   discriminator: Array<number>;
   data: Uint8Array;
 };
+
 export type UpdateCandyGuardInstructionArgs = { data: Uint8Array };
 
 export function getUpdateCandyGuardInstructionDataSerializer(

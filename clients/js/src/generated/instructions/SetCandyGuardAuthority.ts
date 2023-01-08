@@ -28,6 +28,7 @@ export type SetCandyGuardAuthorityInstructionData = {
   discriminator: Array<number>;
   newAuthority: PublicKey;
 };
+
 export type SetCandyGuardAuthorityInstructionArgs = { newAuthority: PublicKey };
 
 export function getSetCandyGuardAuthorityInstructionDataSerializer(

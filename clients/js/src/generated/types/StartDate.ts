@@ -10,6 +10,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 
 /** Guard that sets a specific start date for the mint. */
 export type StartDate = { date: bigint };
+
 export type StartDateArgs = { date: number | bigint };
 
 export function getStartDateSerializer(

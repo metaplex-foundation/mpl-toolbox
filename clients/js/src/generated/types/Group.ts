@@ -15,6 +15,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
  */
 
 export type Group = { label: string; guards: GuardSet };
+
 export type GroupArgs = { label: string; guards: GuardSetArgs };
 
 export function getGroupSerializer(

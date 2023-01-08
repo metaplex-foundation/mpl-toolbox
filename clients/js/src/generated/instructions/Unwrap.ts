@@ -28,6 +28,7 @@ export type UnwrapInstructionAccounts = {
 
 // Arguments.
 export type UnwrapInstructionData = { discriminator: Array<number> };
+
 export type UnwrapInstructionArgs = {};
 
 export function getUnwrapInstructionDataSerializer(

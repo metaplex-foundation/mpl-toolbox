@@ -19,6 +19,7 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type TokenBurn = { amount: bigint; mint: PublicKey };
+
 export type TokenBurnArgs = { amount: number | bigint; mint: PublicKey };
 
 export function getTokenBurnSerializer(

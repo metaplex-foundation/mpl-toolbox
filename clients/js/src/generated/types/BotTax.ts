@@ -19,6 +19,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
  */
 
 export type BotTax = { lamports: bigint; lastInstruction: boolean };
+
 export type BotTaxArgs = {
   lamports: number | bigint;
   lastInstruction: boolean;

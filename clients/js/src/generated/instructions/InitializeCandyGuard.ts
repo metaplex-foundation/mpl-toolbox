@@ -31,6 +31,7 @@ export type InitializeCandyGuardInstructionData = {
   discriminator: Array<number>;
   data: Uint8Array;
 };
+
 export type InitializeCandyGuardInstructionArgs = { data: Uint8Array };
 
 export function getInitializeCandyGuardInstructionDataSerializer(

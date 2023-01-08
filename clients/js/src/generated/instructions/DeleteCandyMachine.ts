@@ -27,6 +27,7 @@ export type DeleteCandyMachineInstructionAccounts = {
 export type DeleteCandyMachineInstructionData = {
   discriminator: Array<number>;
 };
+
 export type DeleteCandyMachineInstructionArgs = {};
 
 export function getDeleteCandyMachineInstructionDataSerializer(

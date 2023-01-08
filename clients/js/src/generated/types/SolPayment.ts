@@ -17,6 +17,7 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type SolPayment = { lamports: bigint; destination: PublicKey };
+
 export type SolPaymentArgs = {
   lamports: number | bigint;
   destination: PublicKey;

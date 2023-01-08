@@ -35,6 +35,7 @@ export type RouteInstructionData = {
   data: Uint8Array;
   label: Option<string>;
 };
+
 export type RouteInstructionArgs = {
   /** The target guard type. */
   guard: GuardType;

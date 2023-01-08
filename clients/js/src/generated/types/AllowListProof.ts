@@ -10,6 +10,7 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 
 /** PDA to track whether an address has been validated or not. */
 export type AllowListProof = { timestamp: bigint };
+
 export type AllowListProofArgs = { timestamp: number | bigint };
 
 export function getAllowListProofSerializer(

@@ -17,6 +17,7 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type TokenGate = { amount: bigint; mint: PublicKey };
+
 export type TokenGateArgs = { amount: number | bigint; mint: PublicKey };
 
 export function getTokenGateSerializer(

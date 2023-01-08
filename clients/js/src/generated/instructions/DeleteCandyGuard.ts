@@ -25,6 +25,7 @@ export type DeleteCandyGuardInstructionAccounts = {
 
 // Arguments.
 export type DeleteCandyGuardInstructionData = { discriminator: Array<number> };
+
 export type DeleteCandyGuardInstructionArgs = {};
 
 export function getDeleteCandyGuardInstructionDataSerializer(

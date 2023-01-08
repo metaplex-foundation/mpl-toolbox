@@ -28,6 +28,7 @@ export type SetCandyMachineAuthorityInstructionData = {
   discriminator: Array<number>;
   newAuthority: PublicKey;
 };
+
 export type SetCandyMachineAuthorityInstructionArgs = {
   newAuthority: PublicKey;
 };
