@@ -3,6 +3,7 @@ const {
   Kinobi,
   RenameNodesVisitor,
   RenderJavaScriptVisitor,
+  MarkNodesAsInternalVisitor,
 } = require("@lorisleiva/kinobi");
 
 // Paths.
@@ -13,8 +14,10 @@ const idlPaths = [
   path.join(idlDir, "candy_guard.json"),
 ];
 
-// Instantiate and transform Kinobi.
+// Instantiate Kinobi.
 const kinobi = new Kinobi(idlPaths);
+
+// Rename nodes.
 kinobi.update(
   new RenameNodesVisitor({
     candyMachineCore: {
@@ -40,6 +43,14 @@ kinobi.update(
       },
     },
   })
+);
+
+// Make some nodes internal to override them with custom code.
+kinobi.update(
+  new MarkNodesAsInternalVisitor([
+    { account: "CandyMachine" },
+    { account: "CandyGuard" },
+  ])
 );
 
 // Generate JavaScript client.
