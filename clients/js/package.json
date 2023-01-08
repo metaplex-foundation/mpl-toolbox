@@ -13,12 +13,10 @@
     "postpublish": "git push origin && git push origin --tags",
     "build:docs": "typedoc",
     "build": "rimraf dist && tsc -p tsconfig.json",
-    "test": "tape dist/test/**/*.test.js",
-    "lint": "eslint \"{src,test}/**/*.ts\" --format stylish",
-    "fix:lint": "yarn lint --fix",
-    "prettier": "prettier \"{src,test}/**/*.ts\" --check",
-    "fix:prettier": "prettier --write src/ && prettier --write test/",
-    "fix": "yarn fix:lint && yarn fix:prettier"
+    "test": "ava",
+    "lint": "eslint --ext js,ts,tsx src",
+    "lint:fix": "eslint --fix --ext js,ts,tsx src",
+    "format": "prettier --write src/ && prettier --write test/"
   },
   "files": [
     "/dist/src"
@@ -38,12 +36,10 @@
   "author": "Metaplex Maintainers <contact@metaplex.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@lorisleiva/js-core": "^0.0.17"
+    "@lorisleiva/js-core": "^0.0.19"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7",
-    "@types/tape": "^4.13.2",
-    "debug": "^4.3.4",
+    "@solana/web3.js": "^1.73.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.46.1",
     "eslint": "^8.0.1",
@@ -53,8 +49,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "spok": "^1.4.3",
-    "tape": "^5.5.0",
     "typedoc": "^0.23.16",
     "typescript": "^4.6.2"
   }
