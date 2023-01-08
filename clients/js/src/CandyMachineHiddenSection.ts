@@ -1,5 +1,5 @@
 import { Context, removeNullCharacters } from '@lorisleiva/js-core';
-import { CandyMachineConfigLineSettings } from './CandyMachine';
+import { CandyMachineConfigLineSettings } from './CandyMachineItemSettings';
 import { CandyMachineItem } from './CandyMachineItem';
 import { getFeatureFlagSerializer } from './FeatureFlags';
 
