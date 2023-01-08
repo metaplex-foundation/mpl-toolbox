@@ -33,10 +33,7 @@ import {
   getCandyMachineAccountDataSerializer as getBaseCandyMachineAccountDataSerializer,
 } from './generated/accounts/CandyMachine';
 
-export type CandyMachine = Account<CandyMachineAccountData> & {
-  // TODO: candyGuard: CandyGuard | null;
-  candyGuard: object | null;
-};
+export type CandyMachine = Account<CandyMachineAccountData>;
 
 export type CandyMachineAccountData = {
   /** Identifies the account as a Candy Machine account. */
@@ -190,12 +187,10 @@ export function deserializeCandyMachine(
   context: Pick<Context, 'serializer'>,
   rawAccount: RpcAccount
 ): CandyMachine {
-  const candyMachineAccount = deserializeAccount(
+  return deserializeAccount(
     rawAccount,
     getCandyMachineAccountDataSerializer(context)
   );
-  // TODO: deserializeCandyGuard.
-  return { ...candyMachineAccount, candyGuard: null };
 }
 
 export function getCandyMachineAccountDataSerializer(
