@@ -36,7 +36,7 @@ export const deserializeCandyMachineHiddenSection = (
 
   // Items loaded map.
   const itemsLoadedBuffer = buffer.slice(offset, offset + itemsAvailable);
-  const [itemsLoadedMap] = getFeatureFlagSerializer(context, 8).deserialize(
+  const [itemsLoadedMap] = getFeatureFlagSerializer(s.u64, 8).deserialize(
     itemsLoadedBuffer,
     itemsAvailable
   );

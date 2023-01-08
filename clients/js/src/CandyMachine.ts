@@ -5,27 +5,32 @@ import {
   deserializeAccount,
   mapSerializer,
   none,
-  toAmount,
   PercentAmount,
   PublicKey,
+  removeNullCharacters,
   RpcAccount,
   Serializer,
   some,
-  removeNullCharacters,
+  toAmount,
   unwrapSome,
 } from '@lorisleiva/js-core';
+import { deserializeCandyMachineHiddenSection } from './CandyMachineHiddenSection';
 import { CandyMachineItem } from './CandyMachineItem';
 import {
   CandyMachineConfigLineSettings,
   CandyMachineHiddenSettings,
 } from './CandyMachineItemSettings';
 import { CANDY_MACHINE_HIDDEN_SECTION } from './constants';
-import { FeatureFlags } from './FeatureFlags';
-import { Creator, HiddenSettings } from './generated';
 import {
-  getCandyMachineAccountDataSerializer as getBaseCandyMachineAccountDataSerializer,
-  CandyMachineAccountData as BaseCandyMachineAccountData,
+  FeatureFlags,
+  getFeatureFlagsFromNumber,
+  getNumberFromFeatureFlags,
+} from './FeatureFlags';
+import { Creator } from './generated';
+import {
   CandyMachineAccountArgs as BaseCandyMachineAccountArgs,
+  CandyMachineAccountData as BaseCandyMachineAccountData,
+  getCandyMachineAccountDataSerializer as getBaseCandyMachineAccountDataSerializer,
 } from './generated/accounts/CandyMachine';
 
 export type CandyMachine = Account<CandyMachineAccountData> & {
@@ -200,7 +205,7 @@ export function getCandyMachineAccountDataSerializer(
     getBaseCandyMachineAccountDataSerializer(context),
     (candyMachine: CandyMachineAccountArgs): BaseCandyMachineAccountArgs => ({
       ...candyMachine,
-      features: 0, // TODO
+      features: getNumberFromFeatureFlags(candyMachine.features, 8),
       itemsRedeemed: candyMachine.itemsMinted,
       data: {
         ...candyMachine,
@@ -222,7 +227,11 @@ export function getCandyMachineAccountDataSerializer(
             : none(),
       },
     }),
-    (base: BaseCandyMachineAccountData): CandyMachineAccountData => {
+    (
+      base: BaseCandyMachineAccountData,
+      buffer: Uint8Array,
+      offset: number
+    ): CandyMachineAccountData => {
       const hiddenSettings = unwrapSome(base.data.hiddenSettings);
       const configLineSettings = unwrapSome(base.data.configLineSettings);
       let items: CandyMachineItem[] = [];
@@ -240,11 +249,12 @@ export function getCandyMachineAccountDataSerializer(
       } else {
         itemSettings = { ...configLineSettings, type: 'configLines' };
         const hiddenSection = deserializeCandyMachineHiddenSection(
-          base.data,
-          base.data.itemsAvailable,
-          base.data.itemsAvailable - base.itemsRedeemed,
+          context,
+          buffer,
+          Number(base.data.itemsAvailable),
+          Number(base.data.itemsAvailable - base.itemsRedeemed),
           itemSettings,
-          CANDY_MACHINE_HIDDEN_SECTION
+          offset + CANDY_MACHINE_HIDDEN_SECTION
         );
 
         items = hiddenSection.items;
@@ -254,7 +264,7 @@ export function getCandyMachineAccountDataSerializer(
 
       return {
         discriminator: base.discriminator,
-        features: [], // TODO
+        features: getFeatureFlagsFromNumber(base.features, 8),
         authority: base.authority,
         mintAuthority: base.mintAuthority,
         collectionMint: base.collectionMint,
