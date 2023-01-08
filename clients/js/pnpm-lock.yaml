@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@ava/typescript': ^3.0.1
-  '@lorisleiva/js-core': ^0.0.19
+  '@lorisleiva/js-core': ^0.0.20
   '@solana/web3.js': ^1.73.0
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.46.1
@@ -18,7 +18,7 @@ specifiers:
   typescript: ^4.6.2
 
 dependencies:
-  '@lorisleiva/js-core': 0.0.19
+  '@lorisleiva/js-core': 0.0.20
 
 devDependencies:
   '@ava/typescript': 3.0.1
@@ -90,8 +90,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@lorisleiva/js-core/0.0.19:
-    resolution: {integrity: sha512-fb9IkUlQnDAOXUmIm3ycF5moCAxsVdCauAnd6S7eKBVTMcPfW45JxCeQkycZxa4RQxze7mv/ZSMbO5GXAONiZA==}
+  /@lorisleiva/js-core/0.0.20:
+    resolution: {integrity: sha512-bM4DqR7QhV/p1LiclHMMR6hFpsJZKGlqqVc0OfL4q90l0SOB93HEncoEnnfS6c3WIz+t0Yr22BcUlp6YnwGEHg==}
     dev: false
 
   /@noble/ed25519/1.7.1:

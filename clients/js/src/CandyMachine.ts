@@ -1,5 +1,6 @@
 import { CandyMachineItem } from './CandyMachineItem';
 import { CandyMachineData } from './generated';
+import { CandyMachine as BaseCandyMachine } from './generated/accounts/CandyMachine';
 
 /**
  * This model contains all the relevant information about a Candy Machine.
@@ -7,7 +8,7 @@ import { CandyMachineData } from './generated';
  * loaded inside the Candy Machine along with some statistics about the items.
  */
 export type CandyMachine<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
+  // T extends CandyGuardsSettings = DefaultCandyGuardSettings
 > = BaseCandyMachine & {
   /**
    * Refers to the authority that is allowed to manage the Candy Machine.
