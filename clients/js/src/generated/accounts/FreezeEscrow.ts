@@ -15,9 +15,11 @@ import {
   Serializer,
   assertAccountExists,
   deserializeAccount,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 export type FreezeEscrow = {
+  discriminator: Array<number>;
   /** Candy guard address associated with this escrow. */
   candyGuard: PublicKey;
   /** Candy machine address associated with this escrow. */
@@ -34,6 +36,32 @@ export type FreezeEscrow = {
    * allowed to thaw after this.
    */
   freezePeriod: bigint;
+  /** The destination address for the frozed fund to go to. */
+  destination: PublicKey;
+  /**
+   * The authority that initialized the freeze. This will be the only
+   * address able to unlock the funds in case the candy guard account is
+   * closed.
+   */
+  authority: PublicKey;
+};
+export type FreezeEscrowArgs = {
+  /** Candy guard address associated with this escrow. */
+  candyGuard: PublicKey;
+  /** Candy machine address associated with this escrow. */
+  candyMachine: PublicKey;
+  /** Number of NFTs frozen. */
+  frozenCount: number | bigint;
+  /**
+   * The timestamp of the first (frozen) mint. This is used to calculate
+   * when the freeze period is over.
+   */
+  firstMintTime: Option<number | bigint>;
+  /**
+   * The amount of time (in seconds) for the freeze. The NFTs will be
+   * allowed to thaw after this.
+   */
+  freezePeriod: number | bigint;
   /** The destination address for the frozed fund to go to. */
   destination: PublicKey;
   /**
@@ -72,18 +100,26 @@ export function deserializeFreezeEscrow(
 
 export function getFreezeEscrowSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<FreezeEscrow> {
+): Serializer<FreezeEscrowArgs, FreezeEscrow> {
   const s = context.serializer;
-  return s.struct<FreezeEscrow>(
-    [
-      ['candyGuard', s.publicKey],
-      ['candyMachine', s.publicKey],
-      ['frozenCount', s.u64],
-      ['firstMintTime', s.option(s.i64)],
-      ['freezePeriod', s.i64],
-      ['destination', s.publicKey],
-      ['authority', s.publicKey],
-    ],
-    'FreezeEscrow'
-  );
+  return mapSerializer<FreezeEscrowArgs, FreezeEscrow, FreezeEscrow>(
+    s.struct<FreezeEscrow>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['candyGuard', s.publicKey],
+        ['candyMachine', s.publicKey],
+        ['frozenCount', s.u64],
+        ['firstMintTime', s.option(s.i64)],
+        ['freezePeriod', s.i64],
+        ['destination', s.publicKey],
+        ['authority', s.publicKey],
+      ],
+      'FreezeEscrow'
+    ),
+    (value) =>
+      ({
+        discriminator: [100, 4, 61, 102, 0, 123, 141, 187],
+        ...value,
+      } as FreezeEscrow)
+  ) as Serializer<FreezeEscrowArgs, FreezeEscrow>;
 }

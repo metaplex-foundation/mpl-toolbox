@@ -19,10 +19,14 @@ import { Context, Serializer } from '@lorisleiva/js-core';
  */
 
 export type BotTax = { lamports: bigint; lastInstruction: boolean };
+export type BotTaxArgs = {
+  lamports: number | bigint;
+  lastInstruction: boolean;
+};
 
 export function getBotTaxSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<BotTax> {
+): Serializer<BotTaxArgs, BotTax> {
   const s = context.serializer;
   return s.struct<BotTax>(
     [
@@ -30,5 +34,5 @@ export function getBotTaxSerializer(
       ['lastInstruction', s.bool],
     ],
     'BotTax'
-  );
+  ) as Serializer<BotTaxArgs, BotTax>;
 }

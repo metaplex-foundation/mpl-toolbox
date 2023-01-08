@@ -27,10 +27,15 @@ export type FreezeTokenPayment = {
   mint: PublicKey;
   destinationAta: PublicKey;
 };
+export type FreezeTokenPaymentArgs = {
+  amount: number | bigint;
+  mint: PublicKey;
+  destinationAta: PublicKey;
+};
 
 export function getFreezeTokenPaymentSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<FreezeTokenPayment> {
+): Serializer<FreezeTokenPaymentArgs, FreezeTokenPayment> {
   const s = context.serializer;
   return s.struct<FreezeTokenPayment>(
     [
@@ -39,5 +44,5 @@ export function getFreezeTokenPaymentSerializer(
       ['destinationAta', s.publicKey],
     ],
     'FreezeTokenPayment'
-  );
+  ) as Serializer<FreezeTokenPaymentArgs, FreezeTokenPayment>;
 }

@@ -24,6 +24,16 @@ export type AddConfigLinesInstructionAccounts = {
 };
 
 // Arguments.
+export type AddConfigLinesInstructionData = {
+  discriminator: Array<number>;
+  index: number;
+  configLines: Array<{
+    /** Name of the asset. */
+    name: string;
+    /** URI to JSON metadata. */
+    uri: string;
+  }>;
+};
 export type AddConfigLinesInstructionArgs = {
   index: number;
   configLines: Array<{
@@ -34,22 +44,15 @@ export type AddConfigLinesInstructionArgs = {
   }>;
 };
 
-// Discriminator.
-export type AddConfigLinesInstructionDiscriminator = Array<number>;
-export function getAddConfigLinesInstructionDiscriminator(): AddConfigLinesInstructionDiscriminator {
-  return [223, 50, 224, 227, 151, 8, 115, 106];
-}
-
-// Data.
-type AddConfigLinesInstructionData = AddConfigLinesInstructionArgs & {
-  discriminator: AddConfigLinesInstructionDiscriminator;
-};
 export function getAddConfigLinesInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<AddConfigLinesInstructionArgs> {
+): Serializer<AddConfigLinesInstructionArgs, AddConfigLinesInstructionData> {
   const s = context.serializer;
-  const discriminator = getAddConfigLinesInstructionDiscriminator();
-  const serializer: Serializer<AddConfigLinesInstructionData> =
+  return mapSerializer<
+    AddConfigLinesInstructionArgs,
+    AddConfigLinesInstructionData,
+    AddConfigLinesInstructionData
+  >(
     s.struct<AddConfigLinesInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
@@ -67,12 +70,14 @@ export function getAddConfigLinesInstructionDataSerializer(
           ),
         ],
       ],
-      'AddConfigLinesInstructionData'
-    );
-  return mapSerializer(serializer, (value: AddConfigLinesInstructionArgs) => ({
-    ...value,
-    discriminator,
-  }));
+      'addConfigLinesInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [223, 50, 224, 227, 151, 8, 115, 106],
+        ...value,
+      } as AddConfigLinesInstructionData)
+  ) as Serializer<AddConfigLinesInstructionArgs, AddConfigLinesInstructionData>;
 }
 
 // Instruction.

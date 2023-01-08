@@ -23,27 +23,37 @@ export type DeleteCandyMachineInstructionAccounts = {
   authority: Signer;
 };
 
-// Discriminator.
-export type DeleteCandyMachineInstructionDiscriminator = Array<number>;
-export function getDeleteCandyMachineInstructionDiscriminator(): DeleteCandyMachineInstructionDiscriminator {
-  return [183, 18, 70, 156, 148, 109, 161, 34];
-}
-
-// Data.
-type DeleteCandyMachineInstructionData = {
-  discriminator: DeleteCandyMachineInstructionDiscriminator;
+// Arguments.
+export type DeleteCandyMachineInstructionData = {
+  discriminator: Array<number>;
 };
+export type DeleteCandyMachineInstructionArgs = {};
+
 export function getDeleteCandyMachineInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<{}> {
+): Serializer<
+  DeleteCandyMachineInstructionArgs,
+  DeleteCandyMachineInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getDeleteCandyMachineInstructionDiscriminator();
-  const serializer: Serializer<DeleteCandyMachineInstructionData> =
+  return mapSerializer<
+    DeleteCandyMachineInstructionArgs,
+    DeleteCandyMachineInstructionData,
+    DeleteCandyMachineInstructionData
+  >(
     s.struct<DeleteCandyMachineInstructionData>(
       [['discriminator', s.array(s.u8, 8)]],
-      'DeleteCandyMachineInstructionData'
-    );
-  return mapSerializer(serializer, () => ({ discriminator }));
+      'withdrawInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [183, 18, 70, 156, 148, 109, 161, 34],
+        ...value,
+      } as DeleteCandyMachineInstructionData)
+  ) as Serializer<
+    DeleteCandyMachineInstructionArgs,
+    DeleteCandyMachineInstructionData
+  >;
 }
 
 // Instruction.
@@ -53,7 +63,8 @@ export function deleteCandyMachine(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: DeleteCandyMachineInstructionAccounts
+  input: DeleteCandyMachineInstructionAccounts &
+    DeleteCandyMachineInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -77,9 +88,8 @@ export function deleteCandyMachine(
   });
 
   // Data.
-  const data = getDeleteCandyMachineInstructionDataSerializer(
-    context
-  ).serialize({});
+  const data =
+    getDeleteCandyMachineInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

@@ -35,27 +35,29 @@ export type SetCollectionInstructionAccounts = {
   systemProgram?: PublicKey;
 };
 
-// Discriminator.
-export type SetCollectionInstructionDiscriminator = Array<number>;
-export function getSetCollectionInstructionDiscriminator(): SetCollectionInstructionDiscriminator {
-  return [192, 254, 206, 76, 168, 182, 59, 223];
-}
+// Arguments.
+export type SetCollectionInstructionData = { discriminator: Array<number> };
+export type SetCollectionInstructionArgs = {};
 
-// Data.
-type SetCollectionInstructionData = {
-  discriminator: SetCollectionInstructionDiscriminator;
-};
 export function getSetCollectionInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<{}> {
+): Serializer<SetCollectionInstructionArgs, SetCollectionInstructionData> {
   const s = context.serializer;
-  const discriminator = getSetCollectionInstructionDiscriminator();
-  const serializer: Serializer<SetCollectionInstructionData> =
+  return mapSerializer<
+    SetCollectionInstructionArgs,
+    SetCollectionInstructionData,
+    SetCollectionInstructionData
+  >(
     s.struct<SetCollectionInstructionData>(
       [['discriminator', s.array(s.u8, 8)]],
-      'SetCollectionInstructionData'
-    );
-  return mapSerializer(serializer, () => ({ discriminator }));
+      'setCollectionInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [192, 254, 206, 76, 168, 182, 59, 223],
+        ...value,
+      } as SetCollectionInstructionData)
+  ) as Serializer<SetCollectionInstructionArgs, SetCollectionInstructionData>;
 }
 
 // Instruction.
@@ -65,7 +67,7 @@ export function setCollection(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: SetCollectionInstructionAccounts
+  input: SetCollectionInstructionAccounts & SetCollectionInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -177,7 +179,8 @@ export function setCollection(
   });
 
   // Data.
-  const data = getSetCollectionInstructionDataSerializer(context).serialize({});
+  const data =
+    getSetCollectionInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

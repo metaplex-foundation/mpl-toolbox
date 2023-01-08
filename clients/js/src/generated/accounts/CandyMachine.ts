@@ -14,10 +14,16 @@ import {
   Serializer,
   assertAccountExists,
   deserializeAccount,
+  mapSerializer,
 } from '@lorisleiva/js-core';
-import { CandyMachineData, getCandyMachineDataSerializer } from '../types';
+import {
+  CandyMachineData,
+  CandyMachineDataArgs,
+  getCandyMachineDataSerializer,
+} from '../types';
 
 export type CandyMachine = {
+  discriminator: Array<number>;
   /** Features versioning flags. */
   features: bigint;
   /** Authority address. */
@@ -30,6 +36,20 @@ export type CandyMachine = {
   itemsRedeemed: bigint;
   /** Candy machine configuration data. */
   data: CandyMachineData;
+};
+export type CandyMachineArgs = {
+  /** Features versioning flags. */
+  features: number | bigint;
+  /** Authority address. */
+  authority: PublicKey;
+  /** Authority address allowed to mint from the candy machine. */
+  mintAuthority: PublicKey;
+  /** The collection mint for the candy machine. */
+  collectionMint: PublicKey;
+  /** Number of assets redeemed. */
+  itemsRedeemed: number | bigint;
+  /** Candy machine configuration data. */
+  data: CandyMachineDataArgs;
 };
 
 export async function fetchCandyMachine(
@@ -60,17 +80,25 @@ export function deserializeCandyMachine(
 
 export function getCandyMachineSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CandyMachine> {
+): Serializer<CandyMachineArgs, CandyMachine> {
   const s = context.serializer;
-  return s.struct<CandyMachine>(
-    [
-      ['features', s.u64],
-      ['authority', s.publicKey],
-      ['mintAuthority', s.publicKey],
-      ['collectionMint', s.publicKey],
-      ['itemsRedeemed', s.u64],
-      ['data', getCandyMachineDataSerializer(context)],
-    ],
-    'CandyMachine'
-  );
+  return mapSerializer<CandyMachineArgs, CandyMachine, CandyMachine>(
+    s.struct<CandyMachine>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['features', s.u64],
+        ['authority', s.publicKey],
+        ['mintAuthority', s.publicKey],
+        ['collectionMint', s.publicKey],
+        ['itemsRedeemed', s.u64],
+        ['data', getCandyMachineDataSerializer(context)],
+      ],
+      'CandyMachine'
+    ),
+    (value) =>
+      ({
+        discriminator: [115, 157, 18, 166, 35, 44, 221, 13],
+        ...value,
+      } as CandyMachine)
+  ) as Serializer<CandyMachineArgs, CandyMachine>;
 }

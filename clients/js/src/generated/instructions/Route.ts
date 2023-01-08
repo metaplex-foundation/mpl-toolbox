@@ -27,6 +27,14 @@ export type RouteInstructionAccounts = {
 };
 
 // Arguments.
+export type RouteInstructionData = {
+  discriminator: Array<number>;
+  /** The target guard type. */
+  guard: GuardType;
+  /** Arguments for the guard instruction. */
+  data: Uint8Array;
+  label: Option<string>;
+};
 export type RouteInstructionArgs = {
   /** The target guard type. */
   guard: GuardType;
@@ -35,22 +43,15 @@ export type RouteInstructionArgs = {
   label: Option<string>;
 };
 
-// Discriminator.
-export type RouteInstructionDiscriminator = Array<number>;
-export function getRouteInstructionDiscriminator(): RouteInstructionDiscriminator {
-  return [229, 23, 203, 151, 122, 227, 173, 42];
-}
-
-// Data.
-type RouteInstructionData = RouteInstructionArgs & {
-  discriminator: RouteInstructionDiscriminator;
-};
 export function getRouteInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<RouteInstructionArgs> {
+): Serializer<RouteInstructionArgs, RouteInstructionData> {
   const s = context.serializer;
-  const discriminator = getRouteInstructionDiscriminator();
-  const serializer: Serializer<RouteInstructionData> =
+  return mapSerializer<
+    RouteInstructionArgs,
+    RouteInstructionData,
+    RouteInstructionData
+  >(
     s.struct<RouteInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
@@ -58,12 +59,14 @@ export function getRouteInstructionDataSerializer(
         ['data', s.bytes],
         ['label', s.option(s.string)],
       ],
-      'RouteInstructionData'
-    );
-  return mapSerializer(serializer, (value: RouteInstructionArgs) => ({
-    ...value,
-    discriminator,
-  }));
+      'routeInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [229, 23, 203, 151, 122, 227, 173, 42],
+        ...value,
+      } as RouteInstructionData)
+  ) as Serializer<RouteInstructionArgs, RouteInstructionData>;
 }
 
 // Instruction.

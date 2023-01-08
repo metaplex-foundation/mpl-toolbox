@@ -16,7 +16,11 @@ import {
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
-import { CandyMachineData, getCandyMachineDataSerializer } from '../types';
+import {
+  CandyMachineData,
+  CandyMachineDataArgs,
+  getCandyMachineDataSerializer,
+} from '../types';
 
 // Accounts.
 export type UpdateCandyMachineInstructionAccounts = {
@@ -25,35 +29,40 @@ export type UpdateCandyMachineInstructionAccounts = {
 };
 
 // Arguments.
-export type UpdateCandyMachineInstructionArgs = { data: CandyMachineData };
-
-// Discriminator.
-export type UpdateCandyMachineInstructionDiscriminator = Array<number>;
-export function getUpdateCandyMachineInstructionDiscriminator(): UpdateCandyMachineInstructionDiscriminator {
-  return [219, 200, 88, 176, 158, 63, 253, 127];
-}
-
-// Data.
-type UpdateCandyMachineInstructionData = UpdateCandyMachineInstructionArgs & {
-  discriminator: UpdateCandyMachineInstructionDiscriminator;
+export type UpdateCandyMachineInstructionData = {
+  discriminator: Array<number>;
+  data: CandyMachineData;
 };
+export type UpdateCandyMachineInstructionArgs = { data: CandyMachineDataArgs };
+
 export function getUpdateCandyMachineInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<UpdateCandyMachineInstructionArgs> {
+): Serializer<
+  UpdateCandyMachineInstructionArgs,
+  UpdateCandyMachineInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getUpdateCandyMachineInstructionDiscriminator();
-  const serializer: Serializer<UpdateCandyMachineInstructionData> =
+  return mapSerializer<
+    UpdateCandyMachineInstructionArgs,
+    UpdateCandyMachineInstructionData,
+    UpdateCandyMachineInstructionData
+  >(
     s.struct<UpdateCandyMachineInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['data', getCandyMachineDataSerializer(context)],
       ],
-      'UpdateCandyMachineInstructionData'
-    );
-  return mapSerializer(
-    serializer,
-    (value: UpdateCandyMachineInstructionArgs) => ({ ...value, discriminator })
-  );
+      'updateInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [219, 200, 88, 176, 158, 63, 253, 127],
+        ...value,
+      } as UpdateCandyMachineInstructionData)
+  ) as Serializer<
+    UpdateCandyMachineInstructionArgs,
+    UpdateCandyMachineInstructionData
+  >;
 }
 
 // Instruction.

@@ -26,25 +26,29 @@ export type UnwrapInstructionAccounts = {
   candyMachineProgram: PublicKey;
 };
 
-// Discriminator.
-export type UnwrapInstructionDiscriminator = Array<number>;
-export function getUnwrapInstructionDiscriminator(): UnwrapInstructionDiscriminator {
-  return [126, 175, 198, 14, 212, 69, 50, 44];
-}
+// Arguments.
+export type UnwrapInstructionData = { discriminator: Array<number> };
+export type UnwrapInstructionArgs = {};
 
-// Data.
-type UnwrapInstructionData = { discriminator: UnwrapInstructionDiscriminator };
 export function getUnwrapInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<{}> {
+): Serializer<UnwrapInstructionArgs, UnwrapInstructionData> {
   const s = context.serializer;
-  const discriminator = getUnwrapInstructionDiscriminator();
-  const serializer: Serializer<UnwrapInstructionData> =
+  return mapSerializer<
+    UnwrapInstructionArgs,
+    UnwrapInstructionData,
+    UnwrapInstructionData
+  >(
     s.struct<UnwrapInstructionData>(
       [['discriminator', s.array(s.u8, 8)]],
-      'UnwrapInstructionData'
-    );
-  return mapSerializer(serializer, () => ({ discriminator }));
+      'unwrapInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [126, 175, 198, 14, 212, 69, 50, 44],
+        ...value,
+      } as UnwrapInstructionData)
+  ) as Serializer<UnwrapInstructionArgs, UnwrapInstructionData>;
 }
 
 // Instruction.
@@ -54,7 +58,7 @@ export function unwrap(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: UnwrapInstructionAccounts
+  input: UnwrapInstructionAccounts & UnwrapInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -96,7 +100,7 @@ export function unwrap(
   });
 
   // Data.
-  const data = getUnwrapInstructionDataSerializer(context).serialize({});
+  const data = getUnwrapInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

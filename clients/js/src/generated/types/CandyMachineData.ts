@@ -35,10 +35,28 @@ export type CandyMachineData = {
   /** Hidden setttings */
   hiddenSettings: Option<HiddenSettings>;
 };
+export type CandyMachineDataArgs = {
+  /** Number of assets available */
+  itemsAvailable: number | bigint;
+  /** Symbol for the asset */
+  symbol: string;
+  /** Secondary sales royalty basis points (0-10000) */
+  sellerFeeBasisPoints: number;
+  /** Max supply of each individual asset (default 0) */
+  maxSupply: number | bigint;
+  /** Indicates if the asset is mutable or not (default yes) */
+  isMutable: boolean;
+  /** List of creators */
+  creators: Array<Creator>;
+  /** Config line settings */
+  configLineSettings: Option<ConfigLineSettings>;
+  /** Hidden setttings */
+  hiddenSettings: Option<HiddenSettings>;
+};
 
 export function getCandyMachineDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CandyMachineData> {
+): Serializer<CandyMachineDataArgs, CandyMachineData> {
   const s = context.serializer;
   return s.struct<CandyMachineData>(
     [
@@ -55,5 +73,5 @@ export function getCandyMachineDataSerializer(
       ['hiddenSettings', s.option(getHiddenSettingsSerializer(context))],
     ],
     'CandyMachineData'
-  );
+  ) as Serializer<CandyMachineDataArgs, CandyMachineData>;
 }

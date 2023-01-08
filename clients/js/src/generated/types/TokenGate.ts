@@ -17,10 +17,11 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type TokenGate = { amount: bigint; mint: PublicKey };
+export type TokenGateArgs = { amount: number | bigint; mint: PublicKey };
 
 export function getTokenGateSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TokenGate> {
+): Serializer<TokenGateArgs, TokenGate> {
   const s = context.serializer;
   return s.struct<TokenGate>(
     [
@@ -28,5 +29,5 @@ export function getTokenGateSerializer(
       ['mint', s.publicKey],
     ],
     'TokenGate'
-  );
+  ) as Serializer<TokenGateArgs, TokenGate>;
 }

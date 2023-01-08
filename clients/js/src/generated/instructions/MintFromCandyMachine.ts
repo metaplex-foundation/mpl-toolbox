@@ -38,27 +38,37 @@ export type MintFromCandyMachineInstructionAccounts = {
   recentSlothashes: PublicKey;
 };
 
-// Discriminator.
-export type MintFromCandyMachineInstructionDiscriminator = Array<number>;
-export function getMintFromCandyMachineInstructionDiscriminator(): MintFromCandyMachineInstructionDiscriminator {
-  return [51, 57, 225, 47, 182, 146, 137, 166];
-}
-
-// Data.
-type MintFromCandyMachineInstructionData = {
-  discriminator: MintFromCandyMachineInstructionDiscriminator;
+// Arguments.
+export type MintFromCandyMachineInstructionData = {
+  discriminator: Array<number>;
 };
+export type MintFromCandyMachineInstructionArgs = {};
+
 export function getMintFromCandyMachineInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<{}> {
+): Serializer<
+  MintFromCandyMachineInstructionArgs,
+  MintFromCandyMachineInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getMintFromCandyMachineInstructionDiscriminator();
-  const serializer: Serializer<MintFromCandyMachineInstructionData> =
+  return mapSerializer<
+    MintFromCandyMachineInstructionArgs,
+    MintFromCandyMachineInstructionData,
+    MintFromCandyMachineInstructionData
+  >(
     s.struct<MintFromCandyMachineInstructionData>(
       [['discriminator', s.array(s.u8, 8)]],
-      'MintFromCandyMachineInstructionData'
-    );
-  return mapSerializer(serializer, () => ({ discriminator }));
+      'mintInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [51, 57, 225, 47, 182, 146, 137, 166],
+        ...value,
+      } as MintFromCandyMachineInstructionData)
+  ) as Serializer<
+    MintFromCandyMachineInstructionArgs,
+    MintFromCandyMachineInstructionData
+  >;
 }
 
 // Instruction.
@@ -68,7 +78,8 @@ export function mintFromCandyMachine(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: MintFromCandyMachineInstructionAccounts
+  input: MintFromCandyMachineInstructionAccounts &
+    MintFromCandyMachineInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -199,9 +210,8 @@ export function mintFromCandyMachine(
   });
 
   // Data.
-  const data = getMintFromCandyMachineInstructionDataSerializer(
-    context
-  ).serialize({});
+  const data =
+    getMintFromCandyMachineInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

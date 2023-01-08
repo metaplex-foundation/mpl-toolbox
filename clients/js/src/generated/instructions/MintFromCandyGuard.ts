@@ -42,39 +42,45 @@ export type MintFromCandyGuardInstructionAccounts = {
 };
 
 // Arguments.
+export type MintFromCandyGuardInstructionData = {
+  discriminator: Array<number>;
+  mintArgs: Uint8Array;
+  label: Option<string>;
+};
 export type MintFromCandyGuardInstructionArgs = {
   mintArgs: Uint8Array;
   label: Option<string>;
 };
 
-// Discriminator.
-export type MintFromCandyGuardInstructionDiscriminator = Array<number>;
-export function getMintFromCandyGuardInstructionDiscriminator(): MintFromCandyGuardInstructionDiscriminator {
-  return [51, 57, 225, 47, 182, 146, 137, 166];
-}
-
-// Data.
-type MintFromCandyGuardInstructionData = MintFromCandyGuardInstructionArgs & {
-  discriminator: MintFromCandyGuardInstructionDiscriminator;
-};
 export function getMintFromCandyGuardInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<MintFromCandyGuardInstructionArgs> {
+): Serializer<
+  MintFromCandyGuardInstructionArgs,
+  MintFromCandyGuardInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getMintFromCandyGuardInstructionDiscriminator();
-  const serializer: Serializer<MintFromCandyGuardInstructionData> =
+  return mapSerializer<
+    MintFromCandyGuardInstructionArgs,
+    MintFromCandyGuardInstructionData,
+    MintFromCandyGuardInstructionData
+  >(
     s.struct<MintFromCandyGuardInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['mintArgs', s.bytes],
         ['label', s.option(s.string)],
       ],
-      'MintFromCandyGuardInstructionData'
-    );
-  return mapSerializer(
-    serializer,
-    (value: MintFromCandyGuardInstructionArgs) => ({ ...value, discriminator })
-  );
+      'mintInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [51, 57, 225, 47, 182, 146, 137, 166],
+        ...value,
+      } as MintFromCandyGuardInstructionData)
+  ) as Serializer<
+    MintFromCandyGuardInstructionArgs,
+    MintFromCandyGuardInstructionData
+  >;
 }
 
 // Instruction.

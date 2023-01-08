@@ -24,39 +24,40 @@ export type SetCandyGuardAuthorityInstructionAccounts = {
 };
 
 // Arguments.
+export type SetCandyGuardAuthorityInstructionData = {
+  discriminator: Array<number>;
+  newAuthority: PublicKey;
+};
 export type SetCandyGuardAuthorityInstructionArgs = { newAuthority: PublicKey };
 
-// Discriminator.
-export type SetCandyGuardAuthorityInstructionDiscriminator = Array<number>;
-export function getSetCandyGuardAuthorityInstructionDiscriminator(): SetCandyGuardAuthorityInstructionDiscriminator {
-  return [133, 250, 37, 21, 110, 163, 26, 121];
-}
-
-// Data.
-type SetCandyGuardAuthorityInstructionData =
-  SetCandyGuardAuthorityInstructionArgs & {
-    discriminator: SetCandyGuardAuthorityInstructionDiscriminator;
-  };
 export function getSetCandyGuardAuthorityInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<SetCandyGuardAuthorityInstructionArgs> {
+): Serializer<
+  SetCandyGuardAuthorityInstructionArgs,
+  SetCandyGuardAuthorityInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getSetCandyGuardAuthorityInstructionDiscriminator();
-  const serializer: Serializer<SetCandyGuardAuthorityInstructionData> =
+  return mapSerializer<
+    SetCandyGuardAuthorityInstructionArgs,
+    SetCandyGuardAuthorityInstructionData,
+    SetCandyGuardAuthorityInstructionData
+  >(
     s.struct<SetCandyGuardAuthorityInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['newAuthority', s.publicKey],
       ],
-      'SetCandyGuardAuthorityInstructionData'
-    );
-  return mapSerializer(
-    serializer,
-    (value: SetCandyGuardAuthorityInstructionArgs) => ({
-      ...value,
-      discriminator,
-    })
-  );
+      'setAuthorityInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [133, 250, 37, 21, 110, 163, 26, 121],
+        ...value,
+      } as SetCandyGuardAuthorityInstructionData)
+  ) as Serializer<
+    SetCandyGuardAuthorityInstructionArgs,
+    SetCandyGuardAuthorityInstructionData
+  >;
 }
 
 // Instruction.

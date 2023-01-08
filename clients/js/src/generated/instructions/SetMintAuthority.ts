@@ -24,27 +24,35 @@ export type SetMintAuthorityInstructionAccounts = {
   mintAuthority: Signer;
 };
 
-// Discriminator.
-export type SetMintAuthorityInstructionDiscriminator = Array<number>;
-export function getSetMintAuthorityInstructionDiscriminator(): SetMintAuthorityInstructionDiscriminator {
-  return [67, 127, 155, 187, 100, 174, 103, 121];
-}
+// Arguments.
+export type SetMintAuthorityInstructionData = { discriminator: Array<number> };
+export type SetMintAuthorityInstructionArgs = {};
 
-// Data.
-type SetMintAuthorityInstructionData = {
-  discriminator: SetMintAuthorityInstructionDiscriminator;
-};
 export function getSetMintAuthorityInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<{}> {
+): Serializer<
+  SetMintAuthorityInstructionArgs,
+  SetMintAuthorityInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getSetMintAuthorityInstructionDiscriminator();
-  const serializer: Serializer<SetMintAuthorityInstructionData> =
+  return mapSerializer<
+    SetMintAuthorityInstructionArgs,
+    SetMintAuthorityInstructionData,
+    SetMintAuthorityInstructionData
+  >(
     s.struct<SetMintAuthorityInstructionData>(
       [['discriminator', s.array(s.u8, 8)]],
-      'SetMintAuthorityInstructionData'
-    );
-  return mapSerializer(serializer, () => ({ discriminator }));
+      'setMintAuthorityInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [67, 127, 155, 187, 100, 174, 103, 121],
+        ...value,
+      } as SetMintAuthorityInstructionData)
+  ) as Serializer<
+    SetMintAuthorityInstructionArgs,
+    SetMintAuthorityInstructionData
+  >;
 }
 
 // Instruction.
@@ -54,7 +62,7 @@ export function setMintAuthority(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: SetMintAuthorityInstructionAccounts
+  input: SetMintAuthorityInstructionAccounts & SetMintAuthorityInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -86,9 +94,8 @@ export function setMintAuthority(
   });
 
   // Data.
-  const data = getSetMintAuthorityInstructionDataSerializer(context).serialize(
-    {}
-  );
+  const data =
+    getSetMintAuthorityInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

@@ -11,9 +11,13 @@ import {
   Allocation,
   AllowList,
   BotTax,
+  BotTaxArgs,
   EndDate,
+  EndDateArgs,
   FreezeSolPayment,
+  FreezeSolPaymentArgs,
   FreezeTokenPayment,
+  FreezeTokenPaymentArgs,
   Gatekeeper,
   MintLimit,
   NftBurn,
@@ -21,12 +25,18 @@ import {
   NftPayment,
   ProgramGate,
   RedeemedAmount,
+  RedeemedAmountArgs,
   SolPayment,
+  SolPaymentArgs,
   StartDate,
+  StartDateArgs,
   ThirdPartySigner,
   TokenBurn,
+  TokenBurnArgs,
   TokenGate,
+  TokenGateArgs,
   TokenPayment,
+  TokenPaymentArgs,
   getAddressGateSerializer,
   getAllocationSerializer,
   getAllowListSerializer,
@@ -93,10 +103,52 @@ export type GuardSet = {
   /** Allocation guard (specify the maximum number of mints in a group). */
   allocation: Option<Allocation>;
 };
+export type GuardSetArgs = {
+  /** Last instruction check and bot tax (penalty for invalid transactions). */
+  botTax: Option<BotTaxArgs>;
+  /** Sol payment guard (set the price for the mint in lamports). */
+  solPayment: Option<SolPaymentArgs>;
+  /** Token payment guard (set the price for the mint in spl-token amount). */
+  tokenPayment: Option<TokenPaymentArgs>;
+  /** Start data guard (controls when minting is allowed). */
+  startDate: Option<StartDateArgs>;
+  /** Third party signer guard (requires an extra signer for the transaction). */
+  thirdPartySigner: Option<ThirdPartySigner>;
+  /** Token gate guard (restrict access to holders of a specific token). */
+  tokenGate: Option<TokenGateArgs>;
+  /** Gatekeeper guard (captcha challenge). */
+  gatekeeper: Option<Gatekeeper>;
+  /** End date guard (set an end date to stop the mint). */
+  endDate: Option<EndDateArgs>;
+  /** Allow list guard (curated list of allowed addresses). */
+  allowList: Option<AllowList>;
+  /** Mint limit guard (add a limit on the number of mints per wallet). */
+  mintLimit: Option<MintLimit>;
+  /** NFT Payment (charge an NFT in order to mint). */
+  nftPayment: Option<NftPayment>;
+  /** Redeemed amount guard (add a limit on the overall number of items minted). */
+  redeemedAmount: Option<RedeemedAmountArgs>;
+  /** Address gate (check access against a specified address). */
+  addressGate: Option<AddressGate>;
+  /** NFT gate guard (check access based on holding a specified NFT). */
+  nftGate: Option<NftGate>;
+  /** NFT burn guard (burn a specified NFT). */
+  nftBurn: Option<NftBurn>;
+  /** Token burn guard (burn a specified amount of spl-token). */
+  tokenBurn: Option<TokenBurnArgs>;
+  /** Freeze sol payment guard (set the price for the mint in lamports with a freeze period). */
+  freezeSolPayment: Option<FreezeSolPaymentArgs>;
+  /** Freeze token payment guard (set the price for the mint in spl-token amount with a freeze period). */
+  freezeTokenPayment: Option<FreezeTokenPaymentArgs>;
+  /** Program gate guard (restricts the programs that can be in a mint transaction). */
+  programGate: Option<ProgramGate>;
+  /** Allocation guard (specify the maximum number of mints in a group). */
+  allocation: Option<Allocation>;
+};
 
 export function getGuardSetSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<GuardSet> {
+): Serializer<GuardSetArgs, GuardSet> {
   const s = context.serializer;
   return s.struct<GuardSet>(
     [
@@ -125,5 +177,5 @@ export function getGuardSetSerializer(
       ['allocation', s.option(getAllocationSerializer(context))],
     ],
     'GuardSet'
-  );
+  ) as Serializer<GuardSetArgs, GuardSet>;
 }

@@ -26,35 +26,40 @@ export type UpdateCandyGuardInstructionAccounts = {
 };
 
 // Arguments.
+export type UpdateCandyGuardInstructionData = {
+  discriminator: Array<number>;
+  data: Uint8Array;
+};
 export type UpdateCandyGuardInstructionArgs = { data: Uint8Array };
 
-// Discriminator.
-export type UpdateCandyGuardInstructionDiscriminator = Array<number>;
-export function getUpdateCandyGuardInstructionDiscriminator(): UpdateCandyGuardInstructionDiscriminator {
-  return [219, 200, 88, 176, 158, 63, 253, 127];
-}
-
-// Data.
-type UpdateCandyGuardInstructionData = UpdateCandyGuardInstructionArgs & {
-  discriminator: UpdateCandyGuardInstructionDiscriminator;
-};
 export function getUpdateCandyGuardInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<UpdateCandyGuardInstructionArgs> {
+): Serializer<
+  UpdateCandyGuardInstructionArgs,
+  UpdateCandyGuardInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getUpdateCandyGuardInstructionDiscriminator();
-  const serializer: Serializer<UpdateCandyGuardInstructionData> =
+  return mapSerializer<
+    UpdateCandyGuardInstructionArgs,
+    UpdateCandyGuardInstructionData,
+    UpdateCandyGuardInstructionData
+  >(
     s.struct<UpdateCandyGuardInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['data', s.bytes],
       ],
-      'UpdateCandyGuardInstructionData'
-    );
-  return mapSerializer(
-    serializer,
-    (value: UpdateCandyGuardInstructionArgs) => ({ ...value, discriminator })
-  );
+      'updateInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [219, 200, 88, 176, 158, 63, 253, 127],
+        ...value,
+      } as UpdateCandyGuardInstructionData)
+  ) as Serializer<
+    UpdateCandyGuardInstructionArgs,
+    UpdateCandyGuardInstructionData
+  >;
 }
 
 // Instruction.

@@ -19,10 +19,11 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type TokenBurn = { amount: bigint; mint: PublicKey };
+export type TokenBurnArgs = { amount: number | bigint; mint: PublicKey };
 
 export function getTokenBurnSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TokenBurn> {
+): Serializer<TokenBurnArgs, TokenBurn> {
   const s = context.serializer;
   return s.struct<TokenBurn>(
     [
@@ -30,5 +31,5 @@ export function getTokenBurnSerializer(
       ['mint', s.publicKey],
     ],
     'TokenBurn'
-  );
+  ) as Serializer<TokenBurnArgs, TokenBurn>;
 }

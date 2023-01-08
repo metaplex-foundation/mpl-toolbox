@@ -6,17 +6,28 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Group, GuardSet, getGroupSerializer, getGuardSetSerializer } from '.';
+import {
+  Group,
+  GroupArgs,
+  GuardSet,
+  GuardSetArgs,
+  getGroupSerializer,
+  getGuardSetSerializer,
+} from '.';
 import { Context, Option, Serializer } from '@lorisleiva/js-core';
 
 export type CandyGuardData = {
   default: GuardSet;
   groups: Option<Array<Group>>;
 };
+export type CandyGuardDataArgs = {
+  default: GuardSetArgs;
+  groups: Option<Array<GroupArgs>>;
+};
 
 export function getCandyGuardDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CandyGuardData> {
+): Serializer<CandyGuardDataArgs, CandyGuardData> {
   const s = context.serializer;
   return s.struct<CandyGuardData>(
     [
@@ -24,5 +35,5 @@ export function getCandyGuardDataSerializer(
       ['groups', s.option(s.vec(getGroupSerializer(context)))],
     ],
     'CandyGuardData'
-  );
+  ) as Serializer<CandyGuardDataArgs, CandyGuardData>;
 }

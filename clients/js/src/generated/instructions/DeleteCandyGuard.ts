@@ -23,27 +23,35 @@ export type DeleteCandyGuardInstructionAccounts = {
   authority: Signer;
 };
 
-// Discriminator.
-export type DeleteCandyGuardInstructionDiscriminator = Array<number>;
-export function getDeleteCandyGuardInstructionDiscriminator(): DeleteCandyGuardInstructionDiscriminator {
-  return [183, 18, 70, 156, 148, 109, 161, 34];
-}
+// Arguments.
+export type DeleteCandyGuardInstructionData = { discriminator: Array<number> };
+export type DeleteCandyGuardInstructionArgs = {};
 
-// Data.
-type DeleteCandyGuardInstructionData = {
-  discriminator: DeleteCandyGuardInstructionDiscriminator;
-};
 export function getDeleteCandyGuardInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<{}> {
+): Serializer<
+  DeleteCandyGuardInstructionArgs,
+  DeleteCandyGuardInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getDeleteCandyGuardInstructionDiscriminator();
-  const serializer: Serializer<DeleteCandyGuardInstructionData> =
+  return mapSerializer<
+    DeleteCandyGuardInstructionArgs,
+    DeleteCandyGuardInstructionData,
+    DeleteCandyGuardInstructionData
+  >(
     s.struct<DeleteCandyGuardInstructionData>(
       [['discriminator', s.array(s.u8, 8)]],
-      'DeleteCandyGuardInstructionData'
-    );
-  return mapSerializer(serializer, () => ({ discriminator }));
+      'withdrawInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [183, 18, 70, 156, 148, 109, 161, 34],
+        ...value,
+      } as DeleteCandyGuardInstructionData)
+  ) as Serializer<
+    DeleteCandyGuardInstructionArgs,
+    DeleteCandyGuardInstructionData
+  >;
 }
 
 // Instruction.
@@ -53,7 +61,7 @@ export function deleteCandyGuard(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: DeleteCandyGuardInstructionAccounts
+  input: DeleteCandyGuardInstructionAccounts & DeleteCandyGuardInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -77,9 +85,8 @@ export function deleteCandyGuard(
   });
 
   // Data.
-  const data = getDeleteCandyGuardInstructionDataSerializer(context).serialize(
-    {}
-  );
+  const data =
+    getDeleteCandyGuardInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

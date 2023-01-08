@@ -14,9 +14,16 @@ import {
   Serializer,
   assertAccountExists,
   deserializeAccount,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 export type CandyGuard = {
+  discriminator: Array<number>;
+  base: PublicKey;
+  bump: number;
+  authority: PublicKey;
+};
+export type CandyGuardArgs = {
   base: PublicKey;
   bump: number;
   authority: PublicKey;
@@ -50,14 +57,22 @@ export function deserializeCandyGuard(
 
 export function getCandyGuardSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CandyGuard> {
+): Serializer<CandyGuardArgs, CandyGuard> {
   const s = context.serializer;
-  return s.struct<CandyGuard>(
-    [
-      ['base', s.publicKey],
-      ['bump', s.u8],
-      ['authority', s.publicKey],
-    ],
-    'CandyGuard'
-  );
+  return mapSerializer<CandyGuardArgs, CandyGuard, CandyGuard>(
+    s.struct<CandyGuard>(
+      [
+        ['discriminator', s.array(s.u8, 8)],
+        ['base', s.publicKey],
+        ['bump', s.u8],
+        ['authority', s.publicKey],
+      ],
+      'CandyGuard'
+    ),
+    (value) =>
+      ({
+        discriminator: [95, 25, 33, 117, 164, 206, 9, 250],
+        ...value,
+      } as CandyGuard)
+  ) as Serializer<CandyGuardArgs, CandyGuard>;
 }

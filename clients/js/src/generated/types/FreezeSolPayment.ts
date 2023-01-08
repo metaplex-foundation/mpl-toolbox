@@ -20,10 +20,14 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type FreezeSolPayment = { lamports: bigint; destination: PublicKey };
+export type FreezeSolPaymentArgs = {
+  lamports: number | bigint;
+  destination: PublicKey;
+};
 
 export function getFreezeSolPaymentSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<FreezeSolPayment> {
+): Serializer<FreezeSolPaymentArgs, FreezeSolPayment> {
   const s = context.serializer;
   return s.struct<FreezeSolPayment>(
     [
@@ -31,5 +35,5 @@ export function getFreezeSolPaymentSerializer(
       ['destination', s.publicKey],
     ],
     'FreezeSolPayment'
-  );
+  ) as Serializer<FreezeSolPaymentArgs, FreezeSolPayment>;
 }

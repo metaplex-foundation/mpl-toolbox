@@ -3,7 +3,6 @@ const {
   Kinobi,
   RenameNodesVisitor,
   RenderJavaScriptVisitor,
-  ValidateNodesVisitor,
 } = require("@lorisleiva/kinobi");
 
 // Paths.
@@ -42,7 +41,6 @@ kinobi.update(
     },
   })
 );
-kinobi.accept(new ValidateNodesVisitor());
 
 // Generate JavaScript client.
 const jsDir = path.join(clientDir, "js", "src", "generated");

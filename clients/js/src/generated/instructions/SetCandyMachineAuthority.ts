@@ -24,41 +24,42 @@ export type SetCandyMachineAuthorityInstructionAccounts = {
 };
 
 // Arguments.
+export type SetCandyMachineAuthorityInstructionData = {
+  discriminator: Array<number>;
+  newAuthority: PublicKey;
+};
 export type SetCandyMachineAuthorityInstructionArgs = {
   newAuthority: PublicKey;
 };
 
-// Discriminator.
-export type SetCandyMachineAuthorityInstructionDiscriminator = Array<number>;
-export function getSetCandyMachineAuthorityInstructionDiscriminator(): SetCandyMachineAuthorityInstructionDiscriminator {
-  return [133, 250, 37, 21, 110, 163, 26, 121];
-}
-
-// Data.
-type SetCandyMachineAuthorityInstructionData =
-  SetCandyMachineAuthorityInstructionArgs & {
-    discriminator: SetCandyMachineAuthorityInstructionDiscriminator;
-  };
 export function getSetCandyMachineAuthorityInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<SetCandyMachineAuthorityInstructionArgs> {
+): Serializer<
+  SetCandyMachineAuthorityInstructionArgs,
+  SetCandyMachineAuthorityInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getSetCandyMachineAuthorityInstructionDiscriminator();
-  const serializer: Serializer<SetCandyMachineAuthorityInstructionData> =
+  return mapSerializer<
+    SetCandyMachineAuthorityInstructionArgs,
+    SetCandyMachineAuthorityInstructionData,
+    SetCandyMachineAuthorityInstructionData
+  >(
     s.struct<SetCandyMachineAuthorityInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['newAuthority', s.publicKey],
       ],
-      'SetCandyMachineAuthorityInstructionData'
-    );
-  return mapSerializer(
-    serializer,
-    (value: SetCandyMachineAuthorityInstructionArgs) => ({
-      ...value,
-      discriminator,
-    })
-  );
+      'setAuthorityInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [133, 250, 37, 21, 110, 163, 26, 121],
+        ...value,
+      } as SetCandyMachineAuthorityInstructionData)
+  ) as Serializer<
+    SetCandyMachineAuthorityInstructionArgs,
+    SetCandyMachineAuthorityInstructionData
+  >;
 }
 
 // Instruction.

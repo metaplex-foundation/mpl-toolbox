@@ -16,7 +16,11 @@ import {
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
-import { CandyMachineData, getCandyMachineDataSerializer } from '../types';
+import {
+  CandyMachineData,
+  CandyMachineDataArgs,
+  getCandyMachineDataSerializer,
+} from '../types';
 
 // Accounts.
 export type InitializeCandyMachineInstructionAccounts = {
@@ -34,39 +38,42 @@ export type InitializeCandyMachineInstructionAccounts = {
 };
 
 // Arguments.
-export type InitializeCandyMachineInstructionArgs = { data: CandyMachineData };
+export type InitializeCandyMachineInstructionData = {
+  discriminator: Array<number>;
+  data: CandyMachineData;
+};
+export type InitializeCandyMachineInstructionArgs = {
+  data: CandyMachineDataArgs;
+};
 
-// Discriminator.
-export type InitializeCandyMachineInstructionDiscriminator = Array<number>;
-export function getInitializeCandyMachineInstructionDiscriminator(): InitializeCandyMachineInstructionDiscriminator {
-  return [175, 175, 109, 31, 13, 152, 155, 237];
-}
-
-// Data.
-type InitializeCandyMachineInstructionData =
-  InitializeCandyMachineInstructionArgs & {
-    discriminator: InitializeCandyMachineInstructionDiscriminator;
-  };
 export function getInitializeCandyMachineInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeCandyMachineInstructionArgs> {
+): Serializer<
+  InitializeCandyMachineInstructionArgs,
+  InitializeCandyMachineInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getInitializeCandyMachineInstructionDiscriminator();
-  const serializer: Serializer<InitializeCandyMachineInstructionData> =
+  return mapSerializer<
+    InitializeCandyMachineInstructionArgs,
+    InitializeCandyMachineInstructionData,
+    InitializeCandyMachineInstructionData
+  >(
     s.struct<InitializeCandyMachineInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['data', getCandyMachineDataSerializer(context)],
       ],
-      'InitializeCandyMachineInstructionData'
-    );
-  return mapSerializer(
-    serializer,
-    (value: InitializeCandyMachineInstructionArgs) => ({
-      ...value,
-      discriminator,
-    })
-  );
+      'initializeInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [175, 175, 109, 31, 13, 152, 155, 237],
+        ...value,
+      } as InitializeCandyMachineInstructionData)
+  ) as Serializer<
+    InitializeCandyMachineInstructionArgs,
+    InitializeCandyMachineInstructionData
+  >;
 }
 
 // Instruction.

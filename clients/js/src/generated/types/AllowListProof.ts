@@ -10,10 +10,14 @@ import { Context, Serializer } from '@lorisleiva/js-core';
 
 /** PDA to track whether an address has been validated or not. */
 export type AllowListProof = { timestamp: bigint };
+export type AllowListProofArgs = { timestamp: number | bigint };
 
 export function getAllowListProofSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<AllowListProof> {
+): Serializer<AllowListProofArgs, AllowListProof> {
   const s = context.serializer;
-  return s.struct<AllowListProof>([['timestamp', s.i64]], 'AllowListProof');
+  return s.struct<AllowListProof>(
+    [['timestamp', s.i64]],
+    'AllowListProof'
+  ) as Serializer<AllowListProofArgs, AllowListProof>;
 }

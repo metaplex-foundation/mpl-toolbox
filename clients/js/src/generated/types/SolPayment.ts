@@ -17,10 +17,14 @@ import { Context, PublicKey, Serializer } from '@lorisleiva/js-core';
  */
 
 export type SolPayment = { lamports: bigint; destination: PublicKey };
+export type SolPaymentArgs = {
+  lamports: number | bigint;
+  destination: PublicKey;
+};
 
 export function getSolPaymentSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<SolPayment> {
+): Serializer<SolPaymentArgs, SolPayment> {
   const s = context.serializer;
   return s.struct<SolPayment>(
     [
@@ -28,5 +32,5 @@ export function getSolPaymentSerializer(
       ['destination', s.publicKey],
     ],
     'SolPayment'
-  );
+  ) as Serializer<SolPaymentArgs, SolPayment>;
 }

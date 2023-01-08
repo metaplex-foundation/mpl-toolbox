@@ -6,7 +6,7 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { GuardSet, getGuardSetSerializer } from '.';
+import { GuardSet, GuardSetArgs, getGuardSetSerializer } from '.';
 import { Context, Serializer } from '@lorisleiva/js-core';
 
 /**
@@ -15,10 +15,11 @@ import { Context, Serializer } from '@lorisleiva/js-core';
  */
 
 export type Group = { label: string; guards: GuardSet };
+export type GroupArgs = { label: string; guards: GuardSetArgs };
 
 export function getGroupSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<Group> {
+): Serializer<GroupArgs, Group> {
   const s = context.serializer;
   return s.struct<Group>(
     [
@@ -26,5 +27,5 @@ export function getGroupSerializer(
       ['guards', getGuardSetSerializer(context)],
     ],
     'Group'
-  );
+  ) as Serializer<GroupArgs, Group>;
 }

@@ -14,10 +14,14 @@ import { Context, Serializer } from '@lorisleiva/js-core';
  */
 
 export type RedeemedAmount = { maximum: bigint };
+export type RedeemedAmountArgs = { maximum: number | bigint };
 
 export function getRedeemedAmountSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<RedeemedAmount> {
+): Serializer<RedeemedAmountArgs, RedeemedAmount> {
   const s = context.serializer;
-  return s.struct<RedeemedAmount>([['maximum', s.u64]], 'RedeemedAmount');
+  return s.struct<RedeemedAmount>(
+    [['maximum', s.u64]],
+    'RedeemedAmount'
+  ) as Serializer<RedeemedAmountArgs, RedeemedAmount>;
 }

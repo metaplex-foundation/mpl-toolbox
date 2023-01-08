@@ -27,39 +27,40 @@ export type InitializeCandyGuardInstructionAccounts = {
 };
 
 // Arguments.
+export type InitializeCandyGuardInstructionData = {
+  discriminator: Array<number>;
+  data: Uint8Array;
+};
 export type InitializeCandyGuardInstructionArgs = { data: Uint8Array };
 
-// Discriminator.
-export type InitializeCandyGuardInstructionDiscriminator = Array<number>;
-export function getInitializeCandyGuardInstructionDiscriminator(): InitializeCandyGuardInstructionDiscriminator {
-  return [175, 175, 109, 31, 13, 152, 155, 237];
-}
-
-// Data.
-type InitializeCandyGuardInstructionData =
-  InitializeCandyGuardInstructionArgs & {
-    discriminator: InitializeCandyGuardInstructionDiscriminator;
-  };
 export function getInitializeCandyGuardInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeCandyGuardInstructionArgs> {
+): Serializer<
+  InitializeCandyGuardInstructionArgs,
+  InitializeCandyGuardInstructionData
+> {
   const s = context.serializer;
-  const discriminator = getInitializeCandyGuardInstructionDiscriminator();
-  const serializer: Serializer<InitializeCandyGuardInstructionData> =
+  return mapSerializer<
+    InitializeCandyGuardInstructionArgs,
+    InitializeCandyGuardInstructionData,
+    InitializeCandyGuardInstructionData
+  >(
     s.struct<InitializeCandyGuardInstructionData>(
       [
         ['discriminator', s.array(s.u8, 8)],
         ['data', s.bytes],
       ],
-      'InitializeCandyGuardInstructionData'
-    );
-  return mapSerializer(
-    serializer,
-    (value: InitializeCandyGuardInstructionArgs) => ({
-      ...value,
-      discriminator,
-    })
-  );
+      'initializeInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [175, 175, 109, 31, 13, 152, 155, 237],
+        ...value,
+      } as InitializeCandyGuardInstructionData)
+  ) as Serializer<
+    InitializeCandyGuardInstructionArgs,
+    InitializeCandyGuardInstructionData
+  >;
 }
 
 // Instruction.

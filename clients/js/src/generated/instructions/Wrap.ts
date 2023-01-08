@@ -26,25 +26,29 @@ export type WrapInstructionAccounts = {
   candyMachineAuthority: Signer;
 };
 
-// Discriminator.
-export type WrapInstructionDiscriminator = Array<number>;
-export function getWrapInstructionDiscriminator(): WrapInstructionDiscriminator {
-  return [178, 40, 10, 189, 228, 129, 186, 140];
-}
+// Arguments.
+export type WrapInstructionData = { discriminator: Array<number> };
+export type WrapInstructionArgs = {};
 
-// Data.
-type WrapInstructionData = { discriminator: WrapInstructionDiscriminator };
 export function getWrapInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<{}> {
+): Serializer<WrapInstructionArgs, WrapInstructionData> {
   const s = context.serializer;
-  const discriminator = getWrapInstructionDiscriminator();
-  const serializer: Serializer<WrapInstructionData> =
+  return mapSerializer<
+    WrapInstructionArgs,
+    WrapInstructionData,
+    WrapInstructionData
+  >(
     s.struct<WrapInstructionData>(
       [['discriminator', s.array(s.u8, 8)]],
-      'WrapInstructionData'
-    );
-  return mapSerializer(serializer, () => ({ discriminator }));
+      'wrapInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: [178, 40, 10, 189, 228, 129, 186, 140],
+        ...value,
+      } as WrapInstructionData)
+  ) as Serializer<WrapInstructionArgs, WrapInstructionData>;
 }
 
 // Instruction.
@@ -54,7 +58,7 @@ export function wrap(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: WrapInstructionAccounts
+  input: WrapInstructionAccounts & WrapInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -96,7 +100,7 @@ export function wrap(
   });
 
   // Data.
-  const data = getWrapInstructionDataSerializer(context).serialize({});
+  const data = getWrapInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },
