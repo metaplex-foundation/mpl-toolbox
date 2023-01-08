@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "build": "...",
-    "build:programs": "...",
-    "build:clients": "...",
+    "build": "pnpm build:programs && pnpm build:clients",
+    "build:programs": "./infra/build-programs.sh",
+    "build:clients": "./infra/build-clients.sh",
     "generate": "pnpm generate:idls && pnpm generate:clients && pnpm generate:docs",
     "generate:idls": "./infra/generate-idls.sh",
     "generate:clients": "./infra/generate-clients.sh",
