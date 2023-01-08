@@ -48,7 +48,7 @@ export type CandyMachineHiddenSettings = {
    * cache file with the mapping between mint numbers and metadata URIs
    * so that the order can be verified when the mint is complete.
    */
-  readonly hash: number[];
+  readonly hash: Uint8Array;
 };
 
 /**
