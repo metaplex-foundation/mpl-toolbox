@@ -62,7 +62,7 @@ export const tokenPaymentGuardManifest: CandyGuardManifest<TokenPaymentGuardSett
       });
 
       return {
-        arguments: Buffer.from([]),
+        arguments: new Uint8Array(),
         remainingAccounts: [
           {
             isSigner: false,

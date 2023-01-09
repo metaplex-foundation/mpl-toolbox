@@ -1,11 +1,6 @@
-import { BotTax, botTaxBeet } from '@metaplex-foundation/mpl-candy-guard';
+import { lamports, mapSerializer, SolAmount } from '@lorisleiva/js-core';
+import { getBotTaxSerializer } from 'src/generated';
 import { CandyGuardManifest } from './core';
-import {
-  createSerializerFromBeet,
-  lamports,
-  mapSerializer,
-  SolAmount,
-} from '@/types';
 
 /**
  * The botTax guard charges a penalty for invalid transactions
@@ -42,9 +37,16 @@ export type BotTaxGuardSettings = {
 export const botTaxGuardManifest: CandyGuardManifest<BotTaxGuardSettings> = {
   name: 'botTax',
   settingsBytes: 9,
-  settingsSerializer: mapSerializer<BotTax, BotTaxGuardSettings>(
-    createSerializerFromBeet(botTaxBeet),
-    (settings) => ({ ...settings, lamports: lamports(settings.lamports) }),
-    (settings) => ({ ...settings, lamports: settings.lamports.basisPoints })
-  ),
+  settingsSerializer: (context) =>
+    mapSerializer(
+      getBotTaxSerializer(context),
+      (settings) => ({
+        lamports: settings.lamports.basisPoints,
+        lastInstruction: settings.lastInstruction,
+      }),
+      (settings) => ({
+        lamports: lamports(settings.lamports),
+        lastInstruction: settings.lastInstruction,
+      })
+    ),
 };

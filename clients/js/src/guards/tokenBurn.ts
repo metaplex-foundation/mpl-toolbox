@@ -47,7 +47,7 @@ export const tokenBurnGuardManifest: CandyGuardManifest<TokenBurnGuardSettings> 
       });
 
       return {
-        arguments: Buffer.from([]),
+        arguments: new Uint8Array(),
         remainingAccounts: [
           {
             isSigner: false,

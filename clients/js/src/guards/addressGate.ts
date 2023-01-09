@@ -1,6 +1,6 @@
-import { addressGateBeet } from '@metaplex-foundation/mpl-candy-guard';
+import { PublicKey } from '@lorisleiva/js-core';
+import { getAddressGateSerializer } from 'src/generated';
 import { CandyGuardManifest } from './core';
-import { createSerializerFromBeet, PublicKey } from '@/types';
 
 /**
  * The addressGate guard restricts the mint to a single
@@ -20,5 +20,5 @@ export const addressGateGuardManifest: CandyGuardManifest<AddressGateGuardSettin
   {
     name: 'addressGate',
     settingsBytes: 32,
-    settingsSerializer: createSerializerFromBeet(addressGateBeet),
+    settingsSerializer: getAddressGateSerializer,
   };

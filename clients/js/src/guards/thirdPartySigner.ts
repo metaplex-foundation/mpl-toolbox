@@ -53,7 +53,7 @@ export const thirdPartySignerGuardManifest: CandyGuardManifest<
     }
 
     return {
-      arguments: Buffer.from([]),
+      arguments: new Uint8Array(),
       remainingAccounts: [
         {
           isSigner: true,

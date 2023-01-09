@@ -1,8 +1,5 @@
-import { Buffer } from 'buffer';
-import * as beet from '@metaplex-foundation/beet';
-import { AllowList, allowListBeet } from '@metaplex-foundation/mpl-candy-guard';
+import { getAllowListSerializer } from 'src/generated';
 import { CandyGuardManifest } from './core';
-import { createSerializerFromBeet, mapSerializer } from '@/types';
 
 /**
  * The allowList guard validates the minting wallet against
@@ -97,54 +94,41 @@ export const allowListGuardManifest: CandyGuardManifest<
 > = {
   name: 'allowList',
   settingsBytes: 32,
-  settingsSerializer: mapSerializer<AllowList, AllowListGuardSettings>(
-    createSerializerFromBeet(allowListBeet),
-    (settings) => ({ merkleRoot: new Uint8Array(settings.merkleRoot) }),
-    (settings) => ({ merkleRoot: Array.from(settings.merkleRoot) })
-  ),
-  mintSettingsParser: ({
-    metaplex,
-    settings,
-    payer,
-    candyMachine,
-    candyGuard,
-  }) => {
-    return {
-      arguments: Buffer.from([]),
-      remainingAccounts: [
-        {
-          isSigner: false,
-          isWritable: false,
-          address: metaplex.candyMachines().pdas().merkleProof({
-            merkleRoot: settings.merkleRoot,
-            user: payer.publicKey,
-            candyMachine,
-            candyGuard,
-          }),
-        },
-      ],
-    };
-  },
-  routeSettingsParser: ({
-    metaplex,
-    settings,
-    routeSettings,
-    programs,
-    candyMachine,
-    candyGuard,
-    payer,
-  }) => {
+  settingsSerializer: getAllowListSerializer,
+  mintSettingsParser: (
+    context,
+    { settings, payer, candyMachine, candyGuard }
+  ) => ({
+    arguments: new Uint8Array(),
+    remainingAccounts: [
+      {
+        isSigner: false,
+        isWritable: false,
+        // TODO: PDAs.
+        address: findMerkleProofPda(context, {
+          merkleRoot: settings.merkleRoot,
+          user: payer.publicKey,
+          candyMachine,
+          candyGuard,
+        }),
+      },
+    ],
+  }),
+  routeSettingsParser: (
+    context,
+    { settings, routeSettings, candyMachine, candyGuard, payer }
+  ) => {
+    const s = context.serializer;
     const proof = routeSettings.merkleProof;
-    const vectorSize = Buffer.alloc(4);
-    beet.u32.write(vectorSize, 0, proof.length);
 
     return {
-      arguments: Buffer.concat([vectorSize, ...proof]),
+      arguments: s.vec(s.bytes).serialize(proof),
       remainingAccounts: [
         {
           isSigner: false,
           isWritable: true,
-          address: metaplex.candyMachines().pdas().merkleProof({
+          // TODO: PDAs.
+          address: findMerkleProofPda(context, {
             merkleRoot: settings.merkleRoot,
             user: payer.publicKey,
             candyMachine,
@@ -154,7 +138,7 @@ export const allowListGuardManifest: CandyGuardManifest<
         {
           isSigner: false,
           isWritable: false,
-          address: metaplex.programs().getSystem(programs).address,
+          address: context.programs.get('splSystem').address,
         },
       ],
     };

@@ -43,7 +43,7 @@ export const tokenGateGuardManifest: CandyGuardManifest<TokenGateGuardSettings> 
       });
 
       return {
-        arguments: Buffer.from([]),
+        arguments: new Uint8Array(),
         remainingAccounts: [
           {
             isSigner: false,

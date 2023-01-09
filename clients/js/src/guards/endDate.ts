@@ -1,5 +1,4 @@
-import { mapSerializer } from '@lorisleiva/js-core';
-import { EndDate, getEndDateSerializer } from '../generated';
+import { getEndDateSerializer } from '../generated';
 import { CandyGuardManifest } from './core';
 
 /**
@@ -12,16 +11,12 @@ import { CandyGuardManifest } from './core';
  */
 export type EndDateGuardSettings = {
   /** The date after which minting is no longer possible. */
-  date: bigint;
+  date: bigint; // TODO: Create DateTime and DateTimeInput types?
 };
 
 /** @internal */
 export const endDateGuardManifest: CandyGuardManifest<EndDateGuardSettings> = {
   name: 'endDate',
   settingsBytes: 8,
-  settingsSerializer: mapSerializer<EndDate, EndDateGuardSettings>(
-    getEndDateSerializer(context),
-    (settings) => ({ date: settings.date }),
-    (settings) => settings
-  ),
+  settingsSerializer: getEndDateSerializer,
 };

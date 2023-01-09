@@ -1,16 +1,11 @@
-import { Buffer } from 'buffer';
 import {
-  SolPayment,
-  solPaymentBeet,
-} from '@metaplex-foundation/mpl-candy-guard';
-import { CandyGuardManifest } from './core';
-import {
-  createSerializerFromBeet,
   lamports,
   mapSerializer,
   PublicKey,
   SolAmount,
-} from '@/types';
+} from '@lorisleiva/js-core';
+import { getSolPaymentSerializer } from 'src/generated';
+import { CandyGuardManifest } from './core';
 
 /**
  * The solPayment guard is used to charge an
@@ -33,21 +28,26 @@ export const solPaymentGuardManifest: CandyGuardManifest<SolPaymentGuardSettings
   {
     name: 'solPayment',
     settingsBytes: 40,
-    settingsSerializer: mapSerializer<SolPayment, SolPaymentGuardSettings>(
-      createSerializerFromBeet(solPaymentBeet),
-      (settings) => ({ ...settings, amount: lamports(settings.lamports) }),
-      (settings) => ({ ...settings, lamports: settings.amount.basisPoints })
-    ),
-    mintSettingsParser: ({ settings }) => {
-      return {
-        arguments: Buffer.from([]),
-        remainingAccounts: [
-          {
-            isSigner: false,
-            address: settings.destination,
-            isWritable: true,
-          },
-        ],
-      };
-    },
+    settingsSerializer: (context) =>
+      mapSerializer(
+        getSolPaymentSerializer(context),
+        (settings) => ({
+          lamports: settings.amount.basisPoints,
+          destination: settings.destination,
+        }),
+        (settings) => ({
+          amount: lamports(settings.lamports),
+          destination: settings.destination,
+        })
+      ),
+    mintSettingsParser: (context, { settings }) => ({
+      arguments: new Uint8Array(),
+      remainingAccounts: [
+        {
+          isSigner: false,
+          address: settings.destination,
+          isWritable: true,
+        },
+      ],
+    }),
   };

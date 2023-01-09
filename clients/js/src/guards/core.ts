@@ -26,7 +26,9 @@ export type CandyGuardManifest<
   /**
    * The serializer used to serialize and deserialize your guard's settings.
    */
-  settingsSerializer: Serializer<Settings>;
+  settingsSerializer(
+    context: Pick<Context, 'serializer'>
+  ): Serializer<Settings>;
 
   /**
    * If your guard requires additional accounts or arguments to be passed
@@ -34,6 +36,7 @@ export type CandyGuardManifest<
    * of your guards into the required arguments and remaining accounts.
    */
   mintSettingsParser?: (
+    context: Pick<Context, 'serializer' | 'programs'>,
     input: MintSettingsParserInput<Settings, MintSettings>
   ) => {
     /** The serialized arguments to pass to the mint instruction. */
@@ -48,6 +51,7 @@ export type CandyGuardManifest<
    * `routeSettings` of your guards into the required arguments and remaining accounts.
    */
   routeSettingsParser?: (
+    context: Pick<Context, 'serializer' | 'programs'>,
     input: RouteSettingsParserInput<Settings, RouteSettings>
   ) => {
     /** The serialized arguments to pass to the route instruction. */
@@ -59,8 +63,6 @@ export type CandyGuardManifest<
 
 /** The input passed to each guard when building the mint instruction. */
 export type MintSettingsParserInput<Settings, MintSettings> = {
-  /** The context used to mint. */
-  context: Context;
   /** The guard's settings. */
   settings: Settings;
   /** The optional mint settings. */
@@ -81,8 +83,6 @@ export type MintSettingsParserInput<Settings, MintSettings> = {
 
 /** The input passed to each guard when building the route instruction. */
 export type RouteSettingsParserInput<Settings, RouteSettings> = {
-  /** The context used when calling the route instruction. */
-  context: Context;
   /** The guard's settings. */
   settings: Settings;
   /** The route settings for that guard. */

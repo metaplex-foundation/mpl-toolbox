@@ -104,3 +104,9 @@ export function getCandyGuardAccountDataSerializer<
     (value: BaseCandyGuardAccountData): CandyGuardAccountData<T> => value
   );
 }
+
+export function getCandyGuardSettingsSerializer<
+  T extends CandyGuardsSettings = DefaultCandyGuardSettings
+>(context: Pick<Context, 'serializer'>): Serializer<T, T> {
+  throw new Error('Not implemented');
+}

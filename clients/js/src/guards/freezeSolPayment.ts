@@ -1,28 +1,18 @@
-import { Buffer } from 'buffer';
-import * as beet from '@metaplex-foundation/beet';
 import {
-  FreezeInstruction,
-  FreezeSolPayment,
-  freezeSolPaymentBeet,
-} from '@metaplex-foundation/mpl-candy-guard';
-import {
-  MintOwnerMustBeMintPayerError,
-  UnrecognizePathForRouteInstructionError,
-} from '../errors';
+  Context,
+  lamports,
+  mapSerializer,
+  PublicKey,
+  Serializer,
+  Signer,
+  SolAmount,
+} from '@lorisleiva/js-core';
+import { FreezeInstruction, getFreezeSolPaymentSerializer } from '../generated';
 import {
   CandyGuardManifest,
   CandyGuardsRemainingAccount,
   RouteSettingsParserInput,
 } from './core';
-import { assert } from '@/utils';
-import {
-  createSerializerFromBeet,
-  lamports,
-  mapSerializer,
-  PublicKey,
-  Signer,
-  SolAmount,
-} from '@/types';
 
 /**
  * The freezeSolPayment guard allows minting frozen NFTs by charging
@@ -146,48 +136,38 @@ export const freezeSolPaymentGuardManifest: CandyGuardManifest<
 > = {
   name: 'freezeSolPayment',
   settingsBytes: 40,
-  settingsSerializer: mapSerializer<
-    FreezeSolPayment,
-    FreezeSolPaymentGuardSettings
-  >(
-    createSerializerFromBeet(freezeSolPaymentBeet),
-    (settings) => ({
-      amount: lamports(settings.lamports),
-      destination: settings.destination,
-    }),
-    (settings) => ({
-      lamports: settings.amount.basisPoints,
-      destination: settings.destination,
-    })
-  ),
-  mintSettingsParser: ({
-    metaplex,
-    settings,
-    owner,
-    payer,
-    mint,
-    candyMachine,
-    candyGuard,
-    programs,
-  }) => {
+  settingsSerializer: (context) =>
+    mapSerializer(
+      getFreezeSolPaymentSerializer(context),
+      (settings) => ({
+        lamports: settings.amount.basisPoints,
+        destination: settings.destination,
+      }),
+      (settings) => ({
+        amount: lamports(settings.lamports),
+        destination: settings.destination,
+      })
+    ),
+  mintSettingsParser: (
+    context,
+    { settings, owner, payer, mint, candyMachine, candyGuard }
+  ) => {
     if (!owner.equals(payer.publicKey)) {
       throw new MintOwnerMustBeMintPayerError('freezeSolPayment');
     }
 
-    const freezeEscrow = metaplex.candyMachines().pdas().freezeEscrow({
+    const freezeEscrow = findFreezeEscrowPda(context, {
       destination: settings.destination,
       candyMachine,
       candyGuard,
-      programs,
     });
-    const nftAta = metaplex.tokens().pdas().associatedTokenAccount({
+    const nftAta = findAssociatedTokenPda(context, {
       mint: mint.publicKey,
       owner: payer.publicKey,
-      programs,
     });
 
     return {
-      arguments: Buffer.from([]),
+      arguments: new Uint8Array(),
       remainingAccounts: [
         {
           isSigner: false,
@@ -202,14 +182,14 @@ export const freezeSolPaymentGuardManifest: CandyGuardManifest<
       ],
     };
   },
-  routeSettingsParser: (input) => {
+  routeSettingsParser: (context, input) => {
     switch (input.routeSettings.path) {
       case 'initialize':
-        return initializeRouteInstruction(input);
+        return initializeRouteInstruction(context, input);
       case 'thaw':
-        return thawRouteInstruction(input);
+        return thawRouteInstruction(context, input);
       case 'unlockFunds':
-        return unlockFundsRouteInstruction(input);
+        return unlockFundsRouteInstruction(context, input);
       default:
         throw new UnrecognizePathForRouteInstructionError(
           'freezeSolPayment',
@@ -220,32 +200,39 @@ export const freezeSolPaymentGuardManifest: CandyGuardManifest<
   },
 };
 
-function initializeRouteInstruction({
-  metaplex,
-  settings,
-  routeSettings,
-  candyMachine,
-  candyGuard,
-  programs,
-}: RouteSettingsParserInput<
-  FreezeSolPaymentGuardSettings,
-  FreezeSolPaymentGuardRouteSettings
->) {
-  assert(routeSettings.path === 'initialize');
-  const freezeEscrow = metaplex.candyMachines().pdas().freezeEscrow({
+function initializeRouteInstruction(
+  context: Pick<Context, 'serializer' | 'programs'>,
+  {
+    settings,
+    routeSettings,
+    candyMachine,
+    candyGuard,
+  }: RouteSettingsParserInput<
+    FreezeSolPaymentGuardSettings,
+    FreezeSolPaymentGuardRouteSettings
+  >
+) {
+  if (routeSettings.path !== 'initialize') {
+    throw new Error('Expected initialize path.');
+  }
+
+  const s = context.serializer;
+  const freezeEscrow = findFreezeEscrowPda(context, {
     destination: settings.destination,
     candyMachine,
     candyGuard,
-    programs,
   });
-  const systemProgram = metaplex.programs().getSystem(programs);
-
-  const args = Buffer.alloc(9);
-  beet.u8.write(args, 0, FreezeInstruction.Initialize);
-  beet.u64.write(args, 1, routeSettings.period);
+  const systemProgram = context.programs.get('splSystem');
+  const argSerializer = s.tuple([s.u8, s.u64]) as Serializer<
+    [number, bigint | number],
+    [number, bigint]
+  >;
 
   return {
-    arguments: args,
+    arguments: argSerializer.serialize([
+      FreezeInstruction.Initialize,
+      routeSettings.period,
+    ]),
     remainingAccounts: [
       {
         isSigner: false,
@@ -266,18 +253,23 @@ function initializeRouteInstruction({
   };
 }
 
-function thawRouteInstruction({
-  metaplex,
-  settings,
-  routeSettings,
-  candyMachine,
-  candyGuard,
-  programs,
-}: RouteSettingsParserInput<
-  FreezeSolPaymentGuardSettings,
-  FreezeSolPaymentGuardRouteSettings
->) {
-  assert(routeSettings.path === 'thaw');
+function thawRouteInstruction(
+  context: Pick<Context, 'serializer' | 'programs'>,
+  {
+    settings,
+    routeSettings,
+    candyMachine,
+    candyGuard,
+  }: RouteSettingsParserInput<
+    FreezeSolPaymentGuardSettings,
+    FreezeSolPaymentGuardRouteSettings
+  >
+) {
+  if (routeSettings.path !== 'thaw') {
+    throw new Error('Expected thaw path.');
+  }
+
+  const s = context.serializer;
   const freezeEscrow = metaplex.candyMachines().pdas().freezeEscrow({
     destination: settings.destination,
     candyMachine,
@@ -296,11 +288,8 @@ function thawRouteInstruction({
   const tokenProgram = metaplex.programs().getToken(programs);
   const tokenMetadataProgram = metaplex.programs().getTokenMetadata(programs);
 
-  const args = Buffer.alloc(1);
-  beet.u8.write(args, 0, FreezeInstruction.Thaw);
-
   return {
-    arguments: args,
+    arguments: s.u8.serialize(FreezeInstruction.Thaw),
     remainingAccounts: [
       {
         isSigner: false,
@@ -341,18 +330,23 @@ function thawRouteInstruction({
   };
 }
 
-function unlockFundsRouteInstruction({
-  metaplex,
-  settings,
-  routeSettings,
-  candyMachine,
-  candyGuard,
-  programs,
-}: RouteSettingsParserInput<
-  FreezeSolPaymentGuardSettings,
-  FreezeSolPaymentGuardRouteSettings
->) {
-  assert(routeSettings.path === 'unlockFunds');
+function unlockFundsRouteInstruction(
+  context: Pick<Context, 'serializer' | 'programs'>,
+  {
+    settings,
+    routeSettings,
+    candyMachine,
+    candyGuard,
+  }: RouteSettingsParserInput<
+    FreezeSolPaymentGuardSettings,
+    FreezeSolPaymentGuardRouteSettings
+  >
+) {
+  if (routeSettings.path !== 'unlockFunds') {
+    throw new Error('Expected unlockFunds path.');
+  }
+
+  const s = context.serializer;
   const freezeEscrow = metaplex.candyMachines().pdas().freezeEscrow({
     destination: settings.destination,
     candyMachine,
@@ -361,11 +355,8 @@ function unlockFundsRouteInstruction({
   });
   const systemProgram = metaplex.programs().getSystem(programs);
 
-  const args = Buffer.alloc(1);
-  beet.u8.write(args, 0, FreezeInstruction.UnlockFunds);
-
   return {
-    arguments: args,
+    arguments: s.u8.serialize(FreezeInstruction.UnlockFunds),
     remainingAccounts: [
       {
         isSigner: false,

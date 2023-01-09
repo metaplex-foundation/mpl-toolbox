@@ -51,7 +51,7 @@ export const mintLimitGuardManifest: CandyGuardManifest<MintLimitGuardSettings> 
       });
 
       return {
-        arguments: Buffer.from([]),
+        arguments: new Uint8Array(),
         remainingAccounts: [
           {
             address: counterPda,

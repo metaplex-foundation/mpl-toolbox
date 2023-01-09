@@ -1,11 +1,5 @@
-import { StartDate, startDateBeet } from '@metaplex-foundation/mpl-candy-guard';
+import { getStartDateSerializer } from 'src/generated';
 import { CandyGuardManifest } from './core';
-import {
-  createSerializerFromBeet,
-  DateTime,
-  mapSerializer,
-  toDateTime,
-} from '@/types';
 
 /**
  * The startDate guard determines the start date of the mint.
@@ -17,7 +11,7 @@ import {
  */
 export type StartDateGuardSettings = {
   /** The date before which minting is not yet possible. */
-  date: DateTime;
+  date: bigint;
 };
 
 /** @internal */
@@ -25,9 +19,5 @@ export const startDateGuardManifest: CandyGuardManifest<StartDateGuardSettings> 
   {
     name: 'startDate',
     settingsBytes: 8,
-    settingsSerializer: mapSerializer<StartDate, StartDateGuardSettings>(
-      createSerializerFromBeet(startDateBeet),
-      (settings) => ({ date: toDateTime(settings.date) }),
-      (settings) => settings
-    ),
+    settingsSerializer: getStartDateSerializer,
   };

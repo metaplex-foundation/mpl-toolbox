@@ -92,7 +92,7 @@ export const nftBurnGuardManifest: CandyGuardManifest<
     });
 
     return {
-      arguments: Buffer.from([]),
+      arguments: new Uint8Array(),
       remainingAccounts: [
         {
           isSigner: false,
