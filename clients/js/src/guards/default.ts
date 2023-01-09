@@ -1,95 +1,87 @@
-import { AddressGateGuardSettings } from './addressGate';
-import {
-  AllowListGuardRouteSettings,
-  AllowListGuardSettings,
-} from './allowList';
-import { BotTaxGuardSettings } from './botTax';
+import { AddressGateGuard } from './addressGate';
+import { AllowListGuardRouteSettings, AllowListGuard } from './allowList';
+import { BotTaxGuard } from './botTax';
 import {
   CandyGuardsData,
   CandyGuardsMintSettings,
   CandyGuardsRouteSettings,
   CandyGuardsSettings,
 } from './core';
-import { EndDateGuardSettings } from './endDate';
-import {
-  GatekeeperGuardMintSettings,
-  GatekeeperGuardSettings,
-} from './gatekeeper';
-import { MintLimitGuardSettings } from './mintLimit';
-import { NftBurnGuardMintSettings, NftBurnGuardSettings } from './nftBurn';
-import { NftGateGuardMintSettings, NftGateGuardSettings } from './nftGate';
-import {
-  NftPaymentGuardMintSettings,
-  NftPaymentGuardSettings,
-} from './nftPayment';
-import { ProgramGateGuardSettings } from './programGate';
-import { RedeemedAmountGuardSettings } from './redeemedAmount';
-import { SolPaymentGuardSettings } from './solPayment';
-import { StartDateGuardSettings } from './startDate';
+import { EndDateGuard, EndDateGuardSettings } from './endDate';
+import { GatekeeperGuardMintSettings, GatekeeperGuard } from './gatekeeper';
+import { MintLimitGuard } from './mintLimit';
+import { NftBurnGuardMintSettings, NftBurnGuard } from './nftBurn';
+import { NftGateGuardMintSettings, NftGateGuard } from './nftGate';
+import { NftPaymentGuardMintSettings, NftPaymentGuard } from './nftPayment';
+import { ProgramGateGuard } from './programGate';
+import { RedeemedAmountGuard } from './redeemedAmount';
+import { SolPaymentGuard } from './solPayment';
+import { StartDateGuard } from './startDate';
 import {
   ThirdPartySignerGuardMintSettings,
-  ThirdPartySignerGuardSettings,
+  ThirdPartySignerGuard,
 } from './thirdPartySigner';
-import { TokenBurnGuardSettings } from './tokenBurn';
-import { TokenGateGuardSettings } from './tokenGate';
-import { TokenPaymentGuardSettings } from './tokenPayment';
+import { TokenBurnGuard } from './tokenBurn';
+import { TokenGateGuard } from './tokenGate';
+import { TokenPaymentGuard } from './tokenPayment';
 import {
   FreezeSolPaymentGuardRouteSettings,
-  FreezeSolPaymentGuardSettings,
+  FreezeSolPaymentGuard,
 } from './freezeSolPayment';
 import {
   FreezeTokenPaymentGuardRouteSettings,
-  FreezeTokenPaymentGuardSettings,
+  FreezeTokenPaymentGuard,
 } from './freezeTokenPayment';
 
 /**
  * The settings for all default Candy Machine guards.
+ * TODO: Use settings when settings > data.
  */
 export type DefaultCandyGuardSettings = CandyGuardsSettings & {
-  botTax: BotTaxGuardSettings | null;
-  solPayment: SolPaymentGuardSettings | null;
-  tokenPayment: TokenPaymentGuardSettings | null;
-  startDate: StartDateGuardSettings | null;
-  thirdPartySigner: ThirdPartySignerGuardSettings | null;
-  tokenGate: TokenGateGuardSettings | null;
-  gatekeeper: GatekeeperGuardSettings | null;
+  botTax: BotTaxGuard | null;
+  solPayment: SolPaymentGuard | null;
+  tokenPayment: TokenPaymentGuard | null;
+  startDate: StartDateGuard | null;
+  thirdPartySigner: ThirdPartySignerGuard | null;
+  tokenGate: TokenGateGuard | null;
+  gatekeeper: GatekeeperGuard | null;
   endDate: EndDateGuardSettings | null;
-  allowList: AllowListGuardSettings | null;
-  mintLimit: MintLimitGuardSettings | null;
-  nftPayment: NftPaymentGuardSettings | null;
-  redeemedAmount: RedeemedAmountGuardSettings | null;
-  addressGate: AddressGateGuardSettings | null;
-  nftGate: NftGateGuardSettings | null;
-  nftBurn: NftBurnGuardSettings | null;
-  tokenBurn: TokenBurnGuardSettings | null;
-  freezeSolPayment: FreezeSolPaymentGuardSettings | null;
-  freezeTokenPayment: FreezeTokenPaymentGuardSettings | null;
-  programGate: ProgramGateGuardSettings | null;
+  allowList: AllowListGuard | null;
+  mintLimit: MintLimitGuard | null;
+  nftPayment: NftPaymentGuard | null;
+  redeemedAmount: RedeemedAmountGuard | null;
+  addressGate: AddressGateGuard | null;
+  nftGate: NftGateGuard | null;
+  nftBurn: NftBurnGuard | null;
+  tokenBurn: TokenBurnGuard | null;
+  freezeSolPayment: FreezeSolPaymentGuard | null;
+  freezeTokenPayment: FreezeTokenPaymentGuard | null;
+  programGate: ProgramGateGuard | null;
 };
 
 /**
  * The data for all default Candy Machine guards.
  */
 export type DefaultCandyGuardData = CandyGuardsData & {
-  botTax: BotTaxGuardSettings | null;
-  solPayment: SolPaymentGuardSettings | null; //
-  tokenPayment: TokenPaymentGuardSettings | null;
-  startDate: StartDateGuardSettings | null;
-  thirdPartySigner: ThirdPartySignerGuardSettings | null;
-  tokenGate: TokenGateGuardSettings | null;
-  gatekeeper: GatekeeperGuardSettings | null;
-  endDate: EndDateGuardSettings | null;
-  allowList: AllowListGuardSettings | null;
-  mintLimit: MintLimitGuardSettings | null;
-  nftPayment: NftPaymentGuardSettings | null;
-  redeemedAmount: RedeemedAmountGuardSettings | null;
-  addressGate: AddressGateGuardSettings | null;
-  nftGate: NftGateGuardSettings | null;
-  nftBurn: NftBurnGuardSettings | null;
-  tokenBurn: TokenBurnGuardSettings | null;
-  freezeSolPayment: FreezeSolPaymentGuardSettings | null;
-  freezeTokenPayment: FreezeTokenPaymentGuardSettings | null;
-  programGate: ProgramGateGuardSettings | null;
+  botTax: BotTaxGuard | null;
+  solPayment: SolPaymentGuard | null; //
+  tokenPayment: TokenPaymentGuard | null;
+  startDate: StartDateGuard | null;
+  thirdPartySigner: ThirdPartySignerGuard | null;
+  tokenGate: TokenGateGuard | null;
+  gatekeeper: GatekeeperGuard | null;
+  endDate: EndDateGuard | null;
+  allowList: AllowListGuard | null;
+  mintLimit: MintLimitGuard | null;
+  nftPayment: NftPaymentGuard | null;
+  redeemedAmount: RedeemedAmountGuard | null;
+  addressGate: AddressGateGuard | null;
+  nftGate: NftGateGuard | null;
+  nftBurn: NftBurnGuard | null;
+  tokenBurn: TokenBurnGuard | null;
+  freezeSolPayment: FreezeSolPaymentGuard | null;
+  freezeTokenPayment: FreezeTokenPaymentGuard | null;
+  programGate: ProgramGateGuard | null;
 };
 
 /**
@@ -166,7 +158,7 @@ export const defaultCandyGuardNames: string[] = [
 ];
 
 /** @internal */
-export const emptyDefaultCandyGuardSettings: {
+export const emptyDefaultCandyGuard: {
   [key in keyof DefaultCandyGuardSettings]: null;
 } = defaultCandyGuardNames.reduce((acc, name) => {
   acc[name] = null;
