@@ -13,11 +13,14 @@ import {
   CandyGuardAccountData as BaseCandyGuardAccountData,
   CandyGuardAccountArgs as BaseCandyGuardAccountArgs,
 } from './generated/accounts/CandyGuard';
-import { CandyGuardsSettings, DefaultCandyGuardSettings } from './guards';
+import {
+  CandyGuardsData,
+  CandyGuardsSettings,
+  DefaultCandyGuardSettings,
+} from './guards';
 
-export type CandyGuard<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
-> = Account<CandyGuardAccountData<T>>;
+export type CandyGuard<T extends CandyGuardsData = DefaultCandyGuardData> =
+  Account<CandyGuardAccountData<T>>;
 
 export type CandyGuardAccountData<
   T extends CandyGuardsSettings = DefaultCandyGuardSettings

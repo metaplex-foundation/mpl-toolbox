@@ -21,7 +21,7 @@ import {
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type TokenBurnGuardSettings = {
+export type TokenBurnGuard = {
   /** The mint address of the required tokens. */
   mint: PublicKey;
 
@@ -30,36 +30,35 @@ export type TokenBurnGuardSettings = {
 };
 
 /** @internal */
-export const tokenBurnGuardManifest: CandyGuardManifest<TokenBurnGuardSettings> =
-  {
-    name: 'tokenBurn',
-    settingsBytes: 40,
-    settingsSerializer: mapSerializer<TokenBurn, TokenBurnGuardSettings>(
-      createSerializerFromBeet(tokenBurnBeet),
-      (settings) => ({ ...settings, amount: token(settings.amount) }),
-      (settings) => ({ ...settings, amount: settings.amount.basisPoints })
-    ),
-    mintSettingsParser: ({ metaplex, settings, payer, programs }) => {
-      const tokenAccount = metaplex.tokens().pdas().associatedTokenAccount({
-        mint: settings.mint,
-        owner: payer.publicKey,
-        programs,
-      });
+export const tokenBurnGuardManifest: CandyGuardManifest<TokenBurnGuard> = {
+  name: 'tokenBurn',
+  settingsBytes: 40,
+  settingsSerializer: mapSerializer<TokenBurn, TokenBurnGuard>(
+    createSerializerFromBeet(tokenBurnBeet),
+    (settings) => ({ ...settings, amount: token(settings.amount) }),
+    (settings) => ({ ...settings, amount: settings.amount.basisPoints })
+  ),
+  mintSettingsParser: ({ metaplex, settings, payer, programs }) => {
+    const tokenAccount = metaplex.tokens().pdas().associatedTokenAccount({
+      mint: settings.mint,
+      owner: payer.publicKey,
+      programs,
+    });
 
-      return {
-        arguments: new Uint8Array(),
-        remainingAccounts: [
-          {
-            isSigner: false,
-            address: tokenAccount,
-            isWritable: true,
-          },
-          {
-            isSigner: false,
-            address: settings.mint,
-            isWritable: true,
-          },
-        ],
-      };
-    },
-  };
+    return {
+      arguments: new Uint8Array(),
+      remainingAccounts: [
+        {
+          isSigner: false,
+          address: tokenAccount,
+          isWritable: true,
+        },
+        {
+          isSigner: false,
+          address: settings.mint,
+          isWritable: true,
+        },
+      ],
+    };
+  },
+};

@@ -7,6 +7,7 @@ import { Context, PublicKey, Serializer, Signer } from '@lorisleiva/js-core';
  */
 export type CandyGuardManifest<
   Settings extends object,
+  Data extends Settings = Settings,
   MintSettings extends object = {},
   RouteSettings extends object = {}
 > = {
@@ -28,7 +29,7 @@ export type CandyGuardManifest<
    */
   settingsSerializer(
     context: Pick<Context, 'serializer'>
-  ): Serializer<Settings>;
+  ): Serializer<Settings, Data>;
 
   /**
    * If your guard requires additional accounts or arguments to be passed
@@ -37,7 +38,7 @@ export type CandyGuardManifest<
    */
   mintSettingsParser?: (
     context: Pick<Context, 'serializer' | 'programs'>,
-    input: MintSettingsParserInput<Settings, MintSettings>
+    input: MintSettingsParserInput<Data, MintSettings>
   ) => {
     /** The serialized arguments to pass to the mint instruction. */
     arguments: Uint8Array;
@@ -52,7 +53,7 @@ export type CandyGuardManifest<
    */
   routeSettingsParser?: (
     context: Pick<Context, 'serializer' | 'programs'>,
-    input: RouteSettingsParserInput<Settings, RouteSettings>
+    input: RouteSettingsParserInput<Data, RouteSettings>
   ) => {
     /** The serialized arguments to pass to the route instruction. */
     arguments: Uint8Array;
@@ -62,9 +63,9 @@ export type CandyGuardManifest<
 };
 
 /** The input passed to each guard when building the mint instruction. */
-export type MintSettingsParserInput<Settings, MintSettings> = {
-  /** The guard's settings. */
-  settings: Settings;
+export type MintSettingsParserInput<Data, MintSettings> = {
+  /** The guard's data. */
+  data: Data;
   /** The optional mint settings. */
   mintSettings: MintSettings | null;
   /** The owner of the minted NFT, this is typically the payer. */
@@ -82,9 +83,9 @@ export type MintSettingsParserInput<Settings, MintSettings> = {
 };
 
 /** The input passed to each guard when building the route instruction. */
-export type RouteSettingsParserInput<Settings, RouteSettings> = {
-  /** The guard's settings. */
-  settings: Settings;
+export type RouteSettingsParserInput<Data, RouteSettings> = {
+  /** The guard's data. */
+  data: Data;
   /** The route settings for that guard. */
   routeSettings: RouteSettings;
   /** The payer for the route instruction. */
@@ -103,6 +104,15 @@ export type RouteSettingsParserInput<Settings, RouteSettings> = {
  * the settings of the guard as the value.
  */
 export type CandyGuardsSettings = {
+  [name: string]: object | null;
+};
+
+/**
+ * Sets expectations on the Candy Guard data which
+ * uses the name of the guard as the key and, if enabled,
+ * the data of the guard as the value.
+ */
+export type CandyGuardsData = {
   [name: string]: object | null;
 };
 

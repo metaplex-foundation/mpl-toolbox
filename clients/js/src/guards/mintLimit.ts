@@ -1,7 +1,5 @@
-import { Buffer } from 'buffer';
-import { mintLimitBeet } from '@metaplex-foundation/mpl-candy-guard';
+import { getMintLimitSerializer } from '../generated';
 import { CandyGuardManifest } from './core';
-import { createSerializerFromBeet } from '@/types';
 
 /**
  * The mintLimit guard allows to specify a limit on the
@@ -17,7 +15,7 @@ import { createSerializerFromBeet } from '@/types';
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type MintLimitGuardSettings = {
+export type MintLimitGuard = {
   /**
    * A unique identitifer for the limit
    * for a given wallet and candy machine.
@@ -29,36 +27,27 @@ export type MintLimitGuardSettings = {
 };
 
 /** @internal */
-export const mintLimitGuardManifest: CandyGuardManifest<MintLimitGuardSettings> =
-  {
-    name: 'mintLimit',
-    settingsBytes: 3,
-    settingsSerializer: createSerializerFromBeet(mintLimitBeet),
-    mintSettingsParser: ({
-      metaplex,
-      settings,
-      payer,
+export const mintLimitGuardManifest: CandyGuardManifest<MintLimitGuard> = {
+  name: 'mintLimit',
+  settingsBytes: 3,
+  settingsSerializer: getMintLimitSerializer,
+  mintSettingsParser: (context, { data, payer, candyMachine, candyGuard }) => {
+    const counterPda = findMintLimitCounterPda(context, {
+      id: data.id,
+      user: payer.publicKey,
       candyMachine,
       candyGuard,
-      programs,
-    }) => {
-      const counterPda = metaplex.candyMachines().pdas().mintLimitCounter({
-        id: settings.id,
-        user: payer.publicKey,
-        candyMachine,
-        candyGuard,
-        programs,
-      });
+    });
 
-      return {
-        arguments: new Uint8Array(),
-        remainingAccounts: [
-          {
-            address: counterPda,
-            isSigner: false,
-            isWritable: true,
-          },
-        ],
-      };
-    },
-  };
+    return {
+      arguments: new Uint8Array(),
+      remainingAccounts: [
+        {
+          address: counterPda,
+          isSigner: false,
+          isWritable: true,
+        },
+      ],
+    };
+  },
+};

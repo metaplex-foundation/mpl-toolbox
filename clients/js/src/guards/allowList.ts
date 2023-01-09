@@ -1,4 +1,4 @@
-import { getAllowListSerializer } from 'src/generated';
+import { getAllowListSerializer } from '../generated';
 import { CandyGuardManifest } from './core';
 
 /**
@@ -40,7 +40,7 @@ import { CandyGuardManifest } from './core';
  * @see {@link AllowListGuardRouteSettings} to learn more about
  * the instructions that can be executed against this guard.
  */
-export type AllowListGuardSettings = {
+export type AllowListGuard = {
   /**
    * The Root of the Merkle Tree representing the allow list.
    * You may use the `getMerkleRoot` helper function to generate this.
@@ -71,7 +71,7 @@ export type AllowListGuardSettings = {
  * // You are now allows to mint with this wallet.
  * ```
  *
- * @see {@link AllowListGuardSettings} for more
+ * @see {@link AllowListGuard} for more
  * information on the allowList guard itself.
  */
 export type AllowListGuardRouteSettings = {
@@ -88,7 +88,8 @@ export type AllowListGuardRouteSettings = {
 
 /** @internal */
 export const allowListGuardManifest: CandyGuardManifest<
-  AllowListGuardSettings,
+  AllowListGuard,
+  AllowListGuard,
   {},
   AllowListGuardRouteSettings
 > = {

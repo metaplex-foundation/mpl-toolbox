@@ -1,5 +1,5 @@
 import { lamports, mapSerializer, SolAmount } from '@lorisleiva/js-core';
-import { getBotTaxSerializer } from 'src/generated';
+import { getBotTaxSerializer } from '../generated';
 import { CandyGuardManifest } from './core';
 
 /**
@@ -18,7 +18,7 @@ import { CandyGuardManifest } from './core';
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type BotTaxGuardSettings = {
+export type BotTaxGuard = {
   /** The amount in SOL to charge for an invalid transaction. */
   lamports: SolAmount;
 
@@ -34,7 +34,7 @@ export type BotTaxGuardSettings = {
 };
 
 /** @internal */
-export const botTaxGuardManifest: CandyGuardManifest<BotTaxGuardSettings> = {
+export const botTaxGuardManifest: CandyGuardManifest<BotTaxGuard> = {
   name: 'botTax',
   settingsBytes: 9,
   settingsSerializer: (context) =>

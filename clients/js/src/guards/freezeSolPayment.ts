@@ -30,7 +30,7 @@ import {
  * @see {@link FreezeSolPaymentGuardRouteSettings} to learn more about
  * the instructions that can be executed against this guard.
  */
-export type FreezeSolPaymentGuardSettings = {
+export type FreezeSolPaymentGuard = {
   /** The amount in SOL to charge for. */
   amount: SolAmount;
 
@@ -96,7 +96,7 @@ export type FreezeSolPaymentGuardSettings = {
  * });
  * ```
  *
- * @see {@link FreezeSolPaymentGuardSettings} for more
+ * @see {@link FreezeSolPaymentGuard} for more
  * information on the freezeSolPayment guard itself.
  */
 export type FreezeSolPaymentGuardRouteSettings =
@@ -130,7 +130,8 @@ export type FreezeSolPaymentGuardRouteSettings =
 
 /** @internal */
 export const freezeSolPaymentGuardManifest: CandyGuardManifest<
-  FreezeSolPaymentGuardSettings,
+  FreezeSolPaymentGuard,
+  FreezeSolPaymentGuard,
   {},
   FreezeSolPaymentGuardRouteSettings
 > = {
@@ -208,7 +209,7 @@ function initializeRouteInstruction(
     candyMachine,
     candyGuard,
   }: RouteSettingsParserInput<
-    FreezeSolPaymentGuardSettings,
+    FreezeSolPaymentGuard,
     FreezeSolPaymentGuardRouteSettings
   >
 ) {
@@ -261,7 +262,7 @@ function thawRouteInstruction(
     candyMachine,
     candyGuard,
   }: RouteSettingsParserInput<
-    FreezeSolPaymentGuardSettings,
+    FreezeSolPaymentGuard,
     FreezeSolPaymentGuardRouteSettings
   >
 ) {
@@ -338,7 +339,7 @@ function unlockFundsRouteInstruction(
     candyMachine,
     candyGuard,
   }: RouteSettingsParserInput<
-    FreezeSolPaymentGuardSettings,
+    FreezeSolPaymentGuard,
     FreezeSolPaymentGuardRouteSettings
   >
 ) {

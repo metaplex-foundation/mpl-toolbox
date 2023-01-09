@@ -25,7 +25,7 @@ import {
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type TokenPaymentGuardSettings = {
+export type TokenPaymentGuard = {
   /** The mint address of the required tokens. */
   mint: PublicKey;
 
@@ -37,11 +37,11 @@ export type TokenPaymentGuardSettings = {
 };
 
 /** @internal */
-export const tokenPaymentGuardManifest: CandyGuardManifest<TokenPaymentGuardSettings> =
+export const tokenPaymentGuardManifest: CandyGuardManifest<TokenPaymentGuard> =
   {
     name: 'tokenPayment',
     settingsBytes: 72,
-    settingsSerializer: mapSerializer<TokenPayment, TokenPaymentGuardSettings>(
+    settingsSerializer: mapSerializer<TokenPayment, TokenPaymentGuard>(
       createSerializerFromBeet(tokenPaymentBeet),
       (settings) => ({
         mint: settings.mint,

@@ -20,7 +20,7 @@ import { createSerializerFromBeet, PublicKey } from '@/types';
  * @see {@link NftPaymentGuardMintSettings} for more
  * information on the mint settings of this guard.
  */
-export type NftPaymentGuardSettings = {
+export type NftPaymentGuard = {
   /** The mint address of the required NFT Collection. */
   requiredCollection: PublicKey;
 
@@ -32,7 +32,7 @@ export type NftPaymentGuardSettings = {
  * The settings for the nftPayment guard that could
  * be provided when minting from the Candy Machine.
  *
- * @see {@link NftPaymentGuardSettings} for more
+ * @see {@link NftPaymentGuard} for more
  * information on the nftPayment guard itself.
  */
 export type NftPaymentGuardMintSettings = {
@@ -55,7 +55,8 @@ export type NftPaymentGuardMintSettings = {
 
 /** @internal */
 export const nftPaymentGuardManifest: CandyGuardManifest<
-  NftPaymentGuardSettings,
+  NftPaymentGuard,
+  NftPaymentGuard,
   NftPaymentGuardMintSettings
 > = {
   name: 'nftPayment',

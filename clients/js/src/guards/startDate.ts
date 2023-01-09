@@ -1,4 +1,4 @@
-import { getStartDateSerializer } from 'src/generated';
+import { getStartDateSerializer } from '../generated';
 import { CandyGuardManifest } from './core';
 
 /**
@@ -9,15 +9,14 @@ import { CandyGuardManifest } from './core';
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type StartDateGuardSettings = {
+export type StartDateGuard = {
   /** The date before which minting is not yet possible. */
   date: bigint;
 };
 
 /** @internal */
-export const startDateGuardManifest: CandyGuardManifest<StartDateGuardSettings> =
-  {
-    name: 'startDate',
-    settingsBytes: 8,
-    settingsSerializer: getStartDateSerializer,
-  };
+export const startDateGuardManifest: CandyGuardManifest<StartDateGuard> = {
+  name: 'startDate',
+  settingsBytes: 8,
+  settingsSerializer: getStartDateSerializer,
+};

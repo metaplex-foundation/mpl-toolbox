@@ -5,6 +5,7 @@ import {
 } from './allowList';
 import { BotTaxGuardSettings } from './botTax';
 import {
+  CandyGuardsData,
   CandyGuardsMintSettings,
   CandyGuardsRouteSettings,
   CandyGuardsSettings,
@@ -47,6 +48,31 @@ import {
 export type DefaultCandyGuardSettings = CandyGuardsSettings & {
   botTax: BotTaxGuardSettings | null;
   solPayment: SolPaymentGuardSettings | null;
+  tokenPayment: TokenPaymentGuardSettings | null;
+  startDate: StartDateGuardSettings | null;
+  thirdPartySigner: ThirdPartySignerGuardSettings | null;
+  tokenGate: TokenGateGuardSettings | null;
+  gatekeeper: GatekeeperGuardSettings | null;
+  endDate: EndDateGuardSettings | null;
+  allowList: AllowListGuardSettings | null;
+  mintLimit: MintLimitGuardSettings | null;
+  nftPayment: NftPaymentGuardSettings | null;
+  redeemedAmount: RedeemedAmountGuardSettings | null;
+  addressGate: AddressGateGuardSettings | null;
+  nftGate: NftGateGuardSettings | null;
+  nftBurn: NftBurnGuardSettings | null;
+  tokenBurn: TokenBurnGuardSettings | null;
+  freezeSolPayment: FreezeSolPaymentGuardSettings | null;
+  freezeTokenPayment: FreezeTokenPaymentGuardSettings | null;
+  programGate: ProgramGateGuardSettings | null;
+};
+
+/**
+ * The data for all default Candy Machine guards.
+ */
+export type DefaultCandyGuardData = CandyGuardsData & {
+  botTax: BotTaxGuardSettings | null;
+  solPayment: SolPaymentGuardSettings | null; //
   tokenPayment: TokenPaymentGuardSettings | null;
   startDate: StartDateGuardSettings | null;
   thirdPartySigner: ThirdPartySignerGuardSettings | null;

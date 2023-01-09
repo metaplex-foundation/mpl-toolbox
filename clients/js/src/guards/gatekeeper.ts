@@ -25,7 +25,7 @@ import {
  * @see {@link GatekeeperGuardMintSettings} for more
  * information on the mint settings of this guard.
  */
-export type GatekeeperGuardSettings = {
+export type GatekeeperGuard = {
   /**
    * The public key of the Gatekeeper Network that will
    * be used to check the validity of the minting wallet.
@@ -53,7 +53,7 @@ export type GatekeeperGuardSettings = {
  * The settings for the gatekeeper guard that may
  * be provided when minting from the Candy Machine.
  *
- * @see {@link GatekeeperGuardSettings} for more
+ * @see {@link GatekeeperGuard} for more
  * information on the gatekeeper guard itself.
  */
 export type GatekeeperGuardMintSettings = {
@@ -72,12 +72,13 @@ export type GatekeeperGuardMintSettings = {
 
 /** @internal */
 export const gatekeeperGuardManifest: CandyGuardManifest<
-  GatekeeperGuardSettings,
+  GatekeeperGuard,
+  GatekeeperGuard,
   GatekeeperGuardMintSettings
 > = {
   name: 'gatekeeper',
   settingsBytes: 33,
-  settingsSerializer: mapSerializer<Gatekeeper, GatekeeperGuardSettings>(
+  settingsSerializer: mapSerializer<Gatekeeper, GatekeeperGuard>(
     createSerializerFromBeet(gatekeeperBeet),
     (settings) => ({ ...settings, network: settings.gatekeeperNetwork }),
     (settings) => ({ ...settings, gatekeeperNetwork: settings.network })

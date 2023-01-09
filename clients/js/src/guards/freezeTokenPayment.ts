@@ -40,7 +40,7 @@ import {
  * @see {@link FreezeTokenPaymentGuardRouteSettings} to learn more about
  * the instructions that can be executed against this guard.
  */
-export type FreezeTokenPaymentGuardSettings = {
+export type FreezeTokenPaymentGuard = {
   /** The mint address of the required tokens. */
   mint: PublicKey;
 
@@ -109,7 +109,7 @@ export type FreezeTokenPaymentGuardSettings = {
  * });
  * ```
  *
- * @see {@link FreezeTokenPaymentGuardSettings} for more
+ * @see {@link FreezeTokenPaymentGuard} for more
  * information on the freezeTokenPayment guard itself.
  */
 export type FreezeTokenPaymentGuardRouteSettings =
@@ -143,7 +143,8 @@ export type FreezeTokenPaymentGuardRouteSettings =
 
 /** @internal */
 export const freezeTokenPaymentGuardManifest: CandyGuardManifest<
-  FreezeTokenPaymentGuardSettings,
+  FreezeTokenPaymentGuard,
+  FreezeTokenPaymentGuard,
   {},
   FreezeTokenPaymentGuardRouteSettings
 > = {
@@ -151,7 +152,7 @@ export const freezeTokenPaymentGuardManifest: CandyGuardManifest<
   settingsBytes: 72,
   settingsSerializer: mapSerializer<
     FreezeTokenPayment,
-    FreezeTokenPaymentGuardSettings
+    FreezeTokenPaymentGuard
   >(
     createSerializerFromBeet(freezeTokenPaymentBeet),
     (settings) => ({
@@ -252,7 +253,7 @@ function initializeRouteInstruction({
   candyGuard,
   programs,
 }: RouteSettingsParserInput<
-  FreezeTokenPaymentGuardSettings,
+  FreezeTokenPaymentGuard,
   FreezeTokenPaymentGuardRouteSettings
 >) {
   assert(routeSettings.path === 'initialize');
@@ -333,7 +334,7 @@ function thawRouteInstruction({
   candyGuard,
   programs,
 }: RouteSettingsParserInput<
-  FreezeTokenPaymentGuardSettings,
+  FreezeTokenPaymentGuard,
   FreezeTokenPaymentGuardRouteSettings
 >) {
   assert(routeSettings.path === 'thaw');
@@ -408,7 +409,7 @@ function unlockFundsRouteInstruction({
   candyGuard,
   programs,
 }: RouteSettingsParserInput<
-  FreezeTokenPaymentGuardSettings,
+  FreezeTokenPaymentGuard,
   FreezeTokenPaymentGuardRouteSettings
 >) {
   assert(routeSettings.path === 'unlockFunds');

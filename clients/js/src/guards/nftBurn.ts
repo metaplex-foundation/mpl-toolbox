@@ -19,7 +19,7 @@ import { createSerializerFromBeet, PublicKey } from '@/types';
  * @see {@link NftBurnGuardMintSettings} for more
  * information on the mint settings of this guard.
  */
-export type NftBurnGuardSettings = {
+export type NftBurnGuard = {
   /** The mint address of the required NFT Collection. */
   requiredCollection: PublicKey;
 };
@@ -28,7 +28,7 @@ export type NftBurnGuardSettings = {
  * The settings for the nftBurn guard that could
  * be provided when minting from the Candy Machine.
  *
- * @see {@link NftBurnGuardSettings} for more
+ * @see {@link NftBurnGuard} for more
  * information on the nftBurn guard itself.
  */
 export type NftBurnGuardMintSettings = {
@@ -51,7 +51,8 @@ export type NftBurnGuardMintSettings = {
 
 /** @internal */
 export const nftBurnGuardManifest: CandyGuardManifest<
-  NftBurnGuardSettings,
+  NftBurnGuard,
+  NftBurnGuard,
   NftBurnGuardMintSettings
 > = {
   name: 'nftBurn',

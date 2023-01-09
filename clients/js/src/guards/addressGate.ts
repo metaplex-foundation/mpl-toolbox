@@ -1,5 +1,5 @@
 import { PublicKey } from '@lorisleiva/js-core';
-import { getAddressGateSerializer } from 'src/generated';
+import { getAddressGateSerializer } from '../generated';
 import { CandyGuardManifest } from './core';
 
 /**
@@ -10,15 +10,14 @@ import { CandyGuardManifest } from './core';
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type AddressGateGuardSettings = {
+export type AddressGateGuard = {
   /** The only address that is allowed to mint from the Candy Machine. */
   address: PublicKey;
 };
 
 /** @internal */
-export const addressGateGuardManifest: CandyGuardManifest<AddressGateGuardSettings> =
-  {
-    name: 'addressGate',
-    settingsBytes: 32,
-    settingsSerializer: getAddressGateSerializer,
-  };
+export const addressGateGuardManifest: CandyGuardManifest<AddressGateGuard> = {
+  name: 'addressGate',
+  settingsBytes: 32,
+  settingsSerializer: getAddressGateSerializer,
+};

@@ -19,20 +19,17 @@ import {
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type RedeemedAmountGuardSettings = {
+export type RedeemedAmountGuard = {
   /** The maximum amount of NFTs that can be minted using that guard. */
   maximum: BigNumber;
 };
 
 /** @internal */
-export const redeemedAmountGuardManifest: CandyGuardManifest<RedeemedAmountGuardSettings> =
+export const redeemedAmountGuardManifest: CandyGuardManifest<RedeemedAmountGuard> =
   {
     name: 'redeemedAmount',
     settingsBytes: 8,
-    settingsSerializer: mapSerializer<
-      RedeemedAmount,
-      RedeemedAmountGuardSettings
-    >(
+    settingsSerializer: mapSerializer<RedeemedAmount, RedeemedAmountGuard>(
       createSerializerFromBeet(redeemedAmountBeet),
       (settings) => ({ maximum: toBigNumber(settings.maximum) }),
       (settings) => settings

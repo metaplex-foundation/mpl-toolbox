@@ -17,7 +17,7 @@ import {
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type TokenGateGuardSettings = {
+export type TokenGateGuard = {
   /** The mint address of the required tokens. */
   mint: PublicKey;
 
@@ -26,31 +26,30 @@ export type TokenGateGuardSettings = {
 };
 
 /** @internal */
-export const tokenGateGuardManifest: CandyGuardManifest<TokenGateGuardSettings> =
-  {
-    name: 'tokenGate',
-    settingsBytes: 40,
-    settingsSerializer: mapSerializer<TokenGate, TokenGateGuardSettings>(
-      createSerializerFromBeet(tokenGateBeet),
-      (settings) => ({ ...settings, amount: token(settings.amount) }),
-      (settings) => ({ ...settings, amount: settings.amount.basisPoints })
-    ),
-    mintSettingsParser: ({ metaplex, settings, payer, programs }) => {
-      const tokenAccount = metaplex.tokens().pdas().associatedTokenAccount({
-        mint: settings.mint,
-        owner: payer.publicKey,
-        programs,
-      });
+export const tokenGateGuardManifest: CandyGuardManifest<TokenGateGuard> = {
+  name: 'tokenGate',
+  settingsBytes: 40,
+  settingsSerializer: mapSerializer<TokenGate, TokenGateGuard>(
+    createSerializerFromBeet(tokenGateBeet),
+    (settings) => ({ ...settings, amount: token(settings.amount) }),
+    (settings) => ({ ...settings, amount: settings.amount.basisPoints })
+  ),
+  mintSettingsParser: ({ metaplex, settings, payer, programs }) => {
+    const tokenAccount = metaplex.tokens().pdas().associatedTokenAccount({
+      mint: settings.mint,
+      owner: payer.publicKey,
+      programs,
+    });
 
-      return {
-        arguments: new Uint8Array(),
-        remainingAccounts: [
-          {
-            isSigner: false,
-            address: tokenAccount,
-            isWritable: false,
-          },
-        ],
-      };
-    },
-  };
+    return {
+      arguments: new Uint8Array(),
+      remainingAccounts: [
+        {
+          isSigner: false,
+          address: tokenAccount,
+          isWritable: false,
+        },
+      ],
+    };
+  },
+};

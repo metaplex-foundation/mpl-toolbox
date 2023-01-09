@@ -19,7 +19,7 @@ import { createSerializerFromBeet, PublicKey, Signer } from '@/types';
  * @see {@link ThirdPartySignerGuardMintSettings} for more
  * information on the mint settings of this guard.
  */
-export type ThirdPartySignerGuardSettings = {
+export type ThirdPartySignerGuard = {
   /**
    * The address of the signer that will
    * need to sign each mint transaction.
@@ -31,7 +31,7 @@ export type ThirdPartySignerGuardSettings = {
  * The settings for the thirdPartySigner guard that could
  * be provided when minting from the Candy Machine.
  *
- * @see {@link ThirdPartySignerGuardSettings} for more
+ * @see {@link ThirdPartySignerGuard} for more
  * information on the thirdPartySigner guard itself.
  */
 export type ThirdPartySignerGuardMintSettings = {
@@ -41,7 +41,8 @@ export type ThirdPartySignerGuardMintSettings = {
 
 /** @internal */
 export const thirdPartySignerGuardManifest: CandyGuardManifest<
-  ThirdPartySignerGuardSettings,
+  ThirdPartySignerGuard,
+  ThirdPartySignerGuard,
   ThirdPartySignerGuardMintSettings
 > = {
   name: 'thirdPartySigner',
