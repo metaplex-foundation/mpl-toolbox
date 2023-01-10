@@ -8,16 +8,17 @@ const {
 // Paths.
 const clientDir = path.join(__dirname, "..", "clients");
 const idlDir = path.join(__dirname, "..", "idls");
-const idlPaths = [
-  path.join(idlDir, "spl_system.json"),
-  path.join(idlDir, "spl_memo.json"),
-];
 
-// Instantiate Kinobi.
-const kinobi = new Kinobi(idlPaths);
+// Helpers.
+function renderJs(kinobi, path) {
+  const jsDir = path.join(clientDir, path, "src", "generated");
+  const prettier = require(path.join(clientDir, path, ".prettierrc.json"));
+  kinobi.accept(new RenderJavaScriptVisitor(jsDir, { prettier }));
+}
 
-// Wrap leafs in amounts or datetimes.
-kinobi.update(
+// System Client.
+const system = new Kinobi(path.join(idlDir, "spl_system.json"));
+system.update(
   new SetLeafWrappersVisitor({
     "splSystem.CreateAccount.lamports": {
       kind: "Amount",
@@ -26,8 +27,16 @@ kinobi.update(
     },
   })
 );
+renderJs(system, "js-system");
 
-// Generate JavaScript client.
-const jsDir = path.join(clientDir, "js-system", "src", "generated");
-const prettier = require(path.join(clientDir, "js-system", ".prettierrc.json"));
-kinobi.accept(new RenderJavaScriptVisitor(jsDir, { prettier }));
+// Memo Client.
+const memo = new Kinobi(path.join(idlDir, "spl_memo.json"));
+renderJs(memo, "js-memo");
+
+// Token Client.
+const token = new Kinobi(path.join(idlDir, "spl_token.json"));
+renderJs(token, "js-memo");
+
+// ATA Client.
+const ata = new Kinobi(path.join(idlDir, "spl_associated_token_account.json"));
+renderJs(memo, "js-associated-token");
