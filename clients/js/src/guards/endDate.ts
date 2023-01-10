@@ -1,4 +1,4 @@
-import { getEndDateSerializer } from '../generated';
+import { EndDate, EndDateArgs, getEndDateSerializer } from '../generated';
 import { CandyGuardManifest } from './core';
 
 /**
@@ -9,17 +9,10 @@ import { CandyGuardManifest } from './core';
  * provided when creating and/or updating a Candy
  * Machine if you wish to enable this guard.
  */
-export type EndDateGuard = {
-  /** The date after which minting is no longer possible. */
-  // TODO: Create DateTime and DateTimeInput types?
-  date: bigint; // TODO: DateTime
-};
+export type EndDateGuard = EndDate;
 
 /** @see {@link EndDateGuard} */
-export type EndDateGuardSettings = {
-  /** The date after which minting is no longer possible. */
-  date: number | bigint; // TODO: DateTimeInput
-};
+export type EndDateGuardSettings = EndDateArgs;
 
 /** @internal */
 export const endDateGuardManifest: CandyGuardManifest<
