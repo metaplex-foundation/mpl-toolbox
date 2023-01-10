@@ -1,0 +1,16 @@
+{
+  "version": "0.0.1",
+  "name": "spl_system",
+  "instructions": [
+    {
+      "name": "createAccount",
+      "accounts": [],
+      "args": [
+        {
+          "name": "memo",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,0 @@
-[profile.release]
-overflow-checks = true
-
-[workspace]
-members = [
-    "candy-guard",
-    "candy-machine-core",
-    "macro"
-]
