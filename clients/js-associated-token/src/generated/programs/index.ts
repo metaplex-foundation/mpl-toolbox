@@ -7,4 +7,3 @@
  */
 
 export * from './splMemo';
-export * from './splSystem';

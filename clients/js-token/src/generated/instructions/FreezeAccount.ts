@@ -10,33 +10,26 @@ import {
   AccountMeta,
   Context,
   PublicKey,
-  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
-// Arguments.
-export type AddMemoInstructionData = { memo: string };
-
-export function getAddMemoInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
-): Serializer<AddMemoInstructionData> {
-  const s = context.serializer;
-  return s.struct<AddMemoInstructionData>(
-    [['memo', s.string]],
-    'addMemoInstructionArgs'
-  );
-}
+// Accounts.
+export type FreezeAccountInstructionAccounts = {
+  account: PublicKey;
+  mint: PublicKey;
+  owner: Signer;
+};
 
 // Instruction.
-export function addMemo(
+export function freezeAccount(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: AddMemoInstructionData
+  input: FreezeAccountInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -44,12 +37,26 @@ export function addMemo(
   // Program ID.
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
-    'splMemo',
-    'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Account.
+  keys.push({ pubkey: input.account, isSigner: false, isWritable: false });
+
+  // Mint.
+  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+
+  // Owner.
+  signers.push(input.owner);
+  keys.push({
+    pubkey: input.owner.publicKey,
+    isSigner: true,
+    isWritable: false,
+  });
+
   // Data.
-  const data = getAddMemoInstructionDataSerializer(context).serialize(input);
+  const data = new Uint8Array();
 
   return {
     instruction: { keys, programId, data },

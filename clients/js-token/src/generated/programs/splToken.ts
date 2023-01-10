@@ -7,20 +7,19 @@
  */
 
 import { Context, Program } from '@lorisleiva/js-core';
-import {
-  getSplSystemErrorFromCode,
-  getSplSystemErrorFromName,
-} from '../errors';
+import { getSplTokenErrorFromCode, getSplTokenErrorFromName } from '../errors';
 
-export function getSplSystemProgram(context: Pick<Context, 'eddsa'>): Program {
+export function getSplTokenProgram(context: Pick<Context, 'eddsa'>): Program {
   return {
-    name: 'splSystem',
-    address: context.eddsa.createPublicKey('11111111111111111111111111111111'),
+    name: 'splToken',
+    address: context.eddsa.createPublicKey(
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
     getErrorFromCode(code: number, cause?: Error) {
-      return getSplSystemErrorFromCode(code, this, cause);
+      return getSplTokenErrorFromCode(code, this, cause);
     },
     getErrorFromName(name: string, cause?: Error) {
-      return getSplSystemErrorFromName(name, this, cause);
+      return getSplTokenErrorFromName(name, this, cause);
     },
     isOnCluster() {
       return true;

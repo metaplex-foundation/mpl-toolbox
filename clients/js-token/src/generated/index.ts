@@ -6,6 +6,8 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
+export * from './accounts';
 export * from './errors';
 export * from './instructions';
 export * from './programs';
+export * from './types';

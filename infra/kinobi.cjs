@@ -35,7 +35,7 @@ renderJs(memo, "js-memo");
 
 // Token Client.
 const token = new Kinobi(path.join(idlDir, "spl_token.json"));
-renderJs(token, "js-memo");
+renderJs(token, "js-token");
 
 // ATA Client.
 const ata = new Kinobi(path.join(idlDir, "spl_associated_token_account.json"));
