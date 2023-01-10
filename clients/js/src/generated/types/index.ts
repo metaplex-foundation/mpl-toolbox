@@ -13,6 +13,7 @@ export * from './AllowListProof';
 export * from './BotTax';
 export * from './CandyGuardData';
 export * from './CandyMachineData';
+export * from './ConfigLine';
 export * from './ConfigLineSettings';
 export * from './Creator';
 export * from './EndDate';

@@ -4,6 +4,7 @@ const {
   RenameNodesVisitor,
   RenderJavaScriptVisitor,
   MarkNodesAsInternalVisitor,
+  SetLeafWrappersVisitor,
 } = require("@lorisleiva/kinobi");
 
 // Paths.
@@ -45,11 +46,14 @@ kinobi.update(
   })
 );
 
+// Wrap leafs in amounts or datetimes.
+kinobi.update(new SetLeafWrappersVisitor({}));
+
 // Make some nodes internal to override them with custom code.
 kinobi.update(
   new MarkNodesAsInternalVisitor([
-    { account: "CandyMachine" },
-    { account: "CandyGuard" },
+    { name: "CandyMachine", type: "account" },
+    { name: "CandyGuard", type: "account" },
   ])
 );
 
