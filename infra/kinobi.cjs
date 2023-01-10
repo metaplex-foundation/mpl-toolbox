@@ -1,9 +1,7 @@
 const path = require("path");
 const {
   Kinobi,
-  RenameNodesVisitor,
   RenderJavaScriptVisitor,
-  MarkNodesAsInternalVisitor,
   SetLeafWrappersVisitor,
 } = require("@lorisleiva/kinobi");
 
@@ -18,24 +16,16 @@ const idlPaths = [
 // Instantiate Kinobi.
 const kinobi = new Kinobi(idlPaths);
 
-// Rename nodes.
-// kinobi.update(new RenameNodesVisitor({}));
-
 // Wrap leafs in amounts or datetimes.
-// kinobi.update(
-//   new SetLeafWrappersVisitor({
-//     "mplCandyGuard.StartDate.date": { kind: "DateTime" },
-//     "mplCandyGuard.EndDate.date": { kind: "DateTime" },
-//   })
-// );
-
-// Make some nodes internal to override them with custom code.
-// kinobi.update(
-//   new MarkNodesAsInternalVisitor([
-//     { name: "CandyMachine", type: "account" },
-//     { name: "CandyGuard", type: "account" },
-//   ])
-// );
+kinobi.update(
+  new SetLeafWrappersVisitor({
+    "splSystem.CreateAccount.lamports": {
+      kind: "Amount",
+      identifier: "SOL",
+      decimals: 9,
+    },
+  })
+);
 
 // Generate JavaScript client.
 const jsDir = path.join(clientDir, "js-system", "src", "generated");

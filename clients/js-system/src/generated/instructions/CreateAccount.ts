@@ -8,12 +8,14 @@
 
 import {
   AccountMeta,
+  Amount,
   Context,
   PublicKey,
   Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapAmountSerializer,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
@@ -26,13 +28,13 @@ export type CreateAccountInstructionAccounts = {
 // Arguments.
 export type CreateAccountInstructionData = {
   discriminator: number;
-  lamports: bigint;
+  lamports: Amount<'SOL', 9>;
   space: bigint;
   programId: PublicKey;
 };
 
 export type CreateAccountInstructionArgs = {
-  lamports: number | bigint;
+  lamports: Amount<'SOL', 9>;
   space: number | bigint;
   programId: PublicKey;
 };
@@ -49,7 +51,7 @@ export function getCreateAccountInstructionDataSerializer(
     s.struct<CreateAccountInstructionData>(
       [
         ['discriminator', s.u32],
-        ['lamports', s.u64],
+        ['lamports', mapAmountSerializer(s.u64, 'SOL', 9)],
         ['space', s.u64],
         ['programId', s.publicKey],
       ],
