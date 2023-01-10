@@ -4,17 +4,40 @@
   "instructions": [
     {
       "name": "createAccount",
-      "accounts": [],
+      "accounts": [
+        {
+          "name": "from",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "newAccount",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "discriminant": {
+        "value": 1,
+        "type": "u32"
+      },
       "args": [
         {
-          "name": "memo",
-          "type": "string"
+          "name": "lamports",
+          "type": "u64"
+        },
+        {
+          "name": "space",
+          "type": "u64"
+        },
+        {
+          "name": "programId",
+          "type": "publicKey"
         }
       ]
     }
   ],
   "metadata": {
     "address": "11111111111111111111111111111111",
-    "origin": "anchor"
+    "origin": "shank"
   }
 }

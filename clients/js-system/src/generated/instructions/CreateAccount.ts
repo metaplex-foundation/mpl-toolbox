@@ -17,13 +17,25 @@ import {
   mapSerializer,
 } from '@lorisleiva/js-core';
 
-// Arguments.
-export type CreateAccountInstructionData = {
-  discriminator: Array<number>;
-  memo: string;
+// Accounts.
+export type CreateAccountInstructionAccounts = {
+  from: Signer;
+  newAccount: Signer;
 };
 
-export type CreateAccountInstructionArgs = { memo: string };
+// Arguments.
+export type CreateAccountInstructionData = {
+  discriminator: number;
+  lamports: bigint;
+  space: bigint;
+  programId: PublicKey;
+};
+
+export type CreateAccountInstructionArgs = {
+  lamports: number | bigint;
+  space: number | bigint;
+  programId: PublicKey;
+};
 
 export function getCreateAccountInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
@@ -36,16 +48,14 @@ export function getCreateAccountInstructionDataSerializer(
   >(
     s.struct<CreateAccountInstructionData>(
       [
-        ['discriminator', s.array(s.u8, 8)],
-        ['memo', s.string],
+        ['discriminator', s.u32],
+        ['lamports', s.u64],
+        ['space', s.u64],
+        ['programId', s.publicKey],
       ],
       'createAccountInstructionArgs'
     ),
-    (value) =>
-      ({
-        discriminator: [99, 20, 130, 119, 196, 235, 131, 149],
-        ...value,
-      } as CreateAccountInstructionData)
+    (value) => ({ discriminator: 1, ...value } as CreateAccountInstructionData)
   ) as Serializer<CreateAccountInstructionArgs, CreateAccountInstructionData>;
 }
 
@@ -56,7 +66,7 @@ export function createAccount(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: CreateAccountInstructionArgs
+  input: CreateAccountInstructionAccounts & CreateAccountInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -67,6 +77,22 @@ export function createAccount(
     'splSystem',
     '11111111111111111111111111111111'
   );
+
+  // From.
+  signers.push(input.from);
+  keys.push({
+    pubkey: input.from.publicKey,
+    isSigner: true,
+    isWritable: false,
+  });
+
+  // New Account.
+  signers.push(input.newAccount);
+  keys.push({
+    pubkey: input.newAccount.publicKey,
+    isSigner: true,
+    isWritable: false,
+  });
 
   // Data.
   const data =

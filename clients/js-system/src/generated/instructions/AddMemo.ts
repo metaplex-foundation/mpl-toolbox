@@ -14,39 +14,19 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
-  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Arguments.
-export type AddMemoInstructionData = {
-  discriminator: Array<number>;
-  memo: string;
-};
-
-export type AddMemoInstructionArgs = { memo: string };
+export type AddMemoInstructionData = { memo: string };
 
 export function getAddMemoInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<AddMemoInstructionArgs, AddMemoInstructionData> {
+): Serializer<AddMemoInstructionData> {
   const s = context.serializer;
-  return mapSerializer<
-    AddMemoInstructionArgs,
-    AddMemoInstructionData,
-    AddMemoInstructionData
-  >(
-    s.struct<AddMemoInstructionData>(
-      [
-        ['discriminator', s.array(s.u8, 8)],
-        ['memo', s.string],
-      ],
-      'addMemoInstructionArgs'
-    ),
-    (value) =>
-      ({
-        discriminator: [236, 93, 108, 158, 70, 109, 204, 167],
-        ...value,
-      } as AddMemoInstructionData)
-  ) as Serializer<AddMemoInstructionArgs, AddMemoInstructionData>;
+  return s.struct<AddMemoInstructionData>(
+    [['memo', s.string]],
+    'addMemoInstructionArgs'
+  );
 }
 
 // Instruction.
