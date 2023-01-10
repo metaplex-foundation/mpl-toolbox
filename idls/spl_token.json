@@ -690,10 +690,7 @@
           {
             "name": "signers",
             "type": {
-              "array": [
-                "publicKey",
-                11
-              ]
+              "array": ["publicKey", 11]
             }
           }
         ]
@@ -840,5 +837,9 @@
       "name": "NonNativeNotSupported",
       "msg": "Instruction does not support non-native tokens"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    "origin": "anchor"
+  }
 }

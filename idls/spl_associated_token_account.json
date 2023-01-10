@@ -122,5 +122,9 @@
       "name": "InvalidOwner",
       "msg": "Associated token account owner does not match address derivation"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+    "origin": "anchor"
+  }
 }
