@@ -47,7 +47,12 @@ kinobi.update(
 );
 
 // Wrap leafs in amounts or datetimes.
-kinobi.update(new SetLeafWrappersVisitor({}));
+kinobi.update(
+  new SetLeafWrappersVisitor({
+    "mplCandyGuard.StartDate.date": { kind: "DateTime" },
+    "mplCandyGuard.EndDate.date": { kind: "DateTime" },
+  })
+);
 
 // Make some nodes internal to override them with custom code.
 kinobi.update(
