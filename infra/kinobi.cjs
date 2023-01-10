@@ -10,9 +10,9 @@ const clientDir = path.join(__dirname, "..", "clients");
 const idlDir = path.join(__dirname, "..", "idls");
 
 // Helpers.
-function renderJs(kinobi, path) {
-  const jsDir = path.join(clientDir, path, "src", "generated");
-  const prettier = require(path.join(clientDir, path, ".prettierrc.json"));
+function renderJs(kinobi, dir) {
+  const jsDir = path.join(clientDir, dir, "src", "generated");
+  const prettier = require(path.join(clientDir, dir, ".prettierrc.json"));
   kinobi.accept(new RenderJavaScriptVisitor(jsDir, { prettier }));
 }
 

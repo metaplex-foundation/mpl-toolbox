@@ -7,4 +7,3 @@
  */
 
 export * from './AddMemo';
-export * from './CreateAccount';
