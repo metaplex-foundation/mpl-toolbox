@@ -2,7 +2,7 @@ const { LOCALHOST, tmpLedgerDir } = require("@metaplex-foundation/amman");
 
 const validator = {
   killRunningValidators: true,
-  programs: [programs.candy_guard],
+  programs: [],
   commitment: "singleGossip",
   resetLedger: true,
   verifyFees: false,
