@@ -15,11 +15,26 @@ type ProgramErrorConstructor = new (
 const codeToErrorMap: Map<number, ProgramErrorConstructor> = new Map();
 const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
+/** InvalidOwner: 'Associated token account owner does not match address derivation' */
+export class InvalidOwnerError extends ProgramError {
+  readonly name: string = 'InvalidOwner';
+  readonly code: number = 0x0; // 0
+  constructor(program: Program, cause?: Error) {
+    super(
+      'Associated token account owner does not match address derivation',
+      program,
+      cause
+    );
+  }
+}
+codeToErrorMap.set(0x0, InvalidOwnerError);
+nameToErrorMap.set('InvalidOwner', InvalidOwnerError);
+
 /**
  * Attempts to resolve a custom program error from the provided error code.
  * @category Errors
  */
-export function getSplMemoErrorFromCode(
+export function getSplAssociatedTokenAccountErrorFromCode(
   code: number,
   program: Program,
   cause?: Error
@@ -32,7 +47,7 @@ export function getSplMemoErrorFromCode(
  * Attempts to resolve a custom program error from the provided error name, i.e. 'Unauthorized'.
  * @category Errors
  */
-export function getSplMemoErrorFromName(
+export function getSplAssociatedTokenAccountErrorFromName(
   name: string,
   program: Program,
   cause?: Error

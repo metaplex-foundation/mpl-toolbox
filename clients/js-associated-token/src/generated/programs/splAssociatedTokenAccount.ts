@@ -7,19 +7,24 @@
  */
 
 import { Context, Program } from '@lorisleiva/js-core';
-import { getSplMemoErrorFromCode, getSplMemoErrorFromName } from '../errors';
+import {
+  getSplAssociatedTokenAccountErrorFromCode,
+  getSplAssociatedTokenAccountErrorFromName,
+} from '../errors';
 
-export function getSplMemoProgram(context: Pick<Context, 'eddsa'>): Program {
+export function getSplAssociatedTokenAccountProgram(
+  context: Pick<Context, 'eddsa'>
+): Program {
   return {
-    name: 'splMemo',
+    name: 'splAssociatedTokenAccount',
     address: context.eddsa.createPublicKey(
-      'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
+      'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
     ),
     getErrorFromCode(code: number, cause?: Error) {
-      return getSplMemoErrorFromCode(code, this, cause);
+      return getSplAssociatedTokenAccountErrorFromCode(code, this, cause);
     },
     getErrorFromName(name: string, cause?: Error) {
-      return getSplMemoErrorFromName(name, this, cause);
+      return getSplAssociatedTokenAccountErrorFromName(name, this, cause);
     },
     isOnCluster() {
       return true;

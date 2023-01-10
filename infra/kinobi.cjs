@@ -39,4 +39,4 @@ renderJs(token, "js-token");
 
 // ATA Client.
 const ata = new Kinobi(path.join(idlDir, "spl_associated_token_account.json"));
-renderJs(memo, "js-associated-token");
+renderJs(ata, "js-associated-token");
