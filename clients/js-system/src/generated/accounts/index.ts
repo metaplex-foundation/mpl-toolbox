@@ -5,3 +5,5 @@
  *
  * @see https://github.com/metaplex-foundation/kinobi
  */
+
+export default {};

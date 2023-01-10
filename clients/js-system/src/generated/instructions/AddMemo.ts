@@ -36,7 +36,7 @@ export function addMemo(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: AddMemoInstructionArgs
+  input: AddMemoInstructionData
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
