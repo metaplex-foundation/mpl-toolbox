@@ -33,6 +33,11 @@ import {
   getCandyMachineAccountDataSerializer as getBaseCandyMachineAccountDataSerializer,
 } from './generated/accounts/CandyMachine';
 
+/**
+ * This account contains all the relevant information about a Candy Machine.
+ * This includes its settings but also all of the items (a.k.a. config lines)
+ * loaded inside the Candy Machine along with some statistics about the items.
+ */
 export type CandyMachine = Account<CandyMachineAccountData>;
 
 export type CandyMachineAccountData = {

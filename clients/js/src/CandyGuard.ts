@@ -16,6 +16,7 @@ import {
 import {
   CandyGuardsData,
   CandyGuardsSettings,
+  DefaultCandyGuardData,
   DefaultCandyGuardSettings,
 } from './guards';
 
@@ -23,7 +24,7 @@ export type CandyGuard<T extends CandyGuardsData = DefaultCandyGuardData> =
   Account<CandyGuardAccountData<T>>;
 
 export type CandyGuardAccountData<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
+  T extends CandyGuardsData = DefaultCandyGuardData
 > = {
   /** Identifies the account as a Candy Guard account. */
   discriminator: Array<number>;
@@ -65,7 +66,7 @@ export type CandyGuardAccountArgs<
 > = CandyGuardAccountData<T>;
 
 export async function fetchCandyGuard<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
+  T extends CandyGuardsData = DefaultCandyGuardData
 >(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
@@ -76,7 +77,7 @@ export async function fetchCandyGuard<
 }
 
 export async function safeFetchCandyGuard<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
+  T extends CandyGuardsData = DefaultCandyGuardData
 >(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
@@ -88,7 +89,7 @@ export async function safeFetchCandyGuard<
 }
 
 export function deserializeCandyGuard<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
+  T extends CandyGuardsData = DefaultCandyGuardData
 >(context: Pick<Context, 'serializer'>, rawAccount: RpcAccount): CandyGuard<T> {
   return deserializeAccount(
     rawAccount,
@@ -97,19 +98,14 @@ export function deserializeCandyGuard<
 }
 
 export function getCandyGuardAccountDataSerializer<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
+  T extends CandyGuardsSettings,
+  U extends CandyGuardsData & T
 >(
-  context: Pick<Context, 'serializer'>
-): Serializer<CandyGuardAccountArgs<T>, CandyGuardAccountData<T>> {
+  context: Pick<Context, 'serializer' | 'programs'>
+): Serializer<CandyGuardAccountArgs<T>, CandyGuardAccountData<U>> {
   return mapSerializer(
     getBaseCandyGuardAccountDataSerializer(context),
     (value: CandyGuardAccountArgs<T>): BaseCandyGuardAccountArgs => value,
-    (value: BaseCandyGuardAccountData): CandyGuardAccountData<T> => value
+    (value: BaseCandyGuardAccountData): CandyGuardAccountData<U> => value
   );
-}
-
-export function getCandyGuardSettingsSerializer<
-  T extends CandyGuardsSettings = DefaultCandyGuardSettings
->(context: Pick<Context, 'serializer'>): Serializer<T, T> {
-  throw new Error('Not implemented');
 }
