@@ -6,7 +6,7 @@
       "name": "createAccount",
       "accounts": [
         {
-          "name": "from",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },

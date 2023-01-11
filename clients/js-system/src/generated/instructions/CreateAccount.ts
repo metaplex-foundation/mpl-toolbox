@@ -21,7 +21,7 @@ import {
 
 // Accounts.
 export type CreateAccountInstructionAccounts = {
-  from: Signer;
+  payer: Signer;
   newAccount: Signer;
 };
 
@@ -80,10 +80,10 @@ export function createAccount(
     '11111111111111111111111111111111'
   );
 
-  // From.
-  signers.push(input.from);
+  // Payer.
+  signers.push(input.payer);
   keys.push({
-    pubkey: input.from.publicKey,
+    pubkey: input.payer.publicKey,
     isSigner: true,
     isWritable: false,
   });
