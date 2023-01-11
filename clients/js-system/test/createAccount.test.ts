@@ -5,6 +5,9 @@ import { createAccount } from '../src';
 
 test('test example', async (t) => {
   const metaplex = await createMetaplex();
+  const account = await metaplex.rpc.getAccount(metaplex.payer.publicKey);
+  console.log(account);
+
   const newAccount = generateSigner(metaplex);
   const instruction = createAccount(metaplex, {
     lamports: sol(1.5),
