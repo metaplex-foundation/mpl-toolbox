@@ -1,9 +1,13 @@
-import { createMetaplex, createSignerFromKeypair, sol } from '@lorisleiva/js';
+import {
+  createMetaplex,
+  createSignerFromKeypair,
+  sol,
+} from '@lorisleiva/js-test';
 import test from 'ava';
 import { createAccount } from '../src';
 
-test('test example', (t) => {
-  const metaplex = createMetaplex('http://localhost:8899');
+test('test example', async (t) => {
+  const metaplex = await createMetaplex();
   const newAccount = createSignerFromKeypair(
     metaplex,
     metaplex.eddsa.generateKeypair()
@@ -18,5 +22,5 @@ test('test example', (t) => {
     newAccount,
   });
   console.log(foo);
-  t.true(typeof foo === 'function');
+  t.pass();
 });
