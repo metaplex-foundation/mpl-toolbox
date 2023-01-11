@@ -1,4 +1,3 @@
-import { TransactionBuilder } from '@lorisleiva/js-core';
 import { createMetaplex, generateSigner, sol } from '@lorisleiva/js-test';
 import test from 'ava';
 import { createAccount } from '../src';
@@ -18,7 +17,8 @@ test('test example', async (t) => {
     payer: metaplex.payer,
     newAccount,
   });
-  const foo = await TransactionBuilder.make(metaplex)
+  const foo = await metaplex
+    .transactionBuilder()
     .add(instruction)
     .sendAndConfirm();
   console.log(foo);
