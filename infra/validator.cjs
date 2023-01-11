@@ -3,7 +3,7 @@ const { LOCALHOST, tmpLedgerDir } = require("@metaplex-foundation/amman");
 const validator = {
   killRunningValidators: true,
   programs: [],
-  commitment: "singleGossip",
+  commitment: "processed",
   resetLedger: true,
   verifyFees: false,
   jsonRpcUrl: LOCALHOST,
