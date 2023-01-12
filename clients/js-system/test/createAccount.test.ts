@@ -15,7 +15,7 @@ test('it can create new accounts', async (t) => {
       createAccount(metaplex, {
         lamports: sol(1.5),
         space: 42,
-        programId: metaplex.programs.get('splSystem').address,
+        programId: metaplex.programs.getSystem().address,
         payer: metaplex.payer,
         newAccount,
       })
@@ -27,7 +27,7 @@ test('it can create new accounts', async (t) => {
   t.like(account, {
     exists: true,
     executable: false,
-    owner: metaplex.programs.get('splSystem').address,
+    owner: metaplex.programs.getSystem().address,
     address: newAccount.publicKey,
     lamports: sol(1.5),
     data: new Uint8Array(42),
