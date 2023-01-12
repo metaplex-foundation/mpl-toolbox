@@ -1,3 +1,4 @@
+import { generateSigner } from '@lorisleiva/js-core';
 import {
   generateSignerWithSol,
   isEqualToAmount,
@@ -40,4 +41,39 @@ test('it can create transfer SOLs', async (t) => {
     metaplex.payer.publicKey
   );
   t.true(isLessThanAmount(newPayerBalance, payerBalance));
+});
+
+test('it defaults to transferring from the identity', async (t) => {
+  // Given a destination wallet with no SOL.
+  const metaplex = await createMetaplex();
+  const destination = generateSigner(metaplex);
+
+  // And an identity wallet with 100 SOL.
+  const identityBalance = await metaplex.rpc.getBalance(
+    metaplex.identity.publicKey
+  );
+  t.true(isEqualToAmount(identityBalance, sol(100)));
+
+  // When we transfer 10 SOL to the destination without specifying a source.
+  await metaplex
+    .transactionBuilder()
+    .add(
+      transferSol(metaplex, {
+        to: destination.publicKey,
+        lamports: sol(10),
+      })
+    )
+    .sendAndConfirm();
+
+  // Then the destination now has 10 SOL.
+  const destinationBalance = await metaplex.rpc.getBalance(
+    destination.publicKey
+  );
+  t.true(isEqualToAmount(destinationBalance, sol(10)));
+
+  // And the identity now has 90 SOL minus the transaction fee.
+  const newIdentityBalance = await metaplex.rpc.getBalance(
+    metaplex.identity.publicKey
+  );
+  t.true(isEqualToAmount(newIdentityBalance, sol(90), sol(0.01)));
 });
