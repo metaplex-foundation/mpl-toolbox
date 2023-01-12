@@ -20,7 +20,7 @@ import {
 export type TransferInstructionAccounts = {
   source: PublicKey;
   destination: PublicKey;
-  authority: Signer;
+  authority?: Signer;
 };
 
 // Arguments.
@@ -43,6 +43,7 @@ export function transfer(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
+    identity: Context['identity'];
     programs?: Context['programs'];
   },
   input: TransferInstructionAccounts & TransferInstructionArgs
@@ -64,12 +65,21 @@ export function transfer(
   keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
   // Authority.
-  signers.push(input.authority);
-  keys.push({
-    pubkey: input.authority.publicKey,
-    isSigner: true,
-    isWritable: false,
-  });
+  if (input.authority) {
+    signers.push(input.authority);
+    keys.push({
+      pubkey: input.authority.publicKey,
+      isSigner: true,
+      isWritable: false,
+    });
+  } else {
+    signers.push(context.identity);
+    keys.push({
+      pubkey: context.identity.publicKey,
+      isSigner: true,
+      isWritable: false,
+    });
+  }
 
   // Data.
   const data = getTransferInstructionDataSerializer(context).serialize(input);

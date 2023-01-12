@@ -52,15 +52,17 @@ export function initializeAccount(
   keys.push({ pubkey: input.owner, isSigner: false, isWritable: false });
 
   // Rent.
-  keys.push({
-    pubkey:
-      input.rent ??
-      context.eddsa.createPublicKey(
+  if (input.rent) {
+    keys.push({ pubkey: input.rent, isSigner: false, isWritable: false });
+  } else {
+    keys.push({
+      pubkey: context.eddsa.createPublicKey(
         'SysvarRent111111111111111111111111111111111'
       ),
-    isSigner: false,
-    isWritable: false,
-  });
+      isSigner: false,
+      isWritable: false,
+    });
+  }
 
   // Data.
   const data = new Uint8Array();

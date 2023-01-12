@@ -21,7 +21,7 @@ export type TransferCheckedInstructionAccounts = {
   source: PublicKey;
   mint: PublicKey;
   destination: PublicKey;
-  authority: Signer;
+  authority?: Signer;
 };
 
 // Arguments.
@@ -56,6 +56,7 @@ export function transferChecked(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
+    identity: Context['identity'];
     programs?: Context['programs'];
   },
   input: TransferCheckedInstructionAccounts & TransferCheckedInstructionArgs
@@ -80,12 +81,21 @@ export function transferChecked(
   keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
   // Authority.
-  signers.push(input.authority);
-  keys.push({
-    pubkey: input.authority.publicKey,
-    isSigner: true,
-    isWritable: false,
-  });
+  if (input.authority) {
+    signers.push(input.authority);
+    keys.push({
+      pubkey: input.authority.publicKey,
+      isSigner: true,
+      isWritable: false,
+    });
+  } else {
+    signers.push(context.identity);
+    keys.push({
+      pubkey: context.identity.publicKey,
+      isSigner: true,
+      isWritable: false,
+    });
+  }
 
   // Data.
   const data =

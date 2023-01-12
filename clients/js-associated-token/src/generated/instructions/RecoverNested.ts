@@ -89,17 +89,23 @@ export function recoverNested(
   });
 
   // Token Program.
-  keys.push({
-    pubkey:
-      input.tokenProgram ??
-      getProgramAddressWithFallback(
+  if (input.tokenProgram) {
+    keys.push({
+      pubkey: input.tokenProgram,
+      isSigner: false,
+      isWritable: false,
+    });
+  } else {
+    keys.push({
+      pubkey: getProgramAddressWithFallback(
         context,
         'splToken',
         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
       ),
-    isSigner: false,
-    isWritable: false,
-  });
+      isSigner: false,
+      isWritable: false,
+    });
+  }
 
   // Data.
   const data = new Uint8Array();

@@ -8,11 +8,11 @@
 
 import {
   AccountMeta,
-  Amount,
   Context,
   PublicKey,
   Serializer,
   Signer,
+  SolAmount,
   WrappedInstruction,
   getProgramAddressWithFallback,
   mapAmountSerializer,
@@ -21,20 +21,20 @@ import {
 
 // Accounts.
 export type CreateAccountInstructionAccounts = {
-  payer: Signer;
+  payer?: Signer;
   newAccount: Signer;
 };
 
 // Arguments.
 export type CreateAccountInstructionData = {
   discriminator: number;
-  lamports: Amount<'SOL', 9>;
+  lamports: SolAmount;
   space: bigint;
   programId: PublicKey;
 };
 
 export type CreateAccountInstructionArgs = {
-  lamports: Amount<'SOL', 9>;
+  lamports: SolAmount;
   space: number | bigint;
   programId: PublicKey;
 };
@@ -66,6 +66,7 @@ export function createAccount(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
+    payer: Context['payer'];
     programs?: Context['programs'];
   },
   input: CreateAccountInstructionAccounts & CreateAccountInstructionArgs
@@ -81,12 +82,21 @@ export function createAccount(
   );
 
   // Payer.
-  signers.push(input.payer);
-  keys.push({
-    pubkey: input.payer.publicKey,
-    isSigner: true,
-    isWritable: true,
-  });
+  if (input.payer) {
+    signers.push(input.payer);
+    keys.push({
+      pubkey: input.payer.publicKey,
+      isSigner: true,
+      isWritable: true,
+    });
+  } else {
+    signers.push(context.payer);
+    keys.push({
+      pubkey: context.payer.publicKey,
+      isSigner: true,
+      isWritable: true,
+    });
+  }
 
   // New Account.
   signers.push(input.newAccount);
