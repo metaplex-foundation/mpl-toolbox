@@ -1,11 +1,17 @@
-import { generateSigner, sol } from '@lorisleiva/js-test';
+import {
+  generateSigner,
+  isEqualToAmount,
+  sol,
+  subtractAmounts,
+} from '@lorisleiva/js-test';
 import test from 'ava';
 import { createAccount } from '../src';
 import { createMetaplex } from './_setup';
 
 test('it can create new accounts', async (t) => {
-  // Given an account signer.
+  // Given a payer and an account signer.
   const metaplex = await createMetaplex();
+  const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
   const newAccount = generateSigner(metaplex);
 
   // When we create a new account at this address.
@@ -13,11 +19,10 @@ test('it can create new accounts', async (t) => {
     .transactionBuilder()
     .add(
       createAccount(metaplex, {
+        newAccount,
         lamports: sol(1.5),
         space: 42,
         programId: metaplex.programs.getSystem().address,
-        payer: metaplex.payer,
-        newAccount,
       })
     )
     .sendAndConfirm();
@@ -32,4 +37,16 @@ test('it can create new accounts', async (t) => {
     lamports: sol(1.5),
     data: new Uint8Array(42),
   });
+
+  // And the payer was charged 1.5 SOL for the creation of the account.
+  const newPayerBalance = await metaplex.rpc.getBalance(
+    metaplex.payer.publicKey
+  );
+  t.true(
+    isEqualToAmount(
+      newPayerBalance,
+      subtractAmounts(payerBalance, sol(1.5)),
+      sol(0.01) // (tolerance) Plus a bit more for the transaction fee.
+    )
+  );
 });
