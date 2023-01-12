@@ -17,7 +17,7 @@
         }
       ],
       "discriminant": {
-        "value": 1,
+        "value": 0,
         "type": "u32"
       },
       "args": [

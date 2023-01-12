@@ -57,7 +57,7 @@ export function getCreateAccountInstructionDataSerializer(
       ],
       'createAccountInstructionArgs'
     ),
-    (value) => ({ discriminator: 1, ...value } as CreateAccountInstructionData)
+    (value) => ({ discriminator: 0, ...value } as CreateAccountInstructionData)
   ) as Serializer<CreateAccountInstructionArgs, CreateAccountInstructionData>;
 }
 

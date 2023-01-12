@@ -1,4 +1,9 @@
-import { createMetaplex, generateSigner, sol } from '@lorisleiva/js-test';
+import {
+  base58,
+  createMetaplex,
+  generateSigner,
+  sol,
+} from '@lorisleiva/js-test';
 import test from 'ava';
 import { createAccount } from '../src';
 
@@ -8,12 +13,12 @@ test('test example', async (t) => {
   const newAccount = generateSigner(metaplex);
 
   // When
-  await metaplex
+  const result = await metaplex
     .transactionBuilder()
     .add(
       createAccount(metaplex, {
         lamports: sol(1.5),
-        space: 15,
+        space: 42,
         programId: metaplex.eddsa.createPublicKey(
           '11111111111111111111111111111111'
         ),
@@ -22,6 +27,7 @@ test('test example', async (t) => {
       })
     )
     .sendAndConfirm();
+  console.log(base58.deserialize(result.signature)[0]);
 
   // Then
   const account = await metaplex.rpc.getAccount(newAccount.publicKey);
