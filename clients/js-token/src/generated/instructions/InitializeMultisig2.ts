@@ -56,7 +56,7 @@ export function initializeMultisig2(
   );
 
   // Multisig.
-  keys.push({ pubkey: input.multisig, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.multisig, isSigner: false, isWritable: true });
 
   // Signer.
   keys.push({ pubkey: input.signer, isSigner: false, isWritable: false });

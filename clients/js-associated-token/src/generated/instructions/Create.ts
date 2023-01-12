@@ -49,14 +49,14 @@ export function create(
   keys.push({
     pubkey: input.fundingAddress.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: true,
   });
 
   // Associated Account Address.
   keys.push({
     pubkey: input.associatedAccountAddress,
     isSigner: false,
-    isWritable: false,
+    isWritable: true,
   });
 
   // Wallet Address.

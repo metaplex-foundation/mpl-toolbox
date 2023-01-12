@@ -71,13 +71,13 @@ export function transferChecked(
   );
 
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
 
   // Mint.
   keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
 
   // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
   // Authority.
   signers.push(input.authority);

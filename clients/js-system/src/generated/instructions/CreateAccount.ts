@@ -85,7 +85,7 @@ export function createAccount(
   keys.push({
     pubkey: input.payer.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: true,
   });
 
   // New Account.
@@ -93,7 +93,7 @@ export function createAccount(
   keys.push({
     pubkey: input.newAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: true,
   });
 
   // Data.

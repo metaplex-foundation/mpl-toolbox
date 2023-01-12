@@ -64,7 +64,7 @@ export function setAuthority(
   );
 
   // Owned.
-  keys.push({ pubkey: input.owned, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.owned, isSigner: false, isWritable: true });
 
   // Owner.
   signers.push(input.owner);

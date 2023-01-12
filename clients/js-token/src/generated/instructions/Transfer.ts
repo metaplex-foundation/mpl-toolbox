@@ -58,10 +58,10 @@ export function transfer(
   );
 
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
 
   // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
   // Authority.
   signers.push(input.authority);

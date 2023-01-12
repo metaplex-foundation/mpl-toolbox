@@ -64,7 +64,7 @@ export function initializeMint(
   );
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
 
   // Rent.
   keys.push({

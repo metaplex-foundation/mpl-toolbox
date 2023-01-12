@@ -58,7 +58,7 @@ export function approve(
   );
 
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
 
   // Delegate.
   keys.push({ pubkey: input.delegate, isSigner: false, isWritable: false });

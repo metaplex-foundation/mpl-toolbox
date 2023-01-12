@@ -42,10 +42,10 @@ export function closeAccount(
   );
 
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
 
   // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
   // Owner.
   signers.push(input.owner);

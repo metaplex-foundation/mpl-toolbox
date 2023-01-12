@@ -56,7 +56,7 @@ export function initializeAccount3(
   );
 
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
 
   // Mint.
   keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });

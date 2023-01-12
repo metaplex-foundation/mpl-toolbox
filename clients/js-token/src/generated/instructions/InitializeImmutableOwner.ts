@@ -40,7 +40,7 @@ export function initializeImmutableOwner(
   );
 
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
 
   // Data.
   const data = new Uint8Array();

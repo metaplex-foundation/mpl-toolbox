@@ -63,7 +63,7 @@ export function initializeMint2(
   );
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
 
   // Data.
   const data =

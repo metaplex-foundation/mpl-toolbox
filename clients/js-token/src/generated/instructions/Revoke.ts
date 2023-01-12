@@ -41,7 +41,7 @@ export function revoke(
   );
 
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
 
   // Owner.
   signers.push(input.owner);

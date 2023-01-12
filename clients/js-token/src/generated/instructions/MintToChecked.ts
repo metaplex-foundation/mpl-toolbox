@@ -64,10 +64,10 @@ export function mintToChecked(
   );
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
 
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: false });
+  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
 
   // Owner.
   signers.push(input.owner);

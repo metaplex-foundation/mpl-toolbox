@@ -49,7 +49,7 @@ export function recoverNested(
   keys.push({
     pubkey: input.nestedAssociatedAccountAddress,
     isSigner: false,
-    isWritable: false,
+    isWritable: true,
   });
 
   // Nested Token Mint Address.
@@ -63,7 +63,7 @@ export function recoverNested(
   keys.push({
     pubkey: input.destinationAssociatedAccountAddress,
     isSigner: false,
-    isWritable: false,
+    isWritable: true,
   });
 
   // Owner Associated Account Address.
@@ -85,7 +85,7 @@ export function recoverNested(
   keys.push({
     pubkey: input.walletAddress.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: true,
   });
 
   // Token Program.
