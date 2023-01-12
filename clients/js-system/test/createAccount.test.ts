@@ -3,7 +3,7 @@ import test from 'ava';
 import { createAccount } from '../src';
 
 test('test example', async (t) => {
-  const metaplex = await createMetaplex(undefined, { commitment: 'confirmed' });
+  const metaplex = await createMetaplex();
   const account = await metaplex.rpc.getAccount(metaplex.payer.publicKey);
   console.log(account);
 
