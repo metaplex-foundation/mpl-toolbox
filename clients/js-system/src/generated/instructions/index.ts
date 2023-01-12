@@ -7,3 +7,4 @@
  */
 
 export * from './CreateAccount';
+export * from './TransferSol';

@@ -34,6 +34,31 @@
           "type": "publicKey"
         }
       ]
+    },
+    {
+      "name": "transferSol",
+      "accounts": [
+        {
+          "name": "from",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "to",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "discriminant": {
+        "value": 2,
+        "type": "u32"
+      },
+      "args": [
+        {
+          "name": "lamports",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "metadata": {
