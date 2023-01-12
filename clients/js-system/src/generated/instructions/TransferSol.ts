@@ -12,24 +12,26 @@ import {
   PublicKey,
   Serializer,
   Signer,
+  SolAmount,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapAmountSerializer,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
 export type TransferSolInstructionAccounts = {
-  from: Signer;
+  from?: Signer;
   to: PublicKey;
 };
 
 // Arguments.
 export type TransferSolInstructionData = {
   discriminator: number;
-  lamports: bigint;
+  lamports: SolAmount;
 };
 
-export type TransferSolInstructionArgs = { lamports: number | bigint };
+export type TransferSolInstructionArgs = { lamports: SolAmount };
 
 export function getTransferSolInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
@@ -43,7 +45,7 @@ export function getTransferSolInstructionDataSerializer(
     s.struct<TransferSolInstructionData>(
       [
         ['discriminator', s.u32],
-        ['lamports', s.u64],
+        ['lamports', mapAmountSerializer(s.u64, 'SOL', 9)],
       ],
       'transferSolInstructionArgs'
     ),
@@ -56,6 +58,7 @@ export function transferSol(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
+    identity: Context['identity'];
     programs?: Context['programs'];
   },
   input: TransferSolInstructionAccounts & TransferSolInstructionArgs
@@ -71,8 +74,21 @@ export function transferSol(
   );
 
   // From.
-  signers.push(input.from);
-  keys.push({ pubkey: input.from.publicKey, isSigner: true, isWritable: true });
+  if (input.from) {
+    signers.push(input.from);
+    keys.push({
+      pubkey: input.from.publicKey,
+      isSigner: true,
+      isWritable: true,
+    });
+  } else {
+    signers.push(context.identity);
+    keys.push({
+      pubkey: context.identity.publicKey,
+      isSigner: true,
+      isWritable: true,
+    });
+  }
 
   // To.
   keys.push({ pubkey: input.to, isSigner: false, isWritable: true });

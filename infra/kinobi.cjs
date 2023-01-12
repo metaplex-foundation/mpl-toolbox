@@ -4,6 +4,9 @@ const {
   RenderJavaScriptVisitor,
   SetLeafWrappersVisitor,
 } = require("@lorisleiva/kinobi");
+const {
+  SetInstructionAccountDefaultValuesVisitor,
+} = require("@lorisleiva/kinobi");
 
 // Paths.
 const clientDir = path.join(__dirname, "..", "clients");
@@ -20,12 +23,14 @@ function renderJs(kinobi, dir) {
 const system = new Kinobi(path.join(idlDir, "spl_system.json"));
 system.update(
   new SetLeafWrappersVisitor({
-    "splSystem.CreateAccount.lamports": {
-      kind: "Amount",
-      identifier: "SOL",
-      decimals: 9,
-    },
+    "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
+    "splSystem.TransferSol.lamports": { kind: "SolAmount" },
   })
+);
+system.update(
+  new SetInstructionAccountDefaultValuesVisitor([
+    { instruction: "TransferSol", account: "from", kind: "identity" },
+  ])
 );
 renderJs(system, "js-system");
 
