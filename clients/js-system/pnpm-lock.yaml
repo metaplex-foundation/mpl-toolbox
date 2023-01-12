@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@ava/typescript': ^3.0.1
   '@lorisleiva/js-core': ^0.0.26
-  '@lorisleiva/js-test': ^0.0.26
+  '@lorisleiva/js-test': ^0.0.27
   '@solana/web3.js': ^1.73.0
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.46.1
@@ -23,7 +23,7 @@ dependencies:
 
 devDependencies:
   '@ava/typescript': 3.0.1
-  '@lorisleiva/js-test': 0.0.26_@solana+web3.js@1.73.0
+  '@lorisleiva/js-test': 0.0.27_@solana+web3.js@1.73.0
   '@solana/web3.js': 1.73.0
   '@typescript-eslint/eslint-plugin': 5.47.0_ncmi6noazr3nzas7jxykisekym
   '@typescript-eslint/parser': 5.47.0_lzzuuodtsqwxnvqeq4g4likcqa
@@ -121,8 +121,8 @@ packages:
       '@lorisleiva/js-core': 0.0.26
     dev: true
 
-  /@lorisleiva/js-rpc-web3js/0.0.26_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-rttphDRGMDaJr/R4j+ZCzVbScVJrKW2L69ddXQ61V6Q8Cna+7Da26RJykRTKQT9v9bMf88XEkB3QsVcJBIRjtA==}
+  /@lorisleiva/js-rpc-web3js/0.0.27_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-rizoWBXZOu0N32nYmjFN6YiFfODEqLhdmLZvr1PdZ+7ajh7q1j12QAispvG6j9ELCwPV+UnMpCcQao2AHgqu7A==}
     peerDependencies:
       '@solana/web3.js': ^1.72.0
     dependencies:
@@ -155,8 +155,8 @@ packages:
       '@lorisleiva/js-core': 0.0.26
     dev: true
 
-  /@lorisleiva/js-test/0.0.26_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-EA//8wt1jAOg1OnqNfwxYOxODJYM6eRvL7Za6rdZmKwKmp/Ev/mCrRSUeQ7Hu05KECdBdbdzcvHQBCG3lkcyXA==}
+  /@lorisleiva/js-test/0.0.27_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-DfLwK/mgEWnMJmulYBjX1juaSuRLq5r+uBO7Mo8VnvM8kYYxVxmGxqCVpYjB8J9Tei/gzNFCr26IMAnvvolYag==}
     peerDependencies:
       '@solana/web3.js': ^1.72.0
     dependencies:
@@ -164,7 +164,7 @@ packages:
       '@lorisleiva/js-eddsa-web3js': 0.0.26_@solana+web3.js@1.73.0
       '@lorisleiva/js-http-fetch': 0.0.26
       '@lorisleiva/js-program-repository': 0.0.26
-      '@lorisleiva/js-rpc-web3js': 0.0.26_@solana+web3.js@1.73.0
+      '@lorisleiva/js-rpc-web3js': 0.0.27_@solana+web3.js@1.73.0
       '@lorisleiva/js-serializer-beet': 0.0.26_@solana+web3.js@1.73.0
       '@lorisleiva/js-storage-mock': 0.0.26
       '@lorisleiva/js-transaction-factory-web3js': 0.0.26_@solana+web3.js@1.73.0

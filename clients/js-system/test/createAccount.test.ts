@@ -1,19 +1,14 @@
-import {
-  base58,
-  createMetaplex,
-  generateSigner,
-  sol,
-} from '@lorisleiva/js-test';
+import { createMetaplex, generateSigner, sol } from '@lorisleiva/js-test';
 import test from 'ava';
 import { createAccount } from '../src';
 
-test('test example', async (t) => {
-  // Given
+test('it can create new accounts', async (t) => {
+  // Given an account signer.
   const metaplex = await createMetaplex();
   const newAccount = generateSigner(metaplex);
 
-  // When
-  const result = await metaplex
+  // When we create a new account at this address.
+  await metaplex
     .transactionBuilder()
     .add(
       createAccount(metaplex, {
@@ -27,12 +22,15 @@ test('test example', async (t) => {
       })
     )
     .sendAndConfirm();
-  console.log(base58.deserialize(result.signature)[0]);
 
-  // Then
+  // Then the account was created with the correct data.
   const account = await metaplex.rpc.getAccount(newAccount.publicKey);
-  t.deepEqual(account, {
+  t.like(account, {
     exists: true,
+    executable: false,
+    owner: metaplex.eddsa.createPublicKey('11111111111111111111111111111111'),
+    address: newAccount.publicKey,
     lamports: sol(1.5),
+    data: new Uint8Array(42),
   });
 });

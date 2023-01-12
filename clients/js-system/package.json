@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
-    "@lorisleiva/js-test": "^0.0.26",
+    "@lorisleiva/js-test": "^0.0.27",
     "@solana/web3.js": "^1.73.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.46.1",
