@@ -14,17 +14,13 @@ test('it can add a memo to a transaction', async (t) => {
 
   // Then
   const base58Signature = base58.deserialize(signature)[0];
-
-  const client = (metaplex.rpc as any).connection._rpcClient;
-  const foo = await new Promise((resolve, reject) => {
-    const callback = (error: any, result: any) => {
-      console.log({ error, result });
-      return error ? reject(error) : resolve(result);
-    };
-    client.request('getTransaction', [base58Signature], callback);
+  const params = [
+    base58Signature,
+    { commitment: 'confirmed', maxSupportedTransactionVersion: 0 },
+  ];
+  const rpcResult = await metaplex.rpc.call('getTransaction', params, {
+    id: '123',
   });
-
-  // const foo = await metaplex.rpc.call('getTransaction', [base58Signature]);
-  console.log(base58Signature, foo);
+  console.log(base58Signature, rpcResult);
   t.pass();
 });
