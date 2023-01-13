@@ -18,9 +18,15 @@ test('it can add a memo to a transaction', async (t) => {
     base58Signature,
     { commitment: 'confirmed', maxSupportedTransactionVersion: 0 },
   ];
-  const rpcResult = await metaplex.rpc.call('getTransaction', params, {
-    id: '123',
+  const rpcResult: any = await metaplex.rpc.call('getTransaction', params, {
+    id: '123', // TODO: Fix on web3js RPC.
   });
-  console.log(base58Signature, rpcResult);
+  console.log(
+    base58Signature,
+    rpcResult,
+    rpcResult.result.meta,
+    rpcResult.result.transaction,
+    rpcResult.result.transaction.message.instructions
+  );
   t.pass();
 });
