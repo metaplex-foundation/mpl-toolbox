@@ -4,6 +4,7 @@ import {
   isEqualToAmount,
   isLessThanAmount,
   sol,
+  transactionBuilder,
 } from '@lorisleiva/js-test';
 import test from 'ava';
 import { transferSol } from '../src';
@@ -17,8 +18,7 @@ test('it can create transfer SOLs', async (t) => {
   const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
 
   // When wallet A transfers 10 SOL to wallet B.
-  await metaplex
-    .transactionBuilder()
+  await transactionBuilder(metaplex)
     .add(
       transferSol(metaplex, {
         from: walletA,
@@ -55,8 +55,7 @@ test('it defaults to transferring from the identity', async (t) => {
   t.true(isEqualToAmount(identityBalance, sol(100)));
 
   // When we transfer 10 SOL to the destination without specifying a source.
-  await metaplex
-    .transactionBuilder()
+  await transactionBuilder(metaplex)
     .add(
       transferSol(metaplex, {
         to: destination.publicKey,

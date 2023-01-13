@@ -3,6 +3,7 @@ import {
   isEqualToAmount,
   sol,
   subtractAmounts,
+  transactionBuilder,
 } from '@lorisleiva/js-test';
 import test from 'ava';
 import { createAccount } from '../src';
@@ -15,8 +16,7 @@ test('it can create new accounts', async (t) => {
   const newAccount = generateSigner(metaplex);
 
   // When we create a new account at this address.
-  await metaplex
-    .transactionBuilder()
+  await transactionBuilder(metaplex)
     .add(
       createAccount(metaplex, {
         newAccount,
