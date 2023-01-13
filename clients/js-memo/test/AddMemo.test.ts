@@ -1,4 +1,4 @@
-import { transactionBuilder } from '@lorisleiva/js-test';
+import { base58, transactionBuilder } from '@lorisleiva/js-test';
 import test from 'ava';
 import { addMemo } from '../src';
 import { createMetaplex } from './_setup';
@@ -13,6 +13,18 @@ test('it can add a memo to a transaction', async (t) => {
     .sendAndConfirm();
 
   // Then
-  console.log(signature);
+  const base58Signature = base58.deserialize(signature)[0];
+
+  const client = (metaplex.rpc as any).connection._rpcClient;
+  const foo = await new Promise((resolve, reject) => {
+    const callback = (error: any, result: any) => {
+      console.log({ error, result });
+      return error ? reject(error) : resolve(result);
+    };
+    client.request('getTransaction', [base58Signature], callback);
+  });
+
+  // const foo = await metaplex.rpc.call('getTransaction', [base58Signature]);
+  console.log(base58Signature, foo);
   t.pass();
 });
