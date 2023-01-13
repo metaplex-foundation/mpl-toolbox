@@ -1,7 +1,7 @@
 import test from 'ava';
-import { initializeCandyMachine } from '../src';
+import { create } from '../src';
 
 test('test example', (t) => {
-  const foo = initializeCandyMachine;
+  const foo = create;
   t.true(typeof foo === 'function');
 });

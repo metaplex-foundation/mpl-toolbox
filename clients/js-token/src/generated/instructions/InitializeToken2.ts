@@ -10,27 +10,40 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type InitializeAccountInstructionAccounts = {
+export type InitializeToken2InstructionAccounts = {
   account: PublicKey;
   mint: PublicKey;
-  owner: PublicKey;
   rent?: PublicKey;
 };
 
+// Arguments.
+export type InitializeToken2InstructionData = { owner: PublicKey };
+
+export function getInitializeToken2InstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<InitializeToken2InstructionData> {
+  const s = context.serializer;
+  return s.struct<InitializeToken2InstructionData>(
+    [['owner', s.publicKey]],
+    'initializeAccount2InstructionArgs'
+  );
+}
+
 // Instruction.
-export function initializeAccount(
+export function initializeToken2(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: InitializeAccountInstructionAccounts
+  input: InitializeToken2InstructionAccounts & InitializeToken2InstructionData
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -48,9 +61,6 @@ export function initializeAccount(
   // Mint.
   keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
 
-  // Owner.
-  keys.push({ pubkey: input.owner, isSigner: false, isWritable: false });
-
   // Rent.
   if (input.rent) {
     keys.push({ pubkey: input.rent, isSigner: false, isWritable: false });
@@ -65,7 +75,8 @@ export function initializeAccount(
   }
 
   // Data.
-  const data = new Uint8Array();
+  const data =
+    getInitializeToken2InstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

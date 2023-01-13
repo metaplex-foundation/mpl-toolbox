@@ -17,33 +17,32 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type InitializeAccount3InstructionAccounts = {
+export type InitializeToken3InstructionAccounts = {
   account: PublicKey;
   mint: PublicKey;
 };
 
 // Arguments.
-export type InitializeAccount3InstructionData = { owner: PublicKey };
+export type InitializeToken3InstructionData = { owner: PublicKey };
 
-export function getInitializeAccount3InstructionDataSerializer(
+export function getInitializeToken3InstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeAccount3InstructionData> {
+): Serializer<InitializeToken3InstructionData> {
   const s = context.serializer;
-  return s.struct<InitializeAccount3InstructionData>(
+  return s.struct<InitializeToken3InstructionData>(
     [['owner', s.publicKey]],
     'initializeAccount3InstructionArgs'
   );
 }
 
 // Instruction.
-export function initializeAccount3(
+export function initializeToken3(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: InitializeAccount3InstructionAccounts &
-    InitializeAccount3InstructionData
+  input: InitializeToken3InstructionAccounts & InitializeToken3InstructionData
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -63,7 +62,7 @@ export function initializeAccount3(
 
   // Data.
   const data =
-    getInitializeAccount3InstructionDataSerializer(context).serialize(input);
+    getInitializeToken3InstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },
