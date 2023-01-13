@@ -17,42 +17,36 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type BurnCheckedInstructionAccounts = {
+export type BurnTokenInstructionAccounts = {
   account: PublicKey;
   mint: PublicKey;
   authority?: Signer;
 };
 
 // Arguments.
-export type BurnCheckedInstructionData = { amount: bigint; decimals: number };
+export type BurnTokenInstructionData = { amount: bigint };
 
-export type BurnCheckedInstructionArgs = {
-  amount: number | bigint;
-  decimals: number;
-};
+export type BurnTokenInstructionArgs = { amount: number | bigint };
 
-export function getBurnCheckedInstructionDataSerializer(
+export function getBurnTokenInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<BurnCheckedInstructionArgs, BurnCheckedInstructionData> {
+): Serializer<BurnTokenInstructionArgs, BurnTokenInstructionData> {
   const s = context.serializer;
-  return s.struct<BurnCheckedInstructionData>(
-    [
-      ['amount', s.u64],
-      ['decimals', s.u8],
-    ],
-    'burnCheckedInstructionArgs'
-  ) as Serializer<BurnCheckedInstructionArgs, BurnCheckedInstructionData>;
+  return s.struct<BurnTokenInstructionData>(
+    [['amount', s.u64]],
+    'burnInstructionArgs'
+  ) as Serializer<BurnTokenInstructionArgs, BurnTokenInstructionData>;
 }
 
 // Instruction.
-export function burnChecked(
+export function burnToken(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     identity: Context['identity'];
     programs?: Context['programs'];
   },
-  input: BurnCheckedInstructionAccounts & BurnCheckedInstructionArgs
+  input: BurnTokenInstructionAccounts & BurnTokenInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -88,8 +82,7 @@ export function burnChecked(
   }
 
   // Data.
-  const data =
-    getBurnCheckedInstructionDataSerializer(context).serialize(input);
+  const data = getBurnTokenInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

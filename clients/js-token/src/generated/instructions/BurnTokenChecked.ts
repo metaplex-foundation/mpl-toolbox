@@ -17,36 +17,51 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type TransferInstructionAccounts = {
-  source: PublicKey;
-  destination: PublicKey;
+export type BurnTokenCheckedInstructionAccounts = {
+  account: PublicKey;
+  mint: PublicKey;
   authority?: Signer;
 };
 
 // Arguments.
-export type TransferInstructionData = { amount: bigint };
+export type BurnTokenCheckedInstructionData = {
+  amount: bigint;
+  decimals: number;
+};
 
-export type TransferInstructionArgs = { amount: number | bigint };
+export type BurnTokenCheckedInstructionArgs = {
+  amount: number | bigint;
+  decimals: number;
+};
 
-export function getTransferInstructionDataSerializer(
+export function getBurnTokenCheckedInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TransferInstructionArgs, TransferInstructionData> {
+): Serializer<
+  BurnTokenCheckedInstructionArgs,
+  BurnTokenCheckedInstructionData
+> {
   const s = context.serializer;
-  return s.struct<TransferInstructionData>(
-    [['amount', s.u64]],
-    'transferInstructionArgs'
-  ) as Serializer<TransferInstructionArgs, TransferInstructionData>;
+  return s.struct<BurnTokenCheckedInstructionData>(
+    [
+      ['amount', s.u64],
+      ['decimals', s.u8],
+    ],
+    'burnCheckedInstructionArgs'
+  ) as Serializer<
+    BurnTokenCheckedInstructionArgs,
+    BurnTokenCheckedInstructionData
+  >;
 }
 
 // Instruction.
-export function transfer(
+export function burnTokenChecked(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     identity: Context['identity'];
     programs?: Context['programs'];
   },
-  input: TransferInstructionAccounts & TransferInstructionArgs
+  input: BurnTokenCheckedInstructionAccounts & BurnTokenCheckedInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -58,11 +73,11 @@ export function transfer(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
+  // Account.
+  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
 
-  // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
+  // Mint.
+  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
 
   // Authority.
   if (input.authority) {
@@ -82,7 +97,8 @@ export function transfer(
   }
 
   // Data.
-  const data = getTransferInstructionDataSerializer(context).serialize(input);
+  const data =
+    getBurnTokenCheckedInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

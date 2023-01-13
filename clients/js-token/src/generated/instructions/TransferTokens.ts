@@ -17,49 +17,36 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type TransferCheckedInstructionAccounts = {
+export type TransferTokensInstructionAccounts = {
   source: PublicKey;
-  mint: PublicKey;
   destination: PublicKey;
   authority?: Signer;
 };
 
 // Arguments.
-export type TransferCheckedInstructionData = {
-  amount: bigint;
-  decimals: number;
-};
+export type TransferTokensInstructionData = { amount: bigint };
 
-export type TransferCheckedInstructionArgs = {
-  amount: number | bigint;
-  decimals: number;
-};
+export type TransferTokensInstructionArgs = { amount: number | bigint };
 
-export function getTransferCheckedInstructionDataSerializer(
+export function getTransferTokensInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TransferCheckedInstructionArgs, TransferCheckedInstructionData> {
+): Serializer<TransferTokensInstructionArgs, TransferTokensInstructionData> {
   const s = context.serializer;
-  return s.struct<TransferCheckedInstructionData>(
-    [
-      ['amount', s.u64],
-      ['decimals', s.u8],
-    ],
-    'transferCheckedInstructionArgs'
-  ) as Serializer<
-    TransferCheckedInstructionArgs,
-    TransferCheckedInstructionData
-  >;
+  return s.struct<TransferTokensInstructionData>(
+    [['amount', s.u64]],
+    'transferInstructionArgs'
+  ) as Serializer<TransferTokensInstructionArgs, TransferTokensInstructionData>;
 }
 
 // Instruction.
-export function transferChecked(
+export function transferTokens(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     identity: Context['identity'];
     programs?: Context['programs'];
   },
-  input: TransferCheckedInstructionAccounts & TransferCheckedInstructionArgs
+  input: TransferTokensInstructionAccounts & TransferTokensInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -73,9 +60,6 @@ export function transferChecked(
 
   // Source.
   keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
-
-  // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
 
   // Destination.
   keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
@@ -99,7 +83,7 @@ export function transferChecked(
 
   // Data.
   const data =
-    getTransferCheckedInstructionDataSerializer(context).serialize(input);
+    getTransferTokensInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

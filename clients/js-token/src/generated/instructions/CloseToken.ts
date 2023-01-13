@@ -16,19 +16,20 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type RevokeInstructionAccounts = {
-  source: PublicKey;
+export type CloseTokenInstructionAccounts = {
+  account: PublicKey;
+  destination: PublicKey;
   owner: Signer;
 };
 
 // Instruction.
-export function revoke(
+export function closeToken(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: RevokeInstructionAccounts
+  input: CloseTokenInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -40,8 +41,11 @@ export function revoke(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
+  // Account.
+  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+
+  // Destination.
+  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
   // Owner.
   signers.push(input.owner);

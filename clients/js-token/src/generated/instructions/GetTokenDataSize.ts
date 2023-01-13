@@ -16,20 +16,18 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type ThawAccountInstructionAccounts = {
-  account: PublicKey;
+export type GetTokenDataSizeInstructionAccounts = {
   mint: PublicKey;
-  owner: Signer;
 };
 
 // Instruction.
-export function thawAccount(
+export function getTokenDataSize(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: ThawAccountInstructionAccounts
+  input: GetTokenDataSizeInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -41,19 +39,8 @@ export function thawAccount(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
-
   // Mint.
   keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
-
-  // Owner.
-  signers.push(input.owner);
-  keys.push({
-    pubkey: input.owner.publicKey,
-    isSigner: true,
-    isWritable: false,
-  });
 
   // Data.
   const data = new Uint8Array();

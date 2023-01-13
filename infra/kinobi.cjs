@@ -45,6 +45,24 @@ token.update(
   new RenameNodesVisitor({
     splToken: {
       accounts: { Account: "Token" },
+      instructions: {
+        Approve: "ApproveTokenDelegate",
+        ApproveChecked: "ApproveTokenDelegateChecked",
+        Burn: "BurnToken",
+        BurnChecked: "BurnTokenChecked",
+        CloseAccount: "CloseToken",
+        FreezeAccount: "FreezeToken",
+        GetAccountDataSize: "GetTokenDataSize",
+        InitlializeAccount: "InitlializeToken",
+        InitlializeAccount2: "InitlializeToken2",
+        InitlializeAccount3: "InitlializeToken3",
+        MintTo: "MintTokensTo",
+        MintToChecked: "MintTokensToChecked",
+        Revoke: "RevokeTokenDelegate",
+        ThawAccount: "ThawToken",
+        Transfer: "TransferTokens",
+        TransferChecked: "TransferTokensChecked",
+      },
     },
   })
 );

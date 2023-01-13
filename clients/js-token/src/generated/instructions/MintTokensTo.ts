@@ -10,26 +10,42 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type FreezeAccountInstructionAccounts = {
-  account: PublicKey;
+export type MintTokensToInstructionAccounts = {
   mint: PublicKey;
+  account: PublicKey;
   owner: Signer;
 };
 
+// Arguments.
+export type MintTokensToInstructionData = { amount: bigint };
+
+export type MintTokensToInstructionArgs = { amount: number | bigint };
+
+export function getMintTokensToInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<MintTokensToInstructionArgs, MintTokensToInstructionData> {
+  const s = context.serializer;
+  return s.struct<MintTokensToInstructionData>(
+    [['amount', s.u64]],
+    'mintToInstructionArgs'
+  ) as Serializer<MintTokensToInstructionArgs, MintTokensToInstructionData>;
+}
+
 // Instruction.
-export function freezeAccount(
+export function mintTokensTo(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: FreezeAccountInstructionAccounts
+  input: MintTokensToInstructionAccounts & MintTokensToInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -41,11 +57,11 @@ export function freezeAccount(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Mint.
+  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
+
   // Account.
   keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
-
-  // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
 
   // Owner.
   signers.push(input.owner);
@@ -56,7 +72,8 @@ export function freezeAccount(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data =
+    getMintTokensToInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

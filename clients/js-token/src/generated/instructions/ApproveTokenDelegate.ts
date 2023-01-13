@@ -17,35 +17,42 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type MintToInstructionAccounts = {
-  mint: PublicKey;
-  account: PublicKey;
+export type ApproveTokenDelegateInstructionAccounts = {
+  source: PublicKey;
+  delegate: PublicKey;
   owner: Signer;
 };
 
 // Arguments.
-export type MintToInstructionData = { amount: bigint };
+export type ApproveTokenDelegateInstructionData = { amount: bigint };
 
-export type MintToInstructionArgs = { amount: number | bigint };
+export type ApproveTokenDelegateInstructionArgs = { amount: number | bigint };
 
-export function getMintToInstructionDataSerializer(
+export function getApproveTokenDelegateInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<MintToInstructionArgs, MintToInstructionData> {
+): Serializer<
+  ApproveTokenDelegateInstructionArgs,
+  ApproveTokenDelegateInstructionData
+> {
   const s = context.serializer;
-  return s.struct<MintToInstructionData>(
+  return s.struct<ApproveTokenDelegateInstructionData>(
     [['amount', s.u64]],
-    'mintToInstructionArgs'
-  ) as Serializer<MintToInstructionArgs, MintToInstructionData>;
+    'approveInstructionArgs'
+  ) as Serializer<
+    ApproveTokenDelegateInstructionArgs,
+    ApproveTokenDelegateInstructionData
+  >;
 }
 
 // Instruction.
-export function mintTo(
+export function approveTokenDelegate(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: MintToInstructionAccounts & MintToInstructionArgs
+  input: ApproveTokenDelegateInstructionAccounts &
+    ApproveTokenDelegateInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -57,11 +64,11 @@ export function mintTo(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
+  // Source.
+  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
 
-  // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+  // Delegate.
+  keys.push({ pubkey: input.delegate, isSigner: false, isWritable: false });
 
   // Owner.
   signers.push(input.owner);
@@ -72,7 +79,8 @@ export function mintTo(
   });
 
   // Data.
-  const data = getMintToInstructionDataSerializer(context).serialize(input);
+  const data =
+    getApproveTokenDelegateInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },

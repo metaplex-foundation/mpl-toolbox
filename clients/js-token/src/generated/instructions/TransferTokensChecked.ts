@@ -17,45 +17,53 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type ApproveCheckedInstructionAccounts = {
+export type TransferTokensCheckedInstructionAccounts = {
   source: PublicKey;
   mint: PublicKey;
-  delegate: PublicKey;
-  owner: Signer;
+  destination: PublicKey;
+  authority?: Signer;
 };
 
 // Arguments.
-export type ApproveCheckedInstructionData = {
+export type TransferTokensCheckedInstructionData = {
   amount: bigint;
   decimals: number;
 };
 
-export type ApproveCheckedInstructionArgs = {
+export type TransferTokensCheckedInstructionArgs = {
   amount: number | bigint;
   decimals: number;
 };
 
-export function getApproveCheckedInstructionDataSerializer(
+export function getTransferTokensCheckedInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<ApproveCheckedInstructionArgs, ApproveCheckedInstructionData> {
+): Serializer<
+  TransferTokensCheckedInstructionArgs,
+  TransferTokensCheckedInstructionData
+> {
   const s = context.serializer;
-  return s.struct<ApproveCheckedInstructionData>(
+  return s.struct<TransferTokensCheckedInstructionData>(
     [
       ['amount', s.u64],
       ['decimals', s.u8],
     ],
-    'approveCheckedInstructionArgs'
-  ) as Serializer<ApproveCheckedInstructionArgs, ApproveCheckedInstructionData>;
+    'transferCheckedInstructionArgs'
+  ) as Serializer<
+    TransferTokensCheckedInstructionArgs,
+    TransferTokensCheckedInstructionData
+  >;
 }
 
 // Instruction.
-export function approveChecked(
+export function transferTokensChecked(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
+    identity: Context['identity'];
     programs?: Context['programs'];
   },
-  input: ApproveCheckedInstructionAccounts & ApproveCheckedInstructionArgs
+  input: TransferTokensCheckedInstructionAccounts &
+    TransferTokensCheckedInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -73,20 +81,29 @@ export function approveChecked(
   // Mint.
   keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
 
-  // Delegate.
-  keys.push({ pubkey: input.delegate, isSigner: false, isWritable: false });
+  // Destination.
+  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
-  // Owner.
-  signers.push(input.owner);
-  keys.push({
-    pubkey: input.owner.publicKey,
-    isSigner: true,
-    isWritable: false,
-  });
+  // Authority.
+  if (input.authority) {
+    signers.push(input.authority);
+    keys.push({
+      pubkey: input.authority.publicKey,
+      isSigner: true,
+      isWritable: false,
+    });
+  } else {
+    signers.push(context.identity);
+    keys.push({
+      pubkey: context.identity.publicKey,
+      isSigner: true,
+      isWritable: false,
+    });
+  }
 
   // Data.
   const data =
-    getApproveCheckedInstructionDataSerializer(context).serialize(input);
+    getTransferTokensCheckedInstructionDataSerializer(context).serialize(input);
 
   return {
     instruction: { keys, programId, data },
