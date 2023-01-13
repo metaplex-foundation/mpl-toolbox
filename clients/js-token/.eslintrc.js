@@ -14,6 +14,8 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-underscore-dangle': 'off',
     'max-classes-per-file': 'off',
+    'no-param-reassign': 'off',
+    'func-names': 'off',
   },
   ignorePatterns: ['dist/**', '.eslintrc.js'],
 };
