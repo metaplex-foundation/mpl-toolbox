@@ -6,6 +6,6 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-export * from './Account';
 export * from './Mint';
 export * from './Multisig';
+export * from './Token';

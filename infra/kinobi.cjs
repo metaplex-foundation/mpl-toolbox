@@ -3,6 +3,7 @@ const {
   Kinobi,
   RenderJavaScriptVisitor,
   SetLeafWrappersVisitor,
+  RenameNodesVisitor,
 } = require("@lorisleiva/kinobi");
 const {
   SetInstructionAccountDefaultValuesVisitor,
@@ -40,6 +41,13 @@ renderJs(memo, "js-memo");
 
 // Token Client.
 const token = new Kinobi(path.join(idlDir, "spl_token.json"));
+token.update(
+  new RenameNodesVisitor({
+    splToken: {
+      accounts: { Account: "Token" },
+    },
+  })
+);
 renderJs(token, "js-token");
 
 // ATA Client.

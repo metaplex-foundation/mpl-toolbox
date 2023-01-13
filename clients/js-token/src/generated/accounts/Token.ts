@@ -18,9 +18,9 @@ import {
 } from '@lorisleiva/js-core';
 import { AccountState, getAccountStateSerializer } from '../types';
 
-export type Account = Account<AccountAccountData>;
+export type Token = Account<TokenAccountData>;
 
-export type AccountAccountData = {
+export type TokenAccountData = {
   mint: PublicKey;
   owner: PublicKey;
   amount: bigint;
@@ -31,7 +31,7 @@ export type AccountAccountData = {
   closeAuthority: Option<PublicKey>;
 };
 
-export type AccountAccountArgs = {
+export type TokenAccountArgs = {
   mint: PublicKey;
   owner: PublicKey;
   amount: number | bigint;
@@ -42,38 +42,35 @@ export type AccountAccountArgs = {
   closeAuthority: Option<PublicKey>;
 };
 
-export async function fetchAccount(
+export async function fetchToken(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<Account> {
+): Promise<Token> {
   const maybeAccount = await context.rpc.getAccount(address);
-  assertAccountExists(maybeAccount, 'Account');
-  return deserializeAccount(context, maybeAccount);
+  assertAccountExists(maybeAccount, 'Token');
+  return deserializeToken(context, maybeAccount);
 }
 
-export async function safeFetchAccount(
+export async function safeFetchToken(
   context: Pick<Context, 'rpc' | 'serializer'>,
   address: PublicKey
-): Promise<Account | null> {
+): Promise<Token | null> {
   const maybeAccount = await context.rpc.getAccount(address);
-  return maybeAccount.exists ? deserializeAccount(context, maybeAccount) : null;
+  return maybeAccount.exists ? deserializeToken(context, maybeAccount) : null;
 }
 
-export function deserializeAccount(
+export function deserializeToken(
   context: Pick<Context, 'serializer'>,
   rawAccount: RpcAccount
-): Account {
-  return deserializeAccount(
-    rawAccount,
-    getAccountAccountDataSerializer(context)
-  );
+): Token {
+  return deserializeAccount(rawAccount, getTokenAccountDataSerializer(context));
 }
 
-export function getAccountAccountDataSerializer(
+export function getTokenAccountDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<AccountAccountArgs, AccountAccountData> {
+): Serializer<TokenAccountArgs, TokenAccountData> {
   const s = context.serializer;
-  return s.struct<AccountAccountData>(
+  return s.struct<TokenAccountData>(
     [
       ['mint', s.publicKey],
       ['owner', s.publicKey],
@@ -85,5 +82,5 @@ export function getAccountAccountDataSerializer(
       ['closeAuthority', s.option(s.publicKey)],
     ],
     'Account'
-  ) as Serializer<AccountAccountArgs, AccountAccountData>;
+  ) as Serializer<TokenAccountArgs, TokenAccountData>;
 }
