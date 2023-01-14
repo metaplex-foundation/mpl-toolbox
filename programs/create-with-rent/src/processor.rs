@@ -1,4 +1,4 @@
-use crate::instruction::InstructionThingy;
+use crate::instruction::CreateWithRentInstruction;
 use borsh::BorshDeserialize;
 use solana_program::{account_info::AccountInfo, entrypoint::ProgramResult, pubkey::Pubkey};
 
@@ -9,9 +9,10 @@ impl Processor {
         accounts: &[AccountInfo],
         instruction_data: &[u8],
     ) -> ProgramResult {
-        let instruction: InstructionThingy = InstructionThingy::try_from_slice(instruction_data)?;
+        let instruction: CreateWithRentInstruction =
+            CreateWithRentInstruction::try_from_slice(instruction_data)?;
         match instruction {
-            InstructionThingy::InstructionThing(args) => {
+            CreateWithRentInstruction::CreateAccountWithRent(args) => {
                 // handle instruction
                 Ok(())
             }
