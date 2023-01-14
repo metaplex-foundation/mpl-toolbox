@@ -1,10 +1,12 @@
 use borsh::BorshDeserialize;
-use solana_program::account_info::next_account_info;
-use solana_program::program::invoke;
-use solana_program::rent::Rent;
-use solana_program::sysvar::Sysvar;
 use solana_program::{
-    account_info::AccountInfo, entrypoint::ProgramResult, pubkey::Pubkey, system_instruction,
+    account_info::{next_account_info, AccountInfo},
+    entrypoint::ProgramResult,
+    program::invoke,
+    pubkey::Pubkey,
+    rent::Rent,
+    system_instruction,
+    sysvar::Sysvar,
 };
 
 use crate::instruction::{CreateAccountWithRentArgs, SystemExtrasInstruction};
@@ -27,7 +29,7 @@ impl Processor {
 }
 
 fn create_account_with_rent(
-    program_id: &Pubkey,
+    _program_id: &Pubkey,
     accounts: &[AccountInfo],
     args: CreateAccountWithRentArgs,
 ) -> ProgramResult {
@@ -39,10 +41,7 @@ fn create_account_with_rent(
     let rent = Rent::get()?;
 
     // Args.
-    let CreateAccountWithRentArgs {
-        space,
-        program_id,
-    } = args;
+    let CreateAccountWithRentArgs { space, program_id } = args;
     let lamports: u64 = rent.minimum_balance(space as usize);
 
     // Guards.
