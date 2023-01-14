@@ -5,7 +5,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: './clients/js-system/tsconfig.json',
+    project: './clients/js/tsconfig.json',
   },
   rules: {
     '@typescript-eslint/no-use-before-define': 'off',

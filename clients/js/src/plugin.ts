@@ -3,16 +3,16 @@ import { getSplMemoProgram, getSplSystemProgram } from './generated';
 
 export const splSystem = (): MetaplexPlugin => ({
   install(metaplex) {
-    const splSystem = getSplSystemProgram(metaplex);
-    metaplex.programs.add(splSystem);
+    const splSystemProgram = getSplSystemProgram(metaplex);
+    metaplex.programs.add(splSystemProgram);
     metaplex.programs.getSystem = function (clusterFilter?: ClusterFilter) {
-      return this.get(splSystem.name, clusterFilter);
+      return this.get(splSystemProgram.name, clusterFilter);
     };
 
-    const splMemo = getSplMemoProgram(metaplex);
-    metaplex.programs.add(splMemo);
+    const splMemoProgram = getSplMemoProgram(metaplex);
+    metaplex.programs.add(splMemoProgram);
     metaplex.programs.getMemo = function (clusterFilter?: ClusterFilter) {
-      return this.get(splMemo.name, clusterFilter);
+      return this.get(splMemoProgram.name, clusterFilter);
     };
   },
 });
