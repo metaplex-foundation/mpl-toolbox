@@ -1,7 +1,7 @@
 import { transactionBuilder } from '@lorisleiva/js-test';
 import test from 'ava';
-import { addMemo } from '../src';
-import { createMetaplex } from './_setup';
+import { addMemo } from '../../js-memo/src';
+import { createMetaplex } from '../../js-memo/test/_setup';
 
 test('it can add a memo to a transaction', async (t) => {
   // Given a Metaplex context.

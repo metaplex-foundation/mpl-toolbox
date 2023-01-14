@@ -6,12 +6,16 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
+export * from './AddMemo';
 export * from './AmountToUiAmount';
 export * from './ApproveTokenDelegate';
 export * from './ApproveTokenDelegateChecked';
 export * from './BurnToken';
 export * from './BurnTokenChecked';
 export * from './CloseToken';
+export * from './Create';
+export * from './CreateAccount';
+export * from './CreateIdempotent';
 export * from './FreezeToken';
 export * from './GetTokenDataSize';
 export * from './InitializeImmutableOwner';
@@ -24,10 +28,12 @@ export * from './InitializeToken2';
 export * from './InitializeToken3';
 export * from './MintTokensTo';
 export * from './MintTokensToChecked';
+export * from './RecoverNested';
 export * from './RevokeTokenDelegate';
 export * from './SetAuthority';
 export * from './SyncNative';
 export * from './ThawToken';
+export * from './TransferSol';
 export * from './TransferTokens';
 export * from './TransferTokensChecked';
 export * from './UiAmountToAmount';

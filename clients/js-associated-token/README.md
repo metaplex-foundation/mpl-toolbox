@@ -1,3 +1,0 @@
-# js-associated-token
-
-TODO
