@@ -9,29 +9,30 @@ use solana_program::{
     sysvar::Sysvar,
 };
 
-use crate::instruction::{CreateAccountWithRentArgs, SystemExtrasInstruction};
+use crate::instruction::SystemExtrasInstruction;
 
 pub struct Processor;
 impl Processor {
     pub fn process_instruction(
-        program_id: &Pubkey,
+        _program_id: &Pubkey,
         accounts: &[AccountInfo],
         instruction_data: &[u8],
     ) -> ProgramResult {
         let instruction: SystemExtrasInstruction =
             SystemExtrasInstruction::try_from_slice(instruction_data)?;
         match instruction {
-            SystemExtrasInstruction::CreateAccountWithRent(args) => {
-                create_account_with_rent(program_id, accounts, args)
-            }
+            SystemExtrasInstruction::CreateAccountWithRent {
+                space,
+                program_id: program_owner,
+            } => create_account_with_rent(accounts, space, program_owner),
         }
     }
 }
 
 fn create_account_with_rent(
-    _program_id: &Pubkey,
     accounts: &[AccountInfo],
-    args: CreateAccountWithRentArgs,
+    space: u64,
+    program_owner: Pubkey,
 ) -> ProgramResult {
     // Accounts.
     let account_info_iter = &mut accounts.iter();
@@ -41,7 +42,6 @@ fn create_account_with_rent(
     let rent = Rent::get()?;
 
     // Args.
-    let CreateAccountWithRentArgs { space, program_id } = args;
     let lamports: u64 = rent.minimum_balance(space as usize);
 
     // Guards.
@@ -53,7 +53,7 @@ fn create_account_with_rent(
             new_account.key,
             lamports,
             space,
-            &program_id,
+            &program_owner,
         ),
         &[payer.clone(), new_account.clone(), system_program.clone()],
     )?;
