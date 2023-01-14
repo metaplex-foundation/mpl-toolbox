@@ -7,7 +7,7 @@ use solana_program::{
     account_info::AccountInfo, entrypoint::ProgramResult, pubkey::Pubkey, system_instruction,
 };
 
-use crate::instruction::{CreateAccountWithRentArgs, CreateWithRentInstruction};
+use crate::instruction::{CreateAccountWithRentArgs, SystemExtrasInstruction};
 
 pub struct Processor;
 impl Processor {
@@ -16,10 +16,10 @@ impl Processor {
         accounts: &[AccountInfo],
         instruction_data: &[u8],
     ) -> ProgramResult {
-        let instruction: CreateWithRentInstruction =
-            CreateWithRentInstruction::try_from_slice(instruction_data)?;
+        let instruction: SystemExtrasInstruction =
+            SystemExtrasInstruction::try_from_slice(instruction_data)?;
         match instruction {
-            CreateWithRentInstruction::CreateAccountWithRent(args) => {
+            SystemExtrasInstruction::CreateAccountWithRent(args) => {
                 create_account_with_rent(program_id, accounts, args)
             }
         }
@@ -46,7 +46,7 @@ fn create_account_with_rent(
     let lamports: u64 = rent.minimum_balance(space as usize);
 
     // Guards.
-    // TODO: Ensure system_program is the system program.
+    // TODO: Ensure system_program is the system program?
 
     invoke(
         &system_instruction::create_account(

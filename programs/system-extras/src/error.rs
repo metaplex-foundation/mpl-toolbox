@@ -7,25 +7,25 @@ use solana_program::{
 use thiserror::Error;
 
 #[derive(Error, Clone, Debug, Eq, PartialEq, FromPrimitive)]
-pub enum CreateWithRentError {
+pub enum SystemExtrasError {
     /// Error description
     #[error("Error message")]
     ErrorName,
 }
 
-impl PrintProgramError for CreateWithRentError {
+impl PrintProgramError for SystemExtrasError {
     fn print<E>(&self) {
         msg!(&self.to_string());
     }
 }
 
-impl From<CreateWithRentError> for ProgramError {
-    fn from(e: CreateWithRentError) -> Self {
+impl From<SystemExtrasError> for ProgramError {
+    fn from(e: SystemExtrasError) -> Self {
         ProgramError::Custom(e as u32)
     }
 }
 
-impl<T> DecodeError<T> for CreateWithRentError {
+impl<T> DecodeError<T> for SystemExtrasError {
     fn type_of() -> &'static str {
         "Create With Rent Error"
     }

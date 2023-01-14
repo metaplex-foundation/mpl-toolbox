@@ -14,7 +14,7 @@ pub struct CreateAccountWithRentArgs {
 
 #[derive(Debug, Clone, ShankInstruction, BorshSerialize, BorshDeserialize)]
 #[rustfmt::skip]
-pub enum CreateWithRentInstruction {
+pub enum SystemExtrasInstruction {
     /// Creates a new account with the amount of lamports equal to the rent exemption
     /// for the given data size. This enables clients to create accounts without
     /// having to query the cluster for the current rent exemption.
