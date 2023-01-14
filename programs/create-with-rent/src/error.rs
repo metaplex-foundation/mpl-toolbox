@@ -27,6 +27,6 @@ impl From<CreateWithRentError> for ProgramError {
 
 impl<T> DecodeError<T> for CreateWithRentError {
     fn type_of() -> &'static str {
-        "Error Thingy"
+        "Create With Rent Error"
     }
 }

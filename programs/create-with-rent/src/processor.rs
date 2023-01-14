@@ -13,9 +13,26 @@ impl Processor {
             CreateWithRentInstruction::try_from_slice(instruction_data)?;
         match instruction {
             CreateWithRentInstruction::CreateAccountWithRent(args) => {
-                // handle instruction
-                Ok(())
+                create_account_with_rent(program_id, accounts, args)
             }
         }
     }
+}
+
+fn create_account_with_rent(
+    program_id: &Pubkey,
+    accounts: &'a [AccountInfo],
+    args: CreateAccountWithRentArgs,
+) -> ProgramResult {
+    invoke_signed(
+        &system_instruction::create(payer_info.key, new_account_info.key, required_lamports),
+        &[
+            payer_info.clone(),
+            new_account_info.clone(),
+            system_program_info.clone(),
+        ],
+        seeds,
+    )?;
+
+    Ok(())
 }
