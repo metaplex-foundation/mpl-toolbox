@@ -31,13 +31,21 @@ fn create_account_with_rent(
     accounts: &[AccountInfo],
     args: CreateAccountWithRentArgs,
 ) -> ProgramResult {
+    // Accounts.
     let account_info_iter = &mut accounts.iter();
     let payer = next_account_info(account_info_iter)?;
     let new_account = next_account_info(account_info_iter)?;
     let system_program = next_account_info(account_info_iter)?;
     let rent = Rent::get()?;
-    let lamports: u64 = rent.minimum_balance(args.space as usize);
 
+    // Args.
+    let CreateAccountWithRentArgs {
+        space,
+        program_id,
+    } = args;
+    let lamports: u64 = rent.minimum_balance(space as usize);
+
+    // Guards.
     // TODO: Ensure system_program is the system program.
 
     invoke(
@@ -45,8 +53,8 @@ fn create_account_with_rent(
             payer.key,
             new_account.key,
             lamports,
-            args.space,
-            &args.program_id,
+            space,
+            &program_id,
         ),
         &[payer.clone(), new_account.clone(), system_program.clone()],
     )?;
