@@ -1,6 +1,6 @@
 use solana_program::{pubkey::Pubkey, system_instruction};
 use solana_program_test::{BanksClientError, ProgramTest, ProgramTestContext};
-use solana_sdk::{signature::Signer, transaction::Transaction};
+use solana_sdk::{account::Account, signature::Signer, transaction::Transaction};
 
 pub fn program_test() -> ProgramTest {
     ProgramTest::new("mpl_system_extras", mpl_system_extras::id(), None)
@@ -13,8 +13,7 @@ pub async fn send_transaction(
     context
         .banks_client
         .process_transaction(transaction)
-        .await
-        .unwrap();
+        .await?;
     Ok(())
 }
 
@@ -34,6 +33,15 @@ pub async fn airdrop(
         context.last_blockhash,
     );
 
-    send_transaction(context, transaction).await.unwrap();
+    send_transaction(context, transaction).await?;
     Ok(())
+}
+
+pub async fn get_account(context: &mut ProgramTestContext, pubkey: &Pubkey) -> Account {
+    context
+        .banks_client
+        .get_account(*pubkey)
+        .await
+        .expect("account not found")
+        .expect("account empty")
 }
