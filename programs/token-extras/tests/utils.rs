@@ -1,4 +1,4 @@
-use solana_program::{program_pack::Pack, pubkey::Pubkey, system_instruction};
+use solana_program::{program_pack::Pack, pubkey::Pubkey, rent::Rent, system_instruction};
 use solana_program_test::{BanksClientError, ProgramTest, ProgramTestContext};
 use solana_sdk::{
     account::Account,
@@ -54,6 +54,10 @@ pub async fn get_balance(context: &mut ProgramTestContext, pubkey: &Pubkey) -> u
     }
 }
 
+pub async fn get_rent(context: &mut ProgramTestContext) -> Rent {
+    context.banks_client.get_rent().await.unwrap()
+}
+
 pub async fn create_mint(
     context: &mut ProgramTestContext,
     mint: &Keypair,
@@ -82,6 +86,39 @@ pub async fn create_mint(
         ],
         Some(&context.payer.pubkey()),
         &[&context.payer, mint],
+        context.last_blockhash,
+    );
+
+    context.banks_client.process_transaction(tx).await
+}
+
+pub async fn create_token(
+    context: &mut ProgramTestContext,
+    account: &Keypair,
+    mint: &Pubkey,
+    owner: &Pubkey,
+) -> Result<(), BanksClientError> {
+    let rent = context.banks_client.get_rent().await.unwrap();
+
+    let tx = Transaction::new_signed_with_payer(
+        &[
+            system_instruction::create_account(
+                &context.payer.pubkey(),
+                &account.pubkey(),
+                rent.minimum_balance(spl_token::state::Account::LEN),
+                spl_token::state::Account::LEN as u64,
+                &spl_token::id(),
+            ),
+            spl_token::instruction::initialize_account(
+                &spl_token::id(),
+                &account.pubkey(),
+                mint,
+                owner,
+            )
+            .unwrap(),
+        ],
+        Some(&context.payer.pubkey()),
+        &[&context.payer, account],
         context.last_blockhash,
     );
 
