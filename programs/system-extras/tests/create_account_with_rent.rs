@@ -5,7 +5,6 @@ pub mod utils;
 mod create_account_with_rent {
     use crate::utils::{airdrop, get_account, program_test, send_transaction};
     use mpl_system_extras::instruction::create_account_with_rent_instruction;
-    use solana_program::{rent::Rent, sysvar::Sysvar};
     use solana_program_test::*;
     use solana_sdk::{
         signature::{Keypair, Signer},
@@ -38,7 +37,7 @@ mod create_account_with_rent {
         assert_eq!(account.data.len(), 42);
 
         // And the right amount of lamports was transferred to the new account.
-        let rent = Rent::get().unwrap();
+        let rent = context.banks_client.get_rent().await.unwrap();
         assert_eq!(account.lamports, rent.minimum_balance(42));
 
         // And the right program owner was set.
@@ -72,7 +71,7 @@ mod create_account_with_rent {
         send_transaction(&mut context, transaction).await.unwrap();
 
         // Then the right amount of lamports was transferred to the new account.
-        let rent = Rent::get().unwrap();
+        let rent = context.banks_client.get_rent().await.unwrap();
         let rent_lamports = rent.minimum_balance(42);
         let account = get_account(&mut context, &new_account.pubkey()).await;
         assert_eq!(account.lamports, rent_lamports);
