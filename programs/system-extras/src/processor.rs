@@ -26,6 +26,7 @@ impl Processor {
                 space,
                 program_id: program_owner,
             } => create_account_with_rent(accounts, space, program_owner),
+            SystemExtrasInstruction::TransferAllSol => transfer_all_sol(accounts),
         }
     }
 }
@@ -60,6 +61,27 @@ fn create_account_with_rent(
             &program_owner,
         ),
         &[payer.clone(), new_account.clone(), system_program.clone()],
+    )?;
+
+    Ok(())
+}
+
+fn transfer_all_sol(accounts: &[AccountInfo]) -> ProgramResult {
+    // Accounts.
+    let account_info_iter = &mut accounts.iter();
+    let source = next_account_info(account_info_iter)?;
+    let destination = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
+
+    // Guards.
+    if *system_program.key != system_program::id() {
+        return Err(SystemExtrasError::InvalidSystemProgram.into());
+    }
+
+    // CPI to the System Program.
+    invoke(
+        &system_instruction::transfer(source.key, destination.key, source.lamports()),
+        &[source.clone(), destination.clone(), system_program.clone()],
     )?;
 
     Ok(())

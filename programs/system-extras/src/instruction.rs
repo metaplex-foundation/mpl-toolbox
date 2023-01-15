@@ -17,5 +17,14 @@ pub enum SystemExtrasInstruction {
         space: u64,
         /// The program that will own the new account.
         program_id: Pubkey,
-    }
+    },
+
+    /// Transfers all lamports from the source account to the destination account.
+    /// This enables clients to transfer all lamports without having to query the
+    /// source balance first and perform some custom heuristic on how much lamports
+    /// to remove for the transaction fee.
+    #[account(0, writable, signer, name="source", desc = "The source account sending all its lamports")]
+    #[account(1, writable, name="destination", desc = "The destination account receiving the lamports")]
+    #[account(2, name="system_program", desc = "System program")]
+    TransferAllSol,
 }
