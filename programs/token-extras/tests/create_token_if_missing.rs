@@ -350,13 +350,12 @@ mod create_token_if_missing {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
         let mint = Keypair::new();
-        let mint_authority = Keypair::new();
         let owner = Keypair::new();
         let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
 
-        // And an account owner by the wrong token program.
+        // And a token account owned by the wrong program.
         let wrong_token = Keypair::new();
-        create_mint(&mut context, &mint, &mint_authority.pubkey(), None)
+        create_mint(&mut context, &mint, &Keypair::new().pubkey(), None)
             .await
             .unwrap();
         create_token(&mut context, &wrong_token, &mint.pubkey(), &owner.pubkey())
@@ -393,7 +392,126 @@ mod create_token_if_missing {
         );
     }
 
-    // TODO InvalidTokenMint(5): test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_mint
-    // TODO InvalidTokenOwner(6): test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_owner
-    // TODO CannotCreateNonAssociatedToken(7): test_it_fail_if_the_non_existing_token_account_is_not_an_ata_account
+    #[tokio::test]
+    async fn test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_mint() {
+        // Given a mint/owner pair.
+        let mut context = program_test().start_with_context().await;
+        let mint = Keypair::new();
+        let owner = Keypair::new();
+        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        // And a token account associated with the wrong mint.
+        let wrong_mint = Keypair::new();
+        let wrong_token = Keypair::new();
+        create_mint(&mut context, &wrong_mint, &Keypair::new().pubkey(), None)
+            .await
+            .unwrap();
+        create_token(
+            &mut context,
+            &wrong_token,
+            &wrong_mint.pubkey(),
+            &owner.pubkey(),
+        )
+        .await
+        .unwrap();
+
+        // When we try to call the "CreateTokenIfMissing" instruction.
+        let transaction = Transaction::new_signed_with_payer(
+            &[create_token_if_missing_instruction(
+                &context.payer.pubkey(),
+                &wrong_token.pubkey(),
+                &mint.pubkey(),
+                &owner.pubkey(),
+                &ata_token,
+            )],
+            Some(&context.payer.pubkey()),
+            &[&context.payer],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(5))
+        );
+    }
+
+    #[tokio::test]
+    async fn test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_owner() {
+        // Given a mint/owner pair.
+        let mut context = program_test().start_with_context().await;
+        let mint = Keypair::new();
+        let owner = Keypair::new();
+        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        // And a token account associated with the wrong owner.
+        let wrong_owner = Keypair::new();
+        let wrong_token = Keypair::new();
+        create_mint(&mut context, &mint, &Keypair::new().pubkey(), None)
+            .await
+            .unwrap();
+        create_token(
+            &mut context,
+            &wrong_token,
+            &mint.pubkey(),
+            &wrong_owner.pubkey(),
+        )
+        .await
+        .unwrap();
+
+        // When we try to call the "CreateTokenIfMissing" instruction.
+        let transaction = Transaction::new_signed_with_payer(
+            &[create_token_if_missing_instruction(
+                &context.payer.pubkey(),
+                &wrong_token.pubkey(),
+                &mint.pubkey(),
+                &owner.pubkey(),
+                &ata_token,
+            )],
+            Some(&context.payer.pubkey()),
+            &[&context.payer],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(6))
+        );
+    }
+
+    #[tokio::test]
+    async fn test_it_fail_if_the_non_existing_token_account_is_not_an_ata_account() {
+        // Given a mint/owner pair.
+        let mut context = program_test().start_with_context().await;
+        let mint = Keypair::new();
+        let owner = Keypair::new();
+        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        // And a missing token that is not the associated token account.
+        let missing_token = Keypair::new();
+
+        // When we try to call the "CreateTokenIfMissing" instruction.
+        let transaction = Transaction::new_signed_with_payer(
+            &[create_token_if_missing_instruction(
+                &context.payer.pubkey(),
+                &missing_token.pubkey(),
+                &mint.pubkey(),
+                &owner.pubkey(),
+                &ata_token,
+            )],
+            Some(&context.payer.pubkey()),
+            &[&context.payer],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(7))
+        );
+    }
 }
