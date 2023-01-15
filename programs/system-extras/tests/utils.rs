@@ -13,11 +13,7 @@ pub async fn send_transaction(
     context.banks_client.process_transaction(transaction).await
 }
 
-pub async fn airdrop(
-    context: &mut ProgramTestContext,
-    receiver: &Pubkey,
-    amount: u64,
-) -> Result<(), BanksClientError> {
+pub async fn airdrop(context: &mut ProgramTestContext, receiver: &Pubkey, amount: u64) -> () {
     let transaction = Transaction::new_signed_with_payer(
         &[system_instruction::transfer(
             &context.payer.pubkey(),
@@ -29,8 +25,7 @@ pub async fn airdrop(
         context.last_blockhash,
     );
 
-    send_transaction(context, transaction).await.unwrap();
-    Ok(())
+    send_transaction(context, transaction).await.unwrap()
 }
 
 pub async fn get_account(context: &mut ProgramTestContext, pubkey: &Pubkey) -> Account {
@@ -40,6 +35,19 @@ pub async fn get_account(context: &mut ProgramTestContext, pubkey: &Pubkey) -> A
         .await
         .expect("account not found")
         .expect("account empty")
+}
+
+pub async fn get_balance(context: &mut ProgramTestContext, pubkey: &Pubkey) -> u64 {
+    let account = context
+        .banks_client
+        .get_account(*pubkey)
+        .await
+        .expect("account not found");
+
+    match account {
+        Some(account) => account.lamports,
+        None => 0,
+    }
 }
 
 pub async fn get_rent(context: &mut ProgramTestContext) -> Rent {
