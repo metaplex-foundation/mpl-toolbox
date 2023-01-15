@@ -12,56 +12,52 @@ import {
   PublicKey,
   Serializer,
   Signer,
-  SolAmount,
   WrappedInstruction,
   getProgramAddressWithFallback,
-  mapAmountSerializer,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type TransferSolInstructionAccounts = {
+export type TransferAllSolInstructionAccounts = {
+  /** The source account sending all its lamports */
   source?: Signer;
+  /** The destination account receiving the lamports */
   destination: PublicKey;
+  /** System program */
+  systemProgram?: PublicKey;
 };
 
 // Arguments.
-export type TransferSolInstructionData = {
-  discriminator: number;
-  lamports: SolAmount;
-};
+export type TransferAllSolInstructionData = { discriminator: number };
 
-export type TransferSolInstructionArgs = { lamports: SolAmount };
+export type TransferAllSolInstructionArgs = {};
 
-export function getTransferSolInstructionDataSerializer(
+export function getTransferAllSolInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TransferSolInstructionArgs, TransferSolInstructionData> {
+): Serializer<TransferAllSolInstructionArgs, TransferAllSolInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    TransferSolInstructionArgs,
-    TransferSolInstructionData,
-    TransferSolInstructionData
+    TransferAllSolInstructionArgs,
+    TransferAllSolInstructionData,
+    TransferAllSolInstructionData
   >(
-    s.struct<TransferSolInstructionData>(
-      [
-        ['discriminator', s.u32],
-        ['lamports', mapAmountSerializer(s.u64, 'SOL', 9)],
-      ],
-      'transferSolInstructionArgs'
+    s.struct<TransferAllSolInstructionData>(
+      [['discriminator', s.u8]],
+      'TransferAllSolInstructionArgs'
     ),
-    (value) => ({ discriminator: 2, ...value } as TransferSolInstructionData)
-  ) as Serializer<TransferSolInstructionArgs, TransferSolInstructionData>;
+    (value) => ({ discriminator: 1, ...value } as TransferAllSolInstructionData)
+  ) as Serializer<TransferAllSolInstructionArgs, TransferAllSolInstructionData>;
 }
 
 // Instruction.
-export function transferSol(
+export function transferAllSol(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
     identity: Context['identity'];
     programs?: Context['programs'];
   },
-  input: TransferSolInstructionAccounts & TransferSolInstructionArgs
+  input: TransferAllSolInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -69,8 +65,8 @@ export function transferSol(
   // Program ID.
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
-    'splSystem',
-    '11111111111111111111111111111111'
+    'mplSystemExtras',
+    'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
   );
 
   // Source.
@@ -93,9 +89,29 @@ export function transferSol(
   // Destination.
   keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
 
+  // System Program.
+  if (input.systemProgram) {
+    keys.push({
+      pubkey: input.systemProgram,
+      isSigner: false,
+      isWritable: false,
+    });
+  } else {
+    keys.push({
+      pubkey: getProgramAddressWithFallback(
+        context,
+        'splSystem',
+        '11111111111111111111111111111111'
+      ),
+      isSigner: false,
+      isWritable: false,
+    });
+  }
+
   // Data.
-  const data =
-    getTransferSolInstructionDataSerializer(context).serialize(input);
+  const data = getTransferAllSolInstructionDataSerializer(context).serialize(
+    {}
+  );
 
   return {
     instruction: { keys, programId, data },

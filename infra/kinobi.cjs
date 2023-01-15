@@ -19,12 +19,16 @@ const kinobi = new Kinobi([
   path.join(idlDir, "spl_memo.json"),
   path.join(idlDir, "spl_token.json"),
   path.join(idlDir, "spl_associated_token_account.json"),
+  path.join(idlDir, "mpl_system_extras.json"),
 ]);
 
 // Rename nodes.
 kinobi.update(
   new RenameNodesVisitor({
+    splSystem: { prefix: "Sys" },
+    splMemo: { prefix: "Memo" },
     splToken: {
+      prefix: "Tok",
       accounts: { Account: "Token" },
       instructions: {
         Approve: "ApproveTokenDelegate",
@@ -45,6 +49,8 @@ kinobi.update(
         TransferChecked: "TransferTokensChecked",
       },
     },
+    splAssociatedToken: { prefix: "Ata" },
+    mplSystemExtras: { prefix: "SysEx" },
   })
 );
 
@@ -59,7 +65,8 @@ kinobi.update(
 // Set default values for instruction accounts.
 kinobi.update(
   new SetInstructionAccountDefaultValuesVisitor([
-    { instruction: "TransferSol", account: "from", kind: "identity" },
+    { instruction: "TransferSol", account: "source", kind: "identity" },
+    { instruction: "TransferAllSol", account: "source", kind: "identity" },
   ])
 );
 

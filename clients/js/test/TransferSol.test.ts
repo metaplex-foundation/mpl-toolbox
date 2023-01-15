@@ -21,8 +21,8 @@ test('it can create transfer SOLs', async (t) => {
   await transactionBuilder(metaplex)
     .add(
       transferSol(metaplex, {
-        from: walletA,
-        to: walletB.publicKey,
+        source: walletA,
+        destination: walletB.publicKey,
         lamports: sol(10),
       })
     )
@@ -58,7 +58,7 @@ test('it defaults to transferring from the identity', async (t) => {
   await transactionBuilder(metaplex)
     .add(
       transferSol(metaplex, {
-        to: destination.publicKey,
+        destination: destination.publicKey,
         lamports: sol(10),
       })
     )

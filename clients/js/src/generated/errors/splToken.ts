@@ -16,134 +16,134 @@ const codeToErrorMap: Map<number, ProgramErrorConstructor> = new Map();
 const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
 /** NotRentExempt: 'Lamport balance below rent-exempt threshold' */
-export class NotRentExemptError extends ProgramError {
+export class TokNotRentExemptError extends ProgramError {
   readonly name: string = 'NotRentExempt';
   readonly code: number = 0x0; // 0
   constructor(program: Program, cause?: Error) {
     super('Lamport balance below rent-exempt threshold', program, cause);
   }
 }
-codeToErrorMap.set(0x0, NotRentExemptError);
-nameToErrorMap.set('NotRentExempt', NotRentExemptError);
+codeToErrorMap.set(0x0, TokNotRentExemptError);
+nameToErrorMap.set('NotRentExempt', TokNotRentExemptError);
 
 /** InsufficientFunds: 'Insufficient funds' */
-export class InsufficientFundsError extends ProgramError {
+export class TokInsufficientFundsError extends ProgramError {
   readonly name: string = 'InsufficientFunds';
   readonly code: number = 0x1; // 1
   constructor(program: Program, cause?: Error) {
     super('Insufficient funds', program, cause);
   }
 }
-codeToErrorMap.set(0x1, InsufficientFundsError);
-nameToErrorMap.set('InsufficientFunds', InsufficientFundsError);
+codeToErrorMap.set(0x1, TokInsufficientFundsError);
+nameToErrorMap.set('InsufficientFunds', TokInsufficientFundsError);
 
 /** InvalidMint: 'Invalid Mint' */
-export class InvalidMintError extends ProgramError {
+export class TokInvalidMintError extends ProgramError {
   readonly name: string = 'InvalidMint';
   readonly code: number = 0x2; // 2
   constructor(program: Program, cause?: Error) {
     super('Invalid Mint', program, cause);
   }
 }
-codeToErrorMap.set(0x2, InvalidMintError);
-nameToErrorMap.set('InvalidMint', InvalidMintError);
+codeToErrorMap.set(0x2, TokInvalidMintError);
+nameToErrorMap.set('InvalidMint', TokInvalidMintError);
 
 /** MintMismatch: 'Account not associated with this Mint' */
-export class MintMismatchError extends ProgramError {
+export class TokMintMismatchError extends ProgramError {
   readonly name: string = 'MintMismatch';
   readonly code: number = 0x3; // 3
   constructor(program: Program, cause?: Error) {
     super('Account not associated with this Mint', program, cause);
   }
 }
-codeToErrorMap.set(0x3, MintMismatchError);
-nameToErrorMap.set('MintMismatch', MintMismatchError);
+codeToErrorMap.set(0x3, TokMintMismatchError);
+nameToErrorMap.set('MintMismatch', TokMintMismatchError);
 
 /** OwnerMismatch: 'Owner does not match' */
-export class OwnerMismatchError extends ProgramError {
+export class TokOwnerMismatchError extends ProgramError {
   readonly name: string = 'OwnerMismatch';
   readonly code: number = 0x4; // 4
   constructor(program: Program, cause?: Error) {
     super('Owner does not match', program, cause);
   }
 }
-codeToErrorMap.set(0x4, OwnerMismatchError);
-nameToErrorMap.set('OwnerMismatch', OwnerMismatchError);
+codeToErrorMap.set(0x4, TokOwnerMismatchError);
+nameToErrorMap.set('OwnerMismatch', TokOwnerMismatchError);
 
 /** FixedSupply: 'Fixed supply' */
-export class FixedSupplyError extends ProgramError {
+export class TokFixedSupplyError extends ProgramError {
   readonly name: string = 'FixedSupply';
   readonly code: number = 0x5; // 5
   constructor(program: Program, cause?: Error) {
     super('Fixed supply', program, cause);
   }
 }
-codeToErrorMap.set(0x5, FixedSupplyError);
-nameToErrorMap.set('FixedSupply', FixedSupplyError);
+codeToErrorMap.set(0x5, TokFixedSupplyError);
+nameToErrorMap.set('FixedSupply', TokFixedSupplyError);
 
 /** AlreadyInUse: 'Already in use' */
-export class AlreadyInUseError extends ProgramError {
+export class TokAlreadyInUseError extends ProgramError {
   readonly name: string = 'AlreadyInUse';
   readonly code: number = 0x6; // 6
   constructor(program: Program, cause?: Error) {
     super('Already in use', program, cause);
   }
 }
-codeToErrorMap.set(0x6, AlreadyInUseError);
-nameToErrorMap.set('AlreadyInUse', AlreadyInUseError);
+codeToErrorMap.set(0x6, TokAlreadyInUseError);
+nameToErrorMap.set('AlreadyInUse', TokAlreadyInUseError);
 
 /** InvalidNumberOfProvidedSigners: 'Invalid number of provided signers' */
-export class InvalidNumberOfProvidedSignersError extends ProgramError {
+export class TokInvalidNumberOfProvidedSignersError extends ProgramError {
   readonly name: string = 'InvalidNumberOfProvidedSigners';
   readonly code: number = 0x7; // 7
   constructor(program: Program, cause?: Error) {
     super('Invalid number of provided signers', program, cause);
   }
 }
-codeToErrorMap.set(0x7, InvalidNumberOfProvidedSignersError);
+codeToErrorMap.set(0x7, TokInvalidNumberOfProvidedSignersError);
 nameToErrorMap.set(
   'InvalidNumberOfProvidedSigners',
-  InvalidNumberOfProvidedSignersError
+  TokInvalidNumberOfProvidedSignersError
 );
 
 /** InvalidNumberOfRequiredSigners: 'Invalid number of required signers' */
-export class InvalidNumberOfRequiredSignersError extends ProgramError {
+export class TokInvalidNumberOfRequiredSignersError extends ProgramError {
   readonly name: string = 'InvalidNumberOfRequiredSigners';
   readonly code: number = 0x8; // 8
   constructor(program: Program, cause?: Error) {
     super('Invalid number of required signers', program, cause);
   }
 }
-codeToErrorMap.set(0x8, InvalidNumberOfRequiredSignersError);
+codeToErrorMap.set(0x8, TokInvalidNumberOfRequiredSignersError);
 nameToErrorMap.set(
   'InvalidNumberOfRequiredSigners',
-  InvalidNumberOfRequiredSignersError
+  TokInvalidNumberOfRequiredSignersError
 );
 
 /** UninitializedState: 'State is unititialized' */
-export class UninitializedStateError extends ProgramError {
+export class TokUninitializedStateError extends ProgramError {
   readonly name: string = 'UninitializedState';
   readonly code: number = 0x9; // 9
   constructor(program: Program, cause?: Error) {
     super('State is unititialized', program, cause);
   }
 }
-codeToErrorMap.set(0x9, UninitializedStateError);
-nameToErrorMap.set('UninitializedState', UninitializedStateError);
+codeToErrorMap.set(0x9, TokUninitializedStateError);
+nameToErrorMap.set('UninitializedState', TokUninitializedStateError);
 
 /** NativeNotSupported: 'Instruction does not support native tokens' */
-export class NativeNotSupportedError extends ProgramError {
+export class TokNativeNotSupportedError extends ProgramError {
   readonly name: string = 'NativeNotSupported';
   readonly code: number = 0xa; // 10
   constructor(program: Program, cause?: Error) {
     super('Instruction does not support native tokens', program, cause);
   }
 }
-codeToErrorMap.set(0xa, NativeNotSupportedError);
-nameToErrorMap.set('NativeNotSupported', NativeNotSupportedError);
+codeToErrorMap.set(0xa, TokNativeNotSupportedError);
+nameToErrorMap.set('NativeNotSupported', TokNativeNotSupportedError);
 
 /** NonNativeHasBalance: 'Non-native account can only be closed if its balance is zero' */
-export class NonNativeHasBalanceError extends ProgramError {
+export class TokNonNativeHasBalanceError extends ProgramError {
   readonly name: string = 'NonNativeHasBalance';
   readonly code: number = 0xb; // 11
   constructor(program: Program, cause?: Error) {
@@ -154,77 +154,80 @@ export class NonNativeHasBalanceError extends ProgramError {
     );
   }
 }
-codeToErrorMap.set(0xb, NonNativeHasBalanceError);
-nameToErrorMap.set('NonNativeHasBalance', NonNativeHasBalanceError);
+codeToErrorMap.set(0xb, TokNonNativeHasBalanceError);
+nameToErrorMap.set('NonNativeHasBalance', TokNonNativeHasBalanceError);
 
 /** InvalidInstruction: 'Invalid instruction' */
-export class InvalidInstructionError extends ProgramError {
+export class TokInvalidInstructionError extends ProgramError {
   readonly name: string = 'InvalidInstruction';
   readonly code: number = 0xc; // 12
   constructor(program: Program, cause?: Error) {
     super('Invalid instruction', program, cause);
   }
 }
-codeToErrorMap.set(0xc, InvalidInstructionError);
-nameToErrorMap.set('InvalidInstruction', InvalidInstructionError);
+codeToErrorMap.set(0xc, TokInvalidInstructionError);
+nameToErrorMap.set('InvalidInstruction', TokInvalidInstructionError);
 
 /** InvalidState: 'State is invalid for requested operation' */
-export class InvalidStateError extends ProgramError {
+export class TokInvalidStateError extends ProgramError {
   readonly name: string = 'InvalidState';
   readonly code: number = 0xd; // 13
   constructor(program: Program, cause?: Error) {
     super('State is invalid for requested operation', program, cause);
   }
 }
-codeToErrorMap.set(0xd, InvalidStateError);
-nameToErrorMap.set('InvalidState', InvalidStateError);
+codeToErrorMap.set(0xd, TokInvalidStateError);
+nameToErrorMap.set('InvalidState', TokInvalidStateError);
 
 /** Overflow: 'Operation overflowed' */
-export class OverflowError extends ProgramError {
+export class TokOverflowError extends ProgramError {
   readonly name: string = 'Overflow';
   readonly code: number = 0xe; // 14
   constructor(program: Program, cause?: Error) {
     super('Operation overflowed', program, cause);
   }
 }
-codeToErrorMap.set(0xe, OverflowError);
-nameToErrorMap.set('Overflow', OverflowError);
+codeToErrorMap.set(0xe, TokOverflowError);
+nameToErrorMap.set('Overflow', TokOverflowError);
 
 /** AuthorityTypeNotSupported: 'Account does not support specified authority type' */
-export class AuthorityTypeNotSupportedError extends ProgramError {
+export class TokAuthorityTypeNotSupportedError extends ProgramError {
   readonly name: string = 'AuthorityTypeNotSupported';
   readonly code: number = 0xf; // 15
   constructor(program: Program, cause?: Error) {
     super('Account does not support specified authority type', program, cause);
   }
 }
-codeToErrorMap.set(0xf, AuthorityTypeNotSupportedError);
-nameToErrorMap.set('AuthorityTypeNotSupported', AuthorityTypeNotSupportedError);
+codeToErrorMap.set(0xf, TokAuthorityTypeNotSupportedError);
+nameToErrorMap.set(
+  'AuthorityTypeNotSupported',
+  TokAuthorityTypeNotSupportedError
+);
 
 /** MintCannotFreeze: 'This token mint cannot freeze accounts' */
-export class MintCannotFreezeError extends ProgramError {
+export class TokMintCannotFreezeError extends ProgramError {
   readonly name: string = 'MintCannotFreeze';
   readonly code: number = 0x10; // 16
   constructor(program: Program, cause?: Error) {
     super('This token mint cannot freeze accounts', program, cause);
   }
 }
-codeToErrorMap.set(0x10, MintCannotFreezeError);
-nameToErrorMap.set('MintCannotFreeze', MintCannotFreezeError);
+codeToErrorMap.set(0x10, TokMintCannotFreezeError);
+nameToErrorMap.set('MintCannotFreeze', TokMintCannotFreezeError);
 
 /** AccountFrozen: 'Account is frozen' */
-export class AccountFrozenError extends ProgramError {
+export class TokAccountFrozenError extends ProgramError {
   readonly name: string = 'AccountFrozen';
   readonly code: number = 0x11; // 17
   constructor(program: Program, cause?: Error) {
     super('Account is frozen', program, cause);
   }
 }
-codeToErrorMap.set(0x11, AccountFrozenError);
-nameToErrorMap.set('AccountFrozen', AccountFrozenError);
+codeToErrorMap.set(0x11, TokAccountFrozenError);
+nameToErrorMap.set('AccountFrozen', TokAccountFrozenError);
 
 /** MintDecimalsMismatch: 'The provided decimals value different from the Mint decimals' */
-export class MintDecimalsMismatchError extends ProgramError {
+export class TokMintDecimalsMismatchError extends ProgramError {
   readonly name: string = 'MintDecimalsMismatch';
   readonly code: number = 0x12; // 18
   constructor(program: Program, cause?: Error) {
@@ -235,19 +238,19 @@ export class MintDecimalsMismatchError extends ProgramError {
     );
   }
 }
-codeToErrorMap.set(0x12, MintDecimalsMismatchError);
-nameToErrorMap.set('MintDecimalsMismatch', MintDecimalsMismatchError);
+codeToErrorMap.set(0x12, TokMintDecimalsMismatchError);
+nameToErrorMap.set('MintDecimalsMismatch', TokMintDecimalsMismatchError);
 
 /** NonNativeNotSupported: 'Instruction does not support non-native tokens' */
-export class NonNativeNotSupportedError extends ProgramError {
+export class TokNonNativeNotSupportedError extends ProgramError {
   readonly name: string = 'NonNativeNotSupported';
   readonly code: number = 0x13; // 19
   constructor(program: Program, cause?: Error) {
     super('Instruction does not support non-native tokens', program, cause);
   }
 }
-codeToErrorMap.set(0x13, NonNativeNotSupportedError);
-nameToErrorMap.set('NonNativeNotSupported', NonNativeNotSupportedError);
+codeToErrorMap.set(0x13, TokNonNativeNotSupportedError);
+nameToErrorMap.set('NonNativeNotSupported', TokNonNativeNotSupportedError);
 
 /**
  * Attempts to resolve a custom program error from the provided error code.

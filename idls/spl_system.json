@@ -39,12 +39,12 @@
       "name": "transferSol",
       "accounts": [
         {
-          "name": "from",
+          "name": "source",
           "isMut": true,
           "isSigner": true
         },
         {
-          "name": "to",
+          "name": "destination",
           "isMut": true,
           "isSigner": false
         }
