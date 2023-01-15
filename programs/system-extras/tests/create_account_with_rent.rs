@@ -11,6 +11,7 @@ use solana_program::{
     rent::Rent,
     sysvar::Sysvar,
 };
+use solana_program_test::*;
 use solana_sdk::{
     signature::{Keypair, Signer},
     transaction::Transaction,
