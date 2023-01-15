@@ -4,12 +4,13 @@ use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
     program::invoke,
+    program_pack::Pack,
     pubkey::Pubkey,
     rent::Rent,
     system_instruction, system_program,
     sysvar::Sysvar,
 };
-use solana_sdk::feature_set::{spl_associated_token_account_v1_1_0, spl_token_v3_4_0};
+use spl_associated_token_account::get_associated_token_address;
 
 use crate::instruction::TokenExtrasInstruction;
 
@@ -32,6 +33,7 @@ impl Processor {
 fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     // Accounts.
     let account_info_iter = &mut accounts.iter();
+    let payer = next_account_info(account_info_iter)?;
     let token = next_account_info(account_info_iter)?;
     let mint = next_account_info(account_info_iter)?;
     let owner = next_account_info(account_info_iter)?;
@@ -49,28 +51,39 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     if *system_program.key != system_program::id() {
         return Err(TokenExtrasError::InvalidSystemProgram.into());
     }
-    if *token_program.key != spl_token_v3_4_0::id() {
+    if *token_program.key != spl_token::id() {
         return Err(TokenExtrasError::InvalidTokenProgram.into());
     }
-    if *ata_program.key != spl_associated_token_account_v1_1_0::id() {
+    if *ata_program.key != spl_associated_token_account::id() {
         return Err(TokenExtrasError::InvalidAssociatedTokenProgram.into());
     }
     if *ata.key != computed_ata {
         return Err(TokenExtrasError::InvalidAssociatedTokenAccount.into());
     }
 
-    // CPI to the System Program.
-    // invoke(
-    //     &system_instruction::create_account(
-    //         payer.key,
-    //         new_account.key,
-    //         lamports,
-    //         space,
-    //         &program_owner,
-    //     ),
-    //     &[payer.clone(), new_account.clone(), system_program.clone()],
-    // )?;
+    // Create the token account.
+    let rent = Rent::get()?;
+    invoke(
+        &system_instruction::create_account(
+            payer.key,
+            token.key,
+            rent.minimum_balance(spl_token::state::Account::LEN),
+            spl_token::state::Account::LEN as u64,
+            program_owner,
+        ),
+        &[payer.clone(), new_account.clone(), system_program.clone()],
+    )?;
+
+    // Create and initialize the associated token account.
+    invoke(
+        &spl_associated_token_account::instruction::create_associated_token_account(
+            payer.key,
+            owner.key,
+            mint.key,
+            token_program.key,
+        ),
+        &[payer.clone(), owner.clone(), mint.clone(), token.clone()],
+    )?;
 
     Ok(())
 }
-

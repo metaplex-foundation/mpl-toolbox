@@ -5,7 +5,6 @@ use solana_program::{
     pubkey::Pubkey,
     system_program,
 };
-use solana_sdk::feature_set::{spl_associated_token_account_v1_1_0, spl_token_v3_4_0};
 
 #[derive(Debug, Clone, ShankInstruction, BorshSerialize, BorshDeserialize)]
 #[rustfmt::skip]
@@ -26,17 +25,19 @@ pub enum TokenExtrasInstruction {
     ///
     /// Note that additional checks are made to ensure that the token account provided
     /// matches the mint account and owner account provided.
-    #[account(0, name="token", desc = "The token account that may or may not exist")]
-    #[account(1, name="mint", desc = "The mint account of the provided token account")]
-    #[account(2, name="owner", desc = "The owner of the provided token account")]
-    #[account(3, writable, name="ata", desc = "The associated token account which may be the same as the token account")]
-    #[account(4, name="system_program", desc = "System program")]
-    #[account(5, name="token_program", desc = "Token program")]
-    #[account(6, name="ata_program", desc = "Associated Token program")]
+    #[account(0, writable, signer, name="payer", desc = "The account paying for the token account creation if needed")]
+    #[account(1, name="token", desc = "The token account that may or may not exist")]
+    #[account(2, name="mint", desc = "The mint account of the provided token account")]
+    #[account(3, name="owner", desc = "The owner of the provided token account")]
+    #[account(4, writable, name="ata", desc = "The associated token account which may be the same as the token account")]
+    #[account(5, name="system_program", desc = "System program")]
+    #[account(6, name="token_program", desc = "Token program")]
+    #[account(7, name="ata_program", desc = "Associated Token program")]
     CreateTokenIfMissing,
 }
 
 pub fn create_token_if_missing_instruction(
+    payer: &Pubkey,
     token: &Pubkey,
     mint: &Pubkey,
     owner: &Pubkey,
@@ -45,17 +46,17 @@ pub fn create_token_if_missing_instruction(
     Instruction {
         program_id: crate::ID,
         accounts: vec![
+            AccountMeta::new(*payer, true),
             AccountMeta::new_readonly(*token, false),
             AccountMeta::new_readonly(*mint, false),
             AccountMeta::new_readonly(*owner, false),
             AccountMeta::new(*ata, false),
             AccountMeta::new_readonly(system_program::id(), false),
-            AccountMeta::new_readonly(spl_token_v3_4_0::id(), false),
-            AccountMeta::new_readonly(spl_associated_token_account_v1_1_0::id(), false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+            AccountMeta::new_readonly(spl_associated_token_account::id(), false),
         ],
         data: TokenExtrasInstruction::CreateTokenIfMissing
             .try_to_vec()
             .unwrap(),
     }
 }
-
