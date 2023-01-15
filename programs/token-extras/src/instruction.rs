@@ -36,7 +36,7 @@ pub enum TokenExtrasInstruction {
     CreateTokenIfMissing,
 }
 
-pub fn create_token_if_missing(
+pub fn create_token_if_missing_instruction(
     token: &Pubkey,
     mint: &Pubkey,
     owner: &Pubkey,
