@@ -28,7 +28,7 @@ mod create_account_with_rent {
                 mpl_system_extras::id(),
             )],
             Some(&context.payer.pubkey()),
-            &[&context.payer],
+            &[&context.payer, &new_account],
             context.last_blockhash,
         );
         send_transaction(&mut context, transaction).await.unwrap();
@@ -66,7 +66,7 @@ mod create_account_with_rent {
             // Note that we let the context payer pay for the transaction fee
             // so that we can assert the exact amount of lamports transferred.
             Some(&context.payer.pubkey()),
-            &[&context.payer, &payer],
+            &[&context.payer, &payer, &new_account],
             context.last_blockhash,
         );
         send_transaction(&mut context, transaction).await.unwrap();

@@ -10,12 +10,7 @@ pub async fn send_transaction(
     context: &mut ProgramTestContext,
     transaction: Transaction,
 ) -> Result<(), BanksClientError> {
-    context
-        .banks_client
-        .process_transaction(transaction)
-        .await
-        .unwrap();
-    Ok(())
+    context.banks_client.process_transaction(transaction).await
 }
 
 pub async fn airdrop(
