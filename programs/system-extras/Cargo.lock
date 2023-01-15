@@ -2399,6 +2399,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "mpl-system-extras"
+version = "0.1.0"
+dependencies = [
+ "assert_matches",
+ "borsh",
+ "num-derive",
+ "num-traits",
+ "shank",
+ "solana-logger",
+ "solana-program",
+ "solana-program-test",
+ "solana-sdk",
+ "solana-validator",
+ "thiserror",
+]
+
+[[package]]
 name = "multimap"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5670,23 +5687,6 @@ dependencies = [
  "libc",
  "thiserror",
  "walkdir",
-]
-
-[[package]]
-name = "system-extras"
-version = "0.1.0"
-dependencies = [
- "assert_matches",
- "borsh",
- "num-derive",
- "num-traits",
- "shank",
- "solana-logger",
- "solana-program",
- "solana-program-test",
- "solana-sdk",
- "solana-validator",
- "thiserror",
 ]
 
 [[package]]
