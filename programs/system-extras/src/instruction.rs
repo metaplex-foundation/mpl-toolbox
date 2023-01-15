@@ -1,6 +1,11 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use shank::ShankInstruction;
-use solana_program::pubkey::Pubkey;
+use solana_program::{
+    account_info::AccountInfo,
+    instruction::{AccountMeta, Instruction},
+    pubkey::Pubkey,
+    system_program,
+};
 
 #[derive(Debug, Clone, ShankInstruction, BorshSerialize, BorshDeserialize)]
 #[rustfmt::skip]
@@ -27,4 +32,37 @@ pub enum SystemExtrasInstruction {
     #[account(1, writable, name="destination", desc = "The destination account receiving the lamports")]
     #[account(2, name="system_program", desc = "System program")]
     TransferAllSol,
+}
+
+pub fn create_account_with_rent_instruction(
+    payer: &Pubkey,
+    new_account: &Pubkey,
+    space: u64,
+    program_id: Pubkey,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(*payer, true),
+            AccountMeta::new(*new_account, true),
+            AccountMeta::new_readonly(system_program::id(), false),
+        ],
+        data: SystemExtrasInstruction::CreateAccountWithRent { space, program_id }
+            .try_to_vec()
+            .unwrap(),
+    }
+}
+
+pub fn transfer_all_sol_instruction(source: &Pubkey, destination: &Pubkey) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(*source, true),
+            AccountMeta::new(*destination, false),
+            AccountMeta::new_readonly(system_program::id(), false),
+        ],
+        data: SystemExtrasInstruction::TransferAllSol
+            .try_to_vec()
+            .unwrap(),
+    }
 }
