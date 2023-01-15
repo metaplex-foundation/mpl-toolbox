@@ -13,7 +13,8 @@ pub async fn send_transaction(
     context
         .banks_client
         .process_transaction(transaction)
-        .await?;
+        .await
+        .unwrap();
     Ok(())
 }
 
@@ -33,7 +34,7 @@ pub async fn airdrop(
         context.last_blockhash,
     );
 
-    send_transaction(context, transaction).await?;
+    send_transaction(context, transaction).await.unwrap();
     Ok(())
 }
 
