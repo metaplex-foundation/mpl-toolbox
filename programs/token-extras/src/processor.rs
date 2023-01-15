@@ -42,10 +42,6 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     let token_program = next_account_info(account_info_iter)?;
     let ata_program = next_account_info(account_info_iter)?;
     let computed_ata = get_associated_token_address(owner.key, mint.key);
-    // let (computed_ata) = Pubkey::find_program_address(
-    //     &[mint.key.as_ref(), spl_token_v3_4_0::id(), owner.key.as_ref()],
-    //     ata_program.key,
-    // );
 
     // Guards.
     if *system_program.key != system_program::id() {
@@ -60,19 +56,6 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     if *ata.key != computed_ata {
         return Err(TokenExtrasError::InvalidAssociatedTokenAccount.into());
     }
-
-    // Create the token account.
-    let rent = Rent::get()?;
-    invoke(
-        &system_instruction::create_account(
-            payer.key,
-            token.key,
-            rent.minimum_balance(spl_token::state::Account::LEN),
-            spl_token::state::Account::LEN as u64,
-            program_owner,
-        ),
-        &[payer.clone(), new_account.clone(), system_program.clone()],
-    )?;
 
     // Create and initialize the associated token account.
     invoke(
