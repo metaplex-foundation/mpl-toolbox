@@ -10,6 +10,15 @@ use thiserror::Error;
 pub enum TokenExtrasError {
     #[error("Invalid System Program")]
     InvalidSystemProgram,
+
+    #[error("Invalid Token Program")]
+    InvalidTokenProgram,
+
+    #[error("Invalid Associated Token Program")]
+    InvalidAssociatedTokenProgram,
+
+    #[error("Invalid Associated Token Account: it should derive from the provided mint and owner")]
+    InvalidAssociatedTokenAccount,
 }
 
 impl PrintProgramError for TokenExtrasError {

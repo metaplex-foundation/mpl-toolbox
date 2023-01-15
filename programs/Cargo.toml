@@ -1,6 +1,3 @@
-[profile.release]
-overflow-checks = true
-
 [workspace]
 members = [
     "system-extras",

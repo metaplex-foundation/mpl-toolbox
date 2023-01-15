@@ -9,6 +9,7 @@ use solana_program::{
     system_instruction, system_program,
     sysvar::Sysvar,
 };
+use solana_sdk::feature_set::{spl_associated_token_account_v1_1_0, spl_token_v3_4_0};
 
 use crate::instruction::TokenExtrasInstruction;
 
@@ -38,10 +39,24 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     let system_program = next_account_info(account_info_iter)?;
     let token_program = next_account_info(account_info_iter)?;
     let ata_program = next_account_info(account_info_iter)?;
+    let computed_ata = get_associated_token_address(owner.key, mint.key);
+    // let (computed_ata) = Pubkey::find_program_address(
+    //     &[mint.key.as_ref(), spl_token_v3_4_0::id(), owner.key.as_ref()],
+    //     ata_program.key,
+    // );
 
     // Guards.
     if *system_program.key != system_program::id() {
         return Err(TokenExtrasError::InvalidSystemProgram.into());
+    }
+    if *token_program.key != spl_token_v3_4_0::id() {
+        return Err(TokenExtrasError::InvalidTokenProgram.into());
+    }
+    if *ata_program.key != spl_associated_token_account_v1_1_0::id() {
+        return Err(TokenExtrasError::InvalidAssociatedTokenProgram.into());
+    }
+    if *ata.key != computed_ata {
+        return Err(TokenExtrasError::InvalidAssociatedTokenAccount.into());
     }
 
     // CPI to the System Program.
