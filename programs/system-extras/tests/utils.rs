@@ -1,4 +1,4 @@
-use solana_program::{pubkey::Pubkey, system_instruction};
+use solana_program::{pubkey::Pubkey, rent::Rent, system_instruction};
 use solana_program_test::{BanksClientError, ProgramTest, ProgramTestContext};
 use solana_sdk::{account::Account, signature::Signer, transaction::Transaction};
 
@@ -40,4 +40,8 @@ pub async fn get_account(context: &mut ProgramTestContext, pubkey: &Pubkey) -> A
         .await
         .expect("account not found")
         .expect("account empty")
+}
+
+pub async fn get_rent(context: &mut ProgramTestContext) -> Rent {
+    context.banks_client.get_rent().await.unwrap()
 }
