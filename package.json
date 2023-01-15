@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "build": "pnpm build:clients",
+    "build": "pnpm build:programs && pnpm build:clients",
+    "build:programs": "./infra/build-programs.sh",
     "build:clients": "./infra/build-clients.sh",
-    "generate": "pnpm generate:clients && pnpm generate:docs",
+    "generate": "pnpm generate:idls && pnpm generate:clients && pnpm generate:docs",
+    "generate:idls": "./infra/generate-idls.sh",
     "generate:clients": "./infra/generate-clients.sh",
     "generate:docs": "./infra/generate-docs.sh",
     "validator:start": "CI=1 amman start --config ./infra/validator.cjs",
