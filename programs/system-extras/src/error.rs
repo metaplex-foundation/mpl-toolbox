@@ -8,9 +8,8 @@ use thiserror::Error;
 
 #[derive(Error, Clone, Debug, Eq, PartialEq, FromPrimitive)]
 pub enum SystemExtrasError {
-    /// Error description
-    #[error("Error message")]
-    ErrorName,
+    #[error("Invalid System Program")]
+    InvalidSystemProgram,
 }
 
 impl PrintProgramError for SystemExtrasError {

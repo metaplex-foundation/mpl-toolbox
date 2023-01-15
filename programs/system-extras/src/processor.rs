@@ -1,3 +1,4 @@
+use crate::error::SystemExtrasError;
 use borsh::BorshDeserialize;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -5,7 +6,7 @@ use solana_program::{
     program::invoke,
     pubkey::Pubkey,
     rent::Rent,
-    system_instruction,
+    system_instruction, system_program,
     sysvar::Sysvar,
 };
 
@@ -41,12 +42,15 @@ fn create_account_with_rent(
     let system_program = next_account_info(account_info_iter)?;
     let rent = Rent::get()?;
 
-    // Args.
+    // Guards.
+    if *system_program.key != system_program::id() {
+        return Err(SystemExtrasError::InvalidSystemProgram.into());
+    }
+
+    // Fetch the minimum lamports required for rent exemption.
     let lamports: u64 = rent.minimum_balance(space as usize);
 
-    // Guards.
-    // TODO: Ensure system_program is the system program?
-
+    // CPI to the System Program.
     invoke(
         &system_instruction::create_account(
             payer.key,
