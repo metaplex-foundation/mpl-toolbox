@@ -350,20 +350,26 @@ mod create_token_if_missing {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
         let mint = Keypair::new();
+        let mint_authority = Keypair::new();
         let owner = Keypair::new();
         let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
 
         // And an account owner by the wrong token program.
         let wrong_token = Keypair::new();
+        create_mint(&mut context, &mint, &mint_authority.pubkey(), None)
+            .await
+            .unwrap();
         create_token(&mut context, &wrong_token, &mint.pubkey(), &owner.pubkey())
             .await
             .unwrap();
         let wrong_token_account = get_account(&mut context, &wrong_token.pubkey()).await;
-        let wrong_data = AccountSharedData::from(Account {
-            owner: system_program::id(),
-            ..wrong_token_account
-        });
-        context.set_account(&wrong_token.pubkey(), &wrong_data);
+        context.set_account(
+            &wrong_token.pubkey(),
+            &AccountSharedData::from(Account {
+                owner: system_program::id(),
+                ..wrong_token_account
+            }),
+        );
 
         // When we try to call the "CreateTokenIfMissing" instruction.
         let transaction = Transaction::new_signed_with_payer(
@@ -383,11 +389,11 @@ mod create_token_if_missing {
         // Then we expect a custom program error.
         assert_matches!(
             result.unwrap_err().unwrap(),
-            TransactionError::InstructionError(0, Custom(3))
+            TransactionError::InstructionError(0, Custom(4))
         );
     }
 
-    // TODO InvalidTokenMint: test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_mint
-    // TODO InvalidTokenOwner: test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_owner
-    // TODO CannotCreateNonAssociatedToken: test_it_fail_if_the_non_existing_token_account_is_not_an_ata_account
+    // TODO InvalidTokenMint(5): test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_mint
+    // TODO InvalidTokenOwner(6): test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_owner
+    // TODO CannotCreateNonAssociatedToken(7): test_it_fail_if_the_non_existing_token_account_is_not_an_ata_account
 }
