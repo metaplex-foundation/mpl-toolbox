@@ -4,11 +4,13 @@ pub mod utils;
 
 mod create_account_with_rent {
     use crate::utils::{airdrop, get_account, get_rent, program_test, send_transaction};
+    use assert_matches::assert_matches;
     use mpl_system_extras::instruction::create_account_with_rent_instruction;
+    use solana_program::instruction::InstructionError::Custom;
     use solana_program_test::*;
     use solana_sdk::{
         signature::{Keypair, Signer},
-        transaction::Transaction,
+        transaction::{Transaction, TransactionError},
     };
 
     #[tokio::test]
@@ -99,12 +101,15 @@ mod create_account_with_rent {
             // Note that we let the context payer pay for the transaction
             // fee so that the transaction can be processed.
             Some(&context.payer.pubkey()),
-            &[&context.payer, &payer],
+            &[&context.payer, &payer, &new_account],
             context.last_blockhash,
         );
-        send_transaction(&mut context, transaction).await.unwrap();
+        let result = send_transaction(&mut context, transaction).await;
 
-        // Then we export an error.
-        // TODO
+        // Then we export a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(_, Custom(1))
+        );
     }
 }
