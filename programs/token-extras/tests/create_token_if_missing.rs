@@ -19,6 +19,7 @@ mod create_token_if_missing {
     };
     use solana_program_test::*;
     use solana_sdk::{
+        account::{Account, AccountSharedData},
         signature::{Keypair, Signer},
         transaction::{Transaction, TransactionError},
     };
@@ -314,8 +315,78 @@ mod create_token_if_missing {
         );
     }
 
-    // TODO InvalidAssociatedTokenAccount: test_it_fail_if_the_ata_account_does_not_match_the_mint_and_owner
-    // TODO InvalidProgramOwner: test_it_fail_if_the_existing_token_account_is_not_owned_by_the_token_program
+    #[tokio::test]
+    async fn test_it_fail_if_the_ata_account_does_not_match_the_mint_and_owner() {
+        // Given a mint/owner pair with a wrong ata account.
+        let mut context = program_test().start_with_context().await;
+        let mint = Keypair::new();
+        let owner = Keypair::new();
+        let wrong_ata_token = Keypair::new();
+
+        // When we try to call the "CreateTokenIfMissing" instruction.
+        let transaction = Transaction::new_signed_with_payer(
+            &[create_token_if_missing_instruction(
+                &context.payer.pubkey(),
+                &wrong_ata_token.pubkey(),
+                &mint.pubkey(),
+                &owner.pubkey(),
+                &wrong_ata_token.pubkey(),
+            )],
+            Some(&context.payer.pubkey()),
+            &[&context.payer],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(3))
+        );
+    }
+
+    #[tokio::test]
+    async fn test_it_fail_if_the_existing_token_account_is_not_owned_by_the_token_program() {
+        // Given a mint/owner pair.
+        let mut context = program_test().start_with_context().await;
+        let mint = Keypair::new();
+        let owner = Keypair::new();
+        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        // And an account owner by the wrong token program.
+        let wrong_token = Keypair::new();
+        create_token(&mut context, &wrong_token, &mint.pubkey(), &owner.pubkey())
+            .await
+            .unwrap();
+        let wrong_token_account = get_account(&mut context, &wrong_token.pubkey()).await;
+        let wrong_data = AccountSharedData::from(Account {
+            owner: system_program::id(),
+            ..wrong_token_account
+        });
+        context.set_account(&wrong_token.pubkey(), &wrong_data);
+
+        // When we try to call the "CreateTokenIfMissing" instruction.
+        let transaction = Transaction::new_signed_with_payer(
+            &[create_token_if_missing_instruction(
+                &context.payer.pubkey(),
+                &wrong_token.pubkey(),
+                &mint.pubkey(),
+                &owner.pubkey(),
+                &ata_token,
+            )],
+            Some(&context.payer.pubkey()),
+            &[&context.payer],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(3))
+        );
+    }
+
     // TODO InvalidTokenMint: test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_mint
     // TODO InvalidTokenOwner: test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_owner
     // TODO CannotCreateNonAssociatedToken: test_it_fail_if_the_non_existing_token_account_is_not_an_ata_account
