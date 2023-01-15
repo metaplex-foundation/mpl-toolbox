@@ -9,7 +9,10 @@ mod create_token_if_missing {
     use mpl_token_extras::instruction::{
         create_token_if_missing_instruction, TokenExtrasInstruction,
     };
-    use solana_program::instruction::{AccountMeta, Instruction, InstructionError::Custom};
+    use solana_program::{
+        instruction::{AccountMeta, Instruction, InstructionError::Custom},
+        system_program,
+    };
     use solana_program_test::*;
     use solana_sdk::{
         signature::{Keypair, Signer},
@@ -94,6 +97,90 @@ mod create_token_if_missing {
         assert_matches!(
             result.unwrap_err().unwrap(),
             TransactionError::InstructionError(0, Custom(0))
+        );
+    }
+
+    #[tokio::test]
+    async fn test_it_fail_if_we_provide_the_wrong_token_program() {
+        // Given a mint/owner pair.
+        let mut context = program_test().start_with_context().await;
+        let mint = Keypair::new();
+        let owner = Keypair::new();
+        let new_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        // And a fake token program.
+        let fake_token_program = Keypair::new().pubkey();
+
+        // When we try to create a token account if missing.
+        let transaction = Transaction::new_signed_with_payer(
+            &[Instruction {
+                program_id: mpl_token_extras::id(),
+                accounts: vec![
+                    AccountMeta::new(context.payer.pubkey(), true),
+                    AccountMeta::new_readonly(new_token, false),
+                    AccountMeta::new_readonly(mint.pubkey(), false),
+                    AccountMeta::new_readonly(owner.pubkey(), false),
+                    AccountMeta::new(new_token, false),
+                    AccountMeta::new_readonly(system_program::id(), false),
+                    AccountMeta::new_readonly(fake_token_program, false),
+                    AccountMeta::new_readonly(spl_associated_token_account::id(), false),
+                ],
+                data: TokenExtrasInstruction::CreateTokenIfMissing
+                    .try_to_vec()
+                    .unwrap(),
+            }],
+            Some(&context.payer.pubkey()),
+            &[&context.payer],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(1))
+        );
+    }
+
+    #[tokio::test]
+    async fn test_it_fail_if_we_provide_the_wrong_ata_program() {
+        // Given a mint/owner pair.
+        let mut context = program_test().start_with_context().await;
+        let mint = Keypair::new();
+        let owner = Keypair::new();
+        let new_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        // And a fake ata program.
+        let fake_ata_program = Keypair::new().pubkey();
+
+        // When we try to create a token account if missing.
+        let transaction = Transaction::new_signed_with_payer(
+            &[Instruction {
+                program_id: mpl_token_extras::id(),
+                accounts: vec![
+                    AccountMeta::new(context.payer.pubkey(), true),
+                    AccountMeta::new_readonly(new_token, false),
+                    AccountMeta::new_readonly(mint.pubkey(), false),
+                    AccountMeta::new_readonly(owner.pubkey(), false),
+                    AccountMeta::new(new_token, false),
+                    AccountMeta::new_readonly(system_program::id(), false),
+                    AccountMeta::new_readonly(spl_token::id(), false),
+                    AccountMeta::new_readonly(fake_ata_program, false),
+                ],
+                data: TokenExtrasInstruction::CreateTokenIfMissing
+                    .try_to_vec()
+                    .unwrap(),
+            }],
+            Some(&context.payer.pubkey()),
+            &[&context.payer],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(2))
         );
     }
 }
