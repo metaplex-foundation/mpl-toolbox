@@ -107,7 +107,7 @@ mod create_account_with_rent {
         );
         let result = send_transaction(&mut context, transaction).await;
 
-        // Then we export a custom program error.
+        // Then we expect a custom program error.
         assert_matches!(
             result.unwrap_err().unwrap(),
             TransactionError::InstructionError(0, Custom(1))
@@ -146,7 +146,7 @@ mod create_account_with_rent {
         );
         let result = send_transaction(&mut context, transaction).await;
 
-        // Then we export a custom program error.
+        // Then we expect a custom program error.
         assert_matches!(
             result.unwrap_err().unwrap(),
             TransactionError::InstructionError(0, Custom(0))

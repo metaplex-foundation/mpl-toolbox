@@ -57,7 +57,7 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
 
     if !token.data_is_empty() {
         let parsed_token = spl_token::state::Account::unpack(&token.data.borrow())?;
-        if token.owner != *token_program.key {
+        if *token.owner != *token_program.key {
             return Err(TokenExtrasError::InvalidProgramOwner.into());
         }
         if parsed_token.mint != *mint.key {

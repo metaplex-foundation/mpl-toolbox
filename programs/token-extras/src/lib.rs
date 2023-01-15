@@ -5,4 +5,4 @@ pub mod processor;
 
 pub use solana_program;
 
-solana_program::declare_id!("SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG");
+solana_program::declare_id!("TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p");
