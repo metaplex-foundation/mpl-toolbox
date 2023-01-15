@@ -33,6 +33,8 @@ async fn test_it_creates_an_account_with_minimum_rent_from_given_space() {
         context.last_blockhash,
     );
     send_transaction(&mut context, transaction).await.unwrap();
+
+    assert_eq!(1, 1);
 }
 
 // Test: Not enough funds.

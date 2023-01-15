@@ -1,7 +1,6 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use shank::ShankInstruction;
 use solana_program::{
-    account_info::AccountInfo,
     instruction::{AccountMeta, Instruction},
     pubkey::Pubkey,
     system_program,
