@@ -17,6 +17,7 @@ export * from './Create';
 export * from './CreateAccount';
 export * from './CreateAccountWithRent';
 export * from './CreateIdempotent';
+export * from './CreateTokenIfMissing';
 export * from './FreezeToken';
 export * from './GetTokenDataSize';
 export * from './InitializeImmutableOwner';

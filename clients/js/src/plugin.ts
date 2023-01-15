@@ -6,6 +6,7 @@ import {
 } from '@lorisleiva/js-core';
 import {
   getMplSystemExtrasProgram,
+  getMplTokenExtrasProgram,
   getSplAssociatedTokenAccountProgram,
   getSplMemoProgram,
   getSplSystemProgram,
@@ -36,6 +37,10 @@ export const splSystem = (): MetaplexPlugin => ({
     const mplSystemExtras = getMplSystemExtrasProgram(metaplex);
     metaplex.programs.add(mplSystemExtras);
     metaplex.programs.getSystemExtras = getShortcutMethod(mplSystemExtras);
+
+    const mplTokenExtras = getMplTokenExtrasProgram(metaplex);
+    metaplex.programs.add(mplTokenExtras);
+    metaplex.programs.getSystemExtras = getShortcutMethod(mplTokenExtras);
   },
 });
 
@@ -55,5 +60,6 @@ declare module '@lorisleiva/js-core' {
     getSystem(clusterFilter?: ClusterFilter): Program;
     getSystemExtras(clusterFilter?: ClusterFilter): Program;
     getToken(clusterFilter?: ClusterFilter): Program;
+    getTokenExtras(clusterFilter?: ClusterFilter): Program;
   }
 }

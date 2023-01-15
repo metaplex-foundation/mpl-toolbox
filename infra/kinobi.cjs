@@ -20,6 +20,7 @@ const kinobi = new Kinobi([
   path.join(idlDir, "spl_token.json"),
   path.join(idlDir, "spl_associated_token_account.json"),
   path.join(idlDir, "mpl_system_extras.json"),
+  path.join(idlDir, "mpl_token_extras.json"),
 ]);
 
 // Rename nodes.
@@ -51,6 +52,7 @@ kinobi.update(
     },
     splAssociatedToken: { prefix: "Ata" },
     mplSystemExtras: { prefix: "SysEx" },
+    mplTokenExtras: { prefix: "TokEx" },
   })
 );
 
