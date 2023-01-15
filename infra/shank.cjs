@@ -13,3 +13,12 @@ generateIdl({
   binaryInstallDir,
   programDir: path.join(programDir, "system-extras"),
 });
+
+generateIdl({
+  generator: "shank",
+  programName: "mpl_token_extras",
+  programId: "TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p",
+  idlDir,
+  binaryInstallDir,
+  programDir: path.join(programDir, "token-extras"),
+});
