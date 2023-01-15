@@ -19,6 +19,20 @@ pub enum TokenExtrasError {
 
     #[error("Invalid Associated Token Account: it should derive from the provided mint and owner")]
     InvalidAssociatedTokenAccount,
+
+    #[error("Invalid Program Owner")]
+    InvalidProgramOwner,
+
+    #[error("Invalid Token Mint: it should be the same as the provided mint account")]
+    InvalidTokenMint,
+
+    #[error("Invalid Program Owner: it should be the same as the provided owner account")]
+    InvalidTokenOwner,
+
+    #[error(
+        "Cannot create non-associated token accounts as they would need to sign the transaction. Please provide an associated token account instead"
+    )]
+    CannotCreateNonAssociatedToken,
 }
 
 impl PrintProgramError for TokenExtrasError {

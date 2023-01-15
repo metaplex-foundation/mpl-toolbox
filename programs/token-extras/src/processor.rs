@@ -6,9 +6,7 @@ use solana_program::{
     program::invoke,
     program_pack::Pack,
     pubkey::Pubkey,
-    rent::Rent,
-    system_instruction, system_program,
-    sysvar::Sysvar,
+    system_program,
 };
 use spl_associated_token_account::get_associated_token_address;
 
@@ -55,6 +53,24 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     }
     if *ata.key != computed_ata {
         return Err(TokenExtrasError::InvalidAssociatedTokenAccount.into());
+    }
+
+    if !token.data_is_empty() {
+        let parsed_token = spl_token::state::Account::unpack(&token.data.borrow())?;
+        if token.owner != *token_program.key {
+            return Err(TokenExtrasError::InvalidProgramOwner.into());
+        }
+        if parsed_token.mint != *mint.key {
+            return Err(TokenExtrasError::InvalidTokenMint.into());
+        }
+        if parsed_token.owner != *owner.key {
+            return Err(TokenExtrasError::InvalidTokenOwner.into());
+        }
+        return Ok(());
+    }
+
+    if *token.key != *ata.key {
+        return Err(TokenExtrasError::CannotCreateNonAssociatedToken.into());
     }
 
     // Create and initialize the associated token account.
