@@ -68,6 +68,20 @@
       }
     }
   ],
+  "accounts": [
+    {
+      "name": "DummyChallenge",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          }
+        ]
+      }
+    }
+  ],
   "errors": [
     {
       "code": 0,
