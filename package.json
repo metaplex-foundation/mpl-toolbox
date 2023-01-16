@@ -8,7 +8,7 @@
     "generate:clients": "./infra/generate-clients.sh",
     "generate:docs": "./infra/generate-docs.sh",
     "validator:start": "CI=1 amman start --config ./infra/validator.cjs",
-    "validator:end": "amman stop"
+    "validator:stop": "amman stop"
   },
   "devDependencies": {
     "@lorisleiva/kinobi": "^0.0.24",

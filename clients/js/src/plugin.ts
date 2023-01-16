@@ -13,7 +13,7 @@ import {
   getSplTokenProgram,
 } from './generated';
 
-export const splSystem = (): MetaplexPlugin => ({
+export const mplEssentials = (): MetaplexPlugin => ({
   install(metaplex) {
     const splSystemProgram = getSplSystemProgram(metaplex);
     metaplex.programs.add(splSystemProgram);
