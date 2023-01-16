@@ -1,5 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use shank::ShankInstruction;
+use shank::{ShankAccount, ShankInstruction};
 use solana_program::{
     instruction::{AccountMeta, Instruction},
     pubkey::Pubkey,
@@ -64,4 +64,19 @@ pub fn transfer_all_sol_instruction(source: &Pubkey, destination: &Pubkey) -> In
             .try_to_vec()
             .unwrap(),
     }
+}
+
+#[derive(ShankAccount, BorshSerialize, BorshDeserialize)]
+#[seeds(
+    "challenge",
+    creator("The authority managing the challenge, usually the creator"),
+    challenge_id(
+        "Unique id of the challenge. The same creator cannot reuse the same id for different challenges.",
+        str
+    )
+)]
+/// This is a test account to test PDA seeds.
+pub struct DummyChallenge {
+    /// The authority that can update the challenge, normally the creator.
+    pub authority: Pubkey,
 }
