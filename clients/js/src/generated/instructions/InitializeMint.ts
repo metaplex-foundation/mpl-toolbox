@@ -49,7 +49,7 @@ export function getInitializeMintInstructionDataSerializer(
   >(
     s.struct<InitializeMintInstructionData>(
       [
-        ['discriminator', s.u32],
+        ['discriminator', s.u8],
         ['decimals', s.u8],
         ['mintAuthority', s.publicKey],
         ['freezeAuthority', s.option(s.publicKey)],

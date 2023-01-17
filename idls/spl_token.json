@@ -3,7 +3,7 @@
   "name": "spl_token",
   "instructions": [
     {
-      "name": "InitializeMint",
+      "name": "initializeMint",
       "accounts": [
         {
           "name": "mint",
@@ -33,7 +33,7 @@
         }
       ],
       "discriminant": {
-        "type": "u32",
+        "type": "u8",
         "value": 0
       }
     },
@@ -61,7 +61,11 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 1
+      }
     },
     {
       "name": "initializeMultisig",
@@ -82,7 +86,11 @@
           "name": "m",
           "type": "u8"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 2
+      }
     },
     {
       "name": "transfer",
@@ -108,7 +116,11 @@
           "name": "amount",
           "type": "u64"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 3
+      }
     },
     {
       "name": "approve",
@@ -134,7 +146,11 @@
           "name": "amount",
           "type": "u64"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 4
+      }
     },
     {
       "name": "revoke",
@@ -150,7 +166,11 @@
           "isSigner": true
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 5
+      }
     },
     {
       "name": "setAuthority",
@@ -184,7 +204,11 @@
             "option": "publicKey"
           }
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 6
+      }
     },
     {
       "name": "mintTo",
@@ -210,7 +234,11 @@
           "name": "amount",
           "type": "u64"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 7
+      }
     },
     {
       "name": "burn",
@@ -236,7 +264,11 @@
           "name": "amount",
           "type": "u64"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 8
+      }
     },
     {
       "name": "closeAccount",
@@ -257,7 +289,11 @@
           "isSigner": true
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 9
+      }
     },
     {
       "name": "freezeAccount",
@@ -278,7 +314,11 @@
           "isSigner": true
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 10
+      }
     },
     {
       "name": "thawAccount",
@@ -299,7 +339,11 @@
           "isSigner": true
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 11
+      }
     },
     {
       "name": "transferChecked",
@@ -334,7 +378,11 @@
           "name": "decimals",
           "type": "u8"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 12
+      }
     },
     {
       "name": "approveChecked",
@@ -369,7 +417,11 @@
           "name": "decimals",
           "type": "u8"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 13
+      }
     },
     {
       "name": "mintToChecked",
@@ -399,7 +451,11 @@
           "name": "decimals",
           "type": "u8"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 14
+      }
     },
     {
       "name": "burnChecked",
@@ -429,7 +485,11 @@
           "name": "decimals",
           "type": "u8"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 15
+      }
     },
     {
       "name": "initializeAccount2",
@@ -455,7 +515,11 @@
           "name": "owner",
           "type": "publicKey"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 16
+      }
     },
     {
       "name": "syncNative",
@@ -466,7 +530,11 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 17
+      }
     },
     {
       "name": "initializeAccount3",
@@ -487,7 +555,11 @@
           "name": "owner",
           "type": "publicKey"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 18
+      }
     },
     {
       "name": "initializeMultisig2",
@@ -508,7 +580,11 @@
           "name": "m",
           "type": "u8"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 19
+      }
     },
     {
       "name": "initializeMint2",
@@ -534,7 +610,11 @@
             "option": "publicKey"
           }
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 20
+      }
     },
     {
       "name": "getAccountDataSize",
@@ -545,7 +625,11 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 21
+      }
     },
     {
       "name": "initializeImmutableOwner",
@@ -556,7 +640,11 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 22
+      }
     },
     {
       "name": "amountToUiAmount",
@@ -572,7 +660,11 @@
           "name": "amount",
           "type": "u64"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 23
+      }
     },
     {
       "name": "uiAmountToAmount",
@@ -588,7 +680,11 @@
           "name": "uiAmount",
           "type": "u64"
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 24
+      }
     }
   ],
   "accounts": [

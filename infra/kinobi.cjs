@@ -3,7 +3,6 @@ const {
   Kinobi,
   RenderJavaScriptVisitor,
   SetInstructionAccountDefaultValuesVisitor,
-  SetInstructionDiscriminatorsVisitor,
   SetLeafWrappersVisitor,
   RenameNodesVisitor,
 } = require("@lorisleiva/kinobi");
@@ -21,48 +20,6 @@ const kinobi = new Kinobi([
   path.join(idlDir, "mpl_system_extras.json"),
   path.join(idlDir, "mpl_token_extras.json"),
 ]);
-
-// Set SPL Token instruction discriminators.
-kinobi.update(
-  new SetInstructionDiscriminatorsVisitor({
-    // "splToken.InitializeMint": { value: 0 },
-    "splToken.InitializeAccount": { value: 1 },
-    "splToken.InitializeMultisig": { value: 2 },
-    "splToken.Transfer": { value: 3 },
-    "splToken.Approve": { value: 4 },
-    "splToken.Revoke": { value: 5 },
-    "splToken.SetAuthority": { value: 6 },
-    "splToken.MintTo": { value: 7 },
-    "splToken.Burn": { value: 8 },
-    "splToken.CloseAccount": { value: 9 },
-    "splToken.FreezeAccount": { value: 10 },
-    "splToken.ThawAccount": { value: 11 },
-    "splToken.TransferChecked": { value: 12 },
-    "splToken.ApproveChecked": { value: 13 },
-    "splToken.MintToChecked": { value: 14 },
-    "splToken.BurnChecked": { value: 15 },
-    "splToken.InitializeAccount2": { value: 16 },
-    "splToken.SyncNative": { value: 17 },
-    "splToken.InitializeAccount3": { value: 18 },
-    "splToken.InitializeMultisig2": { value: 19 },
-    "splToken.InitializeMint2": { value: 20 },
-    "splToken.GetAccountDataSize": { value: 21 },
-    "splToken.InitializeImmutableOwner": { value: 22 },
-    "splToken.AmountToUiAmount": { value: 23 },
-    "splToken.UiAmountToAmount": { value: 24 },
-    "splToken.InitializeMintCloseAuthority": { value: 25 },
-    "splToken.TransferFeeExtension": { value: 26 },
-    "splToken.ConfidentialTransferExtension": { value: 27 },
-    "splToken.DefaultAccountStateExtension": { value: 28 },
-    "splToken.Reallocate": { value: 29 },
-    "splToken.MemoTransferExtension": { value: 30 },
-    "splToken.CreateNativeMint": { value: 31 },
-    "splToken.InitializeNonTransferableMint": { value: 32 },
-    "splToken.InterestBearingMintExtension": { value: 33 },
-    "splToken.CpiGuardExtension": { value: 34 },
-    "splToken.InitializePermanentDelegate": { value: 35 },
-  })
-);
 
 // Rename nodes.
 kinobi.update(
