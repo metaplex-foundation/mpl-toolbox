@@ -81,7 +81,7 @@ export function getTokenAccountDataSerializer(
       ['delegatedAmount', s.u64],
       ['closeAuthority', s.option(s.publicKey, s.u32)],
     ],
-    'Account'
+    'Token'
   ) as Serializer<TokenAccountArgs, TokenAccountData>;
 }
 

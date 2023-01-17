@@ -28,7 +28,6 @@ kinobi.update(
     splMemo: { prefix: "Memo" },
     splToken: {
       prefix: "Tok",
-      accounts: { Account: "Token" },
       instructions: {
         Approve: "ApproveTokenDelegate",
         ApproveChecked: "ApproveTokenDelegateChecked",
