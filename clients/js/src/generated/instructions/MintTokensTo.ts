@@ -20,8 +20,8 @@ import {
 // Accounts.
 export type MintTokensToInstructionAccounts = {
   mint: PublicKey;
-  account: PublicKey;
-  owner: Signer;
+  token: PublicKey;
+  mintAuthority: Signer;
 };
 
 // Arguments.
@@ -74,13 +74,13 @@ export function mintTokensTo(
   // Mint.
   keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
 
-  // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+  // Token.
+  keys.push({ pubkey: input.token, isSigner: false, isWritable: true });
 
-  // Owner.
-  signers.push(input.owner);
+  // Mint Authority.
+  signers.push(input.mintAuthority);
   keys.push({
-    pubkey: input.owner.publicKey,
+    pubkey: input.mintAuthority.publicKey,
     isSigner: true,
     isWritable: false,
   });

@@ -219,12 +219,12 @@
           "isSigner": false
         },
         {
-          "name": "account",
+          "name": "token",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "owner",
+          "name": "mintAuthority",
           "isMut": false,
           "isSigner": true
         }
@@ -432,12 +432,12 @@
           "isSigner": false
         },
         {
-          "name": "account",
+          "name": "token",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "owner",
+          "name": "mintAuthority",
           "isMut": false,
           "isSigner": true
         }
