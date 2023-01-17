@@ -38,7 +38,7 @@
       }
     },
     {
-      "name": "initializeAccount",
+      "name": "initializeToken",
       "accounts": [
         {
           "name": "account",
@@ -93,7 +93,7 @@
       }
     },
     {
-      "name": "transfer",
+      "name": "transferTokens",
       "accounts": [
         {
           "name": "source",
@@ -153,7 +153,7 @@
       }
     },
     {
-      "name": "revoke",
+      "name": "revokeTokenDelegate",
       "accounts": [
         {
           "name": "source",
@@ -211,7 +211,7 @@
       }
     },
     {
-      "name": "mintTo",
+      "name": "mintTokensTo",
       "accounts": [
         {
           "name": "mint",
@@ -271,7 +271,7 @@
       }
     },
     {
-      "name": "closeAccount",
+      "name": "closeToken",
       "accounts": [
         {
           "name": "account",
@@ -296,7 +296,7 @@
       }
     },
     {
-      "name": "freezeAccount",
+      "name": "freezeToken",
       "accounts": [
         {
           "name": "account",
@@ -321,7 +321,7 @@
       }
     },
     {
-      "name": "thawAccount",
+      "name": "thawToken",
       "accounts": [
         {
           "name": "account",
@@ -346,7 +346,7 @@
       }
     },
     {
-      "name": "transferChecked",
+      "name": "transferTokensChecked",
       "accounts": [
         {
           "name": "source",
@@ -424,7 +424,7 @@
       }
     },
     {
-      "name": "mintToChecked",
+      "name": "mintTokensToChecked",
       "accounts": [
         {
           "name": "mint",
@@ -492,7 +492,7 @@
       }
     },
     {
-      "name": "initializeAccount2",
+      "name": "initializeToken2",
       "accounts": [
         {
           "name": "account",
@@ -537,7 +537,7 @@
       }
     },
     {
-      "name": "initializeAccount3",
+      "name": "initializeToken3",
       "accounts": [
         {
           "name": "account",
@@ -617,7 +617,7 @@
       }
     },
     {
-      "name": "getAccountDataSize",
+      "name": "getTokenDataSize",
       "accounts": [
         {
           "name": "mint",

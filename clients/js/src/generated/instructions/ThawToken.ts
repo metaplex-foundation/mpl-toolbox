@@ -40,7 +40,7 @@ export function getThawTokenInstructionDataSerializer(
   >(
     s.struct<ThawTokenInstructionData>(
       [['discriminator', s.u8]],
-      'ThawAccountInstructionArgs'
+      'ThawTokenInstructionArgs'
     ),
     (value) => ({ discriminator: 11, ...value } as ThawTokenInstructionData)
   ) as Serializer<ThawTokenInstructionArgs, ThawTokenInstructionData>;

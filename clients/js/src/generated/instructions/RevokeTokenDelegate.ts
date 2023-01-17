@@ -42,7 +42,7 @@ export function getRevokeTokenDelegateInstructionDataSerializer(
   >(
     s.struct<RevokeTokenDelegateInstructionData>(
       [['discriminator', s.u8]],
-      'RevokeInstructionArgs'
+      'RevokeTokenDelegateInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 5, ...value } as RevokeTokenDelegateInstructionData)

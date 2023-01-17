@@ -40,7 +40,7 @@ export function getFreezeTokenInstructionDataSerializer(
   >(
     s.struct<FreezeTokenInstructionData>(
       [['discriminator', s.u8]],
-      'FreezeAccountInstructionArgs'
+      'FreezeTokenInstructionArgs'
     ),
     (value) => ({ discriminator: 10, ...value } as FreezeTokenInstructionData)
   ) as Serializer<FreezeTokenInstructionArgs, FreezeTokenInstructionData>;
