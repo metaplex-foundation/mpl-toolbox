@@ -123,7 +123,7 @@
       }
     },
     {
-      "name": "approve",
+      "name": "approveTokenDelegate",
       "accounts": [
         {
           "name": "source",
@@ -241,7 +241,7 @@
       }
     },
     {
-      "name": "burn",
+      "name": "burnToken",
       "accounts": [
         {
           "name": "account",
@@ -385,7 +385,7 @@
       }
     },
     {
-      "name": "approveChecked",
+      "name": "approveTokenDelegateChecked",
       "accounts": [
         {
           "name": "source",
@@ -458,7 +458,7 @@
       }
     },
     {
-      "name": "burnChecked",
+      "name": "burnTokenChecked",
       "accounts": [
         {
           "name": "account",

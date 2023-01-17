@@ -54,7 +54,7 @@ export function getBurnTokenCheckedInstructionDataSerializer(
         ['amount', s.u64],
         ['decimals', s.u8],
       ],
-      'BurnCheckedInstructionArgs'
+      'BurnTokenCheckedInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 15, ...value } as BurnTokenCheckedInstructionData)

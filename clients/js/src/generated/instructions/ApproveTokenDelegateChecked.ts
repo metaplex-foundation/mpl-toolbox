@@ -55,7 +55,7 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(
         ['amount', s.u64],
         ['decimals', s.u8],
       ],
-      'ApproveCheckedInstructionArgs'
+      'ApproveTokenDelegateCheckedInstructionArgs'
     ),
     (value) =>
       ({

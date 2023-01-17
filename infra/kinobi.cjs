@@ -29,10 +29,6 @@ kinobi.update(
     splToken: {
       prefix: "Tok",
       instructions: {
-        Approve: "ApproveTokenDelegate",
-        ApproveChecked: "ApproveTokenDelegateChecked",
-        Burn: "BurnToken",
-        BurnChecked: "BurnTokenChecked",
         CloseAccount: "CloseToken",
         FreezeAccount: "FreezeToken",
         GetAccountDataSize: "GetTokenDataSize",
