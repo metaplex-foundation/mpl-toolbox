@@ -2,12 +2,10 @@ const path = require("path");
 const {
   Kinobi,
   RenderJavaScriptVisitor,
+  SetInstructionAccountDefaultValuesVisitor,
   SetInstructionDiscriminatorsVisitor,
   SetLeafWrappersVisitor,
   RenameNodesVisitor,
-} = require("@lorisleiva/kinobi");
-const {
-  SetInstructionAccountDefaultValuesVisitor,
 } = require("@lorisleiva/kinobi");
 
 // Paths.
