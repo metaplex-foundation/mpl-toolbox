@@ -1,6 +1,7 @@
 import {
   generateSigner,
   isEqualToAmount,
+  none,
   sol,
   some,
   subtractAmounts,
@@ -16,7 +17,7 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
   const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
   const newAccount = generateSigner(metaplex);
 
-  // When we create a new account at this address with no additional configuration.
+  // When we create a new mint account at this address with no additional configuration.
   await transactionBuilder(metaplex)
     .add(createMint(metaplex, { mint: newAccount }))
     .sendAndConfirm();
@@ -48,4 +49,39 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
       sol(0.0001) // (tolerance) Plus a bit more for the transaction fee.
     )
   );
+});
+
+test('it can create new mint accounts with maximum configuration', async (t) => {
+  // Given an account signer and a mint authority.
+  const metaplex = await createMetaplex();
+  const newAccount = generateSigner(metaplex);
+  const mintAuthority = generateSigner(metaplex).publicKey;
+
+  // When we create a new mint account with all configuration options.
+  await transactionBuilder(metaplex)
+    .add(
+      createMint(metaplex, {
+        mint: newAccount,
+        decimals: 9,
+        mintAuthority,
+        freezeAuthority: none(),
+      })
+    )
+    .sendAndConfirm();
+
+  // Then the account was created with the correct data.
+  const mintAccount = await fetchMint(metaplex, newAccount.publicKey);
+  const rentExemptBalance = await metaplex.rpc.getRent(getMintSize());
+  t.like(mintAccount, <Mint>{
+    address: newAccount.publicKey,
+    header: {
+      owner: metaplex.programs.getToken().address,
+      lamports: rentExemptBalance,
+    },
+    mintAuthority: some(mintAuthority),
+    supply: 0n,
+    decimals: 9,
+    isInitialized: true,
+    freezeAuthority: none(),
+  });
 });
