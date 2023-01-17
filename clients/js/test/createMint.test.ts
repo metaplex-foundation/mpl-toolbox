@@ -7,7 +7,7 @@ import {
   transactionBuilder,
 } from '@lorisleiva/js-test';
 import test from 'ava';
-import { createMint, fetchMint, Mint } from '../src';
+import { createMint, fetchMint, getMintSize, Mint } from '../src';
 import { createMetaplex } from './_setup';
 
 test('it can create new mint accounts with minimum configuration', async (t) => {
@@ -23,16 +23,18 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
 
   // Then the account was created with the correct data.
   const mintAccount = await fetchMint(metaplex, newAccount.publicKey);
+  const rentExemptBalance = await metaplex.rpc.getRent(getMintSize());
   t.like(mintAccount, <Mint>{
     address: newAccount.publicKey,
     header: {
       owner: metaplex.programs.getToken().address,
+      lamports: rentExemptBalance,
     },
-    mintAuthority: some(metaplex.identity.publicKey),
+    mintAuthority: some({ ...metaplex.identity.publicKey }),
     supply: 0n,
     decimals: 0,
     isInitialized: true,
-    freezeAuthority: some(metaplex.identity.publicKey),
+    freezeAuthority: some({ ...metaplex.identity.publicKey }),
   });
 
   // And the payer was charged for the creation of the account.
@@ -42,7 +44,7 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
   t.true(
     isEqualToAmount(
       newPayerBalance,
-      subtractAmounts(payerBalance, sol(1.5)),
+      subtractAmounts(payerBalance, rentExemptBalance),
       sol(0.0001) // (tolerance) Plus a bit more for the transaction fee.
     )
   );
