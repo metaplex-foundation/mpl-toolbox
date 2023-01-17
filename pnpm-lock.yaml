@@ -1,13 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@lorisleiva/kinobi': ^0.0.24
+  '@lorisleiva/kinobi': ^0.0.25
   '@lorisleiva/shank-js': ^0.0.1
   '@metaplex-foundation/amman': ^0.12.1
   typescript: ^4.9.4
 
 devDependencies:
-  '@lorisleiva/kinobi': 0.0.24
+  '@lorisleiva/kinobi': 0.0.25
   '@lorisleiva/shank-js': 0.0.1
   '@metaplex-foundation/amman': 0.12.1_typescript@4.9.4
   typescript: 4.9.4
@@ -31,8 +31,8 @@ packages:
       '@hapi/hoek': 9.3.0
     dev: true
 
-  /@lorisleiva/kinobi/0.0.24:
-    resolution: {integrity: sha512-MJOH/at3SiEzd6QPB5DJV3vDTmSf4hVeyVVyGD0l8bPiAoHgwjZ7vpjj6/4VXXLLj1QnTmUfEsc4OdQFL/GmgQ==}
+  /@lorisleiva/kinobi/0.0.25:
+    resolution: {integrity: sha512-lkuaBkiy+O277zFhzV0YbdG1MJ+y6VxcWQv4laeIlCLg5Ml8+dJ006gwi7P65/0drFnHAgmTPJK0weZ1XU93CA==}
     dependencies:
       '@noble/hashes': 1.1.5
       chalk: 4.1.2

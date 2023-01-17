@@ -11,7 +11,7 @@
     "validator:stop": "amman stop"
   },
   "devDependencies": {
-    "@lorisleiva/kinobi": "^0.0.24",
+    "@lorisleiva/kinobi": "^0.0.25",
     "@lorisleiva/shank-js": "^0.0.1",
     "@metaplex-foundation/amman": "^0.12.1",
     "typescript": "^4.9.4"
