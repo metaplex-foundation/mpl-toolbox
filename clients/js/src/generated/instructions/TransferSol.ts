@@ -47,7 +47,7 @@ export function getTransferSolInstructionDataSerializer(
         ['discriminator', s.u32],
         ['lamports', mapAmountSerializer(s.u64, 'SOL', 9)],
       ],
-      'transferSolInstructionArgs'
+      'TransferSolInstructionArgs'
     ),
     (value) => ({ discriminator: 2, ...value } as TransferSolInstructionData)
   ) as Serializer<TransferSolInstructionArgs, TransferSolInstructionData>;

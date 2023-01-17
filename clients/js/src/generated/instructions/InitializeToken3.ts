@@ -48,7 +48,7 @@ export function getInitializeToken3InstructionDataSerializer(
         ['discriminator', s.u8],
         ['owner', s.publicKey],
       ],
-      'initializeAccount3InstructionArgs'
+      'InitializeAccount3InstructionArgs'
     ),
     (value) =>
       ({ discriminator: 18, ...value } as InitializeToken3InstructionData)

@@ -48,7 +48,7 @@ export function getInitializeMultisig2InstructionDataSerializer(
         ['discriminator', s.u8],
         ['m', s.u8],
       ],
-      'initializeMultisig2InstructionArgs'
+      'InitializeMultisig2InstructionArgs'
     ),
     (value) =>
       ({ discriminator: 19, ...value } as InitializeMultisig2InstructionData)

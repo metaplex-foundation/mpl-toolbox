@@ -55,7 +55,7 @@ export function getCreateAccountInstructionDataSerializer(
         ['space', s.u64],
         ['programId', s.publicKey],
       ],
-      'createAccountInstructionArgs'
+      'CreateAccountInstructionArgs'
     ),
     (value) => ({ discriminator: 0, ...value } as CreateAccountInstructionData)
   ) as Serializer<CreateAccountInstructionArgs, CreateAccountInstructionData>;

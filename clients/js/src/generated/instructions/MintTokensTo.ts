@@ -46,7 +46,7 @@ export function getMintTokensToInstructionDataSerializer(
         ['discriminator', s.u8],
         ['amount', s.u64],
       ],
-      'mintToInstructionArgs'
+      'MintToInstructionArgs'
     ),
     (value) => ({ discriminator: 7, ...value } as MintTokensToInstructionData)
   ) as Serializer<MintTokensToInstructionArgs, MintTokensToInstructionData>;

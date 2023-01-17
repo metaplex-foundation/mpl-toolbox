@@ -49,12 +49,12 @@ export function getInitializeMintInstructionDataSerializer(
   >(
     s.struct<InitializeMintInstructionData>(
       [
-        ['discriminator', s.u8],
+        ['discriminator', s.u32],
         ['decimals', s.u8],
         ['mintAuthority', s.publicKey],
         ['freezeAuthority', s.option(s.publicKey)],
       ],
-      'initializeMintInstructionArgs'
+      'InitializeMintInstructionArgs'
     ),
     (value) => ({ discriminator: 0, ...value } as InitializeMintInstructionData)
   ) as Serializer<InitializeMintInstructionArgs, InitializeMintInstructionData>;

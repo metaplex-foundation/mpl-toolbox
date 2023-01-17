@@ -41,7 +41,7 @@ export function getGetTokenDataSizeInstructionDataSerializer(
   >(
     s.struct<GetTokenDataSizeInstructionData>(
       [['discriminator', s.u8]],
-      'getAccountDataSizeInstructionArgs'
+      'GetAccountDataSizeInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 21, ...value } as GetTokenDataSizeInstructionData)

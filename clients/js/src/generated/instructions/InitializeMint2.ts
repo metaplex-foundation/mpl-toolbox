@@ -53,7 +53,7 @@ export function getInitializeMint2InstructionDataSerializer(
         ['mintAuthority', s.publicKey],
         ['freezeAuthority', s.option(s.publicKey)],
       ],
-      'initializeMint2InstructionArgs'
+      'InitializeMint2InstructionArgs'
     ),
     (value) =>
       ({ discriminator: 20, ...value } as InitializeMint2InstructionData)

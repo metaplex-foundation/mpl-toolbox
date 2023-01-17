@@ -25,7 +25,7 @@ export function getAddMemoInstructionDataSerializer(
   const s = context.serializer;
   return s.struct<AddMemoInstructionData>(
     [['memo', s.string]],
-    'addMemoInstructionArgs'
+    'AddMemoInstructionArgs'
   );
 }
 

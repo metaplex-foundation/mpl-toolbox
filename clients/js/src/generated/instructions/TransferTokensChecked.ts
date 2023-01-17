@@ -55,7 +55,7 @@ export function getTransferTokensCheckedInstructionDataSerializer(
         ['amount', s.u64],
         ['decimals', s.u8],
       ],
-      'transferCheckedInstructionArgs'
+      'TransferCheckedInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 12, ...value } as TransferTokensCheckedInstructionData)

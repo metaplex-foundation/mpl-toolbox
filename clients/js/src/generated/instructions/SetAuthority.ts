@@ -53,7 +53,7 @@ export function getSetAuthorityInstructionDataSerializer(
         ['authorityType', getAuthorityTypeSerializer(context)],
         ['newAuthority', s.option(s.publicKey)],
       ],
-      'setAuthorityInstructionArgs'
+      'SetAuthorityInstructionArgs'
     ),
     (value) => ({ discriminator: 6, ...value } as SetAuthorityInstructionData)
   ) as Serializer<SetAuthorityInstructionArgs, SetAuthorityInstructionData>;

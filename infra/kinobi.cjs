@@ -25,7 +25,7 @@ const kinobi = new Kinobi([
 // Set SPL Token instruction discriminators.
 kinobi.update(
   new SetInstructionDiscriminatorsVisitor({
-    "splToken.InitializeMint": { value: 0 },
+    // "splToken.InitializeMint": { value: 0 },
     "splToken.InitializeAccount": { value: 1 },
     "splToken.InitializeMultisig": { value: 2 },
     "splToken.Transfer": { value: 3 },

@@ -54,7 +54,7 @@ export function getMintTokensToCheckedInstructionDataSerializer(
         ['amount', s.u64],
         ['decimals', s.u8],
       ],
-      'mintToCheckedInstructionArgs'
+      'MintToCheckedInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 14, ...value } as MintTokensToCheckedInstructionData)

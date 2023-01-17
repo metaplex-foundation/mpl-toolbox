@@ -41,7 +41,7 @@ export function getInitializeTokenInstructionDataSerializer(
   >(
     s.struct<InitializeTokenInstructionData>(
       [['discriminator', s.u8]],
-      'initializeAccountInstructionArgs'
+      'InitializeAccountInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 1, ...value } as InitializeTokenInstructionData)

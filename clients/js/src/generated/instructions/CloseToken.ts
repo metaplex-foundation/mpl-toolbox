@@ -40,7 +40,7 @@ export function getCloseTokenInstructionDataSerializer(
   >(
     s.struct<CloseTokenInstructionData>(
       [['discriminator', s.u8]],
-      'closeAccountInstructionArgs'
+      'CloseAccountInstructionArgs'
     ),
     (value) => ({ discriminator: 9, ...value } as CloseTokenInstructionData)
   ) as Serializer<CloseTokenInstructionArgs, CloseTokenInstructionData>;

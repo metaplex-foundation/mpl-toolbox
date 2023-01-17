@@ -49,7 +49,7 @@ export function getApproveTokenDelegateInstructionDataSerializer(
         ['discriminator', s.u8],
         ['amount', s.u64],
       ],
-      'approveInstructionArgs'
+      'ApproveInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 4, ...value } as ApproveTokenDelegateInstructionData)

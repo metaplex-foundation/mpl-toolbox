@@ -41,7 +41,7 @@ export function getInitializeImmutableOwnerInstructionDataSerializer(
   >(
     s.struct<InitializeImmutableOwnerInstructionData>(
       [['discriminator', s.u8]],
-      'initializeImmutableOwnerInstructionArgs'
+      'InitializeImmutableOwnerInstructionArgs'
     ),
     (value) =>
       ({

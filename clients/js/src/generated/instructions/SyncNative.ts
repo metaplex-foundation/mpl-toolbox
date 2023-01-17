@@ -38,7 +38,7 @@ export function getSyncNativeInstructionDataSerializer(
   >(
     s.struct<SyncNativeInstructionData>(
       [['discriminator', s.u8]],
-      'syncNativeInstructionArgs'
+      'SyncNativeInstructionArgs'
     ),
     (value) => ({ discriminator: 17, ...value } as SyncNativeInstructionData)
   ) as Serializer<SyncNativeInstructionArgs, SyncNativeInstructionData>;

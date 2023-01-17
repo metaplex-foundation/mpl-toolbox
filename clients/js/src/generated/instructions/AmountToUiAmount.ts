@@ -47,7 +47,7 @@ export function getAmountToUiAmountInstructionDataSerializer(
         ['discriminator', s.u8],
         ['amount', s.u64],
       ],
-      'amountToUiAmountInstructionArgs'
+      'AmountToUiAmountInstructionArgs'
     ),
     (value) =>
       ({ discriminator: 23, ...value } as AmountToUiAmountInstructionData)

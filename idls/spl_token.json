@@ -3,7 +3,7 @@
   "name": "spl_token",
   "instructions": [
     {
-      "name": "initializeMint",
+      "name": "InitializeMint",
       "accounts": [
         {
           "name": "mint",
@@ -31,7 +31,11 @@
             "option": "publicKey"
           }
         }
-      ]
+      ],
+      "discriminant": {
+        "type": "u32",
+        "value": 0
+      }
     },
     {
       "name": "initializeAccount",

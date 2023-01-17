@@ -49,7 +49,7 @@ export function getInitializeToken2InstructionDataSerializer(
         ['discriminator', s.u8],
         ['owner', s.publicKey],
       ],
-      'initializeAccount2InstructionArgs'
+      'InitializeAccount2InstructionArgs'
     ),
     (value) =>
       ({ discriminator: 16, ...value } as InitializeToken2InstructionData)
