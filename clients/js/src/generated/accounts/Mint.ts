@@ -65,11 +65,11 @@ export function getMintAccountDataSerializer(
   const s = context.serializer;
   return s.struct<MintAccountData>(
     [
-      ['mintAuthority', s.option(s.publicKey)],
+      ['mintAuthority', s.option(s.publicKey, s.u32)],
       ['supply', s.u64],
       ['decimals', s.u8],
       ['isInitialized', s.bool],
-      ['freezeAuthority', s.option(s.publicKey)],
+      ['freezeAuthority', s.option(s.publicKey, s.u32)],
     ],
     'Mint'
   ) as Serializer<MintAccountArgs, MintAccountData>;

@@ -75,11 +75,11 @@ export function getTokenAccountDataSerializer(
       ['mint', s.publicKey],
       ['owner', s.publicKey],
       ['amount', s.u64],
-      ['delegate', s.option(s.publicKey)],
+      ['delegate', s.option(s.publicKey, s.u32)],
       ['state', getAccountStateSerializer(context)],
-      ['isNative', s.option(s.u64)],
+      ['isNative', s.option(s.u64, s.u32)],
       ['delegatedAmount', s.u64],
-      ['closeAuthority', s.option(s.publicKey)],
+      ['closeAuthority', s.option(s.publicKey, s.u32)],
     ],
     'Account'
   ) as Serializer<TokenAccountArgs, TokenAccountData>;

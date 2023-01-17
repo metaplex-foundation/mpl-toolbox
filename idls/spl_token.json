@@ -596,7 +596,7 @@
           {
             "name": "mintAuthority",
             "type": {
-              "option": "publicKey"
+              "coption": "publicKey"
             }
           },
           {
@@ -614,7 +614,7 @@
           {
             "name": "freezeAuthority",
             "type": {
-              "option": "publicKey"
+              "coption": "publicKey"
             }
           }
         ]
@@ -640,7 +640,7 @@
           {
             "name": "delegate",
             "type": {
-              "option": "publicKey"
+              "coption": "publicKey"
             }
           },
           {
@@ -652,7 +652,7 @@
           {
             "name": "isNative",
             "type": {
-              "option": "u64"
+              "coption": "u64"
             }
           },
           {
@@ -662,7 +662,7 @@
           {
             "name": "closeAuthority",
             "type": {
-              "option": "publicKey"
+              "coption": "publicKey"
             }
           }
         ]
