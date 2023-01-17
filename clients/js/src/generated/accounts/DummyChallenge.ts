@@ -59,8 +59,6 @@ export function getDummyChallengeAccountDataSerializer(
   );
 }
 
-export function getDummyChallengeSize(
-  context: Pick<Context, 'serializer'>
-): number | null {
-  return getDummyChallengeAccountDataSerializer(context).fixedSize;
+export function getDummyChallengeSize(): number {
+  return 32;
 }

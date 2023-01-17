@@ -18,7 +18,9 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 /** InvalidSystemProgram: 'Invalid System Program' */
 export class SysExInvalidSystemProgramError extends ProgramError {
   readonly name: string = 'InvalidSystemProgram';
+
   readonly code: number = 0x0; // 0
+
   constructor(program: Program, cause?: Error) {
     super('Invalid System Program', program, cause);
   }
