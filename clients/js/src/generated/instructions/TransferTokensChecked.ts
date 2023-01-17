@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -26,6 +27,7 @@ export type TransferTokensCheckedInstructionAccounts = {
 
 // Arguments.
 export type TransferTokensCheckedInstructionData = {
+  discriminator: number;
   amount: bigint;
   decimals: number;
 };
@@ -42,12 +44,21 @@ export function getTransferTokensCheckedInstructionDataSerializer(
   TransferTokensCheckedInstructionData
 > {
   const s = context.serializer;
-  return s.struct<TransferTokensCheckedInstructionData>(
-    [
-      ['amount', s.u64],
-      ['decimals', s.u8],
-    ],
-    'transferCheckedInstructionArgs'
+  return mapSerializer<
+    TransferTokensCheckedInstructionArgs,
+    TransferTokensCheckedInstructionData,
+    TransferTokensCheckedInstructionData
+  >(
+    s.struct<TransferTokensCheckedInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['amount', s.u64],
+        ['decimals', s.u8],
+      ],
+      'transferCheckedInstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 12, ...value } as TransferTokensCheckedInstructionData)
   ) as Serializer<
     TransferTokensCheckedInstructionArgs,
     TransferTokensCheckedInstructionData

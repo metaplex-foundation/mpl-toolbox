@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -21,6 +23,28 @@ export type CloseTokenInstructionAccounts = {
   destination: PublicKey;
   owner: Signer;
 };
+
+// Arguments.
+export type CloseTokenInstructionData = { discriminator: number };
+
+export type CloseTokenInstructionArgs = {};
+
+export function getCloseTokenInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<CloseTokenInstructionArgs, CloseTokenInstructionData> {
+  const s = context.serializer;
+  return mapSerializer<
+    CloseTokenInstructionArgs,
+    CloseTokenInstructionData,
+    CloseTokenInstructionData
+  >(
+    s.struct<CloseTokenInstructionData>(
+      [['discriminator', s.u8]],
+      'closeAccountInstructionArgs'
+    ),
+    (value) => ({ discriminator: 9, ...value } as CloseTokenInstructionData)
+  ) as Serializer<CloseTokenInstructionArgs, CloseTokenInstructionData>;
+}
 
 // Instruction.
 export function closeToken(
@@ -56,7 +80,7 @@ export function closeToken(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getCloseTokenInstructionDataSerializer(context).serialize({});
 
   return {
     instruction: { keys, programId, data },

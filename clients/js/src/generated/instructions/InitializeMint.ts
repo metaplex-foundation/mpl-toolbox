@@ -15,6 +15,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -25,6 +26,13 @@ export type InitializeMintInstructionAccounts = {
 
 // Arguments.
 export type InitializeMintInstructionData = {
+  discriminator: number;
+  decimals: number;
+  mintAuthority: PublicKey;
+  freezeAuthority: Option<PublicKey>;
+};
+
+export type InitializeMintInstructionArgs = {
   decimals: number;
   mintAuthority: PublicKey;
   freezeAuthority: Option<PublicKey>;
@@ -32,16 +40,24 @@ export type InitializeMintInstructionData = {
 
 export function getInitializeMintInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeMintInstructionData> {
+): Serializer<InitializeMintInstructionArgs, InitializeMintInstructionData> {
   const s = context.serializer;
-  return s.struct<InitializeMintInstructionData>(
-    [
-      ['decimals', s.u8],
-      ['mintAuthority', s.publicKey],
-      ['freezeAuthority', s.option(s.publicKey)],
-    ],
-    'initializeMintInstructionArgs'
-  );
+  return mapSerializer<
+    InitializeMintInstructionArgs,
+    InitializeMintInstructionData,
+    InitializeMintInstructionData
+  >(
+    s.struct<InitializeMintInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['decimals', s.u8],
+        ['mintAuthority', s.publicKey],
+        ['freezeAuthority', s.option(s.publicKey)],
+      ],
+      'initializeMintInstructionArgs'
+    ),
+    (value) => ({ discriminator: 0, ...value } as InitializeMintInstructionData)
+  ) as Serializer<InitializeMintInstructionArgs, InitializeMintInstructionData>;
 }
 
 // Instruction.
@@ -51,7 +67,7 @@ export function initializeMint(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: InitializeMintInstructionAccounts & InitializeMintInstructionData
+  input: InitializeMintInstructionAccounts & InitializeMintInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

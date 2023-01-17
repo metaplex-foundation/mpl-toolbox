@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -20,6 +22,35 @@ export type RevokeTokenDelegateInstructionAccounts = {
   source: PublicKey;
   owner: Signer;
 };
+
+// Arguments.
+export type RevokeTokenDelegateInstructionData = { discriminator: number };
+
+export type RevokeTokenDelegateInstructionArgs = {};
+
+export function getRevokeTokenDelegateInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<
+  RevokeTokenDelegateInstructionArgs,
+  RevokeTokenDelegateInstructionData
+> {
+  const s = context.serializer;
+  return mapSerializer<
+    RevokeTokenDelegateInstructionArgs,
+    RevokeTokenDelegateInstructionData,
+    RevokeTokenDelegateInstructionData
+  >(
+    s.struct<RevokeTokenDelegateInstructionData>(
+      [['discriminator', s.u8]],
+      'revokeInstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 5, ...value } as RevokeTokenDelegateInstructionData)
+  ) as Serializer<
+    RevokeTokenDelegateInstructionArgs,
+    RevokeTokenDelegateInstructionData
+  >;
+}
 
 // Instruction.
 export function revokeTokenDelegate(
@@ -52,7 +83,9 @@ export function revokeTokenDelegate(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getRevokeTokenDelegateInstructionDataSerializer(
+    context
+  ).serialize({});
 
   return {
     instruction: { keys, programId, data },

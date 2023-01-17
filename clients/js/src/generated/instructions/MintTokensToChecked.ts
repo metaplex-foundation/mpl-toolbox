@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -25,6 +26,7 @@ export type MintTokensToCheckedInstructionAccounts = {
 
 // Arguments.
 export type MintTokensToCheckedInstructionData = {
+  discriminator: number;
   amount: bigint;
   decimals: number;
 };
@@ -41,12 +43,21 @@ export function getMintTokensToCheckedInstructionDataSerializer(
   MintTokensToCheckedInstructionData
 > {
   const s = context.serializer;
-  return s.struct<MintTokensToCheckedInstructionData>(
-    [
-      ['amount', s.u64],
-      ['decimals', s.u8],
-    ],
-    'mintToCheckedInstructionArgs'
+  return mapSerializer<
+    MintTokensToCheckedInstructionArgs,
+    MintTokensToCheckedInstructionData,
+    MintTokensToCheckedInstructionData
+  >(
+    s.struct<MintTokensToCheckedInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['amount', s.u64],
+        ['decimals', s.u8],
+      ],
+      'mintToCheckedInstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 14, ...value } as MintTokensToCheckedInstructionData)
   ) as Serializer<
     MintTokensToCheckedInstructionArgs,
     MintTokensToCheckedInstructionData

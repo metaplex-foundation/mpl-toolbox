@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -21,6 +23,28 @@ export type ThawTokenInstructionAccounts = {
   mint: PublicKey;
   owner: Signer;
 };
+
+// Arguments.
+export type ThawTokenInstructionData = { discriminator: number };
+
+export type ThawTokenInstructionArgs = {};
+
+export function getThawTokenInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<ThawTokenInstructionArgs, ThawTokenInstructionData> {
+  const s = context.serializer;
+  return mapSerializer<
+    ThawTokenInstructionArgs,
+    ThawTokenInstructionData,
+    ThawTokenInstructionData
+  >(
+    s.struct<ThawTokenInstructionData>(
+      [['discriminator', s.u8]],
+      'thawAccountInstructionArgs'
+    ),
+    (value) => ({ discriminator: 11, ...value } as ThawTokenInstructionData)
+  ) as Serializer<ThawTokenInstructionArgs, ThawTokenInstructionData>;
+}
 
 // Instruction.
 export function thawToken(
@@ -56,7 +80,7 @@ export function thawToken(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getThawTokenInstructionDataSerializer(context).serialize({});
 
   return {
     instruction: { keys, programId, data },

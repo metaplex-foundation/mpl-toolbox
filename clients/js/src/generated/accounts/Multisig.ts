@@ -68,3 +68,9 @@ export function getMultisigAccountDataSerializer(
     'Multisig'
   );
 }
+
+export function getMultisigSize(
+  context: Pick<Context, 'serializer'>
+): number | null {
+  return getMultisigAccountDataSerializer(context).fixedSize;
+}

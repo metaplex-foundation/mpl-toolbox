@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -26,6 +27,7 @@ export type ApproveTokenDelegateCheckedInstructionAccounts = {
 
 // Arguments.
 export type ApproveTokenDelegateCheckedInstructionData = {
+  discriminator: number;
   amount: bigint;
   decimals: number;
 };
@@ -42,12 +44,24 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(
   ApproveTokenDelegateCheckedInstructionData
 > {
   const s = context.serializer;
-  return s.struct<ApproveTokenDelegateCheckedInstructionData>(
-    [
-      ['amount', s.u64],
-      ['decimals', s.u8],
-    ],
-    'approveCheckedInstructionArgs'
+  return mapSerializer<
+    ApproveTokenDelegateCheckedInstructionArgs,
+    ApproveTokenDelegateCheckedInstructionData,
+    ApproveTokenDelegateCheckedInstructionData
+  >(
+    s.struct<ApproveTokenDelegateCheckedInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['amount', s.u64],
+        ['decimals', s.u8],
+      ],
+      'approveCheckedInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: 13,
+        ...value,
+      } as ApproveTokenDelegateCheckedInstructionData)
   ) as Serializer<
     ApproveTokenDelegateCheckedInstructionArgs,
     ApproveTokenDelegateCheckedInstructionData

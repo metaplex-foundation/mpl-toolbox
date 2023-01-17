@@ -10,15 +10,49 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
 export type InitializeImmutableOwnerInstructionAccounts = {
   account: PublicKey;
 };
+
+// Arguments.
+export type InitializeImmutableOwnerInstructionData = { discriminator: number };
+
+export type InitializeImmutableOwnerInstructionArgs = {};
+
+export function getInitializeImmutableOwnerInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<
+  InitializeImmutableOwnerInstructionArgs,
+  InitializeImmutableOwnerInstructionData
+> {
+  const s = context.serializer;
+  return mapSerializer<
+    InitializeImmutableOwnerInstructionArgs,
+    InitializeImmutableOwnerInstructionData,
+    InitializeImmutableOwnerInstructionData
+  >(
+    s.struct<InitializeImmutableOwnerInstructionData>(
+      [['discriminator', s.u8]],
+      'initializeImmutableOwnerInstructionArgs'
+    ),
+    (value) =>
+      ({
+        discriminator: 22,
+        ...value,
+      } as InitializeImmutableOwnerInstructionData)
+  ) as Serializer<
+    InitializeImmutableOwnerInstructionArgs,
+    InitializeImmutableOwnerInstructionData
+  >;
+}
 
 // Instruction.
 export function initializeImmutableOwner(
@@ -43,7 +77,9 @@ export function initializeImmutableOwner(
   keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getInitializeImmutableOwnerInstructionDataSerializer(
+    context
+  ).serialize({});
 
   return {
     instruction: { keys, programId, data },

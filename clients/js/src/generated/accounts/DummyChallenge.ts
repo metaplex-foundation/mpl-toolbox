@@ -58,3 +58,9 @@ export function getDummyChallengeAccountDataSerializer(
     'DummyChallenge'
   );
 }
+
+export function getDummyChallengeSize(
+  context: Pick<Context, 'serializer'>
+): number | null {
+  return getDummyChallengeAccountDataSerializer(context).fixedSize;
+}

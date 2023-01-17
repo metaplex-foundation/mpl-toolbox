@@ -15,6 +15,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -24,6 +25,13 @@ export type InitializeMint2InstructionAccounts = {
 
 // Arguments.
 export type InitializeMint2InstructionData = {
+  discriminator: number;
+  decimals: number;
+  mintAuthority: PublicKey;
+  freezeAuthority: Option<PublicKey>;
+};
+
+export type InitializeMint2InstructionArgs = {
   decimals: number;
   mintAuthority: PublicKey;
   freezeAuthority: Option<PublicKey>;
@@ -31,16 +39,28 @@ export type InitializeMint2InstructionData = {
 
 export function getInitializeMint2InstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeMint2InstructionData> {
+): Serializer<InitializeMint2InstructionArgs, InitializeMint2InstructionData> {
   const s = context.serializer;
-  return s.struct<InitializeMint2InstructionData>(
-    [
-      ['decimals', s.u8],
-      ['mintAuthority', s.publicKey],
-      ['freezeAuthority', s.option(s.publicKey)],
-    ],
-    'initializeMint2InstructionArgs'
-  );
+  return mapSerializer<
+    InitializeMint2InstructionArgs,
+    InitializeMint2InstructionData,
+    InitializeMint2InstructionData
+  >(
+    s.struct<InitializeMint2InstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['decimals', s.u8],
+        ['mintAuthority', s.publicKey],
+        ['freezeAuthority', s.option(s.publicKey)],
+      ],
+      'initializeMint2InstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 20, ...value } as InitializeMint2InstructionData)
+  ) as Serializer<
+    InitializeMint2InstructionArgs,
+    InitializeMint2InstructionData
+  >;
 }
 
 // Instruction.
@@ -50,7 +70,7 @@ export function initializeMint2(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: InitializeMint2InstructionAccounts & InitializeMint2InstructionData
+  input: InitializeMint2InstructionAccounts & InitializeMint2InstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

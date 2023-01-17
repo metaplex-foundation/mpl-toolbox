@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -22,6 +24,32 @@ export type InitializeTokenInstructionAccounts = {
   owner: PublicKey;
   rent?: PublicKey;
 };
+
+// Arguments.
+export type InitializeTokenInstructionData = { discriminator: number };
+
+export type InitializeTokenInstructionArgs = {};
+
+export function getInitializeTokenInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<InitializeTokenInstructionArgs, InitializeTokenInstructionData> {
+  const s = context.serializer;
+  return mapSerializer<
+    InitializeTokenInstructionArgs,
+    InitializeTokenInstructionData,
+    InitializeTokenInstructionData
+  >(
+    s.struct<InitializeTokenInstructionData>(
+      [['discriminator', s.u8]],
+      'initializeAccountInstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 1, ...value } as InitializeTokenInstructionData)
+  ) as Serializer<
+    InitializeTokenInstructionArgs,
+    InitializeTokenInstructionData
+  >;
+}
 
 // Instruction.
 export function initializeToken(
@@ -65,7 +93,9 @@ export function initializeToken(
   }
 
   // Data.
-  const data = new Uint8Array();
+  const data = getInitializeTokenInstructionDataSerializer(context).serialize(
+    {}
+  );
 
   return {
     instruction: { keys, programId, data },

@@ -15,6 +15,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 import { AuthorityType, getAuthorityTypeSerializer } from '../types';
 
@@ -27,21 +28,35 @@ export type SetAuthorityInstructionAccounts = {
 
 // Arguments.
 export type SetAuthorityInstructionData = {
+  discriminator: number;
+  authorityType: AuthorityType;
+  newAuthority: Option<PublicKey>;
+};
+
+export type SetAuthorityInstructionArgs = {
   authorityType: AuthorityType;
   newAuthority: Option<PublicKey>;
 };
 
 export function getSetAuthorityInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<SetAuthorityInstructionData> {
+): Serializer<SetAuthorityInstructionArgs, SetAuthorityInstructionData> {
   const s = context.serializer;
-  return s.struct<SetAuthorityInstructionData>(
-    [
-      ['authorityType', getAuthorityTypeSerializer(context)],
-      ['newAuthority', s.option(s.publicKey)],
-    ],
-    'setAuthorityInstructionArgs'
-  );
+  return mapSerializer<
+    SetAuthorityInstructionArgs,
+    SetAuthorityInstructionData,
+    SetAuthorityInstructionData
+  >(
+    s.struct<SetAuthorityInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['authorityType', getAuthorityTypeSerializer(context)],
+        ['newAuthority', s.option(s.publicKey)],
+      ],
+      'setAuthorityInstructionArgs'
+    ),
+    (value) => ({ discriminator: 6, ...value } as SetAuthorityInstructionData)
+  ) as Serializer<SetAuthorityInstructionArgs, SetAuthorityInstructionData>;
 }
 
 // Instruction.
@@ -51,7 +66,7 @@ export function setAuthority(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: SetAuthorityInstructionAccounts & SetAuthorityInstructionData
+  input: SetAuthorityInstructionAccounts & SetAuthorityInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

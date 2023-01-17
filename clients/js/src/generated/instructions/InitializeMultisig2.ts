@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -23,16 +24,38 @@ export type InitializeMultisig2InstructionAccounts = {
 };
 
 // Arguments.
-export type InitializeMultisig2InstructionData = { m: number };
+export type InitializeMultisig2InstructionData = {
+  discriminator: number;
+  m: number;
+};
+
+export type InitializeMultisig2InstructionArgs = { m: number };
 
 export function getInitializeMultisig2InstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeMultisig2InstructionData> {
+): Serializer<
+  InitializeMultisig2InstructionArgs,
+  InitializeMultisig2InstructionData
+> {
   const s = context.serializer;
-  return s.struct<InitializeMultisig2InstructionData>(
-    [['m', s.u8]],
-    'initializeMultisig2InstructionArgs'
-  );
+  return mapSerializer<
+    InitializeMultisig2InstructionArgs,
+    InitializeMultisig2InstructionData,
+    InitializeMultisig2InstructionData
+  >(
+    s.struct<InitializeMultisig2InstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['m', s.u8],
+      ],
+      'initializeMultisig2InstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 19, ...value } as InitializeMultisig2InstructionData)
+  ) as Serializer<
+    InitializeMultisig2InstructionArgs,
+    InitializeMultisig2InstructionData
+  >;
 }
 
 // Instruction.
@@ -43,7 +66,7 @@ export function initializeMultisig2(
     programs?: Context['programs'];
   },
   input: InitializeMultisig2InstructionAccounts &
-    InitializeMultisig2InstructionData
+    InitializeMultisig2InstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

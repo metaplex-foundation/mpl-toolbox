@@ -10,15 +10,46 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
 export type GetTokenDataSizeInstructionAccounts = {
   mint: PublicKey;
 };
+
+// Arguments.
+export type GetTokenDataSizeInstructionData = { discriminator: number };
+
+export type GetTokenDataSizeInstructionArgs = {};
+
+export function getGetTokenDataSizeInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<
+  GetTokenDataSizeInstructionArgs,
+  GetTokenDataSizeInstructionData
+> {
+  const s = context.serializer;
+  return mapSerializer<
+    GetTokenDataSizeInstructionArgs,
+    GetTokenDataSizeInstructionData,
+    GetTokenDataSizeInstructionData
+  >(
+    s.struct<GetTokenDataSizeInstructionData>(
+      [['discriminator', s.u8]],
+      'getAccountDataSizeInstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 21, ...value } as GetTokenDataSizeInstructionData)
+  ) as Serializer<
+    GetTokenDataSizeInstructionArgs,
+    GetTokenDataSizeInstructionData
+  >;
+}
 
 // Instruction.
 export function getTokenDataSize(
@@ -43,7 +74,9 @@ export function getTokenDataSize(
   keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getGetTokenDataSizeInstructionDataSerializer(context).serialize(
+    {}
+  );
 
   return {
     instruction: { keys, programId, data },

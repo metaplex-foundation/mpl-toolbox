@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -25,6 +26,7 @@ export type BurnTokenCheckedInstructionAccounts = {
 
 // Arguments.
 export type BurnTokenCheckedInstructionData = {
+  discriminator: number;
   amount: bigint;
   decimals: number;
 };
@@ -41,12 +43,21 @@ export function getBurnTokenCheckedInstructionDataSerializer(
   BurnTokenCheckedInstructionData
 > {
   const s = context.serializer;
-  return s.struct<BurnTokenCheckedInstructionData>(
-    [
-      ['amount', s.u64],
-      ['decimals', s.u8],
-    ],
-    'burnCheckedInstructionArgs'
+  return mapSerializer<
+    BurnTokenCheckedInstructionArgs,
+    BurnTokenCheckedInstructionData,
+    BurnTokenCheckedInstructionData
+  >(
+    s.struct<BurnTokenCheckedInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['amount', s.u64],
+        ['decimals', s.u8],
+      ],
+      'burnCheckedInstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 15, ...value } as BurnTokenCheckedInstructionData)
   ) as Serializer<
     BurnTokenCheckedInstructionArgs,
     BurnTokenCheckedInstructionData

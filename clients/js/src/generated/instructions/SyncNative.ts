@@ -10,15 +10,39 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
 export type SyncNativeInstructionAccounts = {
   account: PublicKey;
 };
+
+// Arguments.
+export type SyncNativeInstructionData = { discriminator: number };
+
+export type SyncNativeInstructionArgs = {};
+
+export function getSyncNativeInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<SyncNativeInstructionArgs, SyncNativeInstructionData> {
+  const s = context.serializer;
+  return mapSerializer<
+    SyncNativeInstructionArgs,
+    SyncNativeInstructionData,
+    SyncNativeInstructionData
+  >(
+    s.struct<SyncNativeInstructionData>(
+      [['discriminator', s.u8]],
+      'syncNativeInstructionArgs'
+    ),
+    (value) => ({ discriminator: 17, ...value } as SyncNativeInstructionData)
+  ) as Serializer<SyncNativeInstructionArgs, SyncNativeInstructionData>;
+}
 
 // Instruction.
 export function syncNative(
@@ -43,7 +67,7 @@ export function syncNative(
   keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getSyncNativeInstructionDataSerializer(context).serialize({});
 
   return {
     instruction: { keys, programId, data },

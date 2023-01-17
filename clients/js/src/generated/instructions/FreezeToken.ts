@@ -10,9 +10,11 @@ import {
   AccountMeta,
   Context,
   PublicKey,
+  Serializer,
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -21,6 +23,28 @@ export type FreezeTokenInstructionAccounts = {
   mint: PublicKey;
   owner: Signer;
 };
+
+// Arguments.
+export type FreezeTokenInstructionData = { discriminator: number };
+
+export type FreezeTokenInstructionArgs = {};
+
+export function getFreezeTokenInstructionDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<FreezeTokenInstructionArgs, FreezeTokenInstructionData> {
+  const s = context.serializer;
+  return mapSerializer<
+    FreezeTokenInstructionArgs,
+    FreezeTokenInstructionData,
+    FreezeTokenInstructionData
+  >(
+    s.struct<FreezeTokenInstructionData>(
+      [['discriminator', s.u8]],
+      'freezeAccountInstructionArgs'
+    ),
+    (value) => ({ discriminator: 10, ...value } as FreezeTokenInstructionData)
+  ) as Serializer<FreezeTokenInstructionArgs, FreezeTokenInstructionData>;
+}
 
 // Instruction.
 export function freezeToken(
@@ -56,7 +80,7 @@ export function freezeToken(
   });
 
   // Data.
-  const data = new Uint8Array();
+  const data = getFreezeTokenInstructionDataSerializer(context).serialize({});
 
   return {
     instruction: { keys, programId, data },

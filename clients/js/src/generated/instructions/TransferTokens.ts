@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -24,7 +25,10 @@ export type TransferTokensInstructionAccounts = {
 };
 
 // Arguments.
-export type TransferTokensInstructionData = { amount: bigint };
+export type TransferTokensInstructionData = {
+  discriminator: number;
+  amount: bigint;
+};
 
 export type TransferTokensInstructionArgs = { amount: number | bigint };
 
@@ -32,9 +36,19 @@ export function getTransferTokensInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<TransferTokensInstructionArgs, TransferTokensInstructionData> {
   const s = context.serializer;
-  return s.struct<TransferTokensInstructionData>(
-    [['amount', s.u64]],
-    'transferInstructionArgs'
+  return mapSerializer<
+    TransferTokensInstructionArgs,
+    TransferTokensInstructionData,
+    TransferTokensInstructionData
+  >(
+    s.struct<TransferTokensInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['amount', s.u64],
+      ],
+      'transferInstructionArgs'
+    ),
+    (value) => ({ discriminator: 3, ...value } as TransferTokensInstructionData)
   ) as Serializer<TransferTokensInstructionArgs, TransferTokensInstructionData>;
 }
 

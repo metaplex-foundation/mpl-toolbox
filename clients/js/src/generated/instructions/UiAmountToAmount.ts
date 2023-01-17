@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -22,7 +23,10 @@ export type UiAmountToAmountInstructionAccounts = {
 };
 
 // Arguments.
-export type UiAmountToAmountInstructionData = { uiAmount: bigint };
+export type UiAmountToAmountInstructionData = {
+  discriminator: number;
+  uiAmount: bigint;
+};
 
 export type UiAmountToAmountInstructionArgs = { uiAmount: number | bigint };
 
@@ -33,9 +37,20 @@ export function getUiAmountToAmountInstructionDataSerializer(
   UiAmountToAmountInstructionData
 > {
   const s = context.serializer;
-  return s.struct<UiAmountToAmountInstructionData>(
-    [['uiAmount', s.u64]],
-    'uiAmountToAmountInstructionArgs'
+  return mapSerializer<
+    UiAmountToAmountInstructionArgs,
+    UiAmountToAmountInstructionData,
+    UiAmountToAmountInstructionData
+  >(
+    s.struct<UiAmountToAmountInstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['uiAmount', s.u64],
+      ],
+      'uiAmountToAmountInstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 24, ...value } as UiAmountToAmountInstructionData)
   ) as Serializer<
     UiAmountToAmountInstructionArgs,
     UiAmountToAmountInstructionData

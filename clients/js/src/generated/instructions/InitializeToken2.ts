@@ -14,6 +14,7 @@ import {
   Signer,
   WrappedInstruction,
   getProgramAddressWithFallback,
+  mapSerializer,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -24,16 +25,38 @@ export type InitializeToken2InstructionAccounts = {
 };
 
 // Arguments.
-export type InitializeToken2InstructionData = { owner: PublicKey };
+export type InitializeToken2InstructionData = {
+  discriminator: number;
+  owner: PublicKey;
+};
+
+export type InitializeToken2InstructionArgs = { owner: PublicKey };
 
 export function getInitializeToken2InstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeToken2InstructionData> {
+): Serializer<
+  InitializeToken2InstructionArgs,
+  InitializeToken2InstructionData
+> {
   const s = context.serializer;
-  return s.struct<InitializeToken2InstructionData>(
-    [['owner', s.publicKey]],
-    'initializeAccount2InstructionArgs'
-  );
+  return mapSerializer<
+    InitializeToken2InstructionArgs,
+    InitializeToken2InstructionData,
+    InitializeToken2InstructionData
+  >(
+    s.struct<InitializeToken2InstructionData>(
+      [
+        ['discriminator', s.u8],
+        ['owner', s.publicKey],
+      ],
+      'initializeAccount2InstructionArgs'
+    ),
+    (value) =>
+      ({ discriminator: 16, ...value } as InitializeToken2InstructionData)
+  ) as Serializer<
+    InitializeToken2InstructionArgs,
+    InitializeToken2InstructionData
+  >;
 }
 
 // Instruction.
@@ -43,7 +66,7 @@ export function initializeToken2(
     eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
-  input: InitializeToken2InstructionAccounts & InitializeToken2InstructionData
+  input: InitializeToken2InstructionAccounts & InitializeToken2InstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
