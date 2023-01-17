@@ -85,8 +85,6 @@ export function getTokenAccountDataSerializer(
   ) as Serializer<TokenAccountArgs, TokenAccountData>;
 }
 
-export function getTokenSize(
-  context: Pick<Context, 'serializer'>
-): number | null {
-  return getTokenAccountDataSerializer(context).fixedSize;
+export function getTokenSize(): number {
+  return 165;
 }

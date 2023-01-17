@@ -7,7 +7,11 @@ import {
   some,
   WrappedInstruction,
 } from '@lorisleiva/js-core';
-import { createAccountWithRent, initializeMint2 } from './generated';
+import {
+  createAccountWithRent,
+  getMintSize,
+  initializeMint2,
+} from './generated';
 
 // Inputs.
 export type CreateMintArgs = {
@@ -31,7 +35,7 @@ export function createMint(
   return [
     createAccountWithRent(context, {
       newAccount: input.mint,
-      space: 82, // TODO: Take from generated variable.
+      space: getMintSize(),
       programId: getProgramAddressWithFallback(
         context,
         'splToken',

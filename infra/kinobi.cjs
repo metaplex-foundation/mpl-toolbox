@@ -2,6 +2,7 @@ const path = require("path");
 const {
   Kinobi,
   RenderJavaScriptVisitor,
+  SetAccountSizeVisitor,
   SetInstructionDiscriminatorsVisitor,
   SetLeafWrappersVisitor,
   RenameNodesVisitor,
@@ -113,6 +114,14 @@ kinobi.update(
     { instruction: "TransferSol", account: "source", kind: "identity" },
     { instruction: "TransferAllSol", account: "source", kind: "identity" },
   ])
+);
+
+// Set fixed account sizes.
+kinobi.update(
+  new SetAccountSizeVisitor({
+    Mint: 82,
+    Token: 165,
+  })
 );
 
 // Render JavaScript.

@@ -75,8 +75,6 @@ export function getMintAccountDataSerializer(
   ) as Serializer<MintAccountArgs, MintAccountData>;
 }
 
-export function getMintSize(
-  context: Pick<Context, 'serializer'>
-): number | null {
-  return getMintAccountDataSerializer(context).fixedSize;
+export function getMintSize(): number {
+  return 82;
 }
