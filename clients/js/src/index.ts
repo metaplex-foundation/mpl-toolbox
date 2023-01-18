@@ -1,4 +1,4 @@
 export * from './generated';
 
-export * from './createMint';
+export * from './CreateMint';
 export * from './plugin';
