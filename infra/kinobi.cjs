@@ -47,6 +47,14 @@ kinobi.update(
   new SetInstructionAccountDefaultValuesVisitor([
     { instruction: "TransferSol", account: "source", kind: "identity" },
     { instruction: "TransferAllSol", account: "source", kind: "identity" },
+    {
+      instruction: "CreateAssociatedToken",
+      account: "ata",
+      kind: "pda",
+      pdaAccount: "AssociatedToken",
+      dependency: "root",
+      seeds: { owner: "owner", mint: "mint" },
+    },
   ])
 );
 

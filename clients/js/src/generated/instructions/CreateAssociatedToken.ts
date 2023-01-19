@@ -15,11 +15,12 @@ import {
   checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
+import { findAssociatedTokenPda } from '../..';
 
 // Accounts.
 export type CreateAssociatedTokenInstructionAccounts = {
   payer?: Signer;
-  ata: PublicKey;
+  ata?: PublicKey;
   owner: PublicKey;
   mint: PublicKey;
   systemProgram?: PublicKey;
@@ -30,6 +31,7 @@ export type CreateAssociatedTokenInstructionAccounts = {
 export function createAssociatedToken(
   context: {
     serializer: Context['serializer'];
+    eddsa: Context['eddsa'];
     payer: Context['payer'];
     programs?: Context['programs'];
   },
@@ -47,9 +49,11 @@ export function createAssociatedToken(
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
-  const ataAccount = input.ata;
   const ownerAccount = input.owner;
   const mintAccount = input.mint;
+  const ataAccount =
+    input.ata ??
+    findAssociatedTokenPda(context, { owner: ownerAccount, mint: mintAccount });
   const systemProgramAccount = input.systemProgram ?? {
     ...getProgramAddressWithFallback(
       context,
