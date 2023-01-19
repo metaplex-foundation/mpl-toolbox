@@ -13,7 +13,6 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
-  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
@@ -47,8 +46,6 @@ export function addMemo(
     'splMemo',
     'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
   );
-
-  // Resolved accounts.
 
   // Data.
   const data = getAddMemoInstructionDataSerializer(context).serialize(input);
