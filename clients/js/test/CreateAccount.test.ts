@@ -64,7 +64,7 @@ test('it knows how much space will be created on chain', async (t) => {
     })
   );
 
-  // When we get its byte and rent created on chain.
+  // When we get its bytes and rent created on chain.
   const bytes = builder.getBytesCreatedOnChain();
   const rent = await builder.getRentCreatedOnChain();
 
@@ -72,6 +72,6 @@ test('it knows how much space will be created on chain', async (t) => {
   t.is(bytes, 42 + ACCOUNT_HEADER_SIZE);
 
   // And the rent reflects that.
-  const expectedRent = await metaplex.rpc.getRent(bytes);
+  const expectedRent = await metaplex.rpc.getRent(42);
   t.deepEqual(rent, expectedRent);
 });
