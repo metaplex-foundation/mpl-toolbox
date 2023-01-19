@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -56,7 +57,6 @@ export function getMintTokensToInstructionDataSerializer(
 export function mintTokensTo(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: MintTokensToInstructionAccounts & MintTokensToInstructionArgs
@@ -71,27 +71,43 @@ export function mintTokensTo(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const mintAccount = input.mint;
+  const tokenAccount = input.token;
+  const mintAuthorityAccount = input.mintAuthority;
+
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, true),
+  });
 
   // Token.
-  keys.push({ pubkey: input.token, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: tokenAccount,
+    isSigner: false,
+    isWritable: isWritable(tokenAccount, true),
+  });
 
   // Mint Authority.
-  signers.push(input.mintAuthority);
+  signers.push(mintAuthorityAccount);
   keys.push({
-    pubkey: input.mintAuthority.publicKey,
+    pubkey: mintAuthorityAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(mintAuthorityAccount, false),
   });
 
   // Data.
   const data =
     getMintTokensToInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

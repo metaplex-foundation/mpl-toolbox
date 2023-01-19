@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -53,7 +54,6 @@ export function getTransferAllSolInstructionDataSerializer(
 export function transferAllSol(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     identity: Context['identity'];
     programs?: Context['programs'];
   },
@@ -69,53 +69,51 @@ export function transferAllSol(
     'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
   );
 
+  // Resolved accounts.
+  const sourceAccount = input.source ?? context.identity;
+  const destinationAccount = input.destination;
+  const systemProgramAccount = input.systemProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
+
   // Source.
-  if (input.source) {
-    signers.push(input.source);
-    keys.push({
-      pubkey: input.source.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  } else {
-    signers.push(context.identity);
-    keys.push({
-      pubkey: context.identity.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  }
+  signers.push(sourceAccount);
+  keys.push({
+    pubkey: sourceAccount.publicKey,
+    isSigner: true,
+    isWritable: isWritable(sourceAccount, true),
+  });
 
   // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: destinationAccount,
+    isSigner: false,
+    isWritable: isWritable(destinationAccount, true),
+  });
 
   // System Program.
-  if (input.systemProgram) {
-    keys.push({
-      pubkey: input.systemProgram,
-      isSigner: false,
-      isWritable: false,
-    });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splSystem',
-        '11111111111111111111111111111111'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: systemProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(systemProgramAccount, false),
+  });
 
   // Data.
   const data = getTransferAllSolInstructionDataSerializer(context).serialize(
     {}
   );
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

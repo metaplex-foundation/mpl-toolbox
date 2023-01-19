@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -56,7 +57,6 @@ export function getTransferTokensInstructionDataSerializer(
 export function transferTokens(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     identity: Context['identity'];
     programs?: Context['programs'];
   },
@@ -72,36 +72,43 @@ export function transferTokens(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const sourceAccount = input.source;
+  const destinationAccount = input.destination;
+  const authorityAccount = input.authority ?? context.identity;
+
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: sourceAccount,
+    isSigner: false,
+    isWritable: isWritable(sourceAccount, true),
+  });
 
   // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: destinationAccount,
+    isSigner: false,
+    isWritable: isWritable(destinationAccount, true),
+  });
 
   // Authority.
-  if (input.authority) {
-    signers.push(input.authority);
-    keys.push({
-      pubkey: input.authority.publicKey,
-      isSigner: true,
-      isWritable: false,
-    });
-  } else {
-    signers.push(context.identity);
-    keys.push({
-      pubkey: context.identity.publicKey,
-      isSigner: true,
-      isWritable: false,
-    });
-  }
+  signers.push(authorityAccount);
+  keys.push({
+    pubkey: authorityAccount.publicKey,
+    isSigner: true,
+    isWritable: isWritable(authorityAccount, false),
+  });
 
   // Data.
   const data =
     getTransferTokensInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

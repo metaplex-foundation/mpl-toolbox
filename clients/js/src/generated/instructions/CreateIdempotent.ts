@@ -12,6 +12,7 @@ import {
   PublicKey,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
@@ -29,7 +30,6 @@ export type CreateIdempotentInstructionAccounts = {
 export function createIdempotent(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: CreateIdempotentInstructionAccounts
@@ -44,79 +44,80 @@ export function createIdempotent(
     'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
   );
 
+  // Resolved accounts.
+  const fundingAddressAccount = input.fundingAddress;
+  const associatedAccountAddressAccount = input.associatedAccountAddress;
+  const walletAddressAccount = input.walletAddress;
+  const tokenMintAddressAccount = input.tokenMintAddress;
+  const systemProgramAccount = input.systemProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
+  const tokenProgramAccount = input.tokenProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
+
   // Funding Address.
-  signers.push(input.fundingAddress);
+  signers.push(fundingAddressAccount);
   keys.push({
-    pubkey: input.fundingAddress.publicKey,
+    pubkey: fundingAddressAccount.publicKey,
     isSigner: true,
-    isWritable: true,
+    isWritable: isWritable(fundingAddressAccount, true),
   });
 
   // Associated Account Address.
   keys.push({
-    pubkey: input.associatedAccountAddress,
+    pubkey: associatedAccountAddressAccount,
     isSigner: false,
-    isWritable: true,
+    isWritable: isWritable(associatedAccountAddressAccount, true),
   });
 
   // Wallet Address.
   keys.push({
-    pubkey: input.walletAddress,
+    pubkey: walletAddressAccount,
     isSigner: false,
-    isWritable: false,
+    isWritable: isWritable(walletAddressAccount, false),
   });
 
   // Token Mint Address.
   keys.push({
-    pubkey: input.tokenMintAddress,
+    pubkey: tokenMintAddressAccount,
     isSigner: false,
-    isWritable: false,
+    isWritable: isWritable(tokenMintAddressAccount, false),
   });
 
   // System Program.
-  if (input.systemProgram) {
-    keys.push({
-      pubkey: input.systemProgram,
-      isSigner: false,
-      isWritable: false,
-    });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splSystem',
-        '11111111111111111111111111111111'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: systemProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(systemProgramAccount, false),
+  });
 
   // Token Program.
-  if (input.tokenProgram) {
-    keys.push({
-      pubkey: input.tokenProgram,
-      isSigner: false,
-      isWritable: false,
-    });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: tokenProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(tokenProgramAccount, false),
+  });
 
   // Data.
   const data = new Uint8Array();
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

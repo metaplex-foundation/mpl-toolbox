@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -63,7 +64,6 @@ export function getApproveTokenDelegateInstructionDataSerializer(
 export function approveTokenDelegate(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: ApproveTokenDelegateInstructionAccounts &
@@ -79,27 +79,43 @@ export function approveTokenDelegate(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const sourceAccount = input.source;
+  const delegateAccount = input.delegate;
+  const ownerAccount = input.owner;
+
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: sourceAccount,
+    isSigner: false,
+    isWritable: isWritable(sourceAccount, true),
+  });
 
   // Delegate.
-  keys.push({ pubkey: input.delegate, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: delegateAccount,
+    isSigner: false,
+    isWritable: isWritable(delegateAccount, false),
+  });
 
   // Owner.
-  signers.push(input.owner);
+  signers.push(ownerAccount);
   keys.push({
-    pubkey: input.owner.publicKey,
+    pubkey: ownerAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(ownerAccount, false),
   });
 
   // Data.
   const data =
     getApproveTokenDelegateInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

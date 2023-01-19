@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -70,7 +71,6 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
 export function createTokenIfMissing(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     payer: Context['payer'];
     programs?: Context['programs'];
   },
@@ -86,96 +86,105 @@ export function createTokenIfMissing(
     'TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p'
   );
 
+  // Resolved accounts.
+  const payerAccount = input.payer ?? context.payer;
+  const tokenAccount = input.token;
+  const mintAccount = input.mint;
+  const ownerAccount = input.owner;
+  const ataAccount = input.ata;
+  const systemProgramAccount = input.systemProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
+  const tokenProgramAccount = input.tokenProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
+  const ataProgramAccount = input.ataProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splAssociatedToken',
+      'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+    ),
+    isWritable: false,
+  };
+
   // Payer.
-  if (input.payer) {
-    signers.push(input.payer);
-    keys.push({
-      pubkey: input.payer.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  } else {
-    signers.push(context.payer);
-    keys.push({
-      pubkey: context.payer.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  }
+  signers.push(payerAccount);
+  keys.push({
+    pubkey: payerAccount.publicKey,
+    isSigner: true,
+    isWritable: isWritable(payerAccount, true),
+  });
 
   // Token.
-  keys.push({ pubkey: input.token, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: tokenAccount,
+    isSigner: false,
+    isWritable: isWritable(tokenAccount, false),
+  });
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, false),
+  });
 
   // Owner.
-  keys.push({ pubkey: input.owner, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: ownerAccount,
+    isSigner: false,
+    isWritable: isWritable(ownerAccount, false),
+  });
 
   // Ata.
-  keys.push({ pubkey: input.ata, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: ataAccount,
+    isSigner: false,
+    isWritable: isWritable(ataAccount, true),
+  });
 
   // System Program.
-  if (input.systemProgram) {
-    keys.push({
-      pubkey: input.systemProgram,
-      isSigner: false,
-      isWritable: false,
-    });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splSystem',
-        '11111111111111111111111111111111'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: systemProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(systemProgramAccount, false),
+  });
 
   // Token Program.
-  if (input.tokenProgram) {
-    keys.push({
-      pubkey: input.tokenProgram,
-      isSigner: false,
-      isWritable: false,
-    });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: tokenProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(tokenProgramAccount, false),
+  });
 
   // Ata Program.
-  if (input.ataProgram) {
-    keys.push({ pubkey: input.ataProgram, isSigner: false, isWritable: false });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splAssociatedToken',
-        'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: ataProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(ataProgramAccount, false),
+  });
 
   // Data.
   const data = getCreateTokenIfMissingInstructionDataSerializer(
     context
   ).serialize({});
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

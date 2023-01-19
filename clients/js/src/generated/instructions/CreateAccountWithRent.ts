@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -71,7 +72,6 @@ export function getCreateAccountWithRentInstructionDataSerializer(
 export function createAccountWithRent(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     payer: Context['payer'];
     programs?: Context['programs'];
   },
@@ -88,57 +88,51 @@ export function createAccountWithRent(
     'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
   );
 
+  // Resolved accounts.
+  const payerAccount = input.payer ?? context.payer;
+  const newAccountAccount = input.newAccount;
+  const systemProgramAccount = input.systemProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
+
   // Payer.
-  if (input.payer) {
-    signers.push(input.payer);
-    keys.push({
-      pubkey: input.payer.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  } else {
-    signers.push(context.payer);
-    keys.push({
-      pubkey: context.payer.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  }
+  signers.push(payerAccount);
+  keys.push({
+    pubkey: payerAccount.publicKey,
+    isSigner: true,
+    isWritable: isWritable(payerAccount, true),
+  });
 
   // New Account.
-  signers.push(input.newAccount);
+  signers.push(newAccountAccount);
   keys.push({
-    pubkey: input.newAccount.publicKey,
+    pubkey: newAccountAccount.publicKey,
     isSigner: true,
-    isWritable: true,
+    isWritable: isWritable(newAccountAccount, true),
   });
 
   // System Program.
-  if (input.systemProgram) {
-    keys.push({
-      pubkey: input.systemProgram,
-      isSigner: false,
-      isWritable: false,
-    });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splSystem',
-        '11111111111111111111111111111111'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: systemProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(systemProgramAccount, false),
+  });
 
   // Data.
   const data =
     getCreateAccountWithRentInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

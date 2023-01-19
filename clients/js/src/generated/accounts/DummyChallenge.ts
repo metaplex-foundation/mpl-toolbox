@@ -59,6 +59,6 @@ export function getDummyChallengeAccountDataSerializer(
   );
 }
 
-export function getDummyChallengeSize(): number {
+export function getDummyChallengeSize(_context = {}): number {
   return 32;
 }

@@ -75,6 +75,6 @@ export function getMintAccountDataSerializer(
   ) as Serializer<MintAccountArgs, MintAccountData>;
 }
 
-export function getMintSize(): number {
+export function getMintSize(_context = {}): number {
   return 82;
 }

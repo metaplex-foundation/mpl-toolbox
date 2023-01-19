@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -61,7 +62,6 @@ export function getAmountToUiAmountInstructionDataSerializer(
 export function amountToUiAmount(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: AmountToUiAmountInstructionAccounts & AmountToUiAmountInstructionArgs
@@ -76,16 +76,26 @@ export function amountToUiAmount(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const mintAccount = input.mint;
+
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, false),
+  });
 
   // Data.
   const data =
     getAmountToUiAmountInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

@@ -14,6 +14,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -67,7 +68,6 @@ export function getInitializeMint2InstructionDataSerializer(
 export function initializeMint2(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: InitializeMint2InstructionAccounts & InitializeMint2InstructionArgs
@@ -82,16 +82,26 @@ export function initializeMint2(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const mintAccount = input.mint;
+
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, true),
+  });
 
   // Data.
   const data =
     getInitializeMint2InstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

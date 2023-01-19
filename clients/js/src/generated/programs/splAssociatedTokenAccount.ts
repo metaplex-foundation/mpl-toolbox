@@ -6,7 +6,7 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Context, Program } from '@lorisleiva/js-core';
+import { Context, Program, publicKey } from '@lorisleiva/js-core';
 import {
   getSplAssociatedTokenAccountErrorFromCode,
   getSplAssociatedTokenAccountErrorFromName,
@@ -17,9 +17,7 @@ export function getSplAssociatedTokenAccountProgram(
 ): Program {
   return {
     name: 'splAssociatedTokenAccount',
-    address: context.eddsa.createPublicKey(
-      'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-    ),
+    address: publicKey('TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
     getErrorFromCode(code: number, cause?: Error) {
       return getSplAssociatedTokenAccountErrorFromCode(code, this, cause);
     },

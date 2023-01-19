@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -62,7 +63,6 @@ export function getInitializeMultisig2InstructionDataSerializer(
 export function initializeMultisig2(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: InitializeMultisig2InstructionAccounts &
@@ -78,19 +78,34 @@ export function initializeMultisig2(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const multisigAccount = input.multisig;
+  const signerAccount = input.signer;
+
   // Multisig.
-  keys.push({ pubkey: input.multisig, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: multisigAccount,
+    isSigner: false,
+    isWritable: isWritable(multisigAccount, true),
+  });
 
   // Signer.
-  keys.push({ pubkey: input.signer, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: signerAccount,
+    isSigner: false,
+    isWritable: isWritable(signerAccount, false),
+  });
 
   // Data.
   const data =
     getInitializeMultisig2InstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

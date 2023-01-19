@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
@@ -33,7 +34,6 @@ export function getAddMemoInstructionDataSerializer(
 export function addMemo(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: AddMemoInstructionData
@@ -48,12 +48,17 @@ export function addMemo(
     'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
   );
 
+  // Resolved accounts.
+
   // Data.
   const data = getAddMemoInstructionDataSerializer(context).serialize(input);
+
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
 
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

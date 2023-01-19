@@ -13,8 +13,10 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
+  publicKey,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -62,7 +64,6 @@ export function getInitializeMultisigInstructionDataSerializer(
 export function initializeMultisig(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: InitializeMultisigInstructionAccounts &
@@ -78,29 +79,35 @@ export function initializeMultisig(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const multisigAccount = input.multisig;
+  const rentAccount =
+    input.rent ?? publicKey('SysvarRent111111111111111111111111111111111');
+
   // Multisig.
-  keys.push({ pubkey: input.multisig, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: multisigAccount,
+    isSigner: false,
+    isWritable: isWritable(multisigAccount, true),
+  });
 
   // Rent.
-  if (input.rent) {
-    keys.push({ pubkey: input.rent, isSigner: false, isWritable: false });
-  } else {
-    keys.push({
-      pubkey: context.eddsa.createPublicKey(
-        'SysvarRent111111111111111111111111111111111'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: rentAccount,
+    isSigner: false,
+    isWritable: isWritable(rentAccount, false),
+  });
 
   // Data.
   const data =
     getInitializeMultisigInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

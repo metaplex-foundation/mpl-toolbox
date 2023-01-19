@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -62,7 +63,6 @@ export function getInitializeToken3InstructionDataSerializer(
 export function initializeToken3(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: InitializeToken3InstructionAccounts & InitializeToken3InstructionArgs
@@ -77,19 +77,34 @@ export function initializeToken3(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const accountAccount = input.account;
+  const mintAccount = input.mint;
+
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: accountAccount,
+    isSigner: false,
+    isWritable: isWritable(accountAccount, true),
+  });
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, false),
+  });
 
   // Data.
   const data =
     getInitializeToken3InstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

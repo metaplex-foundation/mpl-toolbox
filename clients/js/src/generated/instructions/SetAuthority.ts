@@ -14,6 +14,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -63,7 +64,6 @@ export function getSetAuthorityInstructionDataSerializer(
 export function setAuthority(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: SetAuthorityInstructionAccounts & SetAuthorityInstructionArgs
@@ -78,32 +78,44 @@ export function setAuthority(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const ownedAccount = input.owned;
+  const ownerAccount = input.owner;
+  const signerAccount = input.signer;
+
   // Owned.
-  keys.push({ pubkey: input.owned, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: ownedAccount,
+    isSigner: false,
+    isWritable: isWritable(ownedAccount, true),
+  });
 
   // Owner.
-  signers.push(input.owner);
+  signers.push(ownerAccount);
   keys.push({
-    pubkey: input.owner.publicKey,
+    pubkey: ownerAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(ownerAccount, false),
   });
 
   // Signer.
-  signers.push(input.signer);
+  signers.push(signerAccount);
   keys.push({
-    pubkey: input.signer.publicKey,
+    pubkey: signerAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(signerAccount, false),
   });
 
   // Data.
   const data =
     getSetAuthorityInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

@@ -14,6 +14,7 @@ import {
   Signer,
   SolAmount,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapAmountSerializer,
   mapSerializer,
@@ -65,7 +66,6 @@ export function getCreateAccountInstructionDataSerializer(
 export function createAccount(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     payer: Context['payer'];
     programs?: Context['programs'];
   },
@@ -81,38 +81,36 @@ export function createAccount(
     '11111111111111111111111111111111'
   );
 
+  // Resolved accounts.
+  const payerAccount = input.payer ?? context.payer;
+  const newAccountAccount = input.newAccount;
+
   // Payer.
-  if (input.payer) {
-    signers.push(input.payer);
-    keys.push({
-      pubkey: input.payer.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  } else {
-    signers.push(context.payer);
-    keys.push({
-      pubkey: context.payer.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  }
+  signers.push(payerAccount);
+  keys.push({
+    pubkey: payerAccount.publicKey,
+    isSigner: true,
+    isWritable: isWritable(payerAccount, true),
+  });
 
   // New Account.
-  signers.push(input.newAccount);
+  signers.push(newAccountAccount);
   keys.push({
-    pubkey: input.newAccount.publicKey,
+    pubkey: newAccountAccount.publicKey,
     isSigner: true,
-    isWritable: true,
+    isWritable: isWritable(newAccountAccount, true),
   });
 
   // Data.
   const data =
     getCreateAccountInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

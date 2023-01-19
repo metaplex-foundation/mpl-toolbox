@@ -6,15 +6,13 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Context, Program } from '@lorisleiva/js-core';
+import { Context, Program, publicKey } from '@lorisleiva/js-core';
 import { getSplTokenErrorFromCode, getSplTokenErrorFromName } from '../errors';
 
 export function getSplTokenProgram(context: Pick<Context, 'eddsa'>): Program {
   return {
     name: 'splToken',
-    address: context.eddsa.createPublicKey(
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
+    address: publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
     getErrorFromCode(code: number, cause?: Error) {
       return getSplTokenErrorFromCode(code, this, cause);
     },

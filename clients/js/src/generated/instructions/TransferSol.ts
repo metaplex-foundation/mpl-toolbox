@@ -14,6 +14,7 @@ import {
   Signer,
   SolAmount,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapAmountSerializer,
   mapSerializer,
@@ -57,7 +58,6 @@ export function getTransferSolInstructionDataSerializer(
 export function transferSol(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     identity: Context['identity'];
     programs?: Context['programs'];
   },
@@ -73,33 +73,35 @@ export function transferSol(
     '11111111111111111111111111111111'
   );
 
+  // Resolved accounts.
+  const sourceAccount = input.source ?? context.identity;
+  const destinationAccount = input.destination;
+
   // Source.
-  if (input.source) {
-    signers.push(input.source);
-    keys.push({
-      pubkey: input.source.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  } else {
-    signers.push(context.identity);
-    keys.push({
-      pubkey: context.identity.publicKey,
-      isSigner: true,
-      isWritable: true,
-    });
-  }
+  signers.push(sourceAccount);
+  keys.push({
+    pubkey: sourceAccount.publicKey,
+    isSigner: true,
+    isWritable: isWritable(sourceAccount, true),
+  });
 
   // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: destinationAccount,
+    isSigner: false,
+    isWritable: isWritable(destinationAccount, true),
+  });
 
   // Data.
   const data =
     getTransferSolInstructionDataSerializer(context).serialize(input);
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

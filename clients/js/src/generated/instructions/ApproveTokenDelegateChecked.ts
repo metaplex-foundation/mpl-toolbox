@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -72,7 +73,6 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(
 export function approveTokenDelegateChecked(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: ApproveTokenDelegateCheckedInstructionAccounts &
@@ -88,21 +88,39 @@ export function approveTokenDelegateChecked(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const sourceAccount = input.source;
+  const mintAccount = input.mint;
+  const delegateAccount = input.delegate;
+  const ownerAccount = input.owner;
+
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: sourceAccount,
+    isSigner: false,
+    isWritable: isWritable(sourceAccount, true),
+  });
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, false),
+  });
 
   // Delegate.
-  keys.push({ pubkey: input.delegate, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: delegateAccount,
+    isSigner: false,
+    isWritable: isWritable(delegateAccount, false),
+  });
 
   // Owner.
-  signers.push(input.owner);
+  signers.push(ownerAccount);
   keys.push({
-    pubkey: input.owner.publicKey,
+    pubkey: ownerAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(ownerAccount, false),
   });
 
   // Data.
@@ -111,9 +129,12 @@ export function approveTokenDelegateChecked(
       input
     );
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

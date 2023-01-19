@@ -6,7 +6,7 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Context, Program } from '@lorisleiva/js-core';
+import { Context, Program, publicKey } from '@lorisleiva/js-core';
 import {
   getMplSystemExtrasErrorFromCode,
   getMplSystemExtrasErrorFromName,
@@ -17,9 +17,7 @@ export function getMplSystemExtrasProgram(
 ): Program {
   return {
     name: 'mplSystemExtras',
-    address: context.eddsa.createPublicKey(
-      'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
-    ),
+    address: publicKey('SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'),
     getErrorFromCode(code: number, cause?: Error) {
       return getMplSystemExtrasErrorFromCode(code, this, cause);
     },

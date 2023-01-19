@@ -13,8 +13,10 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
+  publicKey,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -55,7 +57,6 @@ export function getInitializeTokenInstructionDataSerializer(
 export function initializeToken(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: InitializeTokenInstructionAccounts
@@ -70,36 +71,52 @@ export function initializeToken(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const accountAccount = input.account;
+  const mintAccount = input.mint;
+  const ownerAccount = input.owner;
+  const rentAccount =
+    input.rent ?? publicKey('SysvarRent111111111111111111111111111111111');
+
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: accountAccount,
+    isSigner: false,
+    isWritable: isWritable(accountAccount, true),
+  });
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, false),
+  });
 
   // Owner.
-  keys.push({ pubkey: input.owner, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: ownerAccount,
+    isSigner: false,
+    isWritable: isWritable(ownerAccount, false),
+  });
 
   // Rent.
-  if (input.rent) {
-    keys.push({ pubkey: input.rent, isSigner: false, isWritable: false });
-  } else {
-    keys.push({
-      pubkey: context.eddsa.createPublicKey(
-        'SysvarRent111111111111111111111111111111111'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: rentAccount,
+    isSigner: false,
+    isWritable: isWritable(rentAccount, false),
+  });
 
   // Data.
   const data = getInitializeTokenInstructionDataSerializer(context).serialize(
     {}
   );
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

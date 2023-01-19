@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -56,7 +57,6 @@ export function getRevokeTokenDelegateInstructionDataSerializer(
 export function revokeTokenDelegate(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: RevokeTokenDelegateInstructionAccounts
@@ -71,15 +71,23 @@ export function revokeTokenDelegate(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const sourceAccount = input.source;
+  const ownerAccount = input.owner;
+
   // Source.
-  keys.push({ pubkey: input.source, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: sourceAccount,
+    isSigner: false,
+    isWritable: isWritable(sourceAccount, true),
+  });
 
   // Owner.
-  signers.push(input.owner);
+  signers.push(ownerAccount);
   keys.push({
-    pubkey: input.owner.publicKey,
+    pubkey: ownerAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(ownerAccount, false),
   });
 
   // Data.
@@ -87,9 +95,12 @@ export function revokeTokenDelegate(
     context
   ).serialize({});
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

@@ -69,6 +69,6 @@ export function getMultisigAccountDataSerializer(
   );
 }
 
-export function getMultisigSize(): number {
+export function getMultisigSize(_context = {}): number {
   return 355;
 }

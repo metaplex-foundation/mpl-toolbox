@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -50,7 +51,6 @@ export function getCloseTokenInstructionDataSerializer(
 export function closeToken(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: CloseTokenInstructionAccounts
@@ -65,26 +65,42 @@ export function closeToken(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const accountAccount = input.account;
+  const destinationAccount = input.destination;
+  const ownerAccount = input.owner;
+
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: accountAccount,
+    isSigner: false,
+    isWritable: isWritable(accountAccount, true),
+  });
 
   // Destination.
-  keys.push({ pubkey: input.destination, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: destinationAccount,
+    isSigner: false,
+    isWritable: isWritable(destinationAccount, true),
+  });
 
   // Owner.
-  signers.push(input.owner);
+  signers.push(ownerAccount);
   keys.push({
-    pubkey: input.owner.publicKey,
+    pubkey: ownerAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(ownerAccount, false),
   });
 
   // Data.
   const data = getCloseTokenInstructionDataSerializer(context).serialize({});
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

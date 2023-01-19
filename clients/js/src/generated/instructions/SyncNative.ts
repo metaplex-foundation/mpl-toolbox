@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -48,7 +49,6 @@ export function getSyncNativeInstructionDataSerializer(
 export function syncNative(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: SyncNativeInstructionAccounts
@@ -63,15 +63,25 @@ export function syncNative(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const accountAccount = input.account;
+
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: accountAccount,
+    isSigner: false,
+    isWritable: isWritable(accountAccount, true),
+  });
 
   // Data.
   const data = getSyncNativeInstructionDataSerializer(context).serialize({});
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

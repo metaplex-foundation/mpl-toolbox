@@ -13,6 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -50,7 +51,6 @@ export function getFreezeTokenInstructionDataSerializer(
 export function freezeToken(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: FreezeTokenInstructionAccounts
@@ -65,26 +65,42 @@ export function freezeToken(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
+  // Resolved accounts.
+  const accountAccount = input.account;
+  const mintAccount = input.mint;
+  const ownerAccount = input.owner;
+
   // Account.
-  keys.push({ pubkey: input.account, isSigner: false, isWritable: true });
+  keys.push({
+    pubkey: accountAccount,
+    isSigner: false,
+    isWritable: isWritable(accountAccount, true),
+  });
 
   // Mint.
-  keys.push({ pubkey: input.mint, isSigner: false, isWritable: false });
+  keys.push({
+    pubkey: mintAccount,
+    isSigner: false,
+    isWritable: isWritable(mintAccount, false),
+  });
 
   // Owner.
-  signers.push(input.owner);
+  signers.push(ownerAccount);
   keys.push({
-    pubkey: input.owner.publicKey,
+    pubkey: ownerAccount.publicKey,
     isSigner: true,
-    isWritable: false,
+    isWritable: isWritable(ownerAccount, false),
   });
 
   // Data.
   const data = getFreezeTokenInstructionDataSerializer(context).serialize({});
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }

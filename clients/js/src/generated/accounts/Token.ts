@@ -85,6 +85,6 @@ export function getTokenAccountDataSerializer(
   ) as Serializer<TokenAccountArgs, TokenAccountData>;
 }
 
-export function getTokenSize(): number {
+export function getTokenSize(_context = {}): number {
   return 165;
 }

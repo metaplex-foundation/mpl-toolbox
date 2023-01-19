@@ -12,6 +12,7 @@ import {
   PublicKey,
   Signer,
   WrappedInstruction,
+  checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
@@ -30,7 +31,6 @@ export type RecoverNestedInstructionAccounts = {
 export function recoverNested(
   context: {
     serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
     programs?: Context['programs'];
   },
   input: RecoverNestedInstructionAccounts
@@ -45,74 +45,84 @@ export function recoverNested(
     'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
   );
 
+  // Resolved accounts.
+  const nestedAssociatedAccountAddressAccount =
+    input.nestedAssociatedAccountAddress;
+  const nestedTokenMintAddressAccount = input.nestedTokenMintAddress;
+  const destinationAssociatedAccountAddressAccount =
+    input.destinationAssociatedAccountAddress;
+  const ownerAssociatedAccountAddressAccount =
+    input.ownerAssociatedAccountAddress;
+  const ownerTokenMintAddressAccount = input.ownerTokenMintAddress;
+  const walletAddressAccount = input.walletAddress;
+  const tokenProgramAccount = input.tokenProgram ?? {
+    ...getProgramAddressWithFallback(
+      context,
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
+
   // Nested Associated Account Address.
   keys.push({
-    pubkey: input.nestedAssociatedAccountAddress,
+    pubkey: nestedAssociatedAccountAddressAccount,
     isSigner: false,
-    isWritable: true,
+    isWritable: isWritable(nestedAssociatedAccountAddressAccount, true),
   });
 
   // Nested Token Mint Address.
   keys.push({
-    pubkey: input.nestedTokenMintAddress,
+    pubkey: nestedTokenMintAddressAccount,
     isSigner: false,
-    isWritable: false,
+    isWritable: isWritable(nestedTokenMintAddressAccount, false),
   });
 
   // Destination Associated Account Address.
   keys.push({
-    pubkey: input.destinationAssociatedAccountAddress,
+    pubkey: destinationAssociatedAccountAddressAccount,
     isSigner: false,
-    isWritable: true,
+    isWritable: isWritable(destinationAssociatedAccountAddressAccount, true),
   });
 
   // Owner Associated Account Address.
   keys.push({
-    pubkey: input.ownerAssociatedAccountAddress,
+    pubkey: ownerAssociatedAccountAddressAccount,
     isSigner: false,
-    isWritable: false,
+    isWritable: isWritable(ownerAssociatedAccountAddressAccount, false),
   });
 
   // Owner Token Mint Address.
   keys.push({
-    pubkey: input.ownerTokenMintAddress,
+    pubkey: ownerTokenMintAddressAccount,
     isSigner: false,
-    isWritable: false,
+    isWritable: isWritable(ownerTokenMintAddressAccount, false),
   });
 
   // Wallet Address.
-  signers.push(input.walletAddress);
+  signers.push(walletAddressAccount);
   keys.push({
-    pubkey: input.walletAddress.publicKey,
+    pubkey: walletAddressAccount.publicKey,
     isSigner: true,
-    isWritable: true,
+    isWritable: isWritable(walletAddressAccount, true),
   });
 
   // Token Program.
-  if (input.tokenProgram) {
-    keys.push({
-      pubkey: input.tokenProgram,
-      isSigner: false,
-      isWritable: false,
-    });
-  } else {
-    keys.push({
-      pubkey: getProgramAddressWithFallback(
-        context,
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      ),
-      isSigner: false,
-      isWritable: false,
-    });
-  }
+  keys.push({
+    pubkey: tokenProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(tokenProgramAccount, false),
+  });
 
   // Data.
   const data = new Uint8Array();
 
+  // Bytes Created On Chain.
+  const bytesCreatedOnChain = 0;
+
   return {
     instruction: { keys, programId, data },
     signers,
-    bytesCreatedOnChain: 0,
+    bytesCreatedOnChain,
   };
 }
