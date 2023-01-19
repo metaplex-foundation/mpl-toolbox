@@ -5,6 +5,7 @@ const {
   SetInstructionAccountDefaultValuesVisitor,
   SetLeafWrappersVisitor,
   RenameNodesVisitor,
+  SetInstructionBytesCreatedOnChainVisitor,
 } = require("@lorisleiva/kinobi");
 
 // Paths.
@@ -47,6 +48,14 @@ kinobi.update(
     { instruction: "TransferSol", account: "source", kind: "identity" },
     { instruction: "TransferAllSol", account: "source", kind: "identity" },
   ])
+);
+
+// Set instruction bytes created on chain.
+kinobi.update(
+  new SetInstructionBytesCreatedOnChainVisitor({
+    CreateAccount: { kind: "arg", name: "space" },
+    CreateAccountWithRent: { kind: "arg", name: "space" },
+  })
 );
 
 // Render JavaScript.

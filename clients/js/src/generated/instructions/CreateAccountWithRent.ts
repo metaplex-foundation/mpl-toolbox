@@ -7,6 +7,7 @@
  */
 
 import {
+  ACCOUNT_HEADER_SIZE,
   AccountMeta,
   Context,
   PublicKey,
@@ -128,7 +129,7 @@ export function createAccountWithRent(
     getCreateAccountWithRentInstructionDataSerializer(context).serialize(input);
 
   // Bytes Created On Chain.
-  const bytesCreatedOnChain = 0;
+  const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;
 
   return {
     instruction: { keys, programId, data },
