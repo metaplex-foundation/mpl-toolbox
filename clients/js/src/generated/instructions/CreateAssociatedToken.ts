@@ -7,6 +7,7 @@
  */
 
 import {
+  ACCOUNT_HEADER_SIZE,
   AccountMeta,
   Context,
   PublicKey,
@@ -16,6 +17,7 @@ import {
   getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 import { findAssociatedTokenPda } from '../..';
+import { getTokenSize } from '../accounts';
 
 // Accounts.
 export type CreateAssociatedTokenInstructionAccounts = {
@@ -118,7 +120,8 @@ export function createAssociatedToken(
   const data = new Uint8Array();
 
   // Bytes Created On Chain.
-  const bytesCreatedOnChain = 0;
+  const bytesCreatedOnChain =
+    (getTokenSize(context) ?? 0) + ACCOUNT_HEADER_SIZE;
 
   return {
     instruction: { keys, programId, data },

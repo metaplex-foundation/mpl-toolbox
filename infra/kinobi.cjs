@@ -63,6 +63,7 @@ kinobi.update(
   new SetInstructionBytesCreatedOnChainVisitor({
     CreateAccount: { kind: "arg", name: "space" },
     CreateAccountWithRent: { kind: "arg", name: "space" },
+    CreateAssociatedToken: { kind: "account", name: "Token" },
   })
 );
 
