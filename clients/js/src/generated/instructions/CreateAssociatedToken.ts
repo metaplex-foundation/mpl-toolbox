@@ -17,7 +17,7 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type CreateInstructionAccounts = {
+export type CreateAssociatedTokenInstructionAccounts = {
   fundingAddress: Signer;
   associatedAccountAddress: PublicKey;
   walletAddress: PublicKey;
@@ -27,12 +27,12 @@ export type CreateInstructionAccounts = {
 };
 
 // Instruction.
-export function create(
+export function createAssociatedToken(
   context: {
     serializer: Context['serializer'];
     programs?: Context['programs'];
   },
-  input: CreateInstructionAccounts
+  input: CreateAssociatedTokenInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

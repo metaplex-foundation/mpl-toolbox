@@ -17,7 +17,7 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type CreateIdempotentInstructionAccounts = {
+export type CreateIdempotentAssociatedTokenInstructionAccounts = {
   fundingAddress: Signer;
   associatedAccountAddress: PublicKey;
   walletAddress: PublicKey;
@@ -27,12 +27,12 @@ export type CreateIdempotentInstructionAccounts = {
 };
 
 // Instruction.
-export function createIdempotent(
+export function createIdempotentAssociatedToken(
   context: {
     serializer: Context['serializer'];
     programs?: Context['programs'];
   },
-  input: CreateIdempotentInstructionAccounts
+  input: CreateIdempotentAssociatedTokenInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

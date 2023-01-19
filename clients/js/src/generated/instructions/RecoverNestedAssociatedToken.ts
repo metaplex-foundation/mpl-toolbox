@@ -17,7 +17,7 @@ import {
 } from '@lorisleiva/js-core';
 
 // Accounts.
-export type RecoverNestedInstructionAccounts = {
+export type RecoverNestedAssociatedTokenInstructionAccounts = {
   nestedAssociatedAccountAddress: PublicKey;
   nestedTokenMintAddress: PublicKey;
   destinationAssociatedAccountAddress: PublicKey;
@@ -28,12 +28,12 @@ export type RecoverNestedInstructionAccounts = {
 };
 
 // Instruction.
-export function recoverNested(
+export function recoverNestedAssociatedToken(
   context: {
     serializer: Context['serializer'];
     programs?: Context['programs'];
   },
-  input: RecoverNestedInstructionAccounts
+  input: RecoverNestedAssociatedTokenInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

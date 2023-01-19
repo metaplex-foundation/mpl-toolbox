@@ -3,7 +3,7 @@
   "name": "spl_associated_token_account",
   "instructions": [
     {
-      "name": "create",
+      "name": "createAssociatedToken",
       "accounts": [
         {
           "name": "fundingAddress",
@@ -39,7 +39,7 @@
       "args": []
     },
     {
-      "name": "createIdempotent",
+      "name": "createIdempotentAssociatedToken",
       "accounts": [
         {
           "name": "fundingAddress",
@@ -75,7 +75,7 @@
       "args": []
     },
     {
-      "name": "recoverNested",
+      "name": "recoverNestedAssociatedToken",
       "accounts": [
         {
           "name": "nestedAssociatedAccountAddress",
