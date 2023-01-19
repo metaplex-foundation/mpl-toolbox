@@ -18,10 +18,10 @@ import {
 
 // Accounts.
 export type CreateIdempotentAssociatedTokenInstructionAccounts = {
-  fundingAddress: Signer;
-  associatedAccountAddress: PublicKey;
-  walletAddress: PublicKey;
-  tokenMintAddress: PublicKey;
+  payer?: Signer;
+  ata: PublicKey;
+  owner: PublicKey;
+  mint: PublicKey;
   systemProgram?: PublicKey;
   tokenProgram?: PublicKey;
 };
@@ -30,6 +30,7 @@ export type CreateIdempotentAssociatedTokenInstructionAccounts = {
 export function createIdempotentAssociatedToken(
   context: {
     serializer: Context['serializer'];
+    payer: Context['payer'];
     programs?: Context['programs'];
   },
   input: CreateIdempotentAssociatedTokenInstructionAccounts
@@ -45,10 +46,10 @@ export function createIdempotentAssociatedToken(
   );
 
   // Resolved accounts.
-  const fundingAddressAccount = input.fundingAddress;
-  const associatedAccountAddressAccount = input.associatedAccountAddress;
-  const walletAddressAccount = input.walletAddress;
-  const tokenMintAddressAccount = input.tokenMintAddress;
+  const payerAccount = input.payer ?? context.payer;
+  const ataAccount = input.ata;
+  const ownerAccount = input.owner;
+  const mintAccount = input.mint;
   const systemProgramAccount = input.systemProgram ?? {
     ...getProgramAddressWithFallback(
       context,
@@ -66,33 +67,33 @@ export function createIdempotentAssociatedToken(
     isWritable: false,
   };
 
-  // Funding Address.
-  signers.push(fundingAddressAccount);
+  // Payer.
+  signers.push(payerAccount);
   keys.push({
-    pubkey: fundingAddressAccount.publicKey,
+    pubkey: payerAccount.publicKey,
     isSigner: true,
-    isWritable: isWritable(fundingAddressAccount, true),
+    isWritable: isWritable(payerAccount, true),
   });
 
-  // Associated Account Address.
+  // Ata.
   keys.push({
-    pubkey: associatedAccountAddressAccount,
+    pubkey: ataAccount,
     isSigner: false,
-    isWritable: isWritable(associatedAccountAddressAccount, true),
+    isWritable: isWritable(ataAccount, true),
   });
 
-  // Wallet Address.
+  // Owner.
   keys.push({
-    pubkey: walletAddressAccount,
+    pubkey: ownerAccount,
     isSigner: false,
-    isWritable: isWritable(walletAddressAccount, false),
+    isWritable: isWritable(ownerAccount, false),
   });
 
-  // Token Mint Address.
+  // Mint.
   keys.push({
-    pubkey: tokenMintAddressAccount,
+    pubkey: mintAccount,
     isSigner: false,
-    isWritable: isWritable(tokenMintAddressAccount, false),
+    isWritable: isWritable(mintAccount, false),
   });
 
   // System Program.

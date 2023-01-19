@@ -6,22 +6,22 @@
       "name": "createAssociatedToken",
       "accounts": [
         {
-          "name": "fundingAddress",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
         {
-          "name": "associatedAccountAddress",
+          "name": "ata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "walletAddress",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "tokenMintAddress",
+          "name": "mint",
           "isMut": false,
           "isSigner": false
         },
@@ -42,22 +42,22 @@
       "name": "createIdempotentAssociatedToken",
       "accounts": [
         {
-          "name": "fundingAddress",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
         {
-          "name": "associatedAccountAddress",
+          "name": "ata",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "walletAddress",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "tokenMintAddress",
+          "name": "mint",
           "isMut": false,
           "isSigner": false
         },
