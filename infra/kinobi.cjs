@@ -38,7 +38,7 @@ kinobi.update(
 kinobi.update(
   new SetLeafWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
-    "splSystem.TransferSol.lamports": { kind: "SolAmount" },
+    "splSystem.TransferSol.amount": { kind: "SolAmount" },
   })
 );
 

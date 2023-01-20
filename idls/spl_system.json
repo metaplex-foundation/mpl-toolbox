@@ -55,7 +55,7 @@
       },
       "args": [
         {
-          "name": "lamports",
+          "name": "amount",
           "type": "u64"
         }
       ]

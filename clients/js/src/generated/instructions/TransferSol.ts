@@ -29,10 +29,10 @@ export type TransferSolInstructionAccounts = {
 // Arguments.
 export type TransferSolInstructionData = {
   discriminator: number;
-  lamports: SolAmount;
+  amount: SolAmount;
 };
 
-export type TransferSolInstructionArgs = { lamports: SolAmount };
+export type TransferSolInstructionArgs = { amount: SolAmount };
 
 export function getTransferSolInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
@@ -46,7 +46,7 @@ export function getTransferSolInstructionDataSerializer(
     s.struct<TransferSolInstructionData>(
       [
         ['discriminator', s.u32],
-        ['lamports', mapAmountSerializer(s.u64, 'SOL', 9)],
+        ['amount', mapAmountSerializer(s.u64, 'SOL', 9)],
       ],
       'TransferSolInstructionArgs'
     ),
