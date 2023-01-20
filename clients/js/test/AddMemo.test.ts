@@ -16,7 +16,8 @@ test('it can add a memo to a transaction', async (t) => {
   const transaction = await metaplex.rpc.getTransaction(signature);
   const firstInstructionData =
     transaction?.message.instructions[0].data ?? new Uint8Array();
-  const firstInstructionDataString =
-    metaplex.serializer.string.deserialize(firstInstructionData)[0];
+  const firstInstructionDataString = metaplex.serializer
+    .string()
+    .deserialize(firstInstructionData)[0];
   t.is(firstInstructionDataString, 'Hello world!');
 });

@@ -15,30 +15,29 @@ import {
 
 export const mplEssentials = (): MetaplexPlugin => ({
   install(metaplex) {
-    const splSystemProgram = getSplSystemProgram(metaplex);
+    const splSystemProgram = getSplSystemProgram();
     metaplex.programs.add(splSystemProgram);
     metaplex.programs.getSystem = getShortcutMethod(splSystemProgram);
 
-    const splMemoProgram = getSplMemoProgram(metaplex);
+    const splMemoProgram = getSplMemoProgram();
     metaplex.programs.add(splMemoProgram);
     metaplex.programs.getMemo = getShortcutMethod(splMemoProgram);
 
-    const splTokenProgram = getSplTokenProgram(metaplex);
+    const splTokenProgram = getSplTokenProgram();
     metaplex.programs.add(splTokenProgram);
     metaplex.programs.getToken = getShortcutMethod(splTokenProgram);
 
-    const splAssociatedTokenProgram =
-      getSplAssociatedTokenAccountProgram(metaplex);
+    const splAssociatedTokenProgram = getSplAssociatedTokenAccountProgram();
     metaplex.programs.add(splAssociatedTokenProgram);
     metaplex.programs.getAssociatedToken = getShortcutMethod(
       splAssociatedTokenProgram
     );
 
-    const mplSystemExtras = getMplSystemExtrasProgram(metaplex);
+    const mplSystemExtras = getMplSystemExtrasProgram();
     metaplex.programs.add(mplSystemExtras);
     metaplex.programs.getSystemExtras = getShortcutMethod(mplSystemExtras);
 
-    const mplTokenExtras = getMplTokenExtrasProgram(metaplex);
+    const mplTokenExtras = getMplTokenExtrasProgram();
     metaplex.programs.add(mplTokenExtras);
     metaplex.programs.getSystemExtras = getShortcutMethod(mplTokenExtras);
   },

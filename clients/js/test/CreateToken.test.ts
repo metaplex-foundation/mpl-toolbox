@@ -1,5 +1,4 @@
 import {
-  base16,
   generateSigner,
   isEqualToAmount,
   none,
@@ -13,7 +12,6 @@ import {
   createToken,
   fetchToken,
   getTokenSize,
-  getTokenStateSerializer,
   Token,
   TokenState,
 } from '../src';
@@ -35,27 +33,6 @@ test('it can create new token accounts with minimum configuration', async (t) =>
     .sendAndConfirm();
 
   // Then the account was created with the correct data.
-  const rawAccount = await metaplex.rpc.getAccount(newToken.publicKey);
-  if (rawAccount.exists) {
-    const s = metaplex.serializer;
-    const tokenSerializer = s.struct(
-      [
-        ['mint', s.publicKey],
-        ['owner', s.publicKey],
-        ['amount', s.u64],
-        ['delegate', s.option(s.publicKey, s.u32)],
-        ['state', getTokenStateSerializer(metaplex)],
-        ['isNative', s.option(s.u64, s.u32)],
-        ['delegatedAmount', s.u64],
-        ['closeAuthority', s.option(s.publicKey, s.u32)],
-      ],
-      'Token'
-    );
-    console.log(base16.deserialize(rawAccount.data));
-    console.log(tokenSerializer.deserialize(rawAccount.data));
-    t.pass();
-    return;
-  }
   const mintAccount = await fetchToken(metaplex, newToken.publicKey);
   const rentExemptBalance = await metaplex.rpc.getRent(getTokenSize());
   t.like(mintAccount, <Token>{
