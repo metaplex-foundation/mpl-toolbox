@@ -22,7 +22,7 @@ import {
 export type MintTokensToInstructionAccounts = {
   mint: PublicKey;
   token: PublicKey;
-  mintAuthority: Signer;
+  mintAuthority?: Signer;
 };
 
 // Arguments.
@@ -57,6 +57,7 @@ export function getMintTokensToInstructionDataSerializer(
 export function mintTokensTo(
   context: {
     serializer: Context['serializer'];
+    identity: Context['identity'];
     programs?: Context['programs'];
   },
   input: MintTokensToInstructionAccounts & MintTokensToInstructionArgs
@@ -74,7 +75,7 @@ export function mintTokensTo(
   // Resolved accounts.
   const mintAccount = input.mint;
   const tokenAccount = input.token;
-  const mintAuthorityAccount = input.mintAuthority;
+  const mintAuthorityAccount = input.mintAuthority ?? context.identity;
 
   // Mint.
   keys.push({

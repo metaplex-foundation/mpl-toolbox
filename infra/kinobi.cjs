@@ -47,6 +47,7 @@ kinobi.update(
   new SetInstructionAccountDefaultValuesVisitor([
     { instruction: "TransferSol", account: "source", kind: "identity" },
     { instruction: "TransferAllSol", account: "source", kind: "identity" },
+    { instruction: "MintTokensTo", account: "mintAuthority", kind: "identity" },
     {
       instruction: "CreateAssociatedToken",
       account: "ata",
