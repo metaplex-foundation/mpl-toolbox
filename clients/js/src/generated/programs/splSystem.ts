@@ -6,13 +6,13 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Context, Program, publicKey } from '@lorisleiva/js-core';
+import { Program, publicKey } from '@lorisleiva/js-core';
 import {
   getSplSystemErrorFromCode,
   getSplSystemErrorFromName,
 } from '../errors';
 
-export function getSplSystemProgram(context: Pick<Context, 'eddsa'>): Program {
+export function getSplSystemProgram(): Program {
   return {
     name: 'splSystem',
     address: publicKey('11111111111111111111111111111111'),

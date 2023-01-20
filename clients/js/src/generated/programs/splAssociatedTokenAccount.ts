@@ -6,15 +6,13 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Context, Program, publicKey } from '@lorisleiva/js-core';
+import { Program, publicKey } from '@lorisleiva/js-core';
 import {
   getSplAssociatedTokenAccountErrorFromCode,
   getSplAssociatedTokenAccountErrorFromName,
 } from '../errors';
 
-export function getSplAssociatedTokenAccountProgram(
-  context: Pick<Context, 'eddsa'>
-): Program {
+export function getSplAssociatedTokenAccountProgram(): Program {
   return {
     name: 'splAssociatedTokenAccount',
     address: publicKey('TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),

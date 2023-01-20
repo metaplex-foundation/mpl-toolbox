@@ -6,10 +6,10 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Context, Program, publicKey } from '@lorisleiva/js-core';
+import { Program, publicKey } from '@lorisleiva/js-core';
 import { getSplMemoErrorFromCode, getSplMemoErrorFromName } from '../errors';
 
-export function getSplMemoProgram(context: Pick<Context, 'eddsa'>): Program {
+export function getSplMemoProgram(): Program {
   return {
     name: 'splMemo',
     address: publicKey('Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'),

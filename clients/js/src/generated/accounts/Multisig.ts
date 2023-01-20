@@ -62,7 +62,7 @@ export function getMultisigAccountDataSerializer(
     [
       ['m', s.u8],
       ['n', s.u8],
-      ['isInitialized', s.bool],
+      ['isInitialized', s.bool()],
       ['signers', s.array(s.publicKey, 11)],
     ],
     'Multisig'
