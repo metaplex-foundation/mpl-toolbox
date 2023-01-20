@@ -38,9 +38,9 @@ test('it can create new token accounts with minimum configuration', async (t) =>
     .sendAndConfirm();
 
   // Then the account was created with the correct data.
-  const mintAccount = await fetchToken(metaplex, newToken.publicKey);
+  const tokenAccount = await fetchToken(metaplex, newToken.publicKey);
   const rentExemptBalance = await metaplex.rpc.getRent(getTokenSize());
-  t.like(mintAccount, <Token>{
+  t.like(tokenAccount, <Token>{
     address: newToken.publicKey,
     header: {
       owner: metaplex.programs.getToken().address,
@@ -86,9 +86,9 @@ test('it can create new token accounts with maximum configuration', async (t) =>
     .sendAndConfirm();
 
   // Then the account was created with the correct data.
-  const mintAccount = await fetchToken(metaplex, newToken.publicKey);
+  const tokenAccount = await fetchToken(metaplex, newToken.publicKey);
   const rentExemptBalance = await metaplex.rpc.getRent(getTokenSize());
-  t.like(mintAccount, <Token>{
+  t.like(tokenAccount, <Token>{
     address: newToken.publicKey,
     header: {
       owner: metaplex.programs.getToken().address,
