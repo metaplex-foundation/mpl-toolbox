@@ -30,8 +30,8 @@ export function findAssociatedTokenPda(
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
   return context.eddsa.findPda(associatedTokenProgramId, [
-    s.publicKey.serialize(seeds.mint),
-    tokenProgramId.bytes,
     s.publicKey.serialize(seeds.owner),
+    tokenProgramId.bytes,
+    s.publicKey.serialize(seeds.mint),
   ]);
 }
