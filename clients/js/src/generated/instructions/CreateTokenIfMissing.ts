@@ -112,7 +112,7 @@ export function createTokenIfMissing(
     ...getProgramAddressWithFallback(
       context,
       'splAssociatedToken',
-      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+      'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
     ),
     isWritable: false,
   };
