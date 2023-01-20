@@ -16,7 +16,7 @@ import {
   assertAccountExists,
   deserializeAccount,
 } from '@lorisleiva/js-core';
-import { AccountState, getAccountStateSerializer } from '../types';
+import { TokenState, getTokenStateSerializer } from '../types';
 
 export type Token = Account<TokenAccountData>;
 
@@ -25,7 +25,7 @@ export type TokenAccountData = {
   owner: PublicKey;
   amount: bigint;
   delegate: Option<PublicKey>;
-  state: AccountState;
+  state: TokenState;
   isNative: Option<bigint>;
   delegatedAmount: bigint;
   closeAuthority: Option<PublicKey>;
@@ -36,7 +36,7 @@ export type TokenAccountArgs = {
   owner: PublicKey;
   amount: number | bigint;
   delegate: Option<PublicKey>;
-  state: AccountState;
+  state: TokenState;
   isNative: Option<number | bigint>;
   delegatedAmount: number | bigint;
   closeAuthority: Option<PublicKey>;
@@ -76,7 +76,7 @@ export function getTokenAccountDataSerializer(
       ['owner', s.publicKey],
       ['amount', s.u64],
       ['delegate', s.option(s.publicKey, s.u32)],
-      ['state', getAccountStateSerializer(context)],
+      ['state', getTokenStateSerializer(context)],
       ['isNative', s.option(s.u64, s.u32)],
       ['delegatedAmount', s.u64],
       ['closeAuthority', s.option(s.publicKey, s.u32)],

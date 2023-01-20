@@ -8,15 +8,15 @@
 
 import { Context, Serializer } from '@lorisleiva/js-core';
 
-export enum AccountState {
+export enum TokenState {
   Uninitialized,
   Initialized,
   Frozen,
 }
 
-export function getAccountStateSerializer(
+export function getTokenStateSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<AccountState> {
+): Serializer<TokenState> {
   const s = context.serializer;
-  return s.enum<AccountState>(AccountState, 'AccountState');
+  return s.enum<TokenState>(TokenState, 'TokenState');
 }

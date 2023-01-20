@@ -746,7 +746,7 @@
           {
             "name": "state",
             "type": {
-              "defined": "AccountState"
+              "defined": "TokenState"
             }
           },
           {
@@ -797,7 +797,7 @@
   ],
   "types": [
     {
-      "name": "AccountState",
+      "name": "TokenState",
       "type": {
         "kind": "enum",
         "variants": [
