@@ -22,7 +22,7 @@ export function findAssociatedTokenPda(
   const associatedTokenProgramId = getProgramAddressWithFallback(
     context,
     'splAssociatedTokenAccount',
-    'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
   );
   const tokenProgramId = getProgramAddressWithFallback(
     context,
