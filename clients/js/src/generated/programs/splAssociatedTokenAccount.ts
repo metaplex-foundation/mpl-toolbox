@@ -15,7 +15,7 @@ import {
 export function getSplAssociatedTokenAccountProgram(): Program {
   return {
     name: 'splAssociatedTokenAccount',
-    address: publicKey('TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
+    address: publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
     getErrorFromCode(code: number, cause?: Error) {
       return getSplAssociatedTokenAccountErrorFromCode(code, this, cause);
     },

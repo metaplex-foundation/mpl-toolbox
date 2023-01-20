@@ -47,7 +47,7 @@ export function createAssociatedToken(
   const programId: PublicKey = getProgramAddressWithFallback(
     context,
     'splAssociatedTokenAccount',
-    'TokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
   );
 
   // Resolved accounts.
