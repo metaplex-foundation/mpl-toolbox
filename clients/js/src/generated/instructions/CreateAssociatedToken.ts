@@ -15,6 +15,7 @@ import {
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
   getProgramAddressWithFallback,
+  publicKey,
 } from '@lorisleiva/js-core';
 import { findAssociatedTokenPda } from '../..';
 import { getTokenSize } from '../accounts';
@@ -56,7 +57,10 @@ export function createAssociatedToken(
   const mintAccount = input.mint;
   const ataAccount =
     input.ata ??
-    findAssociatedTokenPda(context, { owner: ownerAccount, mint: mintAccount });
+    findAssociatedTokenPda(context, {
+      owner: publicKey(ownerAccount),
+      mint: publicKey(mintAccount),
+    });
   const systemProgramAccount = input.systemProgram ?? {
     ...getProgramAddressWithFallback(
       context,

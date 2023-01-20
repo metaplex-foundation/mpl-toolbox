@@ -59,7 +59,10 @@ kinobi.update(
       kind: "pda",
       pdaAccount: "AssociatedToken",
       dependency: "root",
-      seeds: { owner: "owner", mint: "mint" },
+      seeds: {
+        owner: { kind: "account", name: "owner" },
+        mint: { kind: "account", name: "mint" },
+      },
     },
   ])
 );
