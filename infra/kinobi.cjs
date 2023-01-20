@@ -50,6 +50,11 @@ kinobi.update(
     { instruction: "MintTokensTo", account: "mintAuthority", kind: "identity" },
     {
       instruction: "CreateAssociatedToken",
+      account: "owner",
+      kind: "identity",
+    },
+    {
+      instruction: "CreateAssociatedToken",
       account: "ata",
       kind: "pda",
       pdaAccount: "AssociatedToken",

@@ -23,7 +23,7 @@ import { getTokenSize } from '../accounts';
 export type CreateAssociatedTokenInstructionAccounts = {
   payer?: Signer;
   ata?: PublicKey;
-  owner: PublicKey;
+  owner?: PublicKey;
   mint: PublicKey;
   systemProgram?: PublicKey;
   tokenProgram?: PublicKey;
@@ -34,6 +34,7 @@ export function createAssociatedToken(
   context: {
     serializer: Context['serializer'];
     eddsa: Context['eddsa'];
+    identity: Context['identity'];
     payer: Context['payer'];
     programs?: Context['programs'];
   },
@@ -51,7 +52,7 @@ export function createAssociatedToken(
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
-  const ownerAccount = input.owner;
+  const ownerAccount = input.owner ?? context.identity.publicKey;
   const mintAccount = input.mint;
   const ataAccount =
     input.ata ??
