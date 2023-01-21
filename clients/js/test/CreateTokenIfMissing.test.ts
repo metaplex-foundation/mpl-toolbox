@@ -11,6 +11,7 @@ import {
   fetchToken,
   findAssociatedTokenPda,
   TokenState,
+  TokExInvalidSystemProgramError,
 } from '../src';
 import { createMetaplex } from './_setup';
 
@@ -64,7 +65,7 @@ test('it defaults to the identity if no owner is provided', async (t) => {
 // it does not create an account if an associated token account already exists
 // it does not create an account if a regular token account already exists
 
-test.only('it fail if we provide the wrong system program', async (t) => {
+test('it fail if we provide the wrong system program', async (t) => {
   // Given an existing mint and a wrong system program.
   const metaplex = await createMetaplex();
   const mint = (await createMint(metaplex)).publicKey;
@@ -77,7 +78,7 @@ test.only('it fail if we provide the wrong system program', async (t) => {
     .sendAndConfirm();
 
   // Then we expect a custom program error.
-  await promise;
+  await t.throwsAsync(promise, { instanceOf: TokExInvalidSystemProgramError });
 });
 
 // it fail if we provide the wrong token program
