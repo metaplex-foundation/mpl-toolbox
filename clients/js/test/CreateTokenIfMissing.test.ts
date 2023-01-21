@@ -9,7 +9,9 @@ import {
 } from '@lorisleiva/js-test';
 import test from 'ava';
 import {
+  createAssociatedToken,
   createMint as baseCreateMint,
+  createToken,
   createTokenIfMissing,
   fetchToken,
   findAssociatedTokenPda,
@@ -88,8 +90,65 @@ test('the payer pays for the storage fees if a token account gets created', asyn
   t.deepEqual(ataAccount.header.lamports, storageFee);
 });
 
-// it does not create an account if an associated token account already exists
-// it does not create an account if a regular token account already exists
+test('it does not create an account if an associated token account already exists', async (t) => {
+  // Given an existing mint, owner and associated token account.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const owner = generateSigner(metaplex).publicKey;
+  const ata = findAssociatedTokenPda(metaplex, { mint, owner });
+  await transactionBuilder(metaplex)
+    .add(createAssociatedToken(metaplex, { mint, owner }))
+    .sendAndConfirm();
+  t.true(await metaplex.rpc.accountExists(ata));
+
+  // And given an explicit payer to ensure it was not charged for the storage fee.
+  const payer = await generateSignerWithSol(metaplex, sol(100));
+
+  // When we execute the "CreateTokenIfMissing" instruction on that mint/owner pair.
+  await transactionBuilder(metaplex)
+    .add(createTokenIfMissing({ ...metaplex, payer }, { mint, owner }))
+    .sendAndConfirm();
+
+  // Then the ata still exists.
+  t.true(await metaplex.rpc.accountExists(ata));
+
+  // And the payer was not charged for the storage fee of a new account as no new account was created.
+  const payerBalance = await metaplex.rpc.getBalance(payer.publicKey);
+  t.deepEqual(payerBalance, sol(100));
+});
+
+test('it does not create an account if a regular token account already exists', async (t) => {
+  // Given an existing mint, owner and a regular token account between them.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const owner = generateSigner(metaplex).publicKey;
+  const token = generateSigner(metaplex);
+  await transactionBuilder(metaplex)
+    .add(createToken(metaplex, { mint, owner, token }))
+    .sendAndConfirm();
+  t.true(await metaplex.rpc.accountExists(token.publicKey));
+
+  // And given an explicit payer to ensure it was not charged for the storage fee.
+  const payer = await generateSignerWithSol(metaplex, sol(100));
+
+  // When we execute the "CreateTokenIfMissing" instruction on that mint/owner pair
+  // whilst explicitly providing the token account.
+  await transactionBuilder(metaplex)
+    .add(
+      createTokenIfMissing(
+        { ...metaplex, payer },
+        { mint, owner, token: token.publicKey }
+      )
+    )
+    .sendAndConfirm();
+
+  // Then the token account still exists.
+  t.true(await metaplex.rpc.accountExists(token.publicKey));
+
+  // And the payer was not charged for the storage fee of a new account as no new account was created.
+  const payerBalance = await metaplex.rpc.getBalance(payer.publicKey);
+  t.deepEqual(payerBalance, sol(100));
+});
 
 test('it fail if we provide the wrong system program', async (t) => {
   // Given an existing mint and a wrong system program.
