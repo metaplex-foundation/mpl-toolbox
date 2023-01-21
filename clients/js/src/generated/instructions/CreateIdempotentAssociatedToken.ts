@@ -13,7 +13,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -28,22 +27,16 @@ export type CreateIdempotentAssociatedTokenInstructionAccounts = {
 
 // Instruction.
 export function createIdempotentAssociatedToken(
-  context: {
-    serializer: Context['serializer'];
-    payer: Context['payer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateIdempotentAssociatedTokenInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splAssociatedTokenAccount',
-    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-  );
+  const programId: PublicKey = context.programs.get(
+    'splAssociatedTokenAccount'
+  ).address;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
@@ -51,19 +44,11 @@ export function createIdempotentAssociatedToken(
   const ownerAccount = input.owner;
   const mintAccount = input.mint;
   const systemProgramAccount = input.systemProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splSystem',
-      '11111111111111111111111111111111'
-    ),
+    ...context.programs.get('splSystem').address,
     isWritable: false,
   };
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
+    ...context.programs.get('splToken').address,
     isWritable: false,
   };
 

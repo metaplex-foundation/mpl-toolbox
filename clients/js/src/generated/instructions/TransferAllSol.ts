@@ -14,7 +14,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
@@ -52,32 +51,20 @@ export function getTransferAllSolInstructionDataSerializer(
 
 // Instruction.
 export function transferAllSol(
-  context: {
-    serializer: Context['serializer'];
-    identity: Context['identity'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
   input: TransferAllSolInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'mplSystemExtras',
-    'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
-  );
+  const programId: PublicKey = context.programs.get('mplSystemExtras').address;
 
   // Resolved accounts.
   const sourceAccount = input.source ?? context.identity;
   const destinationAccount = input.destination;
   const systemProgramAccount = input.systemProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splSystem',
-      '11111111111111111111111111111111'
-    ),
+    ...context.programs.get('splSystem').address,
     isWritable: false,
   };
 

@@ -15,7 +15,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
   publicKey,
 } from '@lorisleiva/js-core';
@@ -64,21 +63,14 @@ export function getInitializeMintInstructionDataSerializer(
 
 // Instruction.
 export function initializeMint(
-  context: {
-    serializer: Context['serializer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs'>,
   input: InitializeMintInstructionAccounts & InitializeMintInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId: PublicKey = context.programs.get('splToken').address;
 
   // Resolved accounts.
   const mintAccount = input.mint;

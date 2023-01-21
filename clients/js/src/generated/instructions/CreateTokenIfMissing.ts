@@ -14,7 +14,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
@@ -69,22 +68,14 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
 
 // Instruction.
 export function createTokenIfMissing(
-  context: {
-    serializer: Context['serializer'];
-    payer: Context['payer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateTokenIfMissingInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'mplTokenExtras',
-    'TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p'
-  );
+  const programId: PublicKey = context.programs.get('mplTokenExtras').address;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
@@ -93,27 +84,15 @@ export function createTokenIfMissing(
   const ownerAccount = input.owner;
   const ataAccount = input.ata;
   const systemProgramAccount = input.systemProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splSystem',
-      '11111111111111111111111111111111'
-    ),
+    ...context.programs.get('splSystem').address,
     isWritable: false,
   };
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
+    ...context.programs.get('splToken').address,
     isWritable: false,
   };
   const ataProgramAccount = input.ataProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splAssociatedToken',
-      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-    ),
+    ...context.programs.get('splAssociatedToken').address,
     isWritable: false,
   };
 

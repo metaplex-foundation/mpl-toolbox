@@ -13,7 +13,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
 // Accounts.
@@ -29,21 +28,16 @@ export type RecoverNestedAssociatedTokenInstructionAccounts = {
 
 // Instruction.
 export function recoverNestedAssociatedToken(
-  context: {
-    serializer: Context['serializer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs'>,
   input: RecoverNestedAssociatedTokenInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splAssociatedTokenAccount',
-    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-  );
+  const programId: PublicKey = context.programs.get(
+    'splAssociatedTokenAccount'
+  ).address;
 
   // Resolved accounts.
   const nestedAssociatedAccountAddressAccount =
@@ -56,11 +50,7 @@ export function recoverNestedAssociatedToken(
   const ownerTokenMintAddressAccount = input.ownerTokenMintAddress;
   const walletAddressAccount = input.walletAddress;
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
+    ...context.programs.get('splToken').address,
     isWritable: false,
   };
 

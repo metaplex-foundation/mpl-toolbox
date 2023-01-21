@@ -14,7 +14,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
@@ -67,22 +66,14 @@ export function getBurnTokenCheckedInstructionDataSerializer(
 
 // Instruction.
 export function burnTokenChecked(
-  context: {
-    serializer: Context['serializer'];
-    identity: Context['identity'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
   input: BurnTokenCheckedInstructionAccounts & BurnTokenCheckedInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId: PublicKey = context.programs.get('splToken').address;
 
   // Resolved accounts.
   const accountAccount = input.account;

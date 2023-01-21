@@ -14,7 +14,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
   publicKey,
 } from '@lorisleiva/js-core';
@@ -62,10 +61,7 @@ export function getInitializeMultisigInstructionDataSerializer(
 
 // Instruction.
 export function initializeMultisig(
-  context: {
-    serializer: Context['serializer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs'>,
   input: InitializeMultisigInstructionAccounts &
     InitializeMultisigInstructionArgs
 ): WrappedInstruction {
@@ -73,11 +69,7 @@ export function initializeMultisig(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId: PublicKey = context.programs.get('splToken').address;
 
   // Resolved accounts.
   const multisigAccount = input.multisig;

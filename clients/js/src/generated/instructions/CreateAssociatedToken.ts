@@ -14,7 +14,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   publicKey,
 } from '@lorisleiva/js-core';
 import { findAssociatedTokenPda } from '../..';
@@ -32,24 +31,19 @@ export type CreateAssociatedTokenInstructionAccounts = {
 
 // Instruction.
 export function createAssociatedToken(
-  context: {
-    serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
-    identity: Context['identity'];
-    payer: Context['payer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<
+    Context,
+    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
+  >,
   input: CreateAssociatedTokenInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splAssociatedTokenAccount',
-    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-  );
+  const programId: PublicKey = context.programs.get(
+    'splAssociatedTokenAccount'
+  ).address;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
@@ -62,19 +56,11 @@ export function createAssociatedToken(
       mint: publicKey(mintAccount),
     });
   const systemProgramAccount = input.systemProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splSystem',
-      '11111111111111111111111111111111'
-    ),
+    ...context.programs.get('splSystem').address,
     isWritable: false,
   };
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
+    ...context.programs.get('splToken').address,
     isWritable: false,
   };
 

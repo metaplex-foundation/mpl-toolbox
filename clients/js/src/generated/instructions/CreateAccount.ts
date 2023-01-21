@@ -16,7 +16,6 @@ import {
   SolAmount,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapAmountSerializer,
   mapSerializer,
 } from '@lorisleiva/js-core';
@@ -65,22 +64,14 @@ export function getCreateAccountInstructionDataSerializer(
 
 // Instruction.
 export function createAccount(
-  context: {
-    serializer: Context['serializer'];
-    payer: Context['payer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateAccountInstructionAccounts & CreateAccountInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splSystem',
-    '11111111111111111111111111111111'
-  );
+  const programId: PublicKey = context.programs.get('splSystem').address;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;

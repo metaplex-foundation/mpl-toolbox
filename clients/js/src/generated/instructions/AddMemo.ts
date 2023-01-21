@@ -13,7 +13,6 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
-  getProgramAddressWithFallback,
 } from '@lorisleiva/js-core';
 
 // Arguments.
@@ -31,21 +30,14 @@ export function getAddMemoInstructionDataSerializer(
 
 // Instruction.
 export function addMemo(
-  context: {
-    serializer: Context['serializer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs'>,
   input: AddMemoInstructionData
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splMemo',
-    'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
-  );
+  const programId: PublicKey = context.programs.get('splMemo').address;
 
   // Data.
   const data = getAddMemoInstructionDataSerializer(context).serialize(input);

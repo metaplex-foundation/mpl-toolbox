@@ -14,7 +14,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
@@ -68,11 +67,7 @@ export function getTransferTokensCheckedInstructionDataSerializer(
 
 // Instruction.
 export function transferTokensChecked(
-  context: {
-    serializer: Context['serializer'];
-    identity: Context['identity'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
   input: TransferTokensCheckedInstructionAccounts &
     TransferTokensCheckedInstructionArgs
 ): WrappedInstruction {
@@ -80,11 +75,7 @@ export function transferTokensChecked(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId: PublicKey = context.programs.get('splToken').address;
 
   // Resolved accounts.
   const sourceAccount = input.source;

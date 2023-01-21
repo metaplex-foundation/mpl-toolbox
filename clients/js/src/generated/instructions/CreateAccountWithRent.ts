@@ -15,7 +15,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
@@ -71,11 +70,7 @@ export function getCreateAccountWithRentInstructionDataSerializer(
 
 // Instruction.
 export function createAccountWithRent(
-  context: {
-    serializer: Context['serializer'];
-    payer: Context['payer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateAccountWithRentInstructionAccounts &
     CreateAccountWithRentInstructionArgs
 ): WrappedInstruction {
@@ -83,21 +78,13 @@ export function createAccountWithRent(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'mplSystemExtras',
-    'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
-  );
+  const programId: PublicKey = context.programs.get('mplSystemExtras').address;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
   const newAccountAccount = input.newAccount;
   const systemProgramAccount = input.systemProgram ?? {
-    ...getProgramAddressWithFallback(
-      context,
-      'splSystem',
-      '11111111111111111111111111111111'
-    ),
+    ...context.programs.get('splSystem').address,
     isWritable: false,
   };
 

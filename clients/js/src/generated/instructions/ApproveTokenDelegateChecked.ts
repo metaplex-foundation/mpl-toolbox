@@ -14,7 +14,6 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-  getProgramAddressWithFallback,
   mapSerializer,
 } from '@lorisleiva/js-core';
 
@@ -71,10 +70,7 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(
 
 // Instruction.
 export function approveTokenDelegateChecked(
-  context: {
-    serializer: Context['serializer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs'>,
   input: ApproveTokenDelegateCheckedInstructionAccounts &
     ApproveTokenDelegateCheckedInstructionArgs
 ): WrappedInstruction {
@@ -82,11 +78,7 @@ export function approveTokenDelegateChecked(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = getProgramAddressWithFallback(
-    context,
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId: PublicKey = context.programs.get('splToken').address;
 
   // Resolved accounts.
   const sourceAccount = input.source;
