@@ -23,7 +23,7 @@ test('it can create new accounts', async (t) => {
         newAccount,
         lamports: sol(1.5),
         space: 42,
-        programId: metaplex.programs.getSystem().address,
+        programId: metaplex.programs.get('splSystem').address,
       })
     )
     .sendAndConfirm();
@@ -33,7 +33,7 @@ test('it can create new accounts', async (t) => {
   t.like(account, {
     exists: true,
     executable: false,
-    owner: metaplex.programs.getSystem().address,
+    owner: metaplex.programs.get('splSystem').address,
     address: newAccount.publicKey,
     lamports: sol(1.5),
     data: new Uint8Array(42),
@@ -60,7 +60,7 @@ test('it knows how much space will be created on chain', async (t) => {
       newAccount: generateSigner(metaplex),
       lamports: sol(1.5),
       space: 42,
-      programId: metaplex.programs.getSystem().address,
+      programId: metaplex.programs.get('splSystem').address,
     })
   );
 

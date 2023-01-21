@@ -28,7 +28,7 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
   t.like(mintAccount, <Mint>{
     address: newAccount.publicKey,
     header: {
-      owner: metaplex.programs.getToken().address,
+      owner: metaplex.programs.get('splToken').address,
       lamports: rentExemptBalance,
     },
     mintAuthority: some({ ...metaplex.identity.publicKey }),
@@ -75,7 +75,7 @@ test('it can create new mint accounts with maximum configuration', async (t) => 
   t.like(mintAccount, <Mint>{
     address: newAccount.publicKey,
     header: {
-      owner: metaplex.programs.getToken().address,
+      owner: metaplex.programs.get('splToken').address,
       lamports: rentExemptBalance,
     },
     mintAuthority: some(mintAuthority),

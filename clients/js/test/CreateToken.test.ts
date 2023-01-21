@@ -43,7 +43,7 @@ test('it can create new token accounts with minimum configuration', async (t) =>
   t.like(tokenAccount, <Token>{
     address: newToken.publicKey,
     header: {
-      owner: metaplex.programs.getToken().address,
+      owner: metaplex.programs.get('splToken').address,
       lamports: rentExemptBalance,
     },
     mint: newMint.publicKey,
@@ -91,7 +91,7 @@ test('it can create new token accounts with maximum configuration', async (t) =>
   t.like(tokenAccount, <Token>{
     address: newToken.publicKey,
     header: {
-      owner: metaplex.programs.getToken().address,
+      owner: metaplex.programs.get('splToken').address,
       lamports: rentExemptBalance,
     },
     mint: newMint.publicKey,

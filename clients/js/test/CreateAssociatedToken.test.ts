@@ -40,7 +40,7 @@ test('it can create new associated token accounts with minimum configuration', a
   t.like(tokenAccount, <Token>{
     address: ata,
     header: {
-      owner: metaplex.programs.getToken().address,
+      owner: metaplex.programs.get('splToken').address,
       lamports: await metaplex.rpc.getRent(getTokenSize()),
       executable: false,
     },
@@ -88,7 +88,7 @@ test('it can create new associated token accounts with maximum configuration', a
   t.like(tokenAccount, <Token>{
     address: ata,
     header: {
-      owner: metaplex.programs.getToken().address,
+      owner: metaplex.programs.get('splToken').address,
       lamports: rentExemptBalance,
       executable: false,
     },
