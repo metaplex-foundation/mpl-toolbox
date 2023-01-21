@@ -1,6 +1,6 @@
 {
   "version": "1.1.1",
-  "name": "spl_associated_token_account",
+  "name": "spl_associated_token",
   "instructions": [
     {
       "name": "createAssociatedToken",

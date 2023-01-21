@@ -8,19 +8,19 @@
 
 import { Program, publicKey } from '@lorisleiva/js-core';
 import {
-  getSplAssociatedTokenAccountErrorFromCode,
-  getSplAssociatedTokenAccountErrorFromName,
+  getSplAssociatedTokenErrorFromCode,
+  getSplAssociatedTokenErrorFromName,
 } from '../errors';
 
-export function getSplAssociatedTokenAccountProgram(): Program {
+export function getSplAssociatedTokenProgram(): Program {
   return {
-    name: 'splAssociatedTokenAccount',
+    name: 'splAssociatedToken',
     address: publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
     getErrorFromCode(code: number, cause?: Error) {
-      return getSplAssociatedTokenAccountErrorFromCode(code, this, cause);
+      return getSplAssociatedTokenErrorFromCode(code, this, cause);
     },
     getErrorFromName(name: string, cause?: Error) {
-      return getSplAssociatedTokenAccountErrorFromName(name, this, cause);
+      return getSplAssociatedTokenErrorFromName(name, this, cause);
     },
     isOnCluster() {
       return true;

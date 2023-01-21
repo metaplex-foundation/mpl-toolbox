@@ -17,7 +17,7 @@ const kinobi = new Kinobi([
   path.join(idlDir, "spl_system.json"),
   path.join(idlDir, "spl_memo.json"),
   path.join(idlDir, "spl_token.json"),
-  path.join(idlDir, "spl_associated_token_account.json"),
+  path.join(idlDir, "spl_associated_token.json"),
   path.join(idlDir, "mpl_system_extras.json"),
   path.join(idlDir, "mpl_token_extras.json"),
 ]);

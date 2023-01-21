@@ -8,7 +8,7 @@
 
 export * from './mplSystemExtras';
 export * from './mplTokenExtras';
-export * from './splAssociatedTokenAccount';
+export * from './splAssociatedToken';
 export * from './splMemo';
 export * from './splSystem';
 export * from './splToken';

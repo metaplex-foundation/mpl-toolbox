@@ -41,9 +41,8 @@ export function createAssociatedToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get(
-    'splAssociatedTokenAccount'
-  ).address;
+  const programId: PublicKey =
+    context.programs.get('splAssociatedToken').address;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
