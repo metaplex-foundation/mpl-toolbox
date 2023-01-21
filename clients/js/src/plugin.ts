@@ -2,7 +2,7 @@ import { MetaplexPlugin } from '@lorisleiva/js-core';
 import {
   getMplSystemExtrasProgram,
   getMplTokenExtrasProgram,
-  getSplAssociatedTokenAccountProgram,
+  getSplAssociatedTokenProgram,
   getSplMemoProgram,
   getSplSystemProgram,
   getSplTokenProgram,
@@ -13,7 +13,7 @@ export const mplEssentials = (): MetaplexPlugin => ({
     metaplex.programs.add(getSplSystemProgram(), false);
     metaplex.programs.add(getSplMemoProgram(), false);
     metaplex.programs.add(getSplTokenProgram(), false);
-    metaplex.programs.add(getSplAssociatedTokenAccountProgram(), false);
+    metaplex.programs.add(getSplAssociatedTokenProgram(), false);
     metaplex.programs.add(getMplSystemExtrasProgram(), false);
     metaplex.programs.add(getMplTokenExtrasProgram(), false);
   },
