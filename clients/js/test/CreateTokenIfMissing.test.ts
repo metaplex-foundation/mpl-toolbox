@@ -17,7 +17,9 @@ import {
   findAssociatedTokenPda,
   getTokenSize,
   TokenState,
+  TokExInvalidAssociatedTokenProgramError,
   TokExInvalidSystemProgramError,
+  TokExInvalidTokenProgramError,
 } from '../src';
 import { createMetaplex } from './_setup';
 
@@ -156,8 +158,7 @@ test('it fail if we provide the wrong system program', async (t) => {
   const mint = (await createMint(metaplex)).publicKey;
   const systemProgram = generateSigner(metaplex).publicKey;
 
-  // When we execute the "CreateTokenIfMissing" instruction
-  // with the wrong system program.
+  // When we execute the "CreateTokenIfMissing" instruction with the wrong system program.
   const promise = transactionBuilder(metaplex)
     .add(createTokenIfMissing(metaplex, { mint, systemProgram }))
     .sendAndConfirm();
@@ -166,8 +167,38 @@ test('it fail if we provide the wrong system program', async (t) => {
   await t.throwsAsync(promise, { instanceOf: TokExInvalidSystemProgramError });
 });
 
-// it fail if we provide the wrong token program
-// it fail if we provide the wrong ata program
+test('it fail if we provide the wrong token program', async (t) => {
+  // Given an existing mint and a wrong token program.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const tokenProgram = generateSigner(metaplex).publicKey;
+
+  // When we execute the "CreateTokenIfMissing" instruction with the wrong token program.
+  const promise = transactionBuilder(metaplex)
+    .add(createTokenIfMissing(metaplex, { mint, tokenProgram }))
+    .sendAndConfirm();
+
+  // Then we expect a custom program error.
+  await t.throwsAsync(promise, { instanceOf: TokExInvalidTokenProgramError });
+});
+
+test('it fail if we provide the wrong ata program', async (t) => {
+  // Given an existing mint and a wrong ata program.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const ataProgram = generateSigner(metaplex).publicKey;
+
+  // When we execute the "CreateTokenIfMissing" instruction with the wrong ata program.
+  const promise = transactionBuilder(metaplex)
+    .add(createTokenIfMissing(metaplex, { mint, ataProgram }))
+    .sendAndConfirm();
+
+  // Then we expect a custom program error.
+  await t.throwsAsync(promise, {
+    instanceOf: TokExInvalidAssociatedTokenProgramError,
+  });
+});
+
 // it fail if the ata account does not match the mint and owner
 // it fail if the existing token account is not owned by the token program
 // it fail if the existing token account is not associated with the given mint
