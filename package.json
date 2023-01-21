@@ -1,15 +1,19 @@
 {
+  "private": true,
+  "workspaces": [
+    "programs/*",
+    "clients/*"
+  ],
   "scripts": {
-    "build": "pnpm build:programs && pnpm build:clients",
-    "build:programs": "./infra/build-programs.sh",
-    "build:clients": "./infra/build-clients.sh",
-    "generate": "pnpm generate:idls && pnpm generate:clients && pnpm generate:docs",
-    "generate:idls": "./infra/generate-idls.sh",
-    "generate:clients": "./infra/generate-clients.sh",
-    "generate:docs": "./infra/generate-docs.sh",
-    "test": "pnpm test:programs && pnpm test:clients",
-    "test:programs": "./infra/test-programs.sh",
-    "test:clients": "./infra/test-clients.sh",
+    "build": "pnpm run --recursive build",
+    "build:programs": "pnpm run --filter='./programs/*' --recursive build",
+    "build:clients": "pnpm run --filter='./clients/*' --recursive build",
+    "generate": "pnpm generate:idls && pnpm generate:clients",
+    "generate:idls": "node ./infra/shank.cjs",
+    "generate:clients": "node ./infra/kinobi.cjs",
+    "test": "pnpm run --recursive test",
+    "test:programs": "pnpm run --filter='./programs/*' --recursive test",
+    "test:clients": "pnpm run --filter='./clients/*' --recursive test",
     "validator:start": "CI=1 amman start --config ./infra/validator.cjs",
     "validator:stop": "amman stop"
   },
