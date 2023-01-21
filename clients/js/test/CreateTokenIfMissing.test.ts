@@ -1,15 +1,19 @@
 import {
   generateSigner,
+  generateSignerWithSol,
   Metaplex,
   Signer,
+  sol,
+  subtractAmounts,
   transactionBuilder,
-} from '@lorisleiva/js-core';
+} from '@lorisleiva/js-test';
 import test from 'ava';
 import {
   createMint as baseCreateMint,
   createTokenIfMissing,
   fetchToken,
   findAssociatedTokenPda,
+  getTokenSize,
   TokenState,
   TokExInvalidSystemProgramError,
 } from '../src';
@@ -61,7 +65,29 @@ test('it defaults to the identity if no owner is provided', async (t) => {
   });
 });
 
-// the payer pays for the storage fees if a token account gets created
+test('the payer pays for the storage fees if a token account gets created', async (t) => {
+  // Given an existing mint and a payer.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const payer = await generateSignerWithSol(metaplex, sol(100));
+  const identity = metaplex.identity.publicKey;
+
+  // When we execute the "CreateTokenIfMissing" instruction with an explicit payer.
+  await transactionBuilder(metaplex)
+    .add(createTokenIfMissing({ ...metaplex, payer }, { mint }))
+    .sendAndConfirm();
+
+  // Then the payer paid for the storage fee.
+  const storageFee = await metaplex.rpc.getRent(getTokenSize());
+  const payerBalance = await metaplex.rpc.getBalance(payer.publicKey);
+  t.deepEqual(payerBalance, subtractAmounts(sol(100), storageFee));
+
+  // And this matches the lamports on the ATA account.
+  const ata = findAssociatedTokenPda(metaplex, { mint, owner: identity });
+  const ataAccount = await fetchToken(metaplex, ata);
+  t.deepEqual(ataAccount.header.lamports, storageFee);
+});
+
 // it does not create an account if an associated token account already exists
 // it does not create an account if a regular token account already exists
 
