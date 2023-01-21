@@ -10,21 +10,18 @@ test('it can transfer tokens from one account to another', async (t) => {
 
   // And a token account A from owner A with 50 tokens.
   const ownerA = generateSigner(metaplex);
+  const ownerAPublicKey = ownerA.publicKey;
   const tokenA = generateSigner(metaplex);
   await transactionBuilder(metaplex)
-    .add(
-      createToken(metaplex, { mint, token: tokenA, owner: ownerA.publicKey })
-    )
+    .add(createToken(metaplex, { mint, token: tokenA, owner: ownerAPublicKey }))
     .add(mintTokensTo(metaplex, { mint, token: tokenA.publicKey, amount: 50 }))
     .sendAndConfirm();
 
   // And a token account B from owner B with 10 tokens.
-  const ownerB = generateSigner(metaplex);
+  const ownerB = generateSigner(metaplex).publicKey;
   const tokenB = generateSigner(metaplex);
   await transactionBuilder(metaplex)
-    .add(
-      createToken(metaplex, { mint, token: tokenB, owner: ownerB.publicKey })
-    )
+    .add(createToken(metaplex, { mint, token: tokenB, owner: ownerB }))
     .add(mintTokensTo(metaplex, { mint, token: tokenB.publicKey, amount: 10 }))
     .sendAndConfirm();
 
