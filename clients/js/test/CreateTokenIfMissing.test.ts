@@ -17,8 +17,12 @@ import {
   findAssociatedTokenPda,
   getTokenSize,
   TokenState,
+  TokExCannotCreateNonAssociatedTokenError,
+  TokExInvalidAssociatedTokenAccountError,
   TokExInvalidAssociatedTokenProgramError,
   TokExInvalidSystemProgramError,
+  TokExInvalidTokenMintError,
+  TokExInvalidTokenOwnerError,
   TokExInvalidTokenProgramError,
 } from '../src';
 import { createMetaplex } from './_setup';
@@ -199,11 +203,88 @@ test('it fail if we provide the wrong ata program', async (t) => {
   });
 });
 
-// it fail if the ata account does not match the mint and owner
-// it fail if the existing token account is not owned by the token program
-// it fail if the existing token account is not associated with the given mint
-// it fail if the existing token account is not associated with the given owner
-// it fail if the non existing token account is not an ata account
+test('it fail if the ata account does not match the mint and owner', async (t) => {
+  // Given a mint, an owner and an invalid ata address.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const owner = generateSigner(metaplex).publicKey;
+  const invalidAta = generateSigner(metaplex).publicKey;
+
+  // When we execute the "CreateTokenIfMissing" instruction with the wrong ata address.
+  const promise = transactionBuilder(metaplex)
+    .add(createTokenIfMissing(metaplex, { mint, owner, ata: invalidAta }))
+    .sendAndConfirm();
+
+  // Then we expect a custom program error.
+  await t.throwsAsync(promise, {
+    instanceOf: TokExInvalidAssociatedTokenAccountError,
+  });
+});
+
+test('it fail if the existing token account is not associated with the given mint', async (t) => {
+  // Given a mint, an owner and a token account associated with the wrong mint.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const wrongMint = (await createMint(metaplex)).publicKey;
+  const owner = generateSigner(metaplex).publicKey;
+  const token = generateSigner(metaplex);
+  await transactionBuilder(metaplex)
+    .add(createToken(metaplex, { mint: wrongMint, owner, token }))
+    .sendAndConfirm();
+
+  // When we execute the "CreateTokenIfMissing" instruction on that token account.
+  const promise = transactionBuilder(metaplex)
+    .add(
+      createTokenIfMissing(metaplex, { mint, owner, token: token.publicKey })
+    )
+    .sendAndConfirm();
+
+  // Then we expect a custom program error.
+  await t.throwsAsync(promise, { instanceOf: TokExInvalidTokenMintError });
+});
+
+test('it fail if the existing token account is not associated with the given owner', async (t) => {
+  // Given a mint, an owner and a token account associated with the wrong owner.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const owner = generateSigner(metaplex).publicKey;
+  const wrongOwner = generateSigner(metaplex).publicKey;
+  const token = generateSigner(metaplex);
+  await transactionBuilder(metaplex)
+    .add(createToken(metaplex, { mint, owner: wrongOwner, token }))
+    .sendAndConfirm();
+
+  // When we execute the "CreateTokenIfMissing" instruction on that token account.
+  const promise = transactionBuilder(metaplex)
+    .add(
+      createTokenIfMissing(metaplex, { mint, owner, token: token.publicKey })
+    )
+    .sendAndConfirm();
+
+  // Then we expect a custom program error.
+  await t.throwsAsync(promise, { instanceOf: TokExInvalidTokenOwnerError });
+});
+
+test('it fail if the non existing token account is not an ata account', async (t) => {
+  // Given an existing mint/owner pair with no token account.
+  const metaplex = await createMetaplex();
+  const mint = (await createMint(metaplex)).publicKey;
+  const owner = generateSigner(metaplex).publicKey;
+
+  // And given a new address for a regular (non-associated) token account.
+  const token = generateSigner(metaplex).publicKey;
+
+  // When we execute the "CreateTokenIfMissing" instruction on that token account.
+  const promise = transactionBuilder(metaplex)
+    .add(createTokenIfMissing(metaplex, { mint, owner, token }))
+    .sendAndConfirm();
+
+  // Then we expect a custom program error because we need the token account
+  // as a Signer in order to create it.
+  await t.throwsAsync(promise, {
+    instanceOf: TokExCannotCreateNonAssociatedTokenError,
+  });
+});
 
 async function createMint(metaplex: Metaplex): Promise<Signer> {
   const mint = generateSigner(metaplex);
