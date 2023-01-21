@@ -10,6 +10,7 @@ import {
   createTokenIfMissing,
   fetchToken,
   findAssociatedTokenPda,
+  TokenState,
 } from '../src';
 import { createMetaplex } from './_setup';
 
@@ -27,7 +28,13 @@ test('it creates a new associated token if missing', async (t) => {
   // Then a new associated token account was created.
   const ata = findAssociatedTokenPda(metaplex, { mint, owner });
   const ataAccount = await fetchToken(metaplex, ata);
-  console.log(ataAccount);
+  t.like(ataAccount, {
+    address: ata,
+    mint,
+    owner,
+    state: TokenState.Initialized,
+    amount: 0n,
+  });
 });
 
 // it defaults to the identity if no owner is provided
