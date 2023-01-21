@@ -11,6 +11,9 @@
     "build": "pnpm run -r build",
     "build:programs": "pnpm run -r --filter=./programs/* build",
     "build:clients": "pnpm run -r --filter=./clients/* build",
+    "test": "pnpm run -r test",
+    "test:programs": "pnpm run -r --filter=./programs/* test",
+    "test:clients": "pnpm run -r --filter=./clients/* test",
     "bump:patch": "pnpm run -r bump:patch",
     "bump:patch:programs": "pnpm run -r --filter=./programs/* bump:patch",
     "bump:patch:clients": "pnpm run -r --filter=./clients/* bump:patch",
@@ -23,10 +26,9 @@
     "deploy": "pnpm run -r deploy",
     "deploy:programs": "pnpm run -r --filter=./programs/* deploy",
     "deploy:clients": "pnpm run -r --filter=./clients/* deploy",
-    "test": "pnpm run -r test",
-    "test:programs": "pnpm run -r --filter=./programs/* test",
-    "test:clients": "pnpm run -r --filter=./clients/* test",
-    "validator:start": "CI=1 amman start --config ./infra/validator.cjs",
+    "validator": "CI=1 amman start --config ./infra/validator.cjs",
+    "validator:devnet": "CI=1 amman start --config ./infra/validator.devnet.cjs",
+    "validator:mainnet": "CI=1 amman start --config ./infra/validator.mainnet.cjs",
     "validator:stop": "amman stop"
   },
   "devDependencies": {
