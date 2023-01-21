@@ -64,6 +64,23 @@ kinobi.update(
         mint: { kind: "account", name: "mint" },
       },
     },
+    {
+      instruction: "CreateTokenIfMissing",
+      account: "ata",
+      kind: "pda",
+      pdaAccount: "AssociatedToken",
+      dependency: "root",
+      seeds: {
+        owner: { kind: "account", name: "owner" },
+        mint: { kind: "account", name: "mint" },
+      },
+    },
+    {
+      instruction: "CreateTokenIfMissing",
+      account: "token",
+      kind: "account",
+      name: "ata",
+    },
   ])
 );
 

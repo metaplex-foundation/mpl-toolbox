@@ -15,20 +15,22 @@ import {
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
   mapSerializer,
+  publicKey,
 } from '@lorisleiva/js-core';
+import { findAssociatedTokenPda } from '../..';
 
 // Accounts.
 export type CreateTokenIfMissingInstructionAccounts = {
   /** The account paying for the token account creation if needed */
   payer?: Signer;
   /** The token account that may or may not exist */
-  token: PublicKey;
+  token?: PublicKey;
   /** The mint account of the provided token account */
   mint: PublicKey;
   /** The owner of the provided token account */
   owner: PublicKey;
   /** The associated token account which may be the same as the token account */
-  ata: PublicKey;
+  ata?: PublicKey;
   /** System program */
   systemProgram?: PublicKey;
   /** Token program */
@@ -68,7 +70,7 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
 
 // Instruction.
 export function createTokenIfMissing(
-  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
+  context: Pick<Context, 'serializer' | 'programs' | 'eddsa' | 'payer'>,
   input: CreateTokenIfMissingInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
@@ -79,10 +81,15 @@ export function createTokenIfMissing(
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
-  const tokenAccount = input.token;
-  const mintAccount = input.mint;
   const ownerAccount = input.owner;
-  const ataAccount = input.ata;
+  const mintAccount = input.mint;
+  const ataAccount =
+    input.ata ??
+    findAssociatedTokenPda(context, {
+      owner: publicKey(ownerAccount),
+      mint: publicKey(mintAccount),
+    });
+  const tokenAccount = input.token ?? ataAccount;
   const systemProgramAccount = input.systemProgram ?? {
     ...context.programs.get('splSystem').address,
     isWritable: false,
