@@ -1,6 +1,5 @@
 import {
   Context,
-  getProgramAddressWithFallback,
   Option,
   PublicKey,
   Signer,
@@ -23,24 +22,14 @@ export type CreateMintArgs = {
 
 // Instruction.
 export function createMint(
-  context: {
-    serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
-    identity: Context['identity'];
-    payer: Context['payer'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
   input: CreateMintArgs
 ): WrappedInstruction[] {
   return [
     createAccountWithRent(context, {
       newAccount: input.mint,
       space: getMintSize(),
-      programId: getProgramAddressWithFallback(
-        context,
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      ),
+      programId: context.programs.get('splToken').address,
     }),
     initializeMint2(context, {
       mint: input.mint.publicKey,

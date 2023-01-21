@@ -1,16 +1,7 @@
-import {
-  Context,
-  getProgramAddressWithFallback,
-  Pda,
-  PublicKey,
-} from '@lorisleiva/js-core';
+import { Context, Pda, PublicKey } from '@lorisleiva/js-core';
 
 export function findAssociatedTokenPda(
-  context: {
-    serializer: Context['serializer'];
-    eddsa: Context['eddsa'];
-    programs?: Context['programs'];
-  },
+  context: Pick<Context, 'serializer' | 'eddsa' | 'programs'>,
   seeds: {
     /** The address of the mint account */
     mint: PublicKey;
@@ -19,16 +10,10 @@ export function findAssociatedTokenPda(
   }
 ): Pda {
   const s = context.serializer;
-  const associatedTokenProgramId = getProgramAddressWithFallback(
-    context,
-    'splAssociatedTokenAccount',
-    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-  );
-  const tokenProgramId = getProgramAddressWithFallback(
-    context,
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const associatedTokenProgramId = context.programs.get(
+    'splAssociatedTokenAccount'
+  ).address;
+  const tokenProgramId = context.programs.get('splToken').address;
   return context.eddsa.findPda(associatedTokenProgramId, [
     s.publicKey.serialize(seeds.owner),
     tokenProgramId.bytes,
