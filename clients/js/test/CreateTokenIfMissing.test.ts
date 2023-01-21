@@ -1,8 +1,6 @@
 import {
   generateSigner,
   generateSignerWithSol,
-  Metaplex,
-  Signer,
   sol,
   subtractAmounts,
   transactionBuilder,
@@ -10,7 +8,6 @@ import {
 import test from 'ava';
 import {
   createAssociatedToken,
-  createMint as baseCreateMint,
   createToken,
   createTokenIfMissing,
   fetchToken,
@@ -25,7 +22,7 @@ import {
   TokExInvalidTokenOwnerError,
   TokExInvalidTokenProgramError,
 } from '../src';
-import { createMetaplex } from './_setup';
+import { createMetaplex, createMint } from './_setup';
 
 test('it creates a new associated token if missing', async (t) => {
   // Given an existing mint and owner with no associated token account.
@@ -285,11 +282,3 @@ test('it fail if the non existing token account is not an ata account', async (t
     instanceOf: TokExCannotCreateNonAssociatedTokenError,
   });
 });
-
-async function createMint(metaplex: Metaplex): Promise<Signer> {
-  const mint = generateSigner(metaplex);
-  await transactionBuilder(metaplex)
-    .add(baseCreateMint(metaplex, { mint }))
-    .sendAndConfirm();
-  return mint;
-}
