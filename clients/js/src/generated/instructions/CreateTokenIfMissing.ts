@@ -28,7 +28,7 @@ export type CreateTokenIfMissingInstructionAccounts = {
   /** The mint account of the provided token account */
   mint: PublicKey;
   /** The owner of the provided token account */
-  owner: PublicKey;
+  owner?: PublicKey;
   /** The associated token account which may be the same as the token account */
   ata?: PublicKey;
   /** System program */
@@ -70,7 +70,10 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
 
 // Instruction.
 export function createTokenIfMissing(
-  context: Pick<Context, 'serializer' | 'programs' | 'eddsa' | 'payer'>,
+  context: Pick<
+    Context,
+    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
+  >,
   input: CreateTokenIfMissingInstructionAccounts
 ): WrappedInstruction {
   const signers: Signer[] = [];
@@ -81,7 +84,7 @@ export function createTokenIfMissing(
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
-  const ownerAccount = input.owner;
+  const ownerAccount = input.owner ?? context.identity.publicKey;
   const mintAccount = input.mint;
   const ataAccount =
     input.ata ??

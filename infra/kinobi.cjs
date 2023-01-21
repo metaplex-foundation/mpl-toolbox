@@ -81,6 +81,7 @@ kinobi.update(
       kind: "account",
       name: "ata",
     },
+    { instruction: "CreateTokenIfMissing", account: "owner", kind: "identity" },
   ])
 );
 
