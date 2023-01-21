@@ -5,15 +5,15 @@
     "clients/*"
   ],
   "scripts": {
-    "build": "pnpm run --recursive build",
-    "build:programs": "pnpm run --filter='./programs/*' --recursive build",
-    "build:clients": "pnpm run --filter='./clients/*' --recursive build",
     "generate": "pnpm generate:idls && pnpm generate:clients",
     "generate:idls": "node ./infra/shank.cjs",
     "generate:clients": "node ./infra/kinobi.cjs",
-    "test": "pnpm run --recursive test",
-    "test:programs": "pnpm run --filter='./programs/*' --recursive test",
-    "test:clients": "pnpm run --filter='./clients/*' --recursive test",
+    "build": "pnpm run -r build",
+    "build:programs": "pnpm run -r --filter='./programs/*' build",
+    "build:clients": "pnpm run -r --filter='./clients/*' build",
+    "test": "pnpm run -r test",
+    "test:programs": "pnpm run -r --filter='./programs/*' test",
+    "test:clients": "pnpm run -r --filter='./clients/*' test",
     "validator:start": "CI=1 amman start --config ./infra/validator.cjs",
     "validator:stop": "amman stop"
   },
