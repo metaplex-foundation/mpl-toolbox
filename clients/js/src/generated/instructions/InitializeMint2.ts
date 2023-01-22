@@ -72,7 +72,7 @@ export function initializeMint2(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('splToken').address;
+  const programId: PublicKey = context.programs.get('splToken').publicKey;
 
   // Resolved accounts.
   const mintAccount = input.mint;

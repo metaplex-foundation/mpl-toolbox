@@ -80,7 +80,7 @@ export function createTokenIfMissing(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('mplTokenExtras').address;
+  const programId: PublicKey = context.programs.get('mplTokenExtras').publicKey;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
@@ -94,15 +94,15 @@ export function createTokenIfMissing(
     });
   const tokenAccount = input.token ?? ataAccount;
   const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.get('splSystem').address,
+    ...context.programs.get('splSystem').publicKey,
     isWritable: false,
   };
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...context.programs.get('splToken').address,
+    ...context.programs.get('splToken').publicKey,
     isWritable: false,
   };
   const ataProgramAccount = input.ataProgram ?? {
-    ...context.programs.get('splAssociatedToken').address,
+    ...context.programs.get('splAssociatedToken').publicKey,
     isWritable: false,
   };
 

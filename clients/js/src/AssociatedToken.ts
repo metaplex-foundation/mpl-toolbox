@@ -11,8 +11,8 @@ export function findAssociatedTokenPda(
 ): Pda {
   const s = context.serializer;
   const associatedTokenProgramId =
-    context.programs.get('splAssociatedToken').address;
-  const tokenProgramId = context.programs.get('splToken').address;
+    context.programs.get('splAssociatedToken').publicKey;
+  const tokenProgramId = context.programs.get('splToken').publicKey;
   return context.eddsa.findPda(associatedTokenProgramId, [
     s.publicKey.serialize(seeds.owner),
     tokenProgramId.bytes,

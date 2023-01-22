@@ -67,7 +67,7 @@ export function initializeToken3(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('splToken').address;
+  const programId: PublicKey = context.programs.get('splToken').publicKey;
 
   // Resolved accounts.
   const accountAccount = input.account;

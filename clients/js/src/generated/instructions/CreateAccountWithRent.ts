@@ -78,13 +78,14 @@ export function createAccountWithRent(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('mplSystemExtras').address;
+  const programId: PublicKey =
+    context.programs.get('mplSystemExtras').publicKey;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
   const newAccountAccount = input.newAccount;
   const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.get('splSystem').address,
+    ...context.programs.get('splSystem').publicKey,
     isWritable: false,
   };
 

@@ -15,7 +15,7 @@ import {
 export function getSplSystemProgram(): Program {
   return {
     name: 'splSystem',
-    address: publicKey('11111111111111111111111111111111'),
+    publicKey: publicKey('11111111111111111111111111111111'),
     getErrorFromCode(code: number, cause?: Error) {
       return getSplSystemErrorFromCode(code, this, cause);
     },

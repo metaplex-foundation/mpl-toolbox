@@ -12,7 +12,7 @@ import { getSplMemoErrorFromCode, getSplMemoErrorFromName } from '../errors';
 export function getSplMemoProgram(): Program {
   return {
     name: 'splMemo',
-    address: publicKey('Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'),
+    publicKey: publicKey('Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'),
     getErrorFromCode(code: number, cause?: Error) {
       return getSplMemoErrorFromCode(code, this, cause);
     },

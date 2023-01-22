@@ -27,18 +27,18 @@ export type MultisigAccountData = {
 
 export async function fetchMultisig(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<Multisig> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   assertAccountExists(maybeAccount, 'Multisig');
   return deserializeMultisig(context, maybeAccount);
 }
 
 export async function safeFetchMultisig(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<Multisig | null> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   return maybeAccount.exists
     ? deserializeMultisig(context, maybeAccount)
     : null;

@@ -29,7 +29,7 @@ export function createMint(
     createAccountWithRent(context, {
       newAccount: input.mint,
       space: getMintSize(),
-      programId: context.programs.get('splToken').address,
+      programId: context.programs.get('splToken').publicKey,
     }),
     initializeMint2(context, {
       mint: input.mint.publicKey,

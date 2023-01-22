@@ -15,7 +15,7 @@ import {
 export function getMplSystemExtrasProgram(): Program {
   return {
     name: 'mplSystemExtras',
-    address: publicKey('SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'),
+    publicKey: publicKey('SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'),
     getErrorFromCode(code: number, cause?: Error) {
       return getMplSystemExtrasErrorFromCode(code, this, cause);
     },

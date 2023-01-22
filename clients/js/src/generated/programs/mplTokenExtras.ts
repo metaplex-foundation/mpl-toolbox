@@ -15,7 +15,7 @@ import {
 export function getMplTokenExtrasProgram(): Program {
   return {
     name: 'mplTokenExtras',
-    address: publicKey('TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p'),
+    publicKey: publicKey('TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p'),
     getErrorFromCode(code: number, cause?: Error) {
       return getMplTokenExtrasErrorFromCode(code, this, cause);
     },

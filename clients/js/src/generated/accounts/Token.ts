@@ -44,18 +44,18 @@ export type TokenAccountArgs = {
 
 export async function fetchToken(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<Token> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   assertAccountExists(maybeAccount, 'Token');
   return deserializeToken(context, maybeAccount);
 }
 
 export async function safeFetchToken(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<Token | null> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   return maybeAccount.exists ? deserializeToken(context, maybeAccount) : null;
 }
 

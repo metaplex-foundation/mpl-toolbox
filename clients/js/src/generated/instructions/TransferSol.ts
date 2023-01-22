@@ -62,7 +62,7 @@ export function transferSol(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('splSystem').address;
+  const programId: PublicKey = context.programs.get('splSystem').publicKey;
 
   // Resolved accounts.
   const sourceAccount = input.source ?? context.identity;

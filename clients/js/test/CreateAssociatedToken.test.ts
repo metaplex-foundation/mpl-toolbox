@@ -38,9 +38,9 @@ test('it can create new associated token accounts with minimum configuration', a
   });
   const tokenAccount = await fetchToken(metaplex, ata);
   t.like(tokenAccount, <Token>{
-    address: ata,
+    publicKey: ata,
     header: {
-      owner: metaplex.programs.get('splToken').address,
+      owner: metaplex.programs.get('splToken').publicKey,
       lamports: await metaplex.rpc.getRent(getTokenSize()),
       executable: false,
     },
@@ -86,9 +86,9 @@ test('it can create new associated token accounts with maximum configuration', a
   const tokenAccount = await fetchToken(metaplex, ata);
   const rentExemptBalance = await metaplex.rpc.getRent(getTokenSize());
   t.like(tokenAccount, <Token>{
-    address: ata,
+    publicKey: ata,
     header: {
-      owner: metaplex.programs.get('splToken').address,
+      owner: metaplex.programs.get('splToken').publicKey,
       lamports: rentExemptBalance,
       executable: false,
     },

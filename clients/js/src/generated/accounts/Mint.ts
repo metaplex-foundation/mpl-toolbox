@@ -37,18 +37,18 @@ export type MintAccountArgs = {
 
 export async function fetchMint(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<Mint> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   assertAccountExists(maybeAccount, 'Mint');
   return deserializeMint(context, maybeAccount);
 }
 
 export async function safeFetchMint(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<Mint | null> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   return maybeAccount.exists ? deserializeMint(context, maybeAccount) : null;
 }
 

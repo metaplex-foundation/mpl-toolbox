@@ -23,7 +23,7 @@ test('it can create new accounts at the current rent-exemption price', async (t)
       createAccountWithRent(metaplex, {
         newAccount,
         space: 4200,
-        programId: metaplex.programs.get('splSystem').address,
+        programId: metaplex.programs.get('splSystem').publicKey,
       })
     )
     .sendAndConfirm();
@@ -34,8 +34,8 @@ test('it can create new accounts at the current rent-exemption price', async (t)
   t.like(account, {
     exists: true,
     executable: false,
-    owner: metaplex.programs.get('splSystem').address,
-    address: newAccount.publicKey,
+    owner: metaplex.programs.get('splSystem').publicKey,
+    publicKey: newAccount.publicKey,
     lamports: rentBalance,
     data: new Uint8Array(4200),
   });
@@ -61,7 +61,7 @@ test('it knows how much space will be created on chain', async (t) => {
     createAccountWithRent(metaplex, {
       newAccount: generateSigner(metaplex),
       space: 42,
-      programId: metaplex.programs.get('splSystem').address,
+      programId: metaplex.programs.get('splSystem').publicKey,
     })
   );
 

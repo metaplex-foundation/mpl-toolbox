@@ -26,9 +26,9 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
   const mintAccount = await fetchMint(metaplex, newAccount.publicKey);
   const rentExemptBalance = await metaplex.rpc.getRent(getMintSize());
   t.like(mintAccount, <Mint>{
-    address: newAccount.publicKey,
+    publicKey: newAccount.publicKey,
     header: {
-      owner: metaplex.programs.get('splToken').address,
+      owner: metaplex.programs.get('splToken').publicKey,
       lamports: rentExemptBalance,
     },
     mintAuthority: some({ ...metaplex.identity.publicKey }),
@@ -73,9 +73,9 @@ test('it can create new mint accounts with maximum configuration', async (t) => 
   const mintAccount = await fetchMint(metaplex, newAccount.publicKey);
   const rentExemptBalance = await metaplex.rpc.getRent(getMintSize());
   t.like(mintAccount, <Mint>{
-    address: newAccount.publicKey,
+    publicKey: newAccount.publicKey,
     header: {
-      owner: metaplex.programs.get('splToken').address,
+      owner: metaplex.programs.get('splToken').publicKey,
       lamports: rentExemptBalance,
     },
     mintAuthority: some(mintAuthority),

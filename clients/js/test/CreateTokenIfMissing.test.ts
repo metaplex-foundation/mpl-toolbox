@@ -39,7 +39,7 @@ test('it creates a new associated token if missing', async (t) => {
   const ata = findAssociatedTokenPda(metaplex, { mint, owner });
   const ataAccount = await fetchToken(metaplex, ata);
   t.like(ataAccount, {
-    address: ata,
+    publicKey: ata,
     mint,
     owner,
     state: TokenState.Initialized,
@@ -62,7 +62,7 @@ test('it defaults to the identity if no owner is provided', async (t) => {
   const ata = findAssociatedTokenPda(metaplex, { mint, owner: identity });
   const ataAccount = await fetchToken(metaplex, ata);
   t.like(ataAccount, {
-    address: ata,
+    publicKey: ata,
     mint,
     owner: identity,
     state: TokenState.Initialized,

@@ -26,7 +26,7 @@ export function createToken(
     createAccountWithRent(context, {
       newAccount: input.token,
       space: getTokenSize(),
-      programId: context.programs.get('splToken').address,
+      programId: context.programs.get('splToken').publicKey,
     }),
     initializeToken3(context, {
       account: input.token.publicKey,

@@ -37,7 +37,7 @@ export function addMemo(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('splMemo').address;
+  const programId: PublicKey = context.programs.get('splMemo').publicKey;
 
   // Data.
   const data = getAddMemoInstructionDataSerializer(context).serialize(input);

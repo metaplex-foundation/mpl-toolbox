@@ -22,18 +22,18 @@ export type DummyChallengeAccountData = { authority: PublicKey };
 
 export async function fetchDummyChallenge(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<DummyChallenge> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   assertAccountExists(maybeAccount, 'DummyChallenge');
   return deserializeDummyChallenge(context, maybeAccount);
 }
 
 export async function safeFetchDummyChallenge(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  address: PublicKey
+  publicKey: PublicKey
 ): Promise<DummyChallenge | null> {
-  const maybeAccount = await context.rpc.getAccount(address);
+  const maybeAccount = await context.rpc.getAccount(publicKey);
   return maybeAccount.exists
     ? deserializeDummyChallenge(context, maybeAccount)
     : null;

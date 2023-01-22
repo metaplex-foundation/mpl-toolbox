@@ -42,7 +42,7 @@ export function createAssociatedToken(
 
   // Program ID.
   const programId: PublicKey =
-    context.programs.get('splAssociatedToken').address;
+    context.programs.get('splAssociatedToken').publicKey;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
@@ -55,11 +55,11 @@ export function createAssociatedToken(
       mint: publicKey(mintAccount),
     });
   const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.get('splSystem').address,
+    ...context.programs.get('splSystem').publicKey,
     isWritable: false,
   };
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...context.programs.get('splToken').address,
+    ...context.programs.get('splToken').publicKey,
     isWritable: false,
   };
 

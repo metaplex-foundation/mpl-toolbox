@@ -12,7 +12,7 @@ import { getSplTokenErrorFromCode, getSplTokenErrorFromName } from '../errors';
 export function getSplTokenProgram(): Program {
   return {
     name: 'splToken',
-    address: publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+    publicKey: publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
     getErrorFromCode(code: number, cause?: Error) {
       return getSplTokenErrorFromCode(code, this, cause);
     },

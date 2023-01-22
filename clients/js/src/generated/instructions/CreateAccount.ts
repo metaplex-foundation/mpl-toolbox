@@ -71,7 +71,7 @@ export function createAccount(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('splSystem').address;
+  const programId: PublicKey = context.programs.get('splSystem').publicKey;
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;

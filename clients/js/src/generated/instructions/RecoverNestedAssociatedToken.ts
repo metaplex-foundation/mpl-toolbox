@@ -36,7 +36,7 @@ export function recoverNestedAssociatedToken(
 
   // Program ID.
   const programId: PublicKey =
-    context.programs.get('splAssociatedToken').address;
+    context.programs.get('splAssociatedToken').publicKey;
 
   // Resolved accounts.
   const nestedAssociatedAccountAddressAccount =
@@ -49,7 +49,7 @@ export function recoverNestedAssociatedToken(
   const ownerTokenMintAddressAccount = input.ownerTokenMintAddress;
   const walletAddressAccount = input.walletAddress;
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...context.programs.get('splToken').address,
+    ...context.programs.get('splToken').publicKey,
     isWritable: false,
   };
 
