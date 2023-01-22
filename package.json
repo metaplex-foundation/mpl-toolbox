@@ -5,6 +5,7 @@
     "clients/*"
   ],
   "scripts": {
+    "make": "pnpm generate && pnpm build && pnpm test",
     "generate": "pnpm generate:idls && pnpm generate:clients",
     "generate:idls": "node ./infra/shank.cjs",
     "generate:clients": "node ./infra/kinobi.cjs",
