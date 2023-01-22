@@ -6,9 +6,9 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.json",
-    "test": "pnpm build && ava",
+    "test": "ava",
     "bump": "pnpm version",
-    "deploy": "pnpm test && pnpm publish",
+    "deploy": "pnpm build && pnpm test && pnpm publish",
     "postversion": "git tag $npm_package_name@$npm_package_version",
     "build:docs": "typedoc",
     "lint": "eslint --ext js,ts,tsx src",
