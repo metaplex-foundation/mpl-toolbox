@@ -2,10 +2,9 @@ const path = require("path");
 const {
   Kinobi,
   RenderJavaScriptVisitor,
-  SetInstructionAccountDefaultValuesVisitor,
   SetLeafWrappersVisitor,
-  RenameNodesVisitor,
-  SetInstructionBytesCreatedOnChainVisitor,
+  UpdateProgramsVisitor,
+  UpdateInstructionsVisitor,
 } = require("@lorisleiva/kinobi");
 
 // Paths.
@@ -22,9 +21,9 @@ const kinobi = new Kinobi([
   path.join(idlDir, "mpl_token_extras.json"),
 ]);
 
-// Rename nodes.
+// Update programs.
 kinobi.update(
-  new RenameNodesVisitor({
+  new UpdateProgramsVisitor({
     splSystem: { prefix: "Sys" },
     splMemo: { prefix: "Memo" },
     splToken: { prefix: "Tok" },
@@ -34,63 +33,61 @@ kinobi.update(
   })
 );
 
+// Update instructions.
+const ataPdaDefaults = {
+  kind: "pda",
+  pdaAccount: "AssociatedToken",
+  dependency: "root",
+  seeds: {
+    owner: { kind: "account", name: "owner" },
+    mint: { kind: "account", name: "mint" },
+  },
+};
+kinobi.update(
+  new UpdateInstructionsVisitor({
+    TransferSol: {
+      accounts: {
+        source: { defaultsTo: { kind: "identity" } },
+      },
+    },
+    TransferAllSol: {
+      accounts: {
+        source: { defaultsTo: { kind: "identity" } },
+      },
+    },
+    MintTokensTo: {
+      accounts: {
+        mintAuthority: { defaultsTo: { kind: "identity" } },
+      },
+    },
+    CreateAccount: {
+      bytesCreatedOnChain: { kind: "arg", name: "space" },
+    },
+    CreateAccountWithRent: {
+      bytesCreatedOnChain: { kind: "arg", name: "space" },
+    },
+    CreateAssociatedToken: {
+      bytesCreatedOnChain: { kind: "account", name: "Token" },
+      accounts: {
+        owner: { defaultsTo: { kind: "identity" } },
+        ata: { defaultsTo: ataPdaDefaults },
+      },
+    },
+    CreateTokenIfMissing: {
+      accounts: {
+        ata: { defaultsTo: ataPdaDefaults },
+        token: { defaultsTo: { kind: "account", name: "ata" } },
+        owner: { defaultsTo: { kind: "identity" } },
+      },
+    },
+  })
+);
+
 // Wrap leaves.
 kinobi.update(
   new SetLeafWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
     "splSystem.TransferSol.amount": { kind: "SolAmount" },
-  })
-);
-
-// Set default values for instruction accounts.
-kinobi.update(
-  new SetInstructionAccountDefaultValuesVisitor([
-    { instruction: "TransferSol", account: "source", kind: "identity" },
-    { instruction: "TransferAllSol", account: "source", kind: "identity" },
-    { instruction: "MintTokensTo", account: "mintAuthority", kind: "identity" },
-    {
-      instruction: "CreateAssociatedToken",
-      account: "owner",
-      kind: "identity",
-    },
-    {
-      instruction: "CreateAssociatedToken",
-      account: "ata",
-      kind: "pda",
-      pdaAccount: "AssociatedToken",
-      dependency: "root",
-      seeds: {
-        owner: { kind: "account", name: "owner" },
-        mint: { kind: "account", name: "mint" },
-      },
-    },
-    {
-      instruction: "CreateTokenIfMissing",
-      account: "ata",
-      kind: "pda",
-      pdaAccount: "AssociatedToken",
-      dependency: "root",
-      seeds: {
-        owner: { kind: "account", name: "owner" },
-        mint: { kind: "account", name: "mint" },
-      },
-    },
-    {
-      instruction: "CreateTokenIfMissing",
-      account: "token",
-      kind: "account",
-      name: "ata",
-    },
-    { instruction: "CreateTokenIfMissing", account: "owner", kind: "identity" },
-  ])
-);
-
-// Set instruction bytes created on chain.
-kinobi.update(
-  new SetInstructionBytesCreatedOnChainVisitor({
-    CreateAccount: { kind: "arg", name: "space" },
-    CreateAccountWithRent: { kind: "arg", name: "space" },
-    CreateAssociatedToken: { kind: "account", name: "Token" },
   })
 );
 
