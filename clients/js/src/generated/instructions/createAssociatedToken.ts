@@ -16,7 +16,7 @@ import {
   checkForIsWritableOverride as isWritable,
   publicKey,
 } from '@lorisleiva/js-core';
-import { findAssociatedTokenPda } from '../..';
+import { findAssociatedTokenPda } from '../../hooked';
 import { getTokenSize } from '../accounts';
 
 // Accounts.

@@ -1,6 +1,6 @@
 export * from './generated';
+export * from './hooked';
 
-export * from './AssociatedToken';
 export * from './CreateMint';
 export * from './CreateToken';
 export * from './plugin';

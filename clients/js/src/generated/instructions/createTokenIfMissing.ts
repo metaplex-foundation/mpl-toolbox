@@ -17,7 +17,7 @@ import {
   mapSerializer,
   publicKey,
 } from '@lorisleiva/js-core';
-import { findAssociatedTokenPda } from '../..';
+import { findAssociatedTokenPda } from '../../hooked';
 
 // Accounts.
 export type CreateTokenIfMissingInstructionAccounts = {
