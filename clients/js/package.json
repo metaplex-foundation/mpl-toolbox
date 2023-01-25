@@ -9,7 +9,6 @@
     "test": "ava",
     "bump": "pnpm version",
     "deploy": "pnpm build && pnpm test && pnpm publish",
-    "postversion": "git tag $npm_package_name@$npm_package_version",
     "build:docs": "typedoc",
     "lint": "eslint --ext js,ts,tsx src",
     "lint:fix": "eslint --fix --ext js,ts,tsx src",
