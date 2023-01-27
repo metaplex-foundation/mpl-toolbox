@@ -45,7 +45,7 @@ export function getRevokeTokenDelegateInstructionDataSerializer(
       'RevokeTokenDelegateInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 5, ...value } as RevokeTokenDelegateInstructionData)
+      ({ ...value, discriminator: 5 } as RevokeTokenDelegateInstructionData)
   ) as Serializer<
     RevokeTokenDelegateInstructionArgs,
     RevokeTokenDelegateInstructionData

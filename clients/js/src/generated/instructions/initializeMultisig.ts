@@ -52,7 +52,7 @@ export function getInitializeMultisigInstructionDataSerializer(
       'InitializeMultisigInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 2, ...value } as InitializeMultisigInstructionData)
+      ({ ...value, discriminator: 2 } as InitializeMultisigInstructionData)
   ) as Serializer<
     InitializeMultisigInstructionArgs,
     InitializeMultisigInstructionData

@@ -61,7 +61,7 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
       'CreateTokenIfMissingInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 0, ...value } as CreateTokenIfMissingInstructionData)
+      ({ ...value, discriminator: 0 } as CreateTokenIfMissingInstructionData)
   ) as Serializer<
     CreateTokenIfMissingInstructionArgs,
     CreateTokenIfMissingInstructionData

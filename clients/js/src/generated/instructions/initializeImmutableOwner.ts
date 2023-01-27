@@ -45,8 +45,8 @@ export function getInitializeImmutableOwnerInstructionDataSerializer(
     ),
     (value) =>
       ({
-        discriminator: 22,
         ...value,
+        discriminator: 22,
       } as InitializeImmutableOwnerInstructionData)
   ) as Serializer<
     InitializeImmutableOwnerInstructionArgs,

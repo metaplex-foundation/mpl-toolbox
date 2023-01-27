@@ -48,7 +48,7 @@ export function getTransferTokensInstructionDataSerializer(
       ],
       'TransferTokensInstructionArgs'
     ),
-    (value) => ({ discriminator: 3, ...value } as TransferTokensInstructionData)
+    (value) => ({ ...value, discriminator: 3 } as TransferTokensInstructionData)
   ) as Serializer<TransferTokensInstructionArgs, TransferTokensInstructionData>;
 }
 

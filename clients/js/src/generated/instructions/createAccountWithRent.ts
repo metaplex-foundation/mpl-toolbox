@@ -61,7 +61,7 @@ export function getCreateAccountWithRentInstructionDataSerializer(
       'CreateAccountWithRentInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 0, ...value } as CreateAccountWithRentInstructionData)
+      ({ ...value, discriminator: 0 } as CreateAccountWithRentInstructionData)
   ) as Serializer<
     CreateAccountWithRentInstructionArgs,
     CreateAccountWithRentInstructionData

@@ -57,7 +57,7 @@ export function getInitializeMintInstructionDataSerializer(
       ],
       'InitializeMintInstructionArgs'
     ),
-    (value) => ({ discriminator: 0, ...value } as InitializeMintInstructionData)
+    (value) => ({ ...value, discriminator: 0 } as InitializeMintInstructionData)
   ) as Serializer<InitializeMintInstructionArgs, InitializeMintInstructionData>;
 }
 

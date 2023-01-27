@@ -42,7 +42,7 @@ export function getCloseTokenInstructionDataSerializer(
       [['discriminator', s.u8]],
       'CloseTokenInstructionArgs'
     ),
-    (value) => ({ discriminator: 9, ...value } as CloseTokenInstructionData)
+    (value) => ({ ...value, discriminator: 9 } as CloseTokenInstructionData)
   ) as Serializer<CloseTokenInstructionArgs, CloseTokenInstructionData>;
 }
 

@@ -49,7 +49,7 @@ export function getTransferSolInstructionDataSerializer(
       ],
       'TransferSolInstructionArgs'
     ),
-    (value) => ({ discriminator: 2, ...value } as TransferSolInstructionData)
+    (value) => ({ ...value, discriminator: 2 } as TransferSolInstructionData)
   ) as Serializer<TransferSolInstructionArgs, TransferSolInstructionData>;
 }
 

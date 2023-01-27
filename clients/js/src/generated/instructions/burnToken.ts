@@ -48,7 +48,7 @@ export function getBurnTokenInstructionDataSerializer(
       ],
       'BurnTokenInstructionArgs'
     ),
-    (value) => ({ discriminator: 8, ...value } as BurnTokenInstructionData)
+    (value) => ({ ...value, discriminator: 8 } as BurnTokenInstructionData)
   ) as Serializer<BurnTokenInstructionArgs, BurnTokenInstructionData>;
 }
 

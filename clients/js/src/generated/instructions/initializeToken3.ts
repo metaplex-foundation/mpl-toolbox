@@ -51,7 +51,7 @@ export function getInitializeToken3InstructionDataSerializer(
       'InitializeToken3InstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 18, ...value } as InitializeToken3InstructionData)
+      ({ ...value, discriminator: 18 } as InitializeToken3InstructionData)
   ) as Serializer<
     InitializeToken3InstructionArgs,
     InitializeToken3InstructionData

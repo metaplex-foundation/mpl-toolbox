@@ -40,7 +40,7 @@ export function getSyncNativeInstructionDataSerializer(
       [['discriminator', s.u8]],
       'SyncNativeInstructionArgs'
     ),
-    (value) => ({ discriminator: 17, ...value } as SyncNativeInstructionData)
+    (value) => ({ ...value, discriminator: 17 } as SyncNativeInstructionData)
   ) as Serializer<SyncNativeInstructionArgs, SyncNativeInstructionData>;
 }
 

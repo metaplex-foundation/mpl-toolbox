@@ -56,7 +56,7 @@ export function getInitializeMint2InstructionDataSerializer(
       'InitializeMint2InstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 20, ...value } as InitializeMint2InstructionData)
+      ({ ...value, discriminator: 20 } as InitializeMint2InstructionData)
   ) as Serializer<
     InitializeMint2InstructionArgs,
     InitializeMint2InstructionData

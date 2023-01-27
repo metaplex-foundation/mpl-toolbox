@@ -44,7 +44,7 @@ export function getGetTokenDataSizeInstructionDataSerializer(
       'GetTokenDataSizeInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 21, ...value } as GetTokenDataSizeInstructionData)
+      ({ ...value, discriminator: 21 } as GetTokenDataSizeInstructionData)
   ) as Serializer<
     GetTokenDataSizeInstructionArgs,
     GetTokenDataSizeInstructionData

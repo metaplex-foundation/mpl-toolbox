@@ -58,7 +58,7 @@ export function getTransferTokensCheckedInstructionDataSerializer(
       'TransferTokensCheckedInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 12, ...value } as TransferTokensCheckedInstructionData)
+      ({ ...value, discriminator: 12 } as TransferTokensCheckedInstructionData)
   ) as Serializer<
     TransferTokensCheckedInstructionArgs,
     TransferTokensCheckedInstructionData

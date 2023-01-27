@@ -50,7 +50,7 @@ export function getAmountToUiAmountInstructionDataSerializer(
       'AmountToUiAmountInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 23, ...value } as AmountToUiAmountInstructionData)
+      ({ ...value, discriminator: 23 } as AmountToUiAmountInstructionData)
   ) as Serializer<
     AmountToUiAmountInstructionArgs,
     AmountToUiAmountInstructionData

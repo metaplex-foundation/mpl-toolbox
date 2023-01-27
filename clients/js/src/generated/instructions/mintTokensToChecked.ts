@@ -57,7 +57,7 @@ export function getMintTokensToCheckedInstructionDataSerializer(
       'MintTokensToCheckedInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 14, ...value } as MintTokensToCheckedInstructionData)
+      ({ ...value, discriminator: 14 } as MintTokensToCheckedInstructionData)
   ) as Serializer<
     MintTokensToCheckedInstructionArgs,
     MintTokensToCheckedInstructionData

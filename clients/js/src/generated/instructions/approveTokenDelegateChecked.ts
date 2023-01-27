@@ -59,8 +59,8 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(
     ),
     (value) =>
       ({
-        discriminator: 13,
         ...value,
+        discriminator: 13,
       } as ApproveTokenDelegateCheckedInstructionData)
   ) as Serializer<
     ApproveTokenDelegateCheckedInstructionArgs,

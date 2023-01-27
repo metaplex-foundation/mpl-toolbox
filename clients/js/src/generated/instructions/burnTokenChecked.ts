@@ -57,7 +57,7 @@ export function getBurnTokenCheckedInstructionDataSerializer(
       'BurnTokenCheckedInstructionArgs'
     ),
     (value) =>
-      ({ discriminator: 15, ...value } as BurnTokenCheckedInstructionData)
+      ({ ...value, discriminator: 15 } as BurnTokenCheckedInstructionData)
   ) as Serializer<
     BurnTokenCheckedInstructionArgs,
     BurnTokenCheckedInstructionData
