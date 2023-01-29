@@ -6,6 +6,7 @@ import {
   publicKey,
   RpcResultWithContext,
   createAmount,
+  RpcCallOptions,
 } from '@lorisleiva/js-core';
 
 export type FindLargestTokensResult = Array<{
@@ -15,7 +16,8 @@ export type FindLargestTokensResult = Array<{
 
 export const findLargestTokens = async (
   context: Pick<Context, 'rpc' | 'serializer'>,
-  mint: PublicKey
+  mint: PublicKey,
+  options: RpcCallOptions = {}
 ): Promise<FindLargestTokensResult> => {
   const result = await context.rpc.call<
     RpcResultWithContext<
@@ -25,7 +27,7 @@ export const findLargestTokens = async (
         decimals: number;
       }>
     >
-  >('getTokenLargestAccounts', [base58PublicKey(mint)]);
+  >('getTokenLargestAccounts', [base58PublicKey(mint)], options);
   return result.value.map(({ address, amount, decimals }) => ({
     publicKey: publicKey(address),
     amount: createAmount(amount, 'splToken', decimals),
