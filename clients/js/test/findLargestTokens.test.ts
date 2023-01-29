@@ -1,11 +1,7 @@
-import {
-  generateSigner,
-  tokenAmount,
-  transactionBuilder,
-} from '@lorisleiva/js-core';
+import { tokenAmount } from '@lorisleiva/js-core';
 import test from 'ava';
-import { createToken, findLargestTokens, mintTokensTo } from '../src';
-import { createMetaplex, createMint } from './_setup';
+import { findLargestTokens } from '../src';
+import { createMetaplex, createMint, createToken } from './_setup';
 
 test('it gets all token accounts ordered by descending amounts', async (t) => {
   // Given an existing mint.
@@ -13,30 +9,10 @@ test('it gets all token accounts ordered by descending amounts', async (t) => {
   const mint = await createMint(mx);
 
   // And a token account A with 1 token.
-  const tokenA = generateSigner(mx);
-  await transactionBuilder(mx)
-    .add(createToken(mx, { mint: mint.publicKey, token: tokenA }))
-    .add(
-      mintTokensTo(mx, {
-        mint: mint.publicKey,
-        token: tokenA.publicKey,
-        amount: 1,
-      })
-    )
-    .sendAndConfirm();
+  const tokenA = await createToken(mx, { mint: mint.publicKey, amount: 1 });
 
   // And a token account B with 10 tokens.
-  const tokenB = generateSigner(mx);
-  await transactionBuilder(mx)
-    .add(createToken(mx, { mint: mint.publicKey, token: tokenB }))
-    .add(
-      mintTokensTo(mx, {
-        mint: mint.publicKey,
-        token: tokenB.publicKey,
-        amount: 10,
-      })
-    )
-    .sendAndConfirm();
+  const tokenB = await createToken(mx, { mint: mint.publicKey, amount: 10 });
 
   // When we find the largest tokens for the mint.
   const tokens = await findLargestTokens(mx, mint.publicKey);

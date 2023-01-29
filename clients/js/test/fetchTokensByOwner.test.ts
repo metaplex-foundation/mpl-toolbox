@@ -10,4 +10,5 @@ test.skip('it fetches all token account owned by a given owner', async (t) => {
 
   // When
   const foo = await fetchTokensByOwner(mx, owner.publicKey);
+  console.log(foo);
 });
