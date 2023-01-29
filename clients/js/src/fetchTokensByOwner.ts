@@ -1,5 +1,6 @@
 import {
   base58PublicKey,
+  base64,
   Context,
   lamports,
   PublicKey,
@@ -33,11 +34,10 @@ export const fetchTokensByOwner = async (
     [base58PublicKey(owner), { programId: base58PublicKey(splToken) }],
     { ...options, extra: { ...options.extra, encoding: 'base64' } }
   );
-  console.log({ result: result.value[0].account.data });
   return result.value.map(({ pubkey, account }) =>
     deserializeToken(context, {
       ...account,
-      data: Uint8Array.from(atob(account.data[0]), (c) => c.charCodeAt(0)),
+      data: base64.serialize(account.data[0]),
       publicKey: publicKey(pubkey),
       owner: publicKey(account.owner),
       lamports: lamports(account.lamports),
