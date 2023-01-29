@@ -3,6 +3,7 @@ import {
   createMetaplex as baseCreateMetaplex,
   generateSigner,
   Metaplex,
+  Option,
   PublicKey,
   Signer,
   transactionBuilder,
@@ -17,10 +18,17 @@ import {
 export const createMetaplex = async () =>
   (await baseCreateMetaplex()).use(mplEssentials());
 
-export const createMint = async (metaplex: Metaplex): Promise<Signer> => {
+export const createMint = async (
+  metaplex: Metaplex,
+  input: {
+    decimals?: number;
+    mintAuthority?: PublicKey;
+    freezeAuthority?: Option<PublicKey>;
+  } = {}
+): Promise<Signer> => {
   const mint = generateSigner(metaplex);
   await transactionBuilder(metaplex)
-    .add(baseCreateMint(metaplex, { mint }))
+    .add(baseCreateMint(metaplex, { mint, ...input }))
     .sendAndConfirm();
   return mint;
 };
@@ -54,4 +62,28 @@ export const createToken = async (
   }
   await builder.sendAndConfirm();
   return token;
+};
+
+export const createMintAndToken = async (
+  metaplex: Metaplex,
+  input: {
+    decimals?: number;
+    mintAuthority?: Signer;
+    freezeAuthority?: Option<PublicKey>;
+    owner?: PublicKey;
+    amount?: number | bigint;
+  } = {}
+): Promise<[Signer, Signer]> => {
+  const mint = await createMint(metaplex, {
+    decimals: input.decimals,
+    mintAuthority: input.mintAuthority?.publicKey,
+    freezeAuthority: input.freezeAuthority,
+  });
+  const token = await createToken(metaplex, {
+    mint: mint.publicKey,
+    amount: input.amount,
+    owner: input.owner,
+    mintAuthority: input.mintAuthority,
+  });
+  return [mint, token];
 };
