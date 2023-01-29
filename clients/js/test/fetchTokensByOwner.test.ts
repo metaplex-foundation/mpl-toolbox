@@ -1,7 +1,12 @@
 import { generateSigner } from '@lorisleiva/js-core';
 import test from 'ava';
-import { fetchTokensByOwner } from '../src';
-import { createMetaplex, createMintAndToken } from './_setup';
+import { fetchTokensByOwner, fetchTokensByOwnerAndMint } from '../src';
+import {
+  createMetaplex,
+  createMint,
+  createMintAndToken,
+  createToken,
+} from './_setup';
 
 test('it fetches all token account owned by a given owner', async (t) => {
   // Given an existing owner A.
@@ -22,7 +27,35 @@ test('it fetches all token account owned by a given owner', async (t) => {
   // Then we only get back the two tokens owned by owner A.
   t.is(tokens.length, 2);
   t.deepEqual(
-    tokens.map((token) => token.publicKey),
-    [tokenA.publicKey, tokenB.publicKey]
+    tokens.map((token) => token.publicKey).sort(),
+    [tokenA.publicKey, tokenB.publicKey].sort()
+  );
+});
+
+test('it fetches all token account owned by a given mint/owner pair', async (t) => {
+  // Given two owners A and B and two mints U and V.
+  const mx = await createMetaplex();
+  const ownerA = generateSigner(mx).publicKey;
+  const ownerB = generateSigner(mx).publicKey;
+  const mintU = (await createMint(mx)).publicKey;
+  const mintV = (await createMint(mx)).publicKey;
+
+  // And owner A owns two mint U accounts and one mint V account.
+  const tokenAU1 = await createToken(mx, { mint: mintU, owner: ownerA });
+  const tokenAU2 = await createToken(mx, { mint: mintU, owner: ownerA });
+  await createToken(mx, { mint: mintV, owner: ownerA });
+
+  // And owner A owns one mint U account and one mint V account.
+  await createToken(mx, { mint: mintU, owner: ownerB });
+  await createToken(mx, { mint: mintV, owner: ownerB });
+
+  // When we fetch all mint U tokens owned by owner A.
+  const tokens = await fetchTokensByOwnerAndMint(mx, ownerA, mintU);
+
+  // Then we only get back the two tokens owned by owner A from mint U.
+  t.is(tokens.length, 2);
+  t.deepEqual(
+    tokens.map((token) => token.publicKey).sort(),
+    [tokenAU1.publicKey, tokenAU2.publicKey].sort()
   );
 });

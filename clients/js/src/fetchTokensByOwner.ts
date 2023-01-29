@@ -13,9 +13,12 @@ import { deserializeToken, Token } from './generated';
 export const fetchTokensByOwner = async (
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
   owner: PublicKey,
-  options: RpcCallOptions = {}
+  options: RpcCallOptions & { mint?: PublicKey } = {}
 ): Promise<Array<Token>> => {
   const splToken = context.programs.get('splToken').publicKey;
+  const filter = options.mint
+    ? { mint: base58PublicKey(options.mint) }
+    : { programId: base58PublicKey(splToken) };
   const result = await context.rpc.call<
     RpcResultWithContext<
       Array<{
@@ -29,11 +32,10 @@ export const fetchTokensByOwner = async (
         };
       }>
     >
-  >(
-    'getTokenAccountsByOwner',
-    [base58PublicKey(owner), { programId: base58PublicKey(splToken) }],
-    { ...options, extra: { ...options.extra, encoding: 'base64' } }
-  );
+  >('getTokenAccountsByOwner', [base58PublicKey(owner), filter], {
+    ...options,
+    extra: { ...options.extra, encoding: 'base64' },
+  });
   return result.value.map(({ pubkey, account }) =>
     deserializeToken(context, {
       ...account,
@@ -44,3 +46,11 @@ export const fetchTokensByOwner = async (
     })
   );
 };
+
+export const fetchTokensByOwnerAndMint = (
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  owner: PublicKey,
+  mint: PublicKey,
+  options: RpcCallOptions = {}
+): Promise<Array<Token>> =>
+  fetchTokensByOwner(context, owner, { ...options, mint });

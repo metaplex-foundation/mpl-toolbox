@@ -19,11 +19,8 @@ test('it gets all token accounts ordered by descending amounts', async (t) => {
 
   // Then we receive a list of token addresses with their amounts
   // such that token B is first and token A is second.
-  t.deepEqual(
-    tokens.sort(),
-    [
-      { publicKey: tokenB.publicKey, amount: tokenAmount(10) },
-      { publicKey: tokenA.publicKey, amount: tokenAmount(1) },
-    ].sort()
-  );
+  t.deepEqual(tokens, [
+    { publicKey: tokenB.publicKey, amount: tokenAmount(10) },
+    { publicKey: tokenA.publicKey, amount: tokenAmount(1) },
+  ]);
 });
