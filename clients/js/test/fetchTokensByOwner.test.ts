@@ -1,4 +1,4 @@
-import { generateSigner } from '@lorisleiva/js-core';
+import { base58PublicKey, generateSigner } from '@lorisleiva/js-core';
 import test from 'ava';
 import { fetchTokensByOwner, fetchTokensByOwnerAndMint } from '../src';
 import {
@@ -27,8 +27,11 @@ test('it fetches all token account owned by a given owner', async (t) => {
   // Then we only get back the two tokens owned by owner A.
   t.is(tokens.length, 2);
   t.deepEqual(
-    tokens.map((token) => token.publicKey).sort(),
-    [tokenA.publicKey, tokenB.publicKey].sort()
+    tokens.map((token) => base58PublicKey(token.publicKey)).sort(),
+    [
+      base58PublicKey(tokenA.publicKey),
+      base58PublicKey(tokenB.publicKey),
+    ].sort()
   );
 });
 
@@ -55,7 +58,10 @@ test('it fetches all token account owned by a given mint/owner pair', async (t) 
   // Then we only get back the two tokens owned by owner A from mint U.
   t.is(tokens.length, 2);
   t.deepEqual(
-    tokens.map((token) => token.publicKey).sort(),
-    [tokenAU1.publicKey, tokenAU2.publicKey].sort()
+    tokens.map((token) => base58PublicKey(token.publicKey)).sort(),
+    [
+      base58PublicKey(tokenAU1.publicKey),
+      base58PublicKey(tokenAU2.publicKey),
+    ].sort()
   );
 });
