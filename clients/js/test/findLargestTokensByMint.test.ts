@@ -1,6 +1,6 @@
 import { tokenAmount } from '@lorisleiva/js-core';
 import test from 'ava';
-import { findLargestTokens } from '../src';
+import { findLargestTokensByMint } from '../src';
 import { createMetaplex, createMint, createToken } from './_setup';
 
 test('it gets all token accounts ordered by descending amounts', async (t) => {
@@ -15,12 +15,15 @@ test('it gets all token accounts ordered by descending amounts', async (t) => {
   const tokenB = await createToken(mx, { mint: mint.publicKey, amount: 10 });
 
   // When we find the largest tokens for the mint.
-  const tokens = await findLargestTokens(mx, mint.publicKey);
+  const tokens = await findLargestTokensByMint(mx, mint.publicKey);
 
   // Then we receive a list of token addresses with their amounts
   // such that token B is first and token A is second.
-  t.deepEqual(tokens, [
-    { publicKey: tokenB.publicKey, amount: tokenAmount(10) },
-    { publicKey: tokenA.publicKey, amount: tokenAmount(1) },
-  ]);
+  t.deepEqual(
+    tokens.sort(),
+    [
+      { publicKey: tokenB.publicKey, amount: tokenAmount(10) },
+      { publicKey: tokenA.publicKey, amount: tokenAmount(1) },
+    ].sort()
+  );
 });

@@ -9,16 +9,16 @@ import {
   RpcCallOptions,
 } from '@lorisleiva/js-core';
 
-export type FindLargestTokensResult = Array<{
+export type FindLargestTokensByMintResult = Array<{
   publicKey: PublicKey;
   amount: Amount<'splToken'>;
 }>;
 
-export const findLargestTokens = async (
+export const findLargestTokensByMint = async (
   context: Pick<Context, 'rpc' | 'serializer'>,
   mint: PublicKey,
   options: RpcCallOptions = {}
-): Promise<FindLargestTokensResult> => {
+): Promise<FindLargestTokensByMintResult> => {
   const result = await context.rpc.call<
     RpcResultWithContext<
       Array<{
