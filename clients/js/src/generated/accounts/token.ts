@@ -89,9 +89,8 @@ export async function safeFetchAllToken(
     );
 }
 
-export async function getTokenGpaBuilder(
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
-  publicKey: PublicKey
+export function getTokenGpaBuilder(
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
   return gpaBuilder<{

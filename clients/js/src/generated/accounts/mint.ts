@@ -82,9 +82,8 @@ export async function safeFetchAllMint(
     );
 }
 
-export async function getMintGpaBuilder(
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
-  publicKey: PublicKey
+export function getMintGpaBuilder(
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
   return gpaBuilder<{

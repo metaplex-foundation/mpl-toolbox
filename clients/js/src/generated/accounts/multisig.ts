@@ -74,9 +74,8 @@ export async function safeFetchAllMultisig(
     );
 }
 
-export async function getMultisigGpaBuilder(
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
-  publicKey: PublicKey
+export function getMultisigGpaBuilder(
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
   return gpaBuilder<{

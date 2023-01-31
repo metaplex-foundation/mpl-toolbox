@@ -69,9 +69,8 @@ export async function safeFetchAllDummyChallenge(
     );
 }
 
-export async function getDummyChallengeGpaBuilder(
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
-  publicKey: PublicKey
+export function getDummyChallengeGpaBuilder(
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
   return gpaBuilder<{ authority: PublicKey }>(
