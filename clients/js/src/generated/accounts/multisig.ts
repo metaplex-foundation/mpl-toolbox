@@ -89,7 +89,7 @@ export async function getMultisigGpaBuilder(
     ['n', s.u8],
     ['isInitialized', s.bool()],
     ['signers', s.array(s.publicKey, 11)],
-  ]);
+  ]).whereSize(355);
 }
 
 export function deserializeMultisig(

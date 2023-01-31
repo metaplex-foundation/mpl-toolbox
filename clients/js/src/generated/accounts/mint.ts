@@ -99,7 +99,7 @@ export async function getMintGpaBuilder(
     ['decimals', s.u8],
     ['isInitialized', s.bool()],
     ['freezeAuthority', s.fixedOption(s.publicKey, s.u32)],
-  ]);
+  ]).whereSize(82);
 }
 
 export function deserializeMint(

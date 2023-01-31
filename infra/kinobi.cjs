@@ -3,8 +3,9 @@ const {
   Kinobi,
   RenderJavaScriptVisitor,
   SetLeafWrappersVisitor,
-  UpdateProgramsVisitor,
+  UpdateAccountsVisitor,
   UpdateInstructionsVisitor,
+  UpdateProgramsVisitor,
 } = require("@lorisleiva/kinobi");
 
 // Paths.
@@ -30,6 +31,15 @@ kinobi.update(
     splAssociatedToken: { prefix: "Ata" },
     mplSystemExtras: { prefix: "SysEx" },
     mplTokenExtras: { prefix: "TokEx" },
+  })
+);
+
+// Update accounts.
+kinobi.update(
+  new UpdateAccountsVisitor({
+    "splToken.mint": { discriminator: { kind: "size" } },
+    "splToken.token": { discriminator: { kind: "size" } },
+    "splToken.multisig": { discriminator: { kind: "size" } },
   })
 );
 

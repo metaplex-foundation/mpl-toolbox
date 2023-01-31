@@ -112,7 +112,7 @@ export async function getTokenGpaBuilder(
     ['isNative', s.fixedOption(s.u64, s.u32)],
     ['delegatedAmount', s.u64],
     ['closeAuthority', s.fixedOption(s.publicKey, s.u32)],
-  ]);
+  ]).whereSize(165);
 }
 
 export function deserializeToken(
