@@ -11,9 +11,12 @@ import {
   Context,
   PublicKey,
   RpcAccount,
+  RpcGetAccountOptions,
+  RpcGetAccountsOptions,
   Serializer,
   assertAccountExists,
   deserializeAccount,
+  gpaBuilder,
 } from '@lorisleiva/js-core';
 
 export type Multisig = Account<MultisigAccountData>;
@@ -27,21 +30,66 @@ export type MultisigAccountData = {
 
 export async function fetchMultisig(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  publicKey: PublicKey
+  publicKey: PublicKey,
+  options?: RpcGetAccountOptions
 ): Promise<Multisig> {
-  const maybeAccount = await context.rpc.getAccount(publicKey);
+  const maybeAccount = await context.rpc.getAccount(publicKey, options);
   assertAccountExists(maybeAccount, 'Multisig');
   return deserializeMultisig(context, maybeAccount);
 }
 
 export async function safeFetchMultisig(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  publicKey: PublicKey
+  publicKey: PublicKey,
+  options?: RpcGetAccountOptions
 ): Promise<Multisig | null> {
-  const maybeAccount = await context.rpc.getAccount(publicKey);
+  const maybeAccount = await context.rpc.getAccount(publicKey, options);
   return maybeAccount.exists
     ? deserializeMultisig(context, maybeAccount)
     : null;
+}
+
+export async function fetchAllMultisig(
+  context: Pick<Context, 'rpc' | 'serializer'>,
+  publicKeys: PublicKey[],
+  options?: RpcGetAccountsOptions
+): Promise<Multisig[]> {
+  const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
+  return maybeAccounts.map((maybeAccount) => {
+    assertAccountExists(maybeAccount, 'Multisig');
+    return deserializeMultisig(context, maybeAccount);
+  });
+}
+
+export async function safeFetchAllMultisig(
+  context: Pick<Context, 'rpc' | 'serializer'>,
+  publicKeys: PublicKey[],
+  options?: RpcGetAccountsOptions
+): Promise<Multisig[]> {
+  const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
+  return maybeAccounts
+    .filter((maybeAccount) => maybeAccount.exists)
+    .map((maybeAccount) =>
+      deserializeMultisig(context, maybeAccount as RpcAccount)
+    );
+}
+
+export async function getMultisigGpaBuilder(
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  publicKey: PublicKey
+) {
+  const s = context.serializer;
+  return gpaBuilder<{
+    m: number;
+    n: number;
+    isInitialized: boolean;
+    signers: Array<PublicKey>;
+  }>(context, context.programs.get('splToken').publicKey, [
+    ['m', s.u8],
+    ['n', s.u8],
+    ['isInitialized', s.bool()],
+    ['signers', s.array(s.publicKey, 11)],
+  ]);
 }
 
 export function deserializeMultisig(

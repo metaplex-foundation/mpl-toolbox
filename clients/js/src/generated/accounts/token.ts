@@ -12,9 +12,12 @@ import {
   Option,
   PublicKey,
   RpcAccount,
+  RpcGetAccountOptions,
+  RpcGetAccountsOptions,
   Serializer,
   assertAccountExists,
   deserializeAccount,
+  gpaBuilder,
 } from '@lorisleiva/js-core';
 import { TokenState, getTokenStateSerializer } from '../types';
 
@@ -44,19 +47,72 @@ export type TokenAccountArgs = {
 
 export async function fetchToken(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  publicKey: PublicKey
+  publicKey: PublicKey,
+  options?: RpcGetAccountOptions
 ): Promise<Token> {
-  const maybeAccount = await context.rpc.getAccount(publicKey);
+  const maybeAccount = await context.rpc.getAccount(publicKey, options);
   assertAccountExists(maybeAccount, 'Token');
   return deserializeToken(context, maybeAccount);
 }
 
 export async function safeFetchToken(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  publicKey: PublicKey
+  publicKey: PublicKey,
+  options?: RpcGetAccountOptions
 ): Promise<Token | null> {
-  const maybeAccount = await context.rpc.getAccount(publicKey);
+  const maybeAccount = await context.rpc.getAccount(publicKey, options);
   return maybeAccount.exists ? deserializeToken(context, maybeAccount) : null;
+}
+
+export async function fetchAllToken(
+  context: Pick<Context, 'rpc' | 'serializer'>,
+  publicKeys: PublicKey[],
+  options?: RpcGetAccountsOptions
+): Promise<Token[]> {
+  const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
+  return maybeAccounts.map((maybeAccount) => {
+    assertAccountExists(maybeAccount, 'Token');
+    return deserializeToken(context, maybeAccount);
+  });
+}
+
+export async function safeFetchAllToken(
+  context: Pick<Context, 'rpc' | 'serializer'>,
+  publicKeys: PublicKey[],
+  options?: RpcGetAccountsOptions
+): Promise<Token[]> {
+  const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
+  return maybeAccounts
+    .filter((maybeAccount) => maybeAccount.exists)
+    .map((maybeAccount) =>
+      deserializeToken(context, maybeAccount as RpcAccount)
+    );
+}
+
+export async function getTokenGpaBuilder(
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  publicKey: PublicKey
+) {
+  const s = context.serializer;
+  return gpaBuilder<{
+    mint: PublicKey;
+    owner: PublicKey;
+    amount: number | bigint;
+    delegate: Option<PublicKey>;
+    state: TokenState;
+    isNative: Option<number | bigint>;
+    delegatedAmount: number | bigint;
+    closeAuthority: Option<PublicKey>;
+  }>(context, context.programs.get('splToken').publicKey, [
+    ['mint', s.publicKey],
+    ['owner', s.publicKey],
+    ['amount', s.u64],
+    ['delegate', s.fixedOption(s.publicKey, s.u32)],
+    ['state', getTokenStateSerializer(context)],
+    ['isNative', s.fixedOption(s.u64, s.u32)],
+    ['delegatedAmount', s.u64],
+    ['closeAuthority', s.fixedOption(s.publicKey, s.u32)],
+  ]);
 }
 
 export function deserializeToken(

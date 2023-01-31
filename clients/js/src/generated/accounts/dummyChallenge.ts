@@ -11,9 +11,12 @@ import {
   Context,
   PublicKey,
   RpcAccount,
+  RpcGetAccountOptions,
+  RpcGetAccountsOptions,
   Serializer,
   assertAccountExists,
   deserializeAccount,
+  gpaBuilder,
 } from '@lorisleiva/js-core';
 
 export type DummyChallenge = Account<DummyChallengeAccountData>;
@@ -22,21 +25,60 @@ export type DummyChallengeAccountData = { authority: PublicKey };
 
 export async function fetchDummyChallenge(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  publicKey: PublicKey
+  publicKey: PublicKey,
+  options?: RpcGetAccountOptions
 ): Promise<DummyChallenge> {
-  const maybeAccount = await context.rpc.getAccount(publicKey);
+  const maybeAccount = await context.rpc.getAccount(publicKey, options);
   assertAccountExists(maybeAccount, 'DummyChallenge');
   return deserializeDummyChallenge(context, maybeAccount);
 }
 
 export async function safeFetchDummyChallenge(
   context: Pick<Context, 'rpc' | 'serializer'>,
-  publicKey: PublicKey
+  publicKey: PublicKey,
+  options?: RpcGetAccountOptions
 ): Promise<DummyChallenge | null> {
-  const maybeAccount = await context.rpc.getAccount(publicKey);
+  const maybeAccount = await context.rpc.getAccount(publicKey, options);
   return maybeAccount.exists
     ? deserializeDummyChallenge(context, maybeAccount)
     : null;
+}
+
+export async function fetchAllDummyChallenge(
+  context: Pick<Context, 'rpc' | 'serializer'>,
+  publicKeys: PublicKey[],
+  options?: RpcGetAccountsOptions
+): Promise<DummyChallenge[]> {
+  const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
+  return maybeAccounts.map((maybeAccount) => {
+    assertAccountExists(maybeAccount, 'DummyChallenge');
+    return deserializeDummyChallenge(context, maybeAccount);
+  });
+}
+
+export async function safeFetchAllDummyChallenge(
+  context: Pick<Context, 'rpc' | 'serializer'>,
+  publicKeys: PublicKey[],
+  options?: RpcGetAccountsOptions
+): Promise<DummyChallenge[]> {
+  const maybeAccounts = await context.rpc.getAccounts(publicKeys, options);
+  return maybeAccounts
+    .filter((maybeAccount) => maybeAccount.exists)
+    .map((maybeAccount) =>
+      deserializeDummyChallenge(context, maybeAccount as RpcAccount)
+    );
+}
+
+export async function getDummyChallengeGpaBuilder(
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  publicKey: PublicKey
+) {
+  const s = context.serializer;
+  return gpaBuilder<{ authority: PublicKey }>(
+    context,
+    context.programs.get('mplSystemExtras').publicKey,
+    [['authority', s.publicKey]]
+  );
 }
 
 export function deserializeDummyChallenge(
