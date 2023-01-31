@@ -93,25 +93,29 @@ export function getTokenGpaBuilder(
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
-  return gpaBuilder<{
-    mint: PublicKey;
-    owner: PublicKey;
-    amount: number | bigint;
-    delegate: Option<PublicKey>;
-    state: TokenState;
-    isNative: Option<number | bigint>;
-    delegatedAmount: number | bigint;
-    closeAuthority: Option<PublicKey>;
-  }>(context, context.programs.get('splToken').publicKey, [
-    ['mint', s.publicKey],
-    ['owner', s.publicKey],
-    ['amount', s.u64],
-    ['delegate', s.fixedOption(s.publicKey, s.u32)],
-    ['state', getTokenStateSerializer(context)],
-    ['isNative', s.fixedOption(s.u64, s.u32)],
-    ['delegatedAmount', s.u64],
-    ['closeAuthority', s.fixedOption(s.publicKey, s.u32)],
-  ]).whereSize(165);
+  const programId = context.programs.get('splToken').publicKey;
+  return gpaBuilder(context, programId)
+    .registerFields<{
+      mint: PublicKey;
+      owner: PublicKey;
+      amount: number | bigint;
+      delegate: Option<PublicKey>;
+      state: TokenState;
+      isNative: Option<number | bigint>;
+      delegatedAmount: number | bigint;
+      closeAuthority: Option<PublicKey>;
+    }>([
+      ['mint', s.publicKey],
+      ['owner', s.publicKey],
+      ['amount', s.u64],
+      ['delegate', s.fixedOption(s.publicKey, s.u32)],
+      ['state', getTokenStateSerializer(context)],
+      ['isNative', s.fixedOption(s.u64, s.u32)],
+      ['delegatedAmount', s.u64],
+      ['closeAuthority', s.fixedOption(s.publicKey, s.u32)],
+    ])
+    .deserializeUsing<Token>((account) => deserializeToken(context, account))
+    .whereSize(165);
 }
 
 export function deserializeToken(

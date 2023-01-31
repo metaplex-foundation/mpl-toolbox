@@ -1,6 +1,6 @@
 import { generateSigner } from '@lorisleiva/js-test';
 import test from 'ava';
-import { deserializeToken, getTokenGpaBuilder } from '../src';
+import { getTokenGpaBuilder } from '../src';
 import { createMetaplex, createMint, createToken } from './_setup';
 
 test('it can fetch token accounts by owner', async (t) => {
@@ -15,7 +15,7 @@ test('it can fetch token accounts by owner', async (t) => {
   // When we fetch all token accounts owned by owner A.
   const tokens = await getTokenGpaBuilder(mx)
     .whereField('owner', ownerA)
-    .getAndMap((account) => deserializeToken(mx, account));
+    .getDeserialized();
 
   // Then we got the token A only.
   t.deepEqual(tokens[0].publicKey, tokenA.publicKey);

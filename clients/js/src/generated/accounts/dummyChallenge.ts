@@ -73,11 +73,12 @@ export function getDummyChallengeGpaBuilder(
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
-  return gpaBuilder<{ authority: PublicKey }>(
-    context,
-    context.programs.get('mplSystemExtras').publicKey,
-    [['authority', s.publicKey]]
-  );
+  const programId = context.programs.get('mplSystemExtras').publicKey;
+  return gpaBuilder(context, programId)
+    .registerFields<{ authority: PublicKey }>([['authority', s.publicKey]])
+    .deserializeUsing<DummyChallenge>((account) =>
+      deserializeDummyChallenge(context, account)
+    );
 }
 
 export function deserializeDummyChallenge(
