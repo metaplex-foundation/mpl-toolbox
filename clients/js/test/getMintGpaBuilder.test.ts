@@ -1,19 +1,21 @@
-import { defaultPublicKey } from '@lorisleiva/js-test';
+import { generateSigner, some } from '@lorisleiva/js-test';
 import test from 'ava';
 import { deserializeMint, getMintGpaBuilder } from '../src';
 import { createMetaplex, createMint } from './_setup';
 
-test('it TODO', async (t) => {
-  // Given
+test('it can fetch mint accounts by mint authority', async (t) => {
+  // Given two mint accounts such that
+  // one of them has an explicit mint authority.
   const mx = await createMetaplex();
+  const mintAuthority = generateSigner(mx).publicKey;
+  const mint = await createMint(mx, { mintAuthority });
   await createMint(mx);
 
-  // When
-  const mints = await getMintGpaBuilder(mx, defaultPublicKey()).getAndMap(
-    (account) => deserializeMint(mx, account)
-  );
-  console.log(mints);
+  // When we fetch all mint accounts using this mint authority.
+  const mints = await getMintGpaBuilder(mx)
+    .whereField('mintAuthority', some(mintAuthority))
+    .getAndMap((account) => deserializeMint(mx, account));
 
-  // Then
-  t.pass();
+  // Then we got the expected mint account.
+  t.deepEqual(mints[0].publicKey, mint.publicKey);
 });
