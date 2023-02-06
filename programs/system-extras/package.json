@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "build": "cargo build-bpf",
-    "test": "cargo test-bpf"
+    "test": "cargo test-bpf",
+    "deploy": "solana program deploy target/deploy/mpl_system_extras.so --program-id ~/.config/solana/SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG.json"
   }
 }
