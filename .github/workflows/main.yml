@@ -20,12 +20,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Solana
-        uses: ./.github/actions/install-solana
+        uses: .github/actions/install-solana
         with:
           solana_version: ${{ matrix.solana }}
 
       - name: Install Node.js
-        uses: ./.github/actions/install-node
+        uses: .github/actions/install-node
         with:
           node_version: ${{ matrix.node }}
 
