@@ -4,7 +4,6 @@ inputs:
   solana_version:
     description: Version of Solana to install
     required: true
-    default: 1.10.34
 
 runs:
   using: "composite"
@@ -18,7 +17,7 @@ runs:
         key: ${{ runner.os }}-Solana-v${{ inputs.solana_version  }}
 
     - name: Install Solana
-      if: ${{ !env.ACT }} && steps.cache-solana-install.outputs.cache-hit != 'true'
+      if: ${{ !env.ACT }} && steps.cache-solana-install.cache-hit != 'true'
       run: |
         sh -c "$(curl -sSfL https://release.solana.com/v${{ inputs.solana_version }}/install)"
       shell: bash
