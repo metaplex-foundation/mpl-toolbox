@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: program-builds
-          path: **/target/deploy/*.so
+          path: programs/**/target/deploy/*.so
 
   test_js:
     name: Test JS Client
