@@ -7,9 +7,32 @@ on:
     branches: [main]
 
 jobs:
+  build_programs:
+    name: Build Programs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Install Solana
+        uses: ./.github/actions/install-solana
+        with:
+          solana_version: ${{ matrix.solana }}
+      - name: Build System Extras
+        working-directory: ./programs/system-extras
+        run: cargo build-bpf
+      - name: Build Token Extras
+        working-directory: ./programs/token-extras
+        run: cargo build-bpf
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: program-builds
+          path: **/target/deploy/*.so
+
   test_js:
     name: Test JS Client
     runs-on: ubuntu-latest
+    needs: build_programs
     strategy:
       matrix:
         node: ["16.x", "18.x"]
