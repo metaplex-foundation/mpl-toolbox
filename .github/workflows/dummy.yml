@@ -13,6 +13,7 @@ jobs:
     steps:
       - run: touch hello-world.txt && echo "Hello World" > hello-world.txt
         working-directory: ~
+      - run: cat ~/hello-world.txt
       - uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
