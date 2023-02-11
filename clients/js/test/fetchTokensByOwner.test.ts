@@ -1,4 +1,4 @@
-import { base58PublicKey, generateSigner } from '@lorisleiva/js-core';
+import { base58PublicKey, generateSigner } from '@metaplex-foundation/umi-core';
 import test from 'ava';
 import { fetchTokensByOwner, fetchTokensByOwnerAndMint } from '../src';
 import {

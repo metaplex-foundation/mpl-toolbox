@@ -1,4 +1,4 @@
-import { transactionBuilder } from '@lorisleiva/js-test';
+import { transactionBuilder } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { addMemo } from '../src';
 import { createMetaplex } from './_setup';

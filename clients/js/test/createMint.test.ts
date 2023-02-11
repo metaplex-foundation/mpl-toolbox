@@ -6,7 +6,7 @@ import {
   some,
   subtractAmounts,
   transactionBuilder,
-} from '@lorisleiva/js-test';
+} from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createMint, fetchMint, getMintSize, Mint } from '../src';
 import { createMetaplex } from './_setup';

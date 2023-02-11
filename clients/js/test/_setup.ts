@@ -7,7 +7,7 @@ import {
   PublicKey,
   Signer,
   transactionBuilder,
-} from '@lorisleiva/js-test';
+} from '@metaplex-foundation/umi-test';
 import {
   mplEssentials,
   createMint as baseCreateMint,

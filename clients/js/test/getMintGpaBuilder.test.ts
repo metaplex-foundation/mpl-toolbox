@@ -1,4 +1,4 @@
-import { generateSigner, some } from '@lorisleiva/js-test';
+import { generateSigner, some } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { getMintGpaBuilder } from '../src';
 import { createMetaplex, createMint } from './_setup';

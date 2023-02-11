@@ -5,7 +5,7 @@ import {
   sol,
   subtractAmounts,
   transactionBuilder,
-} from '@lorisleiva/js-test';
+} from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createAccountWithRent } from '../src';
 import { createMetaplex } from './_setup';

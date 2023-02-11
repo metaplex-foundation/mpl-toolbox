@@ -1,4 +1,7 @@
-import { generateSigner, transactionBuilder } from '@lorisleiva/js-test';
+import {
+  generateSigner,
+  transactionBuilder,
+} from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createMint, createToken, fetchToken, mintTokensTo } from '../src';
 import { createMetaplex } from './_setup';

@@ -5,7 +5,7 @@ import {
   Signer,
   some,
   WrappedInstruction,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import {
   createAccountWithRent,
   getMintSize,

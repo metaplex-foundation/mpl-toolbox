@@ -4,7 +4,7 @@ import {
   none,
   subtractAmounts,
   transactionBuilder,
-} from '@lorisleiva/js-test';
+} from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import {
   createMint,

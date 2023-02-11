@@ -1,4 +1,4 @@
-import { tokenAmount } from '@lorisleiva/js-core';
+import { tokenAmount } from '@metaplex-foundation/umi-core';
 import test from 'ava';
 import { findLargestTokensByMint } from '../src';
 import { createMetaplex, createMint, createToken } from './_setup';

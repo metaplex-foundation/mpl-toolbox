@@ -1,11 +1,11 @@
-import { generateSigner } from '@lorisleiva/js-core';
+import { generateSigner } from '@metaplex-foundation/umi-core';
 import {
   generateSignerWithSol,
   isEqualToAmount,
   isLessThanAmount,
   sol,
   transactionBuilder,
-} from '@lorisleiva/js-test';
+} from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { transferSol } from '../src';
 import { createMetaplex } from './_setup';

@@ -7,7 +7,7 @@ import {
   RpcResultWithContext,
   createAmount,
   RpcCallOptions,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 
 export type FindLargestTokensByMintResult = Array<{
   publicKey: PublicKey;
