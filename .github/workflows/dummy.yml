@@ -1,0 +1,24 @@
+name: Dummy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dummy:
+    name: Testing Caches
+    runs-on: ubuntu-latest
+    steps:
+      - run: touch hello-world.txt && echo "Hello World" > hello-world.txt
+        working-directory: ~
+      - uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/hello-world.txt
+          key: ${{ runner.os }}-hello-world
+          restore-keys: |
+            ${{ runner.os }}-hello-world-
+            ${{ runner.os }}-
