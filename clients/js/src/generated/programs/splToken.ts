@@ -6,7 +6,7 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Program, publicKey } from '@lorisleiva/js-core';
+import { Program, publicKey } from '@metaplex-foundation/umi-core';
 import { getSplTokenErrorFromCode, getSplTokenErrorFromName } from '../errors';
 
 export function getSplTokenProgram(): Program {

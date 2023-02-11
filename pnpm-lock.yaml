@@ -4,21 +4,21 @@ importers:
 
   .:
     specifiers:
-      '@lorisleiva/kinobi': ^0.0.51
-      '@lorisleiva/shank-js': ^0.0.1
       '@metaplex-foundation/amman': ^0.12.1
+      '@metaplex-foundation/kinobi': ^0.1.0
+      '@metaplex-foundation/shank-js': ^0.1.0
       typescript: ^4.9.4
     devDependencies:
-      '@lorisleiva/kinobi': 0.0.51
-      '@lorisleiva/shank-js': 0.0.1
       '@metaplex-foundation/amman': 0.12.1_typescript@4.9.4
+      '@metaplex-foundation/kinobi': 0.1.0
+      '@metaplex-foundation/shank-js': 0.1.0
       typescript: 4.9.4
 
   clients/js:
     specifiers:
       '@ava/typescript': ^3.0.1
-      '@lorisleiva/js-core': ^0.0.54
-      '@lorisleiva/js-test': ^0.0.54
+      '@metaplex-foundation/umi-core': ^0.1.2
+      '@metaplex-foundation/umi-test': ^0.1.2
       '@solana/web3.js': ^1.73.0
       '@typescript-eslint/eslint-plugin': ^5.0.0
       '@typescript-eslint/parser': ^5.46.1
@@ -33,10 +33,10 @@ importers:
       typedoc: ^0.23.16
       typescript: ^4.6.2
     dependencies:
-      '@lorisleiva/js-core': 0.0.54
+      '@metaplex-foundation/umi-core': 0.1.2
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@lorisleiva/js-test': 0.0.54_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-test': 0.1.2_@solana+web3.js@1.73.0
       '@solana/web3.js': 1.73.0
       '@typescript-eslint/eslint-plugin': 5.48.2_caon6io6stgpr7lz2rtbhekxqy
       '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
@@ -121,124 +121,6 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@lorisleiva/js-core/0.0.54:
-    resolution: {integrity: sha512-syxJMNnNqisIKcrr7QPbq15iR8aopjAd5PzmNZE/FV7QlHq9xjqZaTpsljg8INLlUshoa71W2MDGA8BBlfI4Dg==}
-
-  /@lorisleiva/js-eddsa-web3js/0.0.54_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-/B4sYvaO5XQ1moQ6qdpj7s78RKwCyPq5RB272dm7WWPAgIJdmfkfSggMR2OVWpX3OFcAAWNk82+lFP3esNPKPw==}
-    peerDependencies:
-      '@solana/web3.js': ^1.72.0
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-      '@lorisleiva/js-web3js-adapters': 0.0.54_@solana+web3.js@1.73.0
-      '@noble/ed25519': 1.7.1
-      '@solana/web3.js': 1.73.0
-    dev: true
-
-  /@lorisleiva/js-http-fetch/0.0.54:
-    resolution: {integrity: sha512-s20edphRok0T89tgryYfh6zrIQQulAm2S0Olha3755zMuh80jlO96n2i5N4hXQcW9O0YZ9nFqF2iK0hEHfAMkQ==}
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-      node-fetch: 2.6.7
-    transitivePeerDependencies:
-      - encoding
-    dev: true
-
-  /@lorisleiva/js-program-repository/0.0.54:
-    resolution: {integrity: sha512-jNx95/JMQ9YPahOQnbu42cuuUq09/LUauNdXY5jqPhnqWk1UnYUrdVacTbxY47jqURNnFdSEvPsh5SRnl70h8w==}
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-    dev: true
-
-  /@lorisleiva/js-rpc-web3js/0.0.54_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-GekuNHa6WQ3Pz7G7KZ7eWbEJ3UiYpUp1vfdLDi8ROvBLdgPJFqC3ZBy0Z4NgAktz+7OWjx0grfESSZWycWMprw==}
-    peerDependencies:
-      '@solana/web3.js': ^1.72.0
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-      '@lorisleiva/js-web3js-adapters': 0.0.54_@solana+web3.js@1.73.0
-      '@solana/web3.js': 1.73.0
-    dev: true
-
-  /@lorisleiva/js-serializer-beet/0.0.54_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-8DPX+cPmZKkLiko6aVTYCsw2l7vHvlTopCTLJQ74HIYtITPn1qyhnasNQ2CIvkHLH9U5dMCguv35RBzStJlbeA==}
-    peerDependencies:
-      '@solana/web3.js': ^1.72.0
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-      '@metaplex-foundation/beet': 0.7.1
-      '@solana/web3.js': 1.73.0
-      buffer: 6.0.3
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
-  /@lorisleiva/js-storage-mock/0.0.54:
-    resolution: {integrity: sha512-MS+Dv6nViZZjaUk3I71mcrITBIg9oGoPbguQWBy+VG63E3KUbKfrVIfcKxJeut1OkrxSmw+KtJ/zs7RwxYPK6A==}
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-    dev: true
-
-  /@lorisleiva/js-test/0.0.54_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-Nlzmmi3yM/bwNUoJagWxhB9pDGksFjcrS/uC3GcpJO/MJaNSlVWgxJzeCTS/Jd8P/WvfTFEpu655w02bW83RkQ==}
-    peerDependencies:
-      '@solana/web3.js': ^1.72.0
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-      '@lorisleiva/js-eddsa-web3js': 0.0.54_@solana+web3.js@1.73.0
-      '@lorisleiva/js-http-fetch': 0.0.54
-      '@lorisleiva/js-program-repository': 0.0.54
-      '@lorisleiva/js-rpc-web3js': 0.0.54_@solana+web3.js@1.73.0
-      '@lorisleiva/js-serializer-beet': 0.0.54_@solana+web3.js@1.73.0
-      '@lorisleiva/js-storage-mock': 0.0.54
-      '@lorisleiva/js-transaction-factory-web3js': 0.0.54_@solana+web3.js@1.73.0
-      '@solana/web3.js': 1.73.0
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: true
-
-  /@lorisleiva/js-transaction-factory-web3js/0.0.54_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-D668SRTgDUMlHq8iIUz5igg4XqTc6eHw84cl+fOZG5yAA/72OQ4s8pvOXshQraP2TG9Xm+Sh8RbQ/oV3kkXXEQ==}
-    peerDependencies:
-      '@solana/web3.js': ^1.72.0
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-      '@lorisleiva/js-web3js-adapters': 0.0.54_@solana+web3.js@1.73.0
-      '@solana/web3.js': 1.73.0
-    dev: true
-
-  /@lorisleiva/js-web3js-adapters/0.0.54_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-lZ7Q6Bba+4mmJypy9PTH9Z+FFjl598j6AJtrl6HIN3u79407U49s6MGzt8uSH+2Be6L9kXnN0no+lhZgea4r5Q==}
-    peerDependencies:
-      '@solana/web3.js': ^1.72.0
-    dependencies:
-      '@lorisleiva/js-core': 0.0.54
-      '@solana/web3.js': 1.73.0
-      buffer: 6.0.3
-    dev: true
-
-  /@lorisleiva/kinobi/0.0.51:
-    resolution: {integrity: sha512-OOrv+T/6+1GhKFYd2kUY4x6A9ORE14jATWNOSITOfn9vPBt31UPjY0miSjgvPA0hfvAT5oCfvBL9mR1kIuG+yQ==}
-    dependencies:
-      '@noble/hashes': 1.1.5
-      chalk: 4.1.2
-      nunjucks: 3.2.3
-      prettier: 2.8.1
-    transitivePeerDependencies:
-      - chokidar
-    dev: true
-
-  /@lorisleiva/shank-js/0.0.1:
-    resolution: {integrity: sha512-ucO2r7IL8tAKKgMKGBMyxE5OUv184Ln9Bjl7IA548M3wqZPt94B0NMBClenlnJG8VIq6qTBnPY4t3QJTwhvvIA==}
-    dependencies:
-      '@metaplex-foundation/rustbin': 0.3.1
-      ansi-colors: 4.1.3
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /@metaplex-foundation/amman-client/0.2.4:
     resolution: {integrity: sha512-AB2zKDrGyJtQqUmOswsZCflIuldYmsPvL/zIU/66JOD9HDo8yyz5ITCrs+/0QoW+CIJkotC5JEhuYuBnqLhmNw==}
     dependencies:
@@ -301,6 +183,17 @@ packages:
     resolution: {integrity: sha512-S9RulC2fFCFOQraz61bij+5YCHhSO9llJegK8c8Y6731fSi6snUSQJdCUqYS8AIgR0TKbQvdvgSyIIdbDFZbBA==}
     dev: true
 
+  /@metaplex-foundation/kinobi/0.1.0:
+    resolution: {integrity: sha512-2Jykz+Jcv10xW1rZQPdL7Hwg/Xp99JrtEVSlRLnD/Ij2n8DypsQq6ztONtxyhu0afyDduwvdErKrvCTC+BBQ4w==}
+    dependencies:
+      '@noble/hashes': 1.1.5
+      chalk: 4.1.2
+      nunjucks: 3.2.3
+      prettier: 2.8.1
+    transitivePeerDependencies:
+      - chokidar
+    dev: true
+
   /@metaplex-foundation/rustbin/0.3.1:
     resolution: {integrity: sha512-hWd2JPrnt2/nJzkBpZD3Y6ZfCUlJujv2K7qUfsxdS0jSwLrSrOvYwmNWFw6mc3lbULj6VP4WDyuy9W5/CHU/lQ==}
     dependencies:
@@ -310,6 +203,113 @@ packages:
       toml: 3.0.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@metaplex-foundation/shank-js/0.1.0:
+    resolution: {integrity: sha512-ExTOIIZFJw8WNHfv+anJifP6/Al9gcWJaUXMifGOB6BxV/J0+jfMg13sm0uMlovU7/tiZSPboS09HXnKaykETg==}
+    dependencies:
+      '@metaplex-foundation/rustbin': 0.3.1
+      ansi-colors: 4.1.3
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@metaplex-foundation/umi-core/0.1.2:
+    resolution: {integrity: sha512-s5LzzHANpUuAPfjuqYMiNfECrgaUTEcE/sRDEdnujEUz7Gb0OUNtoaq2/2HE1px1XF3mHEY531it+3DWlMnhRg==}
+
+  /@metaplex-foundation/umi-eddsa-web3js/0.1.2_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-NKRStPVlnwHBqekdxV+i12gXAN/F0I9KmXOfwkZRp6/bSArxf9X+ugyIeXqsp3qfRV1BtB7NTkJdApnkMMPH6Q==}
+    peerDependencies:
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+      '@metaplex-foundation/umi-web3js-adapters': 0.1.2_@solana+web3.js@1.73.0
+      '@noble/ed25519': 1.7.1
+      '@solana/web3.js': 1.73.0
+    dev: true
+
+  /@metaplex-foundation/umi-http-fetch/0.1.2:
+    resolution: {integrity: sha512-KbufqvI9/pst7q7QK7Tsc9iUoh/LhPKfl7H3IMPkszSJQTmCcvx7CFAtf+QLpD/XTNKEN8rL1OCIOyNH5NZMjg==}
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+      node-fetch: 2.6.7
+    transitivePeerDependencies:
+      - encoding
+    dev: true
+
+  /@metaplex-foundation/umi-program-repository/0.1.2:
+    resolution: {integrity: sha512-EnMSWQsGZfnhGtyxt/EoeODQNRB8dIjzdR5Uk+8rshSZAjZVY7HmfujLwhmxM1f5o4GxQTXOL8yNnZP9RJeRUw==}
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+    dev: true
+
+  /@metaplex-foundation/umi-rpc-web3js/0.1.2_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-Xbb+A54z5ll7OD39JmpuXlBSIN5R9Ajgn8ClYtcmu1N2p/SKEHUVwgzKVCnuapQyfFVmokGfzEjmEjY5yAYM9g==}
+    peerDependencies:
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+      '@metaplex-foundation/umi-web3js-adapters': 0.1.2_@solana+web3.js@1.73.0
+      '@solana/web3.js': 1.73.0
+    dev: true
+
+  /@metaplex-foundation/umi-serializer-beet/0.1.2_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-e1xrb0lj9cZ4q4gJo1//aJ+atrduCCjxdPKkbqfRhIk0gQcGmHiZ73HMJEYHAexq7N6zueD4UTuyj6tAK8fw9w==}
+    peerDependencies:
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/beet': 0.7.1
+      '@metaplex-foundation/umi-core': 0.1.2
+      '@solana/web3.js': 1.73.0
+      buffer: 6.0.3
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@metaplex-foundation/umi-storage-mock/0.1.2:
+    resolution: {integrity: sha512-Fj4QuFnp5iWOL/BrBrymahPoIaYEzMC2EucUsn+sWelgTXUuOTDCERSQTcgBtH6J2sxQ+FGD+aF9Zpg82HvPMw==}
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+    dev: true
+
+  /@metaplex-foundation/umi-test/0.1.2_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-qhgZdKZdPHAMwBX6TlxMiYIcTP2XJhADuFHrZm+4K0bmw1O0cztOc0OyMAVRmuIJRcf5cNfenRnJcodp018Qyg==}
+    peerDependencies:
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+      '@metaplex-foundation/umi-eddsa-web3js': 0.1.2_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-http-fetch': 0.1.2
+      '@metaplex-foundation/umi-program-repository': 0.1.2
+      '@metaplex-foundation/umi-rpc-web3js': 0.1.2_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-serializer-beet': 0.1.2_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-storage-mock': 0.1.2
+      '@metaplex-foundation/umi-transaction-factory-web3js': 0.1.2_@solana+web3.js@1.73.0
+      '@solana/web3.js': 1.73.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: true
+
+  /@metaplex-foundation/umi-transaction-factory-web3js/0.1.2_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-5u3pbPVOPMig/7RmxBfJPWOYrchGui6HefDMbzukbDMVPyPNe98JqOTH4+cmFT9c/goy6M6qTTNuol8Q6hCgdA==}
+    peerDependencies:
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+      '@metaplex-foundation/umi-web3js-adapters': 0.1.2_@solana+web3.js@1.73.0
+      '@solana/web3.js': 1.73.0
+    dev: true
+
+  /@metaplex-foundation/umi-web3js-adapters/0.1.2_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-JWLTJbQQBH8+HmPjEMGS+eIH3T69L8rnQAPSERSixwaq5qlUxvymhNwTXZoOpSd9UzVFLRFZZH+88/tsnhQPOQ==}
+    peerDependencies:
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+      '@solana/web3.js': 1.73.0
+      buffer: 6.0.3
     dev: true
 
   /@noble/ed25519/1.7.1:

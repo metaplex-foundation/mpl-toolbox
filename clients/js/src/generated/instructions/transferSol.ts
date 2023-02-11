@@ -17,7 +17,7 @@ import {
   checkForIsWritableOverride as isWritable,
   mapAmountSerializer,
   mapSerializer,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 
 // Accounts.
 export type TransferSolInstructionAccounts = {

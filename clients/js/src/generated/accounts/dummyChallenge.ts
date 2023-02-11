@@ -17,7 +17,7 @@ import {
   assertAccountExists,
   deserializeAccount,
   gpaBuilder,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 
 export type DummyChallenge = Account<DummyChallengeAccountData>;
 

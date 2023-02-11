@@ -18,7 +18,7 @@ import {
   assertAccountExists,
   deserializeAccount,
   gpaBuilder,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import { TokenState, getTokenStateSerializer } from '../types';
 
 export type Token = Account<TokenAccountData>;

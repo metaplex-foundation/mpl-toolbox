@@ -13,7 +13,7 @@ import {
   Signer,
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 
 // Accounts.
 export type RecoverNestedAssociatedTokenInstructionAccounts = {

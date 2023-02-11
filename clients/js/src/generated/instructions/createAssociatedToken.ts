@@ -15,7 +15,7 @@ import {
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
   publicKey,
-} from '@lorisleiva/js-core';
+} from '@metaplex-foundation/umi-core';
 import { findAssociatedTokenPda } from '../../hooked';
 import { getTokenSize } from '../accounts';
 

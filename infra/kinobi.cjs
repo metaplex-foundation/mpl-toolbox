@@ -6,7 +6,7 @@ const {
   UpdateAccountsVisitor,
   UpdateInstructionsVisitor,
   UpdateProgramsVisitor,
-} = require("@lorisleiva/kinobi");
+} = require("@metaplex-foundation/kinobi");
 
 // Paths.
 const clientDir = path.join(__dirname, "..", "clients");
