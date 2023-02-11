@@ -11,9 +11,9 @@ jobs:
     name: Testing Caches
     runs-on: ubuntu-latest
     steps:
-      - run: touch hello-world.txt && echo "Hello World" > hello-world.txt
-        working-directory: ~
+      - run: touch ~/hello-world.txt && echo "Hello World" > ~/hello-world.txt
       - run: cat ~/hello-world.txt
+      - run: pwd
       - uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
