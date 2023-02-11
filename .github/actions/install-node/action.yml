@@ -1,0 +1,21 @@
+name: Install Node
+
+inputs:
+  node_version:
+    description: Version of Node.js to install
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+
+    - name: Setup Node.js ${{ node_version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ node_version }}
+        cache: "pnpm"
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile

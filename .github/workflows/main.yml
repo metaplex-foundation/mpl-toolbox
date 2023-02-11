@@ -1,0 +1,41 @@
+name: Main
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test_js:
+    name: Test JS Client
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ["16.x", "18.x"]
+        solana: ["1.10.34"]
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Install Solana
+        uses: ./.github/actions/install-solana
+        with:
+          solana_version: ${{ matrix.solana }}
+
+      - name: Install Node.js
+        uses: ./.github/actions/install-node
+        with:
+          node_version: ${{ matrix.node }}
+
+      - name: Start local validator using Amman
+        run: pnpm validator
+
+      - name: Install dependencies
+        working-directory: ./clients/js
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and run tests
+        working-directory: ./clients/js
+        run: pnpm build && pnpm test
