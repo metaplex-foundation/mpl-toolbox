@@ -30,15 +30,15 @@ jobs:
 
       - name: Build programs
         run: |
-          for x in ${{ env.PROGRAMS }}; do
-            (cd ./programs/$x && cargo build-bpf)
+          for program in ${{ env.PROGRAMS }}; do
+            (cd ./programs/$program && cargo build-bpf)
           done
 
       - name: Upload program builds
         uses: actions/upload-artifact@v3
         with:
           name: program-builds
-          path: programs/**/target/deploy/*.so
+          path: ./programs/**/target/deploy/*.so
 
   generate_clients:
     name: Generate clients
@@ -96,6 +96,8 @@ jobs:
 
       - name: Debug
         run: |
+          ls -la ./programs
+          ls -la ./programs/system-extras
           ls -la ./programs/system-extras/target
           ls -la ./programs/system-extras/target/deploy
 
