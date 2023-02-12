@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: program-builds
-          path: ../*/programs/**/target/deploy/*.so
+          path: ./../*/programs/**/target/deploy/*.so
           if-no-files-found: error
 
   test_programs:
