@@ -1,0 +1,36 @@
+name: Prepare program environment
+
+inputs:
+  rust:
+    description: The Rust version to install
+    required: true
+  solana:
+    description: The Solana version to install
+    required: true
+  cache:
+    description: Whether we should cache files between workflow runs
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Rust
+      uses: ./.github/actions/install-rust
+      with:
+        version: ${{ inputs.rust }}
+        cache: ${{ inputs.cache }}
+
+    - name: Install Solana
+      uses: ./.github/actions/install-solana
+      with:
+        version: ${{ inputs.solana }}
+        cache: ${{ inputs.cache }}
+
+    - name: Cache target folders
+      if: inputs.cache == 'true'
+      uses: actions/cache@v3
+      with:
+        path: ./programs/**/target/
+        key: ${{ runner.os }}-programs-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-programs
