@@ -38,7 +38,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: program-builds
-          path: ./../*/programs/**/target/deploy/*.so
+          # First wildcard ensures exported paths are consistently under the programs folder.
+          path: ./program*/**/target/deploy/*.so
           if-no-files-found: error
 
   test_programs:
@@ -112,6 +113,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: program-builds
+          path: ./programs
 
       - name: Debug
         run: |
