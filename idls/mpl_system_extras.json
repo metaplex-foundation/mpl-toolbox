@@ -77,6 +77,10 @@
           {
             "name": "authority",
             "type": "publicKey"
+          },
+          {
+            "name": "bump1",
+            "type": "u8"
           }
         ]
       }
