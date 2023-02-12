@@ -34,9 +34,6 @@ jobs:
             (cd ./programs/$program && cargo build-bpf)
           done
 
-      - name: DEBUG Remove one program build
-        run: rm ./programs/system-extras/target/deploy/mpl_system_extras.so
-
       - name: Upload program builds
         uses: actions/upload-artifact@v3
         with:
@@ -111,34 +108,12 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
-      - name: Download program builds
-        id: download
-        uses: actions/download-artifact@v3
+      - name: Prepare validator
+        uses: ./.github/actions/prepare-programs
         with:
-          name: program-builds
-
-      - name: Debug
-        run: |
-          echo "path = ${{ steps.download.outputs.download-path }}"
-          ls -la ./programs
-          ls -la ./programs/token-extras
-          ls -la ./programs/token-extras/target
-          ls -la ./programs/token-extras/target/deploy
-
-      - name: Install Solana
-        uses: ./.github/actions/install-solana
-        with:
-          version: ${{ env.SOLANA_VERSION }}
+          node: ${{ matrix.node }}
+          solana: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
-
-      - name: Install Node.js v${{ matrix.node }}
-        uses: ./.github/actions/install-node
-        with:
-          version: ${{ matrix.node }}
-          cache: ${{ env.CACHE }}
-
-      - name: Start local validator
-        run: pnpm validator
 
       - name: Cache JS client dependencies
         if: env.CACHE == 'true'
