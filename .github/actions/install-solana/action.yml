@@ -14,14 +14,14 @@ runs:
   steps:
     - name: Cache Solana
       id: cache
-      if: ${{ inputs.cache }}
+      if: inputs.cache == 'true'
       uses: actions/cache@v3
       with:
-        path: "$HOME/.local/share/solana/install/releases/${{ inputs.version }}"
-        key: ${{ runner.os }}-Solana-v${{ inputs.version }}
+        path: ~/.local/share/solana/install/releases/${{ inputs.version }}
+        key: ${{ runner.os }}-solana-v${{ inputs.version }}
 
     - name: Install Solana
-      if: ${{ !inputs.cache }} || steps.cache.cache-hit != 'true'
+      if: inputs.cache != 'true' || steps.cache.cache-hit != 'true'
       run: |
         sh -c "$(curl -sSfL https://release.solana.com/v${{ inputs.version }}/install)"
       shell: bash

@@ -14,7 +14,7 @@ runs:
   steps:
     - name: Cache Rust
       id: cache
-      if: ${{ inputs.cache }}
+      if: inputs.cache == 'true'
       uses: actions/cache@v3
       with:
         path: |
@@ -22,10 +22,10 @@ runs:
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-        key: ${{ runner.os }}-Rust-v${{ inputs.version }}
+        key: ${{ runner.os }}-rust-v${{ inputs.version }}
 
     - name: Install Rust
-      if: ${{ !inputs.cache }} || steps.cache.cache-hit != 'true'
+      if: inputs.cache != 'true' || steps.cache.cache-hit != 'true'
       id: rust_toolchain
       uses: actions-rs/toolchain@v1
       with:
