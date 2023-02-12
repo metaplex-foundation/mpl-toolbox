@@ -1,31 +1,35 @@
 name: Install Solana
 
 inputs:
-  solana_version:
-    description: Version of Solana to install
+  version:
+    description: The Solana version to install
     required: true
+  cache:
+    description: Whether we should cache the Solana releases between workflow runs
+    required: true
+    defaults: true
 
 runs:
   using: "composite"
   steps:
-    - name: Cache Solana Install
-      if: ${{ !env.ACT }}
-      id: cache-solana-install
+    - name: Cache Solana
+      id: cache
+      if: ${{ inputs.cache }}
       uses: actions/cache@v3
       with:
-        path: "$HOME/.local/share/solana/install/releases/${{ inputs.solana_version }}"
-        key: ${{ runner.os }}-Solana-v${{ inputs.solana_version }}
+        path: "$HOME/.local/share/solana/install/releases/${{ inputs.version }}"
+        key: ${{ runner.os }}-Solana-v${{ inputs.version }}
 
     - name: Install Solana
-      if: ${{ !env.ACT }} && steps.cache-solana-install.cache-hit != 'true'
+      if: ${{ !inputs.cache }} || steps.cache.cache-hit != 'true'
       run: |
-        sh -c "$(curl -sSfL https://release.solana.com/v${{ inputs.solana_version }}/install)"
+        sh -c "$(curl -sSfL https://release.solana.com/v${{ inputs.version }}/install)"
       shell: bash
 
     - name: Set Active Solana Version
       run: |
         rm -f "$HOME/.local/share/solana/install/active_release"
-        ln -s "$HOME/.local/share/solana/install/releases/${{ inputs.solana_version }}/solana-release" "$HOME/.local/share/solana/install/active_release"
+        ln -s "$HOME/.local/share/solana/install/releases/${{ inputs.version }}/solana-release" "$HOME/.local/share/solana/install/active_release"
       shell: bash
 
     - name: Add Solana bin to Path

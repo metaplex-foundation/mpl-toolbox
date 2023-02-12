@@ -7,19 +7,28 @@ on:
     branches: [main]
 
 jobs:
-  dummy:
-    name: Testing Caches
+  build_programs:
+    name: Build Programs
     runs-on: ubuntu-latest
     steps:
-      - run: touch ~/hello-world.txt && echo "Hello World" > ~/hello-world.txt
-      - run: cat ~/hello-world.txt
-      - run: pwd
-      - uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: ./.github/actions/install-rust
         with:
-          path: ~/hello-world.txt
-          key: ${{ runner.os }}-hello-world
-          restore-keys: |
-            ${{ runner.os }}-hello-world-
-            ${{ runner.os }}-
+          version: 1.65.0
+      - name: Install Solana
+        uses: ./.github/actions/install-solana
+        with:
+          version: 1.10.34
+      - name: Build System Extras
+        working-directory: ./programs/system-extras
+        run: cargo build-bpf
+      - name: Build Token Extras
+        working-directory: ./programs/token-extras
+        run: cargo build-bpf
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: program-builds
+          path: programs/**/target/deploy/*.so

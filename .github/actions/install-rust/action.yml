@@ -1,0 +1,54 @@
+name: Install Rust
+
+inputs:
+  version:
+    description: The Rust version to install
+    required: true
+  cache:
+    description: Whether we should cache the binaries between workflow runs
+    required: true
+    defaults: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Rust
+      id: cache
+      if: ${{ inputs.cache }}
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: ${{ runner.os }}-Rust-v${{ inputs.version }}
+
+    - name: Install Rust
+      if: ${{ !inputs.cache }} || steps.cache.cache-hit != 'true'
+      id: rust_toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ inputs.version }}
+        override: true
+        profile: minimal
+        components: rustfmt, clippy
+
+    - name: Add Cargo bin to Path
+      run: |
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      shell: bash
+
+    - name: Verify Rust install
+      run: |
+        echo "Verifying rust '${{ inputs.version }}' ..."
+        rustc --version
+        cargo --version
+        cargo clippy --version
+        rustfmt --version
+      shell: bash
+
+    - name: Share rustc hash
+      run: |
+        echo 'RUSTC_HASH=${{ steps.rust_toolchain.outputs.rustc_hash }}' >> $GITHUB_ENV
+      shell: bash

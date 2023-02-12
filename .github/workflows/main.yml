@@ -16,7 +16,7 @@ jobs:
       - name: Install Solana
         uses: ./.github/actions/install-solana
         with:
-          solana_version: 1.10.34
+          version: 1.10.34
       - name: Build System Extras
         working-directory: ./programs/system-extras
         run: cargo build-bpf
@@ -45,7 +45,7 @@ jobs:
       - name: Install Solana
         uses: ./.github/actions/install-solana
         with:
-          solana_version: ${{ matrix.solana }}
+          version: ${{ matrix.solana }}
 
       - name: Install Node.js
         uses: ./.github/actions/install-node
