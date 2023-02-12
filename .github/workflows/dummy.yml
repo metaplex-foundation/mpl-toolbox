@@ -46,7 +46,6 @@ jobs:
     name: Test and lint programs
     runs-on: ubuntu-latest
     needs: build_programs
-    if: ${{ github.event_name == 'noop' }}
     strategy:
       matrix:
         program: ["system-extras", "token-extras"]
@@ -71,7 +70,19 @@ jobs:
             ${{ runner.os }}-program-${{ matrix.program }}
             ${{ runner.os }}-programs
 
-      - name: Test programs
+      - name: Run cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --manifest-path ./programs/${{ matrix.program }}/Cargo.toml -- --check
+
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets --all-features --no-deps --manifest-path ./programs/${{ matrix.program }}/Cargo.toml
+
+      - name: Run tests
         working-directory: ./programs/${{ matrix.program }}
         run: cargo test-bpf
 
