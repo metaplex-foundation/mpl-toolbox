@@ -40,6 +40,26 @@ jobs:
           name: program-builds
           path: ./programs/**/target/deploy/*.so
 
+  test_programs:
+    name: Test and lint programs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Prepare program environment
+        uses: ./.github/actions/prepare-programs
+        with:
+          rust: ${{ env.RUST_VERSION }}
+          solana: ${{ env.SOLANA_VERSION }}
+          cache: ${{ env.CACHE }}
+
+      - name: Test programs
+        run: |
+          for program in ${{ env.PROGRAMS }}; do
+            (cd ./programs/$program && cargo test-bpf)
+          done
+
   generate_clients:
     name: Generate clients
     runs-on: ubuntu-latest
@@ -55,10 +75,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: program-builds
+          path: ./programs
 
       - name: Debug
         run: |
-          echo ${{ steps.download.outputs.download_path }}
+          echo "path = ${{ steps.download.outputs.download-path }}"
           ls -la ./programs
           ls -la ./programs/system-extras
           ls -la ./programs/system-extras/target
