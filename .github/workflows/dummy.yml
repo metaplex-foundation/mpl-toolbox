@@ -18,8 +18,9 @@ jobs:
   build_programs:
     name: Build programs
     runs-on: ubuntu-latest
-    matrix:
-      program: ["system-extras", "token-extras"]
+    strategy:
+      matrix:
+        program: ["system-extras", "token-extras"]
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
