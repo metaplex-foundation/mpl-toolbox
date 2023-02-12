@@ -21,7 +21,7 @@ import {
 
 export type DummyChallenge = Account<DummyChallengeAccountData>;
 
-export type DummyChallengeAccountData = { authority: PublicKey; bump1: number };
+export type DummyChallengeAccountData = { authority: PublicKey; bump2: number };
 
 export async function fetchDummyChallenge(
   context: Pick<Context, 'rpc' | 'serializer'>,
@@ -75,9 +75,9 @@ export function getDummyChallengeGpaBuilder(
   const s = context.serializer;
   const programId = context.programs.get('mplSystemExtras').publicKey;
   return gpaBuilder(context, programId)
-    .registerFields<{ authority: PublicKey; bump1: number }>([
+    .registerFields<{ authority: PublicKey; bump2: number }>([
       ['authority', s.publicKey],
-      ['bump1', s.u8],
+      ['bump2', s.u8],
     ])
     .deserializeUsing<DummyChallenge>((account) =>
       deserializeDummyChallenge(context, account)
@@ -101,7 +101,7 @@ export function getDummyChallengeAccountDataSerializer(
   return s.struct<DummyChallengeAccountData>(
     [
       ['authority', s.publicKey],
-      ['bump1', s.u8],
+      ['bump2', s.u8],
     ],
     'DummyChallenge'
   );
