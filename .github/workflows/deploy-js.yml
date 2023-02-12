@@ -1,10 +1,22 @@
-name: Main
+name: Deploy JS Client
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "The severity of the version bump"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      create_release:
+        description: "Create a GitHub release after publishing"
+        required: true
+        type: boolean
+        default: true
 
 env:
   RUST_VERSION: 1.65.0
@@ -61,96 +73,10 @@ jobs:
           path: ./program*/**/target/deploy/*.so
           if-no-files-found: error
 
-  test_programs:
-    name: Test and lint programs
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        program: ["system-extras", "token-extras"]
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Install Rust
-        uses: ./.github/actions/install-rust
-        with:
-          version: ${{ env.RUST_VERSION }}
-
-      - name: Install Solana
-        uses: ./.github/actions/install-solana
-        with:
-          version: ${{ env.SOLANA_VERSION }}
-          cache: ${{ env.CACHE }}
-
-      - name: Cache program dev dependencies
-        if: env.CACHE == 'true'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            ./programs/${{ matrix.program }}/target/
-          key: ${{ runner.os }}-program-${{ matrix.program }}-dev-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
-          restore-keys: |
-            ${{ runner.os }}-program-${{ matrix.program }}-dev
-            ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
-            ${{ runner.os }}-program-${{ matrix.program }}
-
-      - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --manifest-path ./programs/${{ matrix.program }}/Cargo.toml -- --check
-
-      - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --all-targets --all-features --no-deps --manifest-path ./programs/${{ matrix.program }}/Cargo.toml
-
-      - name: Run tests
-        working-directory: ./programs/${{ matrix.program }}
-        run: cargo test-bpf
-
-  generate_clients:
-    name: Generate clients
-    runs-on: ubuntu-latest
-    needs: [build_programs]
-    permissions:
-      contents: write
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Install Node.js
-        uses: ./.github/actions/install-node
-        with:
-          version: ${{ env.NODE_VERSION }}
-          cache: ${{ env.CACHE }}
-
-      - name: Cache IDL generators
-        if: env.CACHE == 'true'
-        uses: actions/cache@v3
-        with:
-          path: ./.crates/
-          key: ${{ runner.os }}-idl-generators-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-idl-generators
-
-      - name: Generate IDLs and clients
-        run: pnpm generate
-
-      - name: Commit generated clients
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Update generated clients
-
   test_js:
     name: Test JS client
     runs-on: ubuntu-latest
-    needs: [generate_clients]
+    needs: [build_programs]
     strategy:
       matrix:
         node: ["16.x", "18.x"]
@@ -158,8 +84,8 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
-      - name: Start validator
-        uses: ./.github/actions/start-validator
+      - name: Prepare validator
+        uses: ./.github/actions/prepare-validator
         with:
           node: ${{ matrix.node }}
           solana: ${{ env.SOLANA_VERSION }}
@@ -189,7 +115,7 @@ jobs:
   lint_js:
     name: Lint JS client
     runs-on: ubuntu-latest
-    needs: [generate_clients]
+    needs: [build_programs]
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -220,3 +146,38 @@ jobs:
       - name: Lint JS client
         working-directory: ./clients/js
         run: pnpm lint
+
+  deploy_js:
+    name: Deploy JS client
+    runs-on: ubuntu-latest
+    needs: [test_js, lint_js]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: ./.github/actions/install-node
+        with:
+          version: ${{ env.NODE_VERSION }}
+          cache: ${{ env.CACHE }}
+
+      - name: Cache JS client dependencies
+        if: env.CACHE == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ./clients/js/node_modules/
+          key: ${{ runner.os }}-clients-js-${{ hashFiles('./clients/js/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-clients-js
+
+      - name: Install JS client dependencies
+        working-directory: ./clients/js
+        run: pnpm install --frozen-lockfile
+
+      - name: Bump JS client
+        working-directory: ./clients/js
+        run: pnpm version ${{ github.event.inputs.bump }} --no-git-tag-version
+
+      - name: Debug
+        working-directory: ./clients/js
+        run: git diff

@@ -1,4 +1,4 @@
-name: Prepare validator
+name: Start validator
 
 inputs:
   node:
