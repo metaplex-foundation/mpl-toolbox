@@ -6,8 +6,8 @@ inputs:
     required: true
   cache:
     description: Whether we should cache the Solana releases between workflow runs
-    required: true
-    defaults: true
+    required: false
+    defaults: "true"
 
 runs:
   using: "composite"
