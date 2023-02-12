@@ -10,12 +10,20 @@ env:
   CACHE: true
   RUST_VERSION: 1.65.0
   SOLANA_VERSION: 1.10.34
+  PROGRAMS:
+    - system-extras
+    - token-extras
 
 jobs:
   build_programs:
     name: Build Programs
     runs-on: ubuntu-latest
     steps:
+      - name: Print things
+        run: |
+          for x in ${{ env.PROGRAMS }}; do
+            echo "$x"
+          done
       - name: Git checkout
         uses: actions/checkout@v3
       - name: Install Rust
