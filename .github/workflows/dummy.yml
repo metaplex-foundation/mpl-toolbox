@@ -17,11 +17,6 @@ jobs:
     name: Build Programs
     runs-on: ubuntu-latest
     steps:
-      - name: Print things
-        run: |
-          for x in ${{ env.PROGRAMS }}; do
-            echo "$x"
-          done
       - name: Git checkout
         uses: actions/checkout@v3
       - name: Install Rust
@@ -42,12 +37,11 @@ jobs:
           key: ${{ runner.os }}-programs-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-programs
-      - name: Build System Extras
-        working-directory: ./programs/system-extras
-        run: cargo build-bpf
-      - name: Build Token Extras
-        working-directory: ./programs/token-extras
-        run: cargo build-bpf
+      - name: Build programs
+        run: |
+          for x in ${{ env.PROGRAMS }}; do
+            (cd ./programs/$x && cargo build-bpf)
+          done
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
