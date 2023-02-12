@@ -44,6 +44,8 @@ jobs:
     name: Generate clients
     runs-on: ubuntu-latest
     needs: build_programs
+    permissions:
+      contents: write
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -70,3 +72,8 @@ jobs:
 
       - name: Generate IDLs and clients
         run: pnpm generate
+
+      - name: Commit generated clients
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update generated clients
