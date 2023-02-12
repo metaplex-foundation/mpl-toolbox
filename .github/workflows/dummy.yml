@@ -77,3 +77,55 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update generated clients
+
+  test_js:
+    name: Test JS client
+    runs-on: ubuntu-latest
+    needs: generate_clients
+    strategy:
+      matrix:
+        node: ["16.x", "18.x"]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Download program builds
+        uses: actions/download-artifact@v3
+        with:
+          name: program-builds
+
+      - name: Install Solana
+        uses: ./.github/actions/install-solana
+        with:
+          version: ${{ env.SOLANA_VERSION }}
+          cache: ${{ env.CACHE }}
+
+      - name: Install Node.js v${{ matrix.node }}
+        uses: ./.github/actions/install-node
+        with:
+          version: ${{ matrix.node }}
+          cache: ${{ env.CACHE }}
+
+      - name: Start local validator
+        run: pnpm validator
+
+      - name: Cache JS client dependencies
+        if: inputs.cache == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ./clients/js/node_modules/
+          key: ${{ runner.os }}-clients-js-${{ hashFiles('./clients/js/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-clients-js
+
+      - name: Install JS client dependencies
+        working-directory: ./clients/js
+        run: pnpm install --frozen-lockfile
+
+      - name: Build JS client
+        working-directory: ./clients/js
+        run: pnpm build
+
+      - name: Test JS client
+        working-directory: ./clients/js
+        run: pnpm test
