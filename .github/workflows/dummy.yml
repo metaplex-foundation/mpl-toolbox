@@ -51,9 +51,18 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download program builds
+        id: download
         uses: actions/download-artifact@v3
         with:
           name: program-builds
+
+      - name: Debug
+        run: |
+          echo ${{ steps.download.outputs.download_path }}
+          ls -la ./programs
+          ls -la ./programs/system-extras
+          ls -la ./programs/system-extras/target
+          ls -la ./programs/system-extras/target/deploy
 
       - name: Install Node.js
         uses: ./.github/actions/install-node
@@ -90,12 +99,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download program builds
+        id: download
         uses: actions/download-artifact@v3
         with:
           name: program-builds
 
       - name: Debug
         run: |
+          echo ${{ steps.download.outputs.download_path }}
           ls -la ./programs
           ls -la ./programs/system-extras
           ls -la ./programs/system-extras/target
