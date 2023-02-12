@@ -79,5 +79,5 @@ pub fn transfer_all_sol_instruction(source: &Pubkey, destination: &Pubkey) -> In
 pub struct DummyChallenge {
     /// The authority that can update the challenge, normally the creator.
     pub authority: Pubkey,
-    pub bump_1: u8,
+    pub bump_2: u8,
 }
