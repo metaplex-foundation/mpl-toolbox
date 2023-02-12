@@ -4,9 +4,6 @@ inputs:
   version:
     description: The Rust version to install
     required: true
-  cache:
-    description: Whether we should cache the binaries between workflow runs
-    required: true
 
 runs:
   using: "composite"

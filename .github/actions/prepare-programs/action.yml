@@ -18,7 +18,6 @@ runs:
       uses: ./.github/actions/install-rust
       with:
         version: ${{ inputs.rust }}
-        cache: ${{ inputs.cache }}
 
     - name: Install Solana
       uses: ./.github/actions/install-solana
