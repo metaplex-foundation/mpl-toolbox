@@ -121,9 +121,9 @@ jobs:
         run: |
           echo "path = ${{ steps.download.outputs.download-path }}"
           ls -la ./programs
-          ls -la ./programs/system-extras
-          ls -la ./programs/system-extras/target
-          ls -la ./programs/system-extras/target/deploy
+          ls -la ./programs/token-extras
+          ls -la ./programs/token-extras/target
+          ls -la ./programs/token-extras/target/deploy
 
       - name: Install Solana
         uses: ./.github/actions/install-solana
