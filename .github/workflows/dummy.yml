@@ -94,6 +94,11 @@ jobs:
         with:
           name: program-builds
 
+      - name: Debug
+        run: |
+          ls -la ./programs/system-extras/target
+          ls -la ./programs/system-extras/target/deploy
+
       - name: Install Solana
         uses: ./.github/actions/install-solana
         with:
@@ -110,7 +115,7 @@ jobs:
         run: pnpm validator
 
       - name: Cache JS client dependencies
-        if: inputs.cache == 'true'
+        if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./clients/js/node_modules/
