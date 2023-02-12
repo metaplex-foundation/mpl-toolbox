@@ -1,8 +1,11 @@
 name: Install Node
 
 inputs:
-  node_version:
-    description: Version of Node.js to install
+  version:
+    description: The Node.js version to install
+    required: true
+  cache:
+    description: Whether we should cache dependencies between workflow runs
     required: true
 
 runs:
@@ -11,12 +14,24 @@ runs:
     - name: Install pnpm
       uses: pnpm/action-setup@v2
 
-    - name: Setup Node.js ${{ inputs.node_version }}
+    - name: Setup Node.js ${{ inputs.version }}
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ inputs.node_version }}
+        node-version: ${{ inputs.version }}
         cache: "pnpm"
 
+    - name: Cache Node.js dependencies
+      id: cache
+      if: inputs.cache == 'true'
+      uses: actions/cache@v3
+      with:
+        path: ./node_modules/
+        key: ${{ runner.os }}-node-v${{ inputs.version }}-${{ hashFiles('./pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-node-v${{ inputs.version }}
+          ${{ runner.os }}-node
+
     - name: Install dependencies
+      if: inputs.cache != 'true' || steps.cache.outputs.cache-hit != 'true'
       run: pnpm install --frozen-lockfile
       shell: bash

@@ -10,17 +10,19 @@ env:
   CACHE: true
   RUST_VERSION: 1.65.0
   SOLANA_VERSION: 1.10.34
+  NODE_VERSION: 16.x
   PROGRAMS: system-extras token-extras
 
 jobs:
   build_programs:
-    name: Build Programs
+    name: Build programs
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
 
-      - uses: ./.github/actions/prepare-programs
+      - name: Prepare program environment
+        uses: ./.github/actions/prepare-programs
         with:
           rust: ${{ env.RUST_VERSION }}
           solana: ${{ env.SOLANA_VERSION }}
@@ -32,8 +34,30 @@ jobs:
             (cd ./programs/$x && cargo build-bpf)
           done
 
-      - name: Upload artifacts
+      - name: Upload program builds
         uses: actions/upload-artifact@v3
         with:
           name: program-builds
           path: programs/**/target/deploy/*.so
+
+  generate_clients:
+    name: Generate clients
+    runs-on: ubuntu-latest
+    needs: build_programs
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Download program builds
+        uses: actions/download-artifact@v3
+        with:
+          name: program-builds
+
+      - name: Install Node.js
+        uses: ./.github/actions/install-node
+        with:
+          version: ${{ env.NODE_VERSION }}
+          cache: ${{ env.CACHE }}
+
+      - name: Generate IDLs and clients
+        run: pnpm generate
