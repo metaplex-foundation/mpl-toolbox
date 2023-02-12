@@ -27,7 +27,7 @@ runs:
           ${{ runner.os }}-rust
 
     - name: Install Rust
-      if: inputs.cache != 'true' || steps.cache.cache-hit != 'true'
+      if: inputs.cache != 'true' || steps.cache.outputs.cache-hit != 'true'
       id: rust_toolchain
       uses: actions-rs/toolchain@v1
       with:
