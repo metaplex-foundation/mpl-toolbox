@@ -21,6 +21,11 @@ jobs:
         uses: ./.github/actions/install-solana
         with:
           version: 1.10.34
+      - name: Cache System Extras
+        uses: actions/cache@v3
+        with:
+          path: ./programs/system-extras/target/
+          key: ${{ runner.os }}-system-extras-${{ hashFiles('./programs/system-extras/Cargo.lock') }}
       - name: Build System Extras
         working-directory: ./programs/system-extras
         run: cargo build-bpf
