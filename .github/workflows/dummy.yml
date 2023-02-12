@@ -18,6 +18,8 @@ jobs:
   build_programs:
     name: Build programs
     runs-on: ubuntu-latest
+    matrix:
+      program: ["system-extras", "token-extras"]
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -29,11 +31,23 @@ jobs:
           solana: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
 
-      - name: Build programs
-        run: |
-          for program in ${{ env.PROGRAMS }}; do
-            (cd ./programs/$program && cargo build-bpf)
-          done
+      - name: Cache program dependencies
+        if: env.CACHE == 'true'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ./programs/${{ matrix.program }}/target/
+          key: ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
+          restore-keys: |
+            ${{ runner.os }}-program-${{ matrix.program }}
+
+      - name: Build program
+        working-directory: ./programs/${{ matrix.program }}
+        run: cargo build-bpf
 
       - name: Upload program builds
         uses: actions/upload-artifact@v3
@@ -61,15 +75,21 @@ jobs:
           solana: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
 
-      - name: Cache target folder with dev dependencies
+      - name: Cache program dev dependencies
         if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
-          path: ./programs/${{ matrix.program }}/target/
-          key: ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ./programs/${{ matrix.program }}/target/
+          key: ${{ runner.os }}-program-${{ matrix.program }}-dev-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
           restore-keys: |
+            ${{ runner.os }}-program-${{ matrix.program }}-dev
+            ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
             ${{ runner.os }}-program-${{ matrix.program }}
-            ${{ runner.os }}-programs
 
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1

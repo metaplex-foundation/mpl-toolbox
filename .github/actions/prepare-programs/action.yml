@@ -24,12 +24,3 @@ runs:
       with:
         version: ${{ inputs.solana }}
         cache: ${{ inputs.cache }}
-
-    - name: Cache target folders
-      if: inputs.cache == 'true'
-      uses: actions/cache@v3
-      with:
-        path: ./programs/**/target/
-        key: ${{ runner.os }}-programs-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-programs
