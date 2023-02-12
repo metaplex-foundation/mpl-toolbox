@@ -60,6 +60,12 @@ jobs:
           solana: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
 
+      - name: DEBUG
+        run: |
+          echo "file = programs/${{ matrix.program }}/Cargo.lock"
+          echo "hash = ${{ hashFiles('programs/${{ matrix.program }}/Cargo.lock') }}"
+          cat programs/${{ matrix.program }}/Cargo.lock
+
       - name: Cache target folder with dev dependencies
         if: env.CACHE == 'true'
         uses: actions/cache@v3
