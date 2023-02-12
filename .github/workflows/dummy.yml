@@ -38,13 +38,14 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: program-builds
-          path: ./programs/system-extras/target/deploy/*.so
+          path: ./*/programs/**/target/deploy/*.so
           if-no-files-found: error
 
   test_programs:
     name: Test and lint programs
     runs-on: ubuntu-latest
     needs: build_programs
+    if: ${{ github.event_name == 'noop' }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -71,21 +72,6 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
-
-      - name: Download program builds
-        id: download
-        uses: actions/download-artifact@v3
-        with:
-          name: program-builds
-          path: ./programs
-
-      - name: Debug
-        run: |
-          echo "path = ${{ steps.download.outputs.download-path }}"
-          ls -la ./programs
-          ls -la ./programs/system-extras
-          ls -la ./programs/system-extras/target
-          ls -la ./programs/system-extras/target/deploy
 
       - name: Install Node.js
         uses: ./.github/actions/install-node
@@ -126,7 +112,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: program-builds
-          path: ./programs
+
+      - name: Debug
+        run: |
+          echo "path = ${{ steps.download.outputs.download-path }}"
+          ls -la ./programs
+          ls -la ./programs/system-extras
+          ls -la ./programs/system-extras/target
+          ls -la ./programs/system-extras/target/deploy
 
       - name: Install Solana
         uses: ./.github/actions/install-solana
