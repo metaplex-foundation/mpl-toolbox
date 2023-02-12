@@ -21,7 +21,10 @@ runs:
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-        key: ${{ runner.os }}-rust-v${{ inputs.version }}
+        key: ${{ runner.os }}-rust-v${{ inputs.version }}-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-rust-v${{ inputs.version }}
+          ${{ runner.os }}-rust
 
     - name: Install Rust
       if: inputs.cache != 'true' || steps.cache.cache-hit != 'true'
