@@ -59,5 +59,14 @@ jobs:
           version: ${{ env.NODE_VERSION }}
           cache: ${{ env.CACHE }}
 
+      - name: Cache IDL generators
+        if: env.CACHE == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ./.crates/
+          key: ${{ runner.os }}-idl-generators-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-idl-generators
+
       - name: Generate IDLs and clients
         run: pnpm generate
