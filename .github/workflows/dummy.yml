@@ -63,18 +63,15 @@ jobs:
       - name: DEBUG
         run: |
           echo "file = programs/${{ matrix.program }}/Cargo.lock"
-          echo "hashA = ${{ hashFiles('./programs/${{ matrix.program }}/Cargo.lock') }}"
-          echo "hashB = ${{ hashFiles('programs/${{ matrix.program }}/Cargo.lock') }}"
-          echo "hashC = ${{ hashFiles('**/${{ matrix.program }}/Cargo.lock') }}"
-          echo "hashD = ${{ hashFiles('program*/${{ matrix.program }}/Cargo.lock') }}"
-          cat programs/${{ matrix.program }}/Cargo.lock
+          echo "hashA = ${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}"
+          echo "hashB = ${{ hashFiles(format('programs/{0}/Cargo.lock', matrix.program)) }}"
 
       - name: Cache target folder with dev dependencies
         if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./programs/${{ matrix.program }}/target/
-          key: ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles('**/${{ matrix.program }}/Cargo.lock') }}
+          key: ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
           restore-keys: |
             ${{ runner.os }}-program-${{ matrix.program }}
             ${{ runner.os }}-programs
