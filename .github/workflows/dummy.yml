@@ -60,12 +60,6 @@ jobs:
           solana: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
 
-      - name: DEBUG
-        run: |
-          echo "file = programs/${{ matrix.program }}/Cargo.lock"
-          echo "hashA = ${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}"
-          echo "hashB = ${{ hashFiles(format('programs/{0}/Cargo.lock', matrix.program)) }}"
-
       - name: Cache target folder with dev dependencies
         if: env.CACHE == 'true'
         uses: actions/cache@v3
@@ -148,7 +142,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./clients/js/node_modules/
-          key: ${{ runner.os }}-clients-js-${{ hashFiles('clients/js/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-clients-js-${{ hashFiles('./clients/js/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-clients-js
 
