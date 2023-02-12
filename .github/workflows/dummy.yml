@@ -10,7 +10,6 @@ env:
   RUST_VERSION: 1.65.0
   SOLANA_VERSION: 1.13.6
   NODE_VERSION: 16.x
-  PROGRAMS: system-extras token-extras
   CARGO_TERM_COLOR: always
   CACHE: true
 
@@ -25,11 +24,15 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
-      - name: Prepare program environment
-        uses: ./.github/actions/prepare-programs
+      - name: Install Rust
+        uses: ./.github/actions/install-rust
         with:
-          rust: ${{ env.RUST_VERSION }}
-          solana: ${{ env.SOLANA_VERSION }}
+          version: ${{ env.RUST_VERSION }}
+
+      - name: Install Solana
+        uses: ./.github/actions/install-solana
+        with:
+          version: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
 
       - name: Cache program dependencies
@@ -69,11 +72,15 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
-      - name: Prepare program environment
-        uses: ./.github/actions/prepare-programs
+      - name: Install Rust
+        uses: ./.github/actions/install-rust
         with:
-          rust: ${{ env.RUST_VERSION }}
-          solana: ${{ env.SOLANA_VERSION }}
+          version: ${{ env.RUST_VERSION }}
+
+      - name: Install Solana
+        uses: ./.github/actions/install-solana
+        with:
+          version: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
 
       - name: Cache program dev dependencies
