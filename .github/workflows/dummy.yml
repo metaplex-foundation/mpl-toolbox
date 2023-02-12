@@ -39,10 +39,12 @@ jobs:
         with:
           name: program-builds
           path: ./programs/**/target/deploy/*.so
+          if-no-files-found: error
 
   test_programs:
     name: Test and lint programs
     runs-on: ubuntu-latest
+    needs: build_programs
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -124,14 +126,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: program-builds
-
-      - name: Debug
-        run: |
-          echo ${{ steps.download.outputs.download_path }}
-          ls -la ./programs
-          ls -la ./programs/system-extras
-          ls -la ./programs/system-extras/target
-          ls -la ./programs/system-extras/target/deploy
+          path: ./programs
 
       - name: Install Solana
         uses: ./.github/actions/install-solana
