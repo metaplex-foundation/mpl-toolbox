@@ -47,6 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build_programs
     if: ${{ github.event_name == 'noop' }}
+    strategy:
+      matrix:
+        program: ["system-extras", "token-extras"]
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -58,11 +61,19 @@ jobs:
           solana: ${{ env.SOLANA_VERSION }}
           cache: ${{ env.CACHE }}
 
+      - name: Cache target folder with dev dependencies
+        if: env.CACHE == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ./programs/${{ matrix.program }}/target/
+          key: ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles('./programs/${{ matrix.program }}/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-program-${{ matrix.program }}
+            ${{ runner.os }}-programs
+
       - name: Test programs
-        run: |
-          for program in ${{ env.PROGRAMS }}; do
-            (cd ./programs/$program && cargo test-bpf)
-          done
+        working-directory: ./programs/${{ matrix.program }}
+        run: cargo test-bpf
 
   generate_clients:
     name: Generate clients

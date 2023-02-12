@@ -34,3 +34,4 @@ runs:
 
     - name: Start local validator
       run: pnpm validator
+      shell: bash
