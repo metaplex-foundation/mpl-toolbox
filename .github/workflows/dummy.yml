@@ -28,6 +28,8 @@ jobs:
         with:
           path: ./programs/system-extras/target/
           key: ${{ runner.os }}-system-extras-${{ hashFiles('./programs/system-extras/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-system-extras
       - name: Build System Extras
         working-directory: ./programs/system-extras
         run: cargo build-bpf
