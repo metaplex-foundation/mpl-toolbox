@@ -23,13 +23,13 @@ jobs:
         with:
           version: 1.10.34
           cache: true
-      - name: Cache System Extras
+      - name: Cache target folders
         uses: actions/cache@v3
         with:
-          path: ./programs/system-extras/target/
-          key: ${{ runner.os }}-system-extras-${{ hashFiles('./programs/system-extras/Cargo.lock') }}
+          path: ./programs/**/target/
+          key: ${{ runner.os }}-programs-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-system-extras
+            ${{ runner.os }}-programs
       - name: Build System Extras
         working-directory: ./programs/system-extras
         run: cargo build-bpf
