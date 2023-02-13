@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         program: ["system-extras", "token-extras"]
-    if: inputs['skip-system-extras'] != 'true'
+    if: inputs[format('skip-{0}', matrix.program)] != 'true'
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
