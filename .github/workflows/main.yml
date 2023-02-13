@@ -8,7 +8,6 @@ on:
 
 env:
   CACHE: true
-  PROGRAMS: '["system-extras", "token-extras"]'
 
 jobs:
   changes:
@@ -30,6 +29,8 @@ jobs:
 
       - name: Get matrix of programs to test
         id: program_matrix
+        env:
+          PROGRAMS: ${{ vars.PROGRAMS }}
         run: |
           CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) }})
           KEYS=$(echo $PROGRAMS | jq -c '.[]' | sed 's/"//g')
@@ -59,7 +60,7 @@ jobs:
       program_matrix: ${{ needs.changes.outputs.program_matrix }}
 
   generate_clients:
-    name: Clients / Generate
+    name: Generate clients
     if: ${{ needs.changes.outputs.any == 'true' }}
     needs: changes
     runs-on: ubuntu-latest
@@ -93,7 +94,7 @@ jobs:
           commit_message: Update generated clients
 
   detect_client_changes:
-    name: Clients / Detect changes
+    name: Detect client changes
     runs-on: ubuntu-latest
     needs:
       - build_programs

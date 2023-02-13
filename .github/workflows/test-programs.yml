@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        program: ${{ fromJson(inputs.program_matrix || '["system-extras", "token-extras"]') }}
+        program: ${{ fromJson(inputs.program_matrix || vars.PROGRAMS) }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3

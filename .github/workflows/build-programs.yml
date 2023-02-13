@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        program: ["system-extras", "token-extras"]
+        program: ${{ fromJson(vars.PROGRAMS) }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
