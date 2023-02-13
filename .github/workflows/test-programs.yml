@@ -9,6 +9,12 @@ on:
       solana:
         default: ${{ vars.SOLANA_VERSION }}
         type: string
+      skip-system-extras:
+        default: false
+        type: string
+      skip-token-extras:
+        default: false
+        type: string
   workflow_dispatch:
     inputs:
       rust:
@@ -32,6 +38,7 @@ jobs:
     strategy:
       matrix:
         program: ["system-extras", "token-extras"]
+    if: inputs.skip-${{ matrix.program }} != 'true'
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
