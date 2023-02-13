@@ -67,6 +67,7 @@ pub fn transfer_all_sol_instruction(source: &Pubkey, destination: &Pubkey) -> In
 }
 
 #[derive(ShankAccount, BorshSerialize, BorshDeserialize)]
+// bump 1.
 // #[seeds(
 //     "challenge",
 //     creator("The authority managing the challenge, usually the creator"),
