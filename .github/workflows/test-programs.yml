@@ -42,6 +42,11 @@ jobs:
         with:
           filters: .github/file-filters.yml
 
+      - name: Get matrix of programs to test
+        run: |
+          PROGRAMS='["system-extras", "token-extras"]'
+          echo "$PROGRAMS"
+
   test_programs:
     name: Test
     runs-on: ubuntu-latest
