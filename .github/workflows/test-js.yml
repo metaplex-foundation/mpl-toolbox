@@ -9,18 +9,6 @@ on:
       node:
         default: ${{ vars.NODE_VERSION }}
         type: string
-  workflow_dispatch:
-    inputs:
-      solana:
-        description: Solana version
-        default: 1.13.6
-        required: true
-        type: string
-      node:
-        description: Node.js version
-        default: 16.x
-        required: true
-        type: string
 
 env:
   CACHE: true
