@@ -1,0 +1,90 @@
+name: Test and lint JS client
+
+on:
+  workflow_call:
+    inputs:
+      solana:
+        required: true
+        default: ${{ env.SOLANA_VERSION }}
+        type: string
+      node:
+        required: true
+        default: ${{ env.NODE_VERSION }}
+        type: string
+      cache:
+        required: true
+        default: true
+        type: string
+
+jobs:
+  test_js:
+    name: Test JS client
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ["16.x", "18.x"]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Start validator
+        uses: ./.github/actions/start-validator
+        with:
+          node: ${{ matrix.node }}
+          solana: ${{ inputs.solana }}
+          cache: ${{ inputs.cache }}
+
+      - name: Cache JS client dependencies
+        if: inputs.cache == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ./clients/js/node_modules/
+          key: ${{ runner.os }}-clients-js-${{ hashFiles('./clients/js/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-clients-js
+
+      - name: Install JS client dependencies
+        working-directory: ./clients/js
+        run: pnpm install --frozen-lockfile
+
+      - name: Build JS client
+        working-directory: ./clients/js
+        run: pnpm build
+
+      - name: Test JS client
+        working-directory: ./clients/js
+        run: pnpm test
+
+  lint_js:
+    name: Lint JS client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: ./.github/actions/install-node
+        with:
+          version: ${{ inputs.node }}
+          cache: ${{ inputs.cache }}
+
+      - name: Cache JS client dependencies
+        if: inputs.cache == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ./clients/js/node_modules/
+          key: ${{ runner.os }}-clients-js-${{ hashFiles('./clients/js/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-clients-js
+
+      - name: Install JS client dependencies
+        working-directory: ./clients/js
+        run: pnpm install --frozen-lockfile
+
+      - name: Format JS client
+        working-directory: ./clients/js
+        run: pnpm format
+
+      - name: Lint JS client
+        working-directory: ./clients/js
+        run: pnpm lint
