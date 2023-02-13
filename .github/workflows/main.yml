@@ -70,15 +70,15 @@ jobs:
         with:
           filters: .github/file-filters.yml
 
-    debug:
-      name: Clients / Debug
-      runs-on: ubuntu-latest
-      needs: [detect_client_changes]
-      steps:
-        - name: Debug
-          run: |
-            echo "${{ needs.detect_client_changes.outputs.js }}"
-            echo "${{ needs.detect_client_changes.outputs.all.js_client }}"
+  debug_changes:
+    name: Clients / Debug
+    runs-on: ubuntu-latest
+    needs: [detect_client_changes]
+    steps:
+      - name: Debug
+        run: |
+          echo "${{ needs.detect_client_changes.outputs.js }}"
+          echo "${{ needs.detect_client_changes.outputs.all.js_client }}"
 
   test_js:
     name: Clients / JS
