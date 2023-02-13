@@ -48,11 +48,7 @@ jobs:
     needs: changes
     strategy:
       matrix:
-        include:
-          - if: needs.changes.outputs.system_extras_program == 'true'
-            program: system-extras
-          - if: needs.changes.outputs.token_extras_program == 'true'
-            program: token-extras
+        program: [system-extras, token-extras]
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
