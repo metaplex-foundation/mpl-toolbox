@@ -187,11 +187,14 @@ jobs:
           pnpm version ${{ github.event.inputs.bump }} --no-git-tag-version
           echo "new_version=$(pnpm pkg get version)" >> $GITHUB_OUTPUT
 
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish JS client
         working-directory: ./clients/js
         run: pnpm publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Commit and tag new version
         uses: stefanzweifel/git-auto-commit-action@v4
