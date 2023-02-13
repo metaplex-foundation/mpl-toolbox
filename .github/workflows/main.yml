@@ -151,6 +151,7 @@ jobs:
     name: Test JS client
     runs-on: ubuntu-latest
     needs: [generate_clients]
+    if: ${{ github.event_name == 'noop' }}
     strategy:
       matrix:
         node: ["16.x", "18.x"]
@@ -190,6 +191,7 @@ jobs:
     name: Lint JS client
     runs-on: ubuntu-latest
     needs: [generate_clients]
+    if: ${{ github.event_name == 'noop' }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -226,6 +228,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [generate_clients]
     steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
       - name: Call reusable workflow
         uses: ./.github/workflows/test-js.yml
         with:
