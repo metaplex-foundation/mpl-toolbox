@@ -52,13 +52,7 @@ jobs:
           echo "CHANGE_KEYS=$CHANGE_KEYS"
           ACTIVE_CHANGE_KEYS=$(for key in $CHANGE_KEYS; do
             change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
-            if [ ${{ steps.changes.outputs.$change_key }} == "true" ]; then
-              echo $key
-            fi
-          done)
-          ACTIVE_CHANGE_KEYS=$(for key in $CHANGE_KEYS; do
-            change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
-            if [ "true" == "true" ]; then
+            if [ steps.changes.outputs.$change_key == "true" ]; then
               echo $key
             fi
           done)
