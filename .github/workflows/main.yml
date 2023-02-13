@@ -30,11 +30,6 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
-      - name: DEBUG
-        run: |
-          echo "FOO=${{ vars.FOO }}"
-          echo "SOLANA_VERSION=${{ vars.SOLANA_VERSION }}"
-
       - name: Install Node.js
         uses: ./.github/actions/install-node
         with:
@@ -58,7 +53,7 @@ jobs:
         with:
           commit_message: Update generated clients
 
-  verify_js:
+  test_js:
     name: JS client
     needs: [generate_clients]
     uses: ./.github/workflows/test-js.yml
