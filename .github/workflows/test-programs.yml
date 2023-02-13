@@ -51,7 +51,6 @@ jobs:
         include:
           - if: needs.changes.outputs.system_extras_program == 'true'
             program: system-extras
-        include:
           - if: needs.changes.outputs.token_extras_program == 'true'
             program: token-extras
     steps:
