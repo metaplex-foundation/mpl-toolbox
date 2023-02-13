@@ -20,16 +20,16 @@ jobs:
       - name: Install Rust
         uses: ./.github/actions/install-rust
         with:
-          version: ${{ env.RUST_VERSION }}
+          version: ${{ vars.RUST_VERSION }}
 
       - name: Install Solana
         uses: ./.github/actions/install-solana
         with:
-          version: ${{ env.SOLANA_VERSION }}
-          cache: ${{ env.CACHE }}
+          version: ${{ vars.SOLANA_VERSION }}
+          cache: ${{ vars.CACHE }}
 
       - name: Cache program dependencies
-        if: env.CACHE == 'true'
+        if: vars.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -67,16 +67,16 @@ jobs:
       - name: Install Rust
         uses: ./.github/actions/install-rust
         with:
-          version: ${{ env.RUST_VERSION }}
+          version: ${{ vars.RUST_VERSION }}
 
       - name: Install Solana
         uses: ./.github/actions/install-solana
         with:
-          version: ${{ env.SOLANA_VERSION }}
-          cache: ${{ env.CACHE }}
+          version: ${{ vars.SOLANA_VERSION }}
+          cache: ${{ vars.CACHE }}
 
       - name: Cache program dev dependencies
-        if: env.CACHE == 'true'
+        if: vars.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -119,17 +119,17 @@ jobs:
 
       - name: DEBUG
         run: |
-          echo "FOO=${{ env.FOO }}"
-          echo "SOLANA_VERSION=${{ env.SOLANA_VERSION }}"
+          echo "FOO=${{ vars.FOO }}"
+          echo "SOLANA_VERSION=${{ vars.SOLANA_VERSION }}"
 
       - name: Install Node.js
         uses: ./.github/actions/install-node
         with:
-          version: ${{ env.NODE_VERSION }}
-          cache: ${{ env.CACHE }}
+          version: ${{ vars.NODE_VERSION }}
+          cache: ${{ vars.CACHE }}
 
       - name: Cache IDL generators
-        if: env.CACHE == 'true'
+        if: vars.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./.crates/
@@ -151,6 +151,6 @@ jobs:
     uses: ./.github/workflows/verify-js.yml
     secrets: inherit
     with:
-      solana: 1.13.6
-      node: 16.x
-      cache: true
+      solana: ${{ vars.SOLANA_VERSION }}
+      node: ${{ vars.NODE_VERSION }}
+      cache: ${{ vars.CACHE }}
