@@ -54,7 +54,8 @@ jobs:
           echo "CHANGE_KEYS=$CHANGE_KEYS"
           ACTIVE_CHANGE_KEYS=$(for key in $CHANGE_KEYS; do
             change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
-            if [ steps.changes.outputs.$change_key == "true" ]; then
+            index=$(echo $CHANGES | jq -c '. | index("$change_key")')
+            if [ $(echo $index) != 'null' ]; then
               echo $key
             fi
           done)
