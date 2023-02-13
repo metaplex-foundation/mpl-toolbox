@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       bump:
-        description: "The severity of the version bump"
+        description: Version bump
         required: true
-        default: "patch"
+        default: patch
         type: choice
         options:
           - patch
           - minor
           - major
       create_release:
-        description: "Create a GitHub release after publishing"
+        description: Create a GitHub release
         required: true
         type: boolean
         default: true
