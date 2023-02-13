@@ -59,7 +59,6 @@ jobs:
     needs: [generate_clients]
     outputs:
       js: ${{ steps.changes.outputs.js_client }}
-      all: ${{ steps.changes.outputs }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -78,9 +77,6 @@ jobs:
         - name: Debug
           run: |
           echo ${{ needs.detect_client_changes.outputs.js }}
-          echo ${{ needs.detect_client_changes.outputs.all.js_client }}
-          echo ${{ needs.detect_client_changes.outputs.all.clients }}
-          echo ${{ needs.detect_client_changes.outputs.all }}
 
   test_js:
     name: Clients / JS
