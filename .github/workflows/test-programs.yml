@@ -59,7 +59,7 @@ jobs:
             fi
           done)
           echo "ACTIVE_CHANGE_KEYS=$ACTIVE_CHANGE_KEYS"
-          matrix=$(echo $ACTIVE_CHANGE_KEYS | jq -R . | jq -sc .)
+          matrix=$(echo $ACTIVE_CHANGE_KEYS | jq -R . | jq -sc . | sed 's/""//')
           echo "matrix=$matrix"
           echo "matrix='$matrix'" >> $GITHUB_OUTPUT
 
