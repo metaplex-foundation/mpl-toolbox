@@ -54,7 +54,7 @@ jobs:
           commit_message: Update generated clients
 
   test_js:
-    name: JS client
+    name: Clients / JS
     needs: [generate_clients]
     uses: ./.github/workflows/test-js.yml
     secrets: inherit
