@@ -6,13 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  RUST_VERSION: 1.65.0
-  SOLANA_VERSION: 1.13.6
-  NODE_VERSION: 16.x
-  CARGO_TERM_COLOR: always
-  CACHE: true
-
 jobs:
   build_programs:
     name: Build programs
@@ -124,6 +117,11 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
+      - name: DEBUG
+        run: |
+          echo "FOO=${{ env.FOO }}"
+          echo "SOLANA_VERSION=${{ env.SOLANA_VERSION }}"
+
       - name: Install Node.js
         uses: ./.github/actions/install-node
         with:
@@ -147,85 +145,10 @@ jobs:
         with:
           commit_message: Update generated clients
 
-  test_js:
-    name: Test JS client
-    runs-on: ubuntu-latest
+  verify_js:
+    name: Verify JS client
     needs: [generate_clients]
-    if: ${{ github.event_name == 'noop' }}
-    strategy:
-      matrix:
-        node: ["16.x", "18.x"]
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Start validator
-        uses: ./.github/actions/start-validator
-        with:
-          node: ${{ matrix.node }}
-          solana: ${{ env.SOLANA_VERSION }}
-          cache: ${{ env.CACHE }}
-
-      - name: Cache JS client dependencies
-        if: env.CACHE == 'true'
-        uses: actions/cache@v3
-        with:
-          path: ./clients/js/node_modules/
-          key: ${{ runner.os }}-clients-js-${{ hashFiles('./clients/js/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-clients-js
-
-      - name: Install JS client dependencies
-        working-directory: ./clients/js
-        run: pnpm install --frozen-lockfile
-
-      - name: Build JS client
-        working-directory: ./clients/js
-        run: pnpm build
-
-      - name: Test JS client
-        working-directory: ./clients/js
-        run: pnpm test
-
-  lint_js:
-    name: Lint JS client
-    runs-on: ubuntu-latest
-    needs: [generate_clients]
-    if: ${{ github.event_name == 'noop' }}
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Install Node.js
-        uses: ./.github/actions/install-node
-        with:
-          version: ${{ env.NODE_VERSION }}
-          cache: ${{ env.CACHE }}
-
-      - name: Cache JS client dependencies
-        if: env.CACHE == 'true'
-        uses: actions/cache@v3
-        with:
-          path: ./clients/js/node_modules/
-          key: ${{ runner.os }}-clients-js-${{ hashFiles('./clients/js/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-clients-js
-
-      - name: Install JS client dependencies
-        working-directory: ./clients/js
-        run: pnpm install --frozen-lockfile
-
-      - name: Format JS client
-        working-directory: ./clients/js
-        run: pnpm format
-
-      - name: Lint JS client
-        working-directory: ./clients/js
-        run: pnpm lint
-
-  test_and_lint_js:
-    needs: [generate_clients]
-    uses: ./.github/workflows/test-js.yml
+    uses: ./.github/workflows/verify-js.yml
     secrets: inherit
     with:
       solana: 1.13.6
