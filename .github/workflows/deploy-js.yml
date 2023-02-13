@@ -18,6 +18,9 @@ on:
         type: boolean
         default: true
 
+env:
+  CACHE: true
+
 jobs:
   build_programs:
     name: Build programs
@@ -38,10 +41,10 @@ jobs:
         uses: ./.github/actions/install-solana
         with:
           version: ${{ vars.SOLANA_VERSION }}
-          cache: ${{ vars.CACHE }}
+          cache: ${{ env.CACHE }}
 
       - name: Cache program dependencies
-        if: vars.CACHE == 'true'
+        if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -82,10 +85,10 @@ jobs:
         with:
           node: ${{ matrix.node }}
           solana: ${{ vars.SOLANA_VERSION }}
-          cache: ${{ vars.CACHE }}
+          cache: ${{ env.CACHE }}
 
       - name: Cache JS client dependencies
-        if: vars.CACHE == 'true'
+        if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./clients/js/node_modules/
@@ -117,10 +120,10 @@ jobs:
         uses: ./.github/actions/install-node
         with:
           version: ${{ vars.NODE_VERSION }}
-          cache: ${{ vars.CACHE }}
+          cache: ${{ env.CACHE }}
 
       - name: Cache JS client dependencies
-        if: vars.CACHE == 'true'
+        if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./clients/js/node_modules/
@@ -154,10 +157,10 @@ jobs:
         uses: ./.github/actions/install-node
         with:
           version: ${{ vars.NODE_VERSION }}
-          cache: ${{ vars.CACHE }}
+          cache: ${{ env.CACHE }}
 
       - name: Cache JS client dependencies
-        if: vars.CACHE == 'true'
+        if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./clients/js/node_modules/
