@@ -156,4 +156,4 @@ jobs:
     with:
       solana: ${{ vars.SOLANA_VERSION }}
       node: ${{ vars.NODE_VERSION }}
-      cache: ${{ env.CACHE }}
+      cache: true
