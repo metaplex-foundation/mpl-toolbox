@@ -4,7 +4,7 @@
 
 # Programs.
 
-program_actions: &program_actions
+program_common: &program_common
   - ".github/actions/install-rust/**"
   - ".github/actions/install-solana/**"
   - ".github/workflows/build-programs.yml"
@@ -12,11 +12,11 @@ program_actions: &program_actions
   - ".github/workflows/main.yml"
 
 system_extras_program: &system_extras_program
-  - *program_actions
+  - *program_common
   - "programs/system-extras/**"
 
 token_extras_program: &token_extras_program
-  - *program_actions
+  - *program_common
   - "programs/token-extras/**"
 
 programs: &programs
@@ -25,16 +25,18 @@ programs: &programs
 
 # Clients.
 
-client_actions: &client_actions
+client_common: &client_common
   - ".github/actions/install-js-client/**"
   - ".github/actions/install-node/**"
   - ".github/actions/install-solana/**"
   - ".github/actions/start-validator/**"
   - ".github/workflows/test-js.yml"
   - ".github/workflows/main.yml"
+  - "infra/shank.cjs"
+  - "infra/kinobi.cjs"
 
 js_client: &js_client
-  - *client_actions
+  - *client_common
   - "clients/js/**"
 
 clients: &clients
