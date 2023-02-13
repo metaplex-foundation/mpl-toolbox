@@ -31,7 +31,6 @@ jobs:
   test_programs:
     name: Test
     runs-on: ubuntu-latest
-    needs: changes
     strategy:
       matrix:
         program: ${{ fromJson(inputs.program_matrix || '["system-extras", "token-extras"]') }}
