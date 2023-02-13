@@ -32,8 +32,8 @@ client_common: &client_common
   - ".github/actions/start-validator/**"
   - ".github/workflows/test-js.yml"
   - ".github/workflows/main.yml"
-  - "infra/shank.cjs"
-  - "infra/kinobi.cjs"
+  - "configs/shank.cjs"
+  - "configs/kinobi.cjs"
 
 js_client: &js_client
   - *client_common
