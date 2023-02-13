@@ -151,6 +151,8 @@ jobs:
     name: Deploy JS client
     runs-on: ubuntu-latest
     needs: [test_js, lint_js]
+    permissions:
+      contents: write
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -179,13 +181,24 @@ jobs:
         run: pnpm build
 
       - name: Bump JS client
+        id: bump
         working-directory: ./clients/js
-        run: pnpm version ${{ github.event.inputs.bump }} --no-git-tag-version
+        run: |
+          pnpm version ${{ github.event.inputs.bump }} --no-git-tag-version
+          echo "new_version=$(pnpm pkg get version)" >> $GITHUB_OUTPUT
 
-      - name: Debug
+      - name: Publish JS client
         working-directory: ./clients/js
-        run: git diff
+        run: pnpm publish --no-git-checks
 
-      # TODO: Commit new version
-      # TODO: Publish JS client
-      # TODO: Create GitHub release
+      - name: Commit and tag new version
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Deploy JS client v${{ steps.bump.outputs.new_version }}
+          tagging_message: js@v${{ steps.bump.outputs.new_version }}
+
+      - name: Create GitHub release
+        if: github.event.inputs.create_release == 'true'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: js@v${{ steps.bump.outputs.new_version }}
