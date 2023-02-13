@@ -9,6 +9,8 @@ on:
       solana:
         default: ${{ vars.SOLANA_VERSION }}
         type: string
+      program_matrix:
+        type: string
   workflow_dispatch:
     inputs:
       rust:
@@ -27,45 +29,13 @@ env:
   PROGRAMS: '["system-extras", "token-extras"]'
 
 jobs:
-  changes:
-    name: Detect changes
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.program_matrix.outputs.matrix }}
-      system_extras: ${{ steps.changes.outputs.system_extras_program }}
-      token_extras: ${{ steps.changes.outputs.token_extras_program }}
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Detect changes
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: .github/file-filters.yml
-
-      - name: Get matrix of programs to test
-        id: program_matrix
-        run: |
-          CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) }})
-          KEYS=$(echo $PROGRAMS | jq -c '.[]' | sed 's/"//g')
-          CHANGED_KEYS=$(for key in $KEYS; do
-            change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
-            index=$(echo $CHANGES | jq -c ". | index(\"$change_key\")")
-            if [ $(echo $index) != 'null' ]; then
-              echo $key
-            fi
-          done)
-          echo "matrix=$(echo "$CHANGED_KEYS" | jq -R . | jq -sc . | sed 's/""//')" | tee $GITHUB_OUTPUT
-
   test_programs:
     name: Test
     runs-on: ubuntu-latest
     needs: changes
-    if: ${{ needs.changes.outputs.matrix != '[]' }}
     strategy:
       matrix:
-        program: ${{ fromJson(needs.changes.outputs.matrix) }}
+        program: ${{ fromJson(inputs.program_matrix || env.PROGRAMS) }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
