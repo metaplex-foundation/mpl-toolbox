@@ -9,12 +9,6 @@ on:
       solana:
         default: ${{ vars.SOLANA_VERSION }}
         type: string
-      skip-system-extras:
-        default: false
-        type: string
-      skip-token-extras:
-        default: false
-        type: string
   workflow_dispatch:
     inputs:
       rust:
@@ -32,13 +26,34 @@ env:
   CACHE: true
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      system_extras: ${{ steps.changes.outputs.system_extras_program }}
+      token_extras: ${{ steps.changes.outputs.token_extras_program }}
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: .github/file-filters.yml
+
   test_programs:
     name: Test
     runs-on: ubuntu-latest
+    needs: changes
     strategy:
       matrix:
-        program: ["system-extras", "token-extras"]
-    if: inputs[format('skip-{0}', matrix.program)] != 'true'
+        include:
+          - if: needs.changes.outputs.system_extras_program == 'true'
+            program: system-extras
+        include:
+          - if: needs.changes.outputs.token_extras_program == 'true'
+            program: token-extras
     steps:
       - name: Git checkout
         uses: actions/checkout@v3

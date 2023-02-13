@@ -15,30 +15,10 @@ jobs:
     uses: ./.github/workflows/build-programs.yml
     secrets: inherit
 
-  detect_program_changes:
-    name: Programs / Detect changes
-    runs-on: ubuntu-latest
-    outputs:
-      system_extras: ${{ steps.changes.outputs.system_extras_program }}
-      token_extras: ${{ steps.changes.outputs.token_extras_program }}
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Detect changes
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: .github/file-filters.yml
-
   test_programs:
     name: Programs
-    needs: [detect_program_changes]
     uses: ./.github/workflows/test-programs.yml
     secrets: inherit
-    with:
-      skip-system-extras: needs.detect_program_changes.outputs.system_extras
-      skip-token-extras: needs.detect_program_changes.outputs.token_extras
 
   generate_clients:
     name: Clients / Generate
