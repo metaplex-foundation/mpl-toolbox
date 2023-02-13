@@ -6,7 +6,6 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-export * from './dummyChallenge';
 export * from './mint';
 export * from './multisig';
 export * from './token';

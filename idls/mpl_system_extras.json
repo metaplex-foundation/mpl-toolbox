@@ -68,24 +68,6 @@
       }
     }
   ],
-  "accounts": [
-    {
-      "name": "DummyChallenge",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "authority",
-            "type": "publicKey"
-          },
-          {
-            "name": "bump3",
-            "type": "u8"
-          }
-        ]
-      }
-    }
-  ],
   "errors": [
     {
       "code": 0,
