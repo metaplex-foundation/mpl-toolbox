@@ -48,19 +48,16 @@ jobs:
         id: program_matrix
         run: |
           CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) }})
-          echo "CHANGES=$CHANGES"
-          echo "PROGRAMS=$PROGRAMS"
           CHANGE_KEYS=$(echo $PROGRAMS | jq -c '.[]' | sed 's/"//g')
-          echo "CHANGE_KEYS=$CHANGE_KEYS"
           ACTIVE_CHANGE_KEYS=$(for key in $CHANGE_KEYS; do
             change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
             index=$(echo $CHANGES | jq -c ". | index(\"$change_key\")")
             if [ $(echo $index) != 'null' ]; then
-              echo "$key\n"
+              echo $key
             fi
           done)
           echo "ACTIVE_CHANGE_KEYS=$ACTIVE_CHANGE_KEYS"
-          matrix=$(echo $ACTIVE_CHANGE_KEYS | jq -R . | jq -sc . | sed 's/""//')
+          matrix=$(echo "$ACTIVE_CHANGE_KEYS" | jq -R . | jq -sc . | sed 's/""//')
           echo "matrix=$matrix"
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
