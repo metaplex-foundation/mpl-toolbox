@@ -15,11 +15,9 @@ on:
     inputs:
       solana:
         required: true
-        default: ${{ vars.SOLANA_VERSION }}
         type: string
       node:
         required: true
-        default: ${{ vars.NODE_VERSION }}
         type: string
 
 env:
