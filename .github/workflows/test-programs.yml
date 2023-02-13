@@ -26,7 +26,6 @@ on:
 
 env:
   CACHE: true
-  PROGRAMS: '["system-extras", "token-extras"]'
 
 jobs:
   test_programs:
@@ -35,7 +34,7 @@ jobs:
     needs: changes
     strategy:
       matrix:
-        program: ${{ fromJson(inputs.program_matrix || env.PROGRAMS) }}
+        program: ${{ fromJson(inputs.program_matrix || '["system-extras", "token-extras"]') }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
