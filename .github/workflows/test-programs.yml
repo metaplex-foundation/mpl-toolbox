@@ -24,6 +24,7 @@ on:
 
 env:
   CACHE: true
+  PROGRAMS: '["system-extras", "token-extras"]'
 
 jobs:
   changes:
@@ -43,9 +44,27 @@ jobs:
           filters: .github/file-filters.yml
 
       - name: Get matrix of programs to test
+        id: program_matrix
         run: |
-          PROGRAMS='["system-extras", "token-extras"]'
-          echo "$PROGRAMS"
+          echo "PROGRAMS=$PROGRAMS"
+          CHANGE_KEYS=$(echo $PROGRAMS | jq -c '.[]' | sed 's/"//g')
+          echo "CHANGE_KEYS=$CHANGE_KEYS"
+          ACTIVE_CHANGE_KEYS=$(for key in $CHANGE_KEYS; do
+            change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
+            if [ ${{ steps.changes.outputs.$change_key }} == "true" ]; then
+              echo $key
+            fi
+          done)
+          ACTIVE_CHANGE_KEYS=$(for key in $CHANGE_KEYS; do
+            change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
+            if [ "true" == "true" ]; then
+              echo $key
+            fi
+          done)
+          echo "ACTIVE_CHANGE_KEYS=$ACTIVE_CHANGE_KEYS"
+          matrix=$(echo $ACTIVE_CHANGE_KEYS | jq -R . | jq -sc .)
+          echo "matrix=$matrix"
+          echo "matrix='$matrix'" >> $GITHUB_OUTPUT
 
   test_programs:
     name: Test
@@ -53,7 +72,7 @@ jobs:
     needs: changes
     strategy:
       matrix:
-        program: [system-extras, token-extras]
+        program: ${{fromJson(needs.program_matrix.outputs.matrix)}}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
