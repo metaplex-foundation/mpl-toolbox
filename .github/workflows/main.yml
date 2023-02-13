@@ -149,11 +149,7 @@ jobs:
           commit_message: Update generated clients
 
   verify_js:
-    name: Verify JS client
+    name: JS client
     needs: [generate_clients]
     uses: ./.github/workflows/verify-js.yml
     secrets: inherit
-    with:
-      solana: ${{ vars.SOLANA_VERSION }}
-      node: ${{ vars.NODE_VERSION }}
-      cache: true

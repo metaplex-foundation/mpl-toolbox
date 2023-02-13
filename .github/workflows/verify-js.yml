@@ -1,23 +1,29 @@
 name: Verify JS client
 
-shared_inputs: &shared_inputs
-  solana:
-    required: true
-    type: string
-  node:
-    required: true
-    type: string
-  cache:
-    required: true
-    type: string
-
 on:
   workflow_call:
     inputs:
-      <<: *shared_inputs
+      solana:
+        required: true
+        default: ${{ vars.SOLANA_VERSION }}
+        type: string
+      node:
+        required: true
+        default: ${{ vars.NODE_VERSION }}
+        type: string
   workflow_dispatch:
     inputs:
-      <<: *shared_inputs
+      solana:
+        required: true
+        default: ${{ vars.SOLANA_VERSION }}
+        type: string
+      node:
+        required: true
+        default: ${{ vars.NODE_VERSION }}
+        type: string
+
+env:
+  CACHE: true
 
 jobs:
   test:
@@ -35,10 +41,10 @@ jobs:
         with:
           node: ${{ matrix.node }}
           solana: ${{ inputs.solana }}
-          cache: ${{ inputs.cache }}
+          cache: ${{ env.CACHE }}
 
       - name: Cache dependencies
-        if: inputs.cache == 'true'
+        if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./clients/js/node_modules/
@@ -69,10 +75,10 @@ jobs:
         uses: ./.github/actions/install-node
         with:
           version: ${{ inputs.node }}
-          cache: ${{ inputs.cache }}
+          cache: ${{ env.CACHE }}
 
       - name: Cache dependencies
-        if: inputs.cache == 'true'
+        if: env.CACHE == 'true'
         uses: actions/cache@v3
         with:
           path: ./clients/js/node_modules/
