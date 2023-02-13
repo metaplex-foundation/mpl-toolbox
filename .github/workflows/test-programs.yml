@@ -47,6 +47,9 @@ jobs:
       - name: Get matrix of programs to test
         id: program_matrix
         run: |
+          CHANGES=$(echo ${{ steps.changes.outputs.changes }} | jq -R . | jq -sc .)
+          echo "CHANGES=$CHANGES"
+          echo ${{ steps.changes.outputs.changes }}
           echo "PROGRAMS=$PROGRAMS"
           CHANGE_KEYS=$(echo $PROGRAMS | jq -c '.[]' | sed 's/"//g')
           echo "CHANGE_KEYS=$CHANGE_KEYS"
