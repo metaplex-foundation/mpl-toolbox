@@ -1,0 +1,19 @@
+# Programs.
+
+system_extras_program: &system_extras_program
+  - "programs/system-extras/**"
+
+token_extras_program: &token_extras_program
+  - "programs/token-extras/**"
+
+programs: &programs
+  - *system_extras_program
+  - *token_extras_program
+
+# Clients.
+
+js_client: &js_client
+  - "clients/js/**"
+
+clients: &clients
+  - *js_client

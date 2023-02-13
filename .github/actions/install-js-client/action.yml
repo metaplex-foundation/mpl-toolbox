@@ -20,3 +20,4 @@ runs:
     - name: Install dependencies
       working-directory: ./clients/js
       run: pnpm install --frozen-lockfile
+      shell: bash
