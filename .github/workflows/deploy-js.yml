@@ -72,7 +72,7 @@ jobs:
   verify_js:
     name: JS client
     needs: [build_programs]
-    uses: ./.github/workflows/verify-js.yml
+    uses: ./.github/workflows/test-js.yml
     secrets: inherit
 
   deploy_js:
