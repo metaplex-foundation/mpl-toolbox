@@ -185,7 +185,7 @@ jobs:
         working-directory: ./clients/js
         run: |
           pnpm version ${{ github.event.inputs.bump }} --no-git-tag-version
-          echo "new_version=$(pnpm pkg get version)" >> $GITHUB_OUTPUT
+          echo "new_version=$(pnpm pkg get version | sed 's/"//g')" >> $GITHUB_OUTPUT
 
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
