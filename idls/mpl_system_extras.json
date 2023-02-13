@@ -79,7 +79,7 @@
             "type": "publicKey"
           },
           {
-            "name": "bump2",
+            "name": "bump3",
             "type": "u8"
           }
         ]
