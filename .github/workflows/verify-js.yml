@@ -1,17 +1,23 @@
 name: Verify JS client
 
+shared_inputs: &shared_inputs
+  solana:
+    required: true
+    type: string
+  node:
+    required: true
+    type: string
+  cache:
+    required: true
+    type: string
+
 on:
   workflow_call:
     inputs:
-      solana:
-        required: true
-        type: string
-      node:
-        required: true
-        type: string
-      cache:
-        required: true
-        type: string
+      <<: *shared_inputs
+  workflow_dispatch:
+    inputs:
+      <<: *shared_inputs
 
 jobs:
   test:
