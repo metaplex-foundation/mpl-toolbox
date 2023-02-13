@@ -11,51 +11,9 @@ env:
 
 jobs:
   build_programs:
-    name: Build programs
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        program: ["system-extras", "token-extras"]
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Install Rust
-        uses: ./.github/actions/install-rust
-        with:
-          version: ${{ vars.RUST_VERSION }}
-
-      - name: Install Solana
-        uses: ./.github/actions/install-solana
-        with:
-          version: ${{ vars.SOLANA_VERSION }}
-          cache: ${{ env.CACHE }}
-
-      - name: Cache program dependencies
-        if: env.CACHE == 'true'
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            ./programs/${{ matrix.program }}/target/
-          key: ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
-          restore-keys: |
-            ${{ runner.os }}-program-${{ matrix.program }}
-
-      - name: Build program
-        working-directory: ./programs/${{ matrix.program }}
-        run: cargo build-bpf
-
-      - name: Upload program builds
-        uses: actions/upload-artifact@v3
-        with:
-          name: program-builds
-          # First wildcard ensures exported paths are consistently under the programs folder.
-          path: ./program*/**/target/deploy/*.so
-          if-no-files-found: error
+    name: Programs
+    uses: ./.github/workflows/build-programs.yml
+    secrets: inherit
 
   test_programs:
     name: Test and lint programs
