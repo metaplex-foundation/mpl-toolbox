@@ -227,3 +227,7 @@ jobs:
     needs: [generate_clients]
     uses: ./.github/workflows/test-js.yml
     secrets: inherit
+    with:
+      solana: 1.13.6
+      node: 16.x
+      cache: true
