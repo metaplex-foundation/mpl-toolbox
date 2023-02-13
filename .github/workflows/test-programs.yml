@@ -31,6 +31,7 @@ jobs:
     name: Detect changes
     runs-on: ubuntu-latest
     outputs:
+      matrix: ${{ steps.program_matrix.outputs.matrix }}
       system_extras: ${{ steps.changes.outputs.system_extras_program }}
       token_extras: ${{ steps.changes.outputs.token_extras_program }}
     steps:
@@ -72,7 +73,7 @@ jobs:
     needs: changes
     strategy:
       matrix:
-        program: ${{fromJson(needs.program_matrix.outputs.matrix)}}
+        program: ${{fromJson(needs.changes.outputs.matrix)}}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
