@@ -4,11 +4,11 @@ import {
 } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createMint, createToken, fetchToken, mintTokensTo } from '../src';
-import { createMetaplex } from './_setup';
+import { createUmi } from './_setup';
 
 test('it can mint tokens to an existing token account', async (t) => {
   // Given an empty token account.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mintAuthority = generateSigner(metaplex);
   const mint = generateSigner(metaplex);
   const token = generateSigner(metaplex);

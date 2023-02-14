@@ -22,11 +22,11 @@ import {
   TokExInvalidTokenOwnerError,
   TokExInvalidTokenProgramError,
 } from '../src';
-import { createMetaplex, createMint } from './_setup';
+import { createUmi, createMint } from './_setup';
 
 test('it creates a new associated token if missing', async (t) => {
   // Given an existing mint and owner with no associated token account.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const owner = generateSigner(metaplex).publicKey;
 
@@ -49,7 +49,7 @@ test('it creates a new associated token if missing', async (t) => {
 
 test('it defaults to the identity if no owner is provided', async (t) => {
   // Given an existing mint without an associated token account with the identity.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const identity = metaplex.identity.publicKey;
 
@@ -72,7 +72,7 @@ test('it defaults to the identity if no owner is provided', async (t) => {
 
 test('the payer pays for the storage fees if a token account gets created', async (t) => {
   // Given an existing mint and a payer.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const payer = await generateSignerWithSol(metaplex, sol(100));
   const identity = metaplex.identity.publicKey;
@@ -95,7 +95,7 @@ test('the payer pays for the storage fees if a token account gets created', asyn
 
 test('it does not create an account if an associated token account already exists', async (t) => {
   // Given an existing mint, owner and associated token account.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const owner = generateSigner(metaplex).publicKey;
   const ata = findAssociatedTokenPda(metaplex, { mint, owner });
@@ -122,7 +122,7 @@ test('it does not create an account if an associated token account already exist
 
 test('it does not create an account if a regular token account already exists', async (t) => {
   // Given an existing mint, owner and a regular token account between them.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const owner = generateSigner(metaplex).publicKey;
   const token = generateSigner(metaplex);
@@ -155,7 +155,7 @@ test('it does not create an account if a regular token account already exists', 
 
 test('it fail if we provide the wrong system program', async (t) => {
   // Given an existing mint and a wrong system program.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const systemProgram = generateSigner(metaplex).publicKey;
 
@@ -170,7 +170,7 @@ test('it fail if we provide the wrong system program', async (t) => {
 
 test('it fail if we provide the wrong token program', async (t) => {
   // Given an existing mint and a wrong token program.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const tokenProgram = generateSigner(metaplex).publicKey;
 
@@ -185,7 +185,7 @@ test('it fail if we provide the wrong token program', async (t) => {
 
 test('it fail if we provide the wrong ata program', async (t) => {
   // Given an existing mint and a wrong ata program.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const ataProgram = generateSigner(metaplex).publicKey;
 
@@ -202,7 +202,7 @@ test('it fail if we provide the wrong ata program', async (t) => {
 
 test('it fail if the ata account does not match the mint and owner', async (t) => {
   // Given a mint, an owner and an invalid ata address.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const owner = generateSigner(metaplex).publicKey;
   const invalidAta = generateSigner(metaplex).publicKey;
@@ -220,7 +220,7 @@ test('it fail if the ata account does not match the mint and owner', async (t) =
 
 test('it fail if the existing token account is not associated with the given mint', async (t) => {
   // Given a mint, an owner and a token account associated with the wrong mint.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const wrongMint = (await createMint(metaplex)).publicKey;
   const owner = generateSigner(metaplex).publicKey;
@@ -242,7 +242,7 @@ test('it fail if the existing token account is not associated with the given min
 
 test('it fail if the existing token account is not associated with the given owner', async (t) => {
   // Given a mint, an owner and a token account associated with the wrong owner.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const owner = generateSigner(metaplex).publicKey;
   const wrongOwner = generateSigner(metaplex).publicKey;
@@ -264,7 +264,7 @@ test('it fail if the existing token account is not associated with the given own
 
 test('it fail if the non existing token account is not an ata account', async (t) => {
   // Given an existing mint/owner pair with no token account.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
   const owner = generateSigner(metaplex).publicKey;
 

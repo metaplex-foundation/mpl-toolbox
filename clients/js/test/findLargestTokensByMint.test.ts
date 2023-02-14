@@ -1,11 +1,11 @@
 import { tokenAmount } from '@metaplex-foundation/umi-core';
 import test from 'ava';
 import { findLargestTokensByMint } from '../src';
-import { createMetaplex, createMint, createToken } from './_setup';
+import { createUmi, createMint, createToken } from './_setup';
 
 test('it gets all token accounts ordered by descending amounts', async (t) => {
   // Given an existing mint.
-  const mx = await createMetaplex();
+  const mx = await createUmi();
   const mint = await createMint(mx);
 
   // And a token account A with 1 token.

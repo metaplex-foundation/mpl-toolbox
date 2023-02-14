@@ -1,40 +1,39 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  createMetaplex as baseCreateMetaplex,
+  createUmi as basecreateUmi,
   generateSigner,
-  Metaplex,
   Option,
   PublicKey,
   Signer,
   transactionBuilder,
+  Umi
 } from '@metaplex-foundation/umi-test';
 import {
-  mplEssentials,
   createMint as baseCreateMint,
   createToken as baseCreateToken,
-  mintTokensTo,
+  mintTokensTo, mplEssentials
 } from '../src';
 
-export const createMetaplex = async () =>
-  (await baseCreateMetaplex()).use(mplEssentials());
+export const createUmi = async () =>
+  (await basecreateUmi()).use(mplEssentials());
 
 export const createMint = async (
-  metaplex: Metaplex,
+  umi: Umi,
   input: {
     decimals?: number;
     mintAuthority?: PublicKey;
     freezeAuthority?: Option<PublicKey>;
   } = {}
 ): Promise<Signer> => {
-  const mint = generateSigner(metaplex);
-  await transactionBuilder(metaplex)
-    .add(baseCreateMint(metaplex, { mint, ...input }))
+  const mint = generateSigner(umi);
+  await transactionBuilder(umi)
+    .add(baseCreateMint(umi, { mint, ...input }))
     .sendAndConfirm();
   return mint;
 };
 
 export const createToken = async (
-  metaplex: Metaplex,
+  umi: Umi,
   input: {
     mint: PublicKey;
     amount?: number | bigint;
@@ -42,9 +41,9 @@ export const createToken = async (
     mintAuthority?: Signer;
   }
 ): Promise<Signer> => {
-  const token = generateSigner(metaplex);
-  let builder = transactionBuilder(metaplex).add(
-    baseCreateToken(metaplex, {
+  const token = generateSigner(umi);
+  let builder = transactionBuilder(umi).add(
+    baseCreateToken(umi, {
       token,
       mint: input.mint,
       owner: input.owner,
@@ -52,7 +51,7 @@ export const createToken = async (
   );
   if (input.amount) {
     builder = builder.add(
-      mintTokensTo(metaplex, {
+      mintTokensTo(umi, {
         mint: input.mint,
         mintAuthority: input.mintAuthority,
         token: token.publicKey,
@@ -65,7 +64,7 @@ export const createToken = async (
 };
 
 export const createMintAndToken = async (
-  metaplex: Metaplex,
+  umi: Umi,
   input: {
     decimals?: number;
     mintAuthority?: Signer;
@@ -74,12 +73,12 @@ export const createMintAndToken = async (
     amount?: number | bigint;
   } = {}
 ): Promise<[Signer, Signer]> => {
-  const mint = await createMint(metaplex, {
+  const mint = await createMint(umi, {
     decimals: input.decimals,
     mintAuthority: input.mintAuthority?.publicKey,
     freezeAuthority: input.freezeAuthority,
   });
-  const token = await createToken(metaplex, {
+  const token = await createToken(umi, {
     mint: mint.publicKey,
     amount: input.amount,
     owner: input.owner,

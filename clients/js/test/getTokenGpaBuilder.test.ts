@@ -1,11 +1,11 @@
 import { generateSigner } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { getTokenGpaBuilder } from '../src';
-import { createMetaplex, createMint, createToken } from './_setup';
+import { createUmi, createMint, createToken } from './_setup';
 
 test('it can fetch token accounts by owner', async (t) => {
   // Given two token accounts A and B owned by owners A and B respectively.
-  const mx = await createMetaplex();
+  const mx = await createUmi();
   const ownerA = generateSigner(mx).publicKey;
   const ownerB = generateSigner(mx).publicKey;
   const mint = (await createMint(mx)).publicKey;

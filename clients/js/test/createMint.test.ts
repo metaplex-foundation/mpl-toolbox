@@ -9,11 +9,11 @@ import {
 } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createMint, fetchMint, getMintSize, Mint } from '../src';
-import { createMetaplex } from './_setup';
+import { createUmi } from './_setup';
 
 test('it can create new mint accounts with minimum configuration', async (t) => {
   // Given a payer and an account signer.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
   const newAccount = generateSigner(metaplex);
 
@@ -53,7 +53,7 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
 
 test('it can create new mint accounts with maximum configuration', async (t) => {
   // Given an account signer and a mint authority.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const newAccount = generateSigner(metaplex);
   const mintAuthority = generateSigner(metaplex).publicKey;
 

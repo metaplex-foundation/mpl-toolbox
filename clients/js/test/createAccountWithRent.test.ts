@@ -8,11 +8,11 @@ import {
 } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createAccountWithRent } from '../src';
-import { createMetaplex } from './_setup';
+import { createUmi } from './_setup';
 
 test('it can create new accounts at the current rent-exemption price', async (t) => {
   // Given a payer and an account signer.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
   const newAccount = generateSigner(metaplex);
 
@@ -56,7 +56,7 @@ test('it can create new accounts at the current rent-exemption price', async (t)
 
 test('it knows how much space will be created on chain', async (t) => {
   // Given a transaction builder creating a new account with rent with 42 bytes of data.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const builder = transactionBuilder(metaplex).add(
     createAccountWithRent(metaplex, {
       newAccount: generateSigner(metaplex),

@@ -15,11 +15,11 @@ import {
   Token,
   TokenState,
 } from '../src';
-import { createMetaplex } from './_setup';
+import { createUmi } from './_setup';
 
 test('it can create new associated token accounts with minimum configuration', async (t) => {
   // Given an existing mint.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const newMint = generateSigner(metaplex);
   await transactionBuilder(metaplex)
     .add(createMint(metaplex, { mint: newMint }))
@@ -57,7 +57,7 @@ test('it can create new associated token accounts with minimum configuration', a
 
 test('it can create new associated token accounts with maximum configuration', async (t) => {
   // Given an existing mint account and various signers.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const payer = await generateSignerWithSol(metaplex);
   const payerBalance = await metaplex.rpc.getBalance(payer.publicKey);
   const newOwner = generateSigner(metaplex);

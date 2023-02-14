@@ -4,11 +4,11 @@ import {
 } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createToken, fetchToken, mintTokensTo, transferTokens } from '../src';
-import { createMetaplex, createMint } from './_setup';
+import { createUmi, createMint } from './_setup';
 
 test('it can transfer tokens from one account to another', async (t) => {
   // Given an existing mint.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const mint = (await createMint(metaplex)).publicKey;
 
   // And a token account A from owner A with 50 tokens.

@@ -8,11 +8,11 @@ import {
 } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { transferSol } from '../src';
-import { createMetaplex } from './_setup';
+import { createUmi } from './_setup';
 
 test('it can create transfer SOLs', async (t) => {
   // Given two wallets A and B with 50 SOL each.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const walletA = await generateSignerWithSol(metaplex, sol(50));
   const walletB = await generateSignerWithSol(metaplex, sol(50));
   const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
@@ -45,7 +45,7 @@ test('it can create transfer SOLs', async (t) => {
 
 test('it defaults to transferring from the identity', async (t) => {
   // Given a destination wallet with no SOL.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
   const destination = generateSigner(metaplex);
 
   // And an identity wallet with 100 SOL.

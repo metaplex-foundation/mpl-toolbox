@@ -1,4 +1,4 @@
-import { MetaplexPlugin } from '@metaplex-foundation/umi-core';
+import { UmiPlugin } from '@metaplex-foundation/umi-core';
 import {
   getMplSystemExtrasProgram,
   getMplTokenExtrasProgram,
@@ -8,13 +8,13 @@ import {
   getSplTokenProgram,
 } from './generated';
 
-export const mplEssentials = (): MetaplexPlugin => ({
-  install(metaplex) {
-    metaplex.programs.add(getSplSystemProgram(), false);
-    metaplex.programs.add(getSplMemoProgram(), false);
-    metaplex.programs.add(getSplTokenProgram(), false);
-    metaplex.programs.add(getSplAssociatedTokenProgram(), false);
-    metaplex.programs.add(getMplSystemExtrasProgram(), false);
-    metaplex.programs.add(getMplTokenExtrasProgram(), false);
+export const mplEssentials = (): UmiPlugin => ({
+  install(umi) {
+    umi.programs.add(getSplSystemProgram(), false);
+    umi.programs.add(getSplMemoProgram(), false);
+    umi.programs.add(getSplTokenProgram(), false);
+    umi.programs.add(getSplAssociatedTokenProgram(), false);
+    umi.programs.add(getMplSystemExtrasProgram(), false);
+    umi.programs.add(getMplTokenExtrasProgram(), false);
   },
 });

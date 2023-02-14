@@ -1,11 +1,11 @@
 import { transactionBuilder } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { addMemo } from '../src';
-import { createMetaplex } from './_setup';
+import { createUmi } from './_setup';
 
 test('it can add a memo to a transaction', async (t) => {
   // Given a Metaplex context.
-  const metaplex = await createMetaplex();
+  const metaplex = await createUmi();
 
   // When we add a memo to a transaction.
   const { signature } = await transactionBuilder(metaplex)
