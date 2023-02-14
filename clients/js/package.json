@@ -6,10 +6,8 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.json",
-    "test": "ava",
-    "bump": "pnpm version",
-    "deploy": "pnpm build && pnpm test && pnpm publish",
     "build:docs": "typedoc",
+    "test": "ava",
     "lint": "eslint --ext js,ts,tsx src",
     "lint:fix": "eslint --fix --ext js,ts,tsx src",
     "format": "prettier --check src test",
