@@ -10,7 +10,7 @@ runs:
   steps:
     - name: Install Rust
       id: rust_toolchain
-      uses: actions-rs/toolchain@v2
+      uses: actions-rs/toolchain@v1
       with:
         toolchain: ${{ inputs.version }}
         override: true
