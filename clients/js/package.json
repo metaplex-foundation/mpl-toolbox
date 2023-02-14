@@ -1,5 +1,5 @@
 {
-  "name": "@lorisleiva/mpl-essentials",
+  "name": "@metaplex-foundation/mpl-essentials",
   "version": "0.0.7",
   "description": "Auto-generated essential Solana and Metaplex programs",
   "main": "dist/src/index.js",
