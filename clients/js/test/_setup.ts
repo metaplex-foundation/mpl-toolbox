@@ -6,12 +6,13 @@ import {
   PublicKey,
   Signer,
   transactionBuilder,
-  Umi
+  Umi,
 } from '@metaplex-foundation/umi-test';
 import {
   createMint as baseCreateMint,
   createToken as baseCreateToken,
-  mintTokensTo, mplEssentials
+  mintTokensTo,
+  mplEssentials,
 } from '../src';
 
 export const createUmi = async () =>
