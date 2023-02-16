@@ -30,17 +30,20 @@ jobs:
       - name: Get matrix of programs to test
         id: program_matrix
         env:
-          PROGRAMS: ${{ vars.PROGRAMS }}
+          ORIGINAL: ${{ vars.PROGRAMS }}
         run: |
-          CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) }})
-          KEYS=$(echo $PROGRAMS | jq -c '.[]' | sed 's/"//g')
-          CHANGED_KEYS=$(for key in $KEYS; do
-            change_key=$(echo $key | sed 's/-/_/g' | sed 's/$/_program/')
+          CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) | sed 's/-/_/g' }})
+          echo "CHANGES=$CHANGES"
+          ORIGINAL_KEYS=$(echo $ORIGINAL | jq -c '.[]' | sed 's/"//g')
+          echo "ORIGINAL_KEYS=$ORIGINAL_KEYS"
+          CHANGED_KEYS=$(for key in $ORIGINAL_KEYS; do
+            change_key=$(echo $key | sed 's/^//' | sed 's/$/_program/' | sed 's/-/_/g')
             index=$(echo $CHANGES | jq -c ". | index(\"$change_key\")")
             if [ $(echo $index) != 'null' ]; then
               echo $key
             fi
           done)
+          echo "CHANGED_KEYS=$CHANGED_KEYS"
           echo "matrix=$(echo "$CHANGED_KEYS" | jq -R . | jq -sc . | sed 's/""//')" | tee $GITHUB_OUTPUT
 
   build_programs:
