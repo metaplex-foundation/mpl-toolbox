@@ -52,11 +52,10 @@ jobs:
       - name: Cache program dependencies
         if: env.CACHE == 'true'
         uses: metaplex-foundation/actions/cache-program@v1
-        uses: actions/cache@v3
         with:
           folder: ./programs/${{ matrix.program }}
           key: program-${{ matrix.program }}
-        
+
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
