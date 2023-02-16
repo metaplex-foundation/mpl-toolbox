@@ -27,24 +27,13 @@ jobs:
         with:
           filters: .github/file-filters.yml
 
-      - name: Get matrix of programs to test
+      - name: Filter program matrix
         id: program_matrix
-        env:
-          ORIGINAL: ${{ vars.PROGRAMS }}
-        run: |
-          CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) }} | sed 's/-/_/g')
-          echo "CHANGES=$CHANGES"
-          ORIGINAL_KEYS=$(echo $ORIGINAL | jq -c '.[]' | sed 's/"//g')
-          echo "ORIGINAL_KEYS=$ORIGINAL_KEYS"
-          CHANGED_KEYS=$(for key in $ORIGINAL_KEYS; do
-            change_key=$(echo $key | sed 's/^//' | sed 's/$/_program/' | sed 's/-/_/g')
-            index=$(echo $CHANGES | jq -c ". | index(\"$change_key\")")
-            if [ $(echo $index) != 'null' ]; then
-              echo $key
-            fi
-          done)
-          echo "CHANGED_KEYS=$CHANGED_KEYS"
-          echo "matrix=$(echo "$CHANGED_KEYS" | jq -R . | jq -sc . | sed 's/""//')" | tee $GITHUB_OUTPUT
+        uses: metaplex-foundation/actions/filter-matrix@v1
+        with:
+          matrix: ${{ vars.PROGRAMS }}
+          filter: ${{ steps.changes.outputs.changes }}
+          suffix: _program
 
   build_programs:
     name: Programs
