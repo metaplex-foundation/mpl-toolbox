@@ -39,32 +39,24 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust
-        uses: ./.github/actions/install-rust
+        uses: metaplex-foundation/actions/install-rust@v1
         with:
-          version: ${{ inputs.rust }}
+          toolchain: ${{ inputs.rust }}
 
       - name: Install Solana
-        uses: ./.github/actions/install-solana
+        uses: metaplex-foundation/actions/install-solana@v1
         with:
           version: ${{ inputs.solana }}
           cache: ${{ env.CACHE }}
 
-      - name: Cache program dev dependencies
+      - name: Cache program dependencies
         if: env.CACHE == 'true'
+        uses: metaplex-foundation/actions/cache-program@v1
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            ./programs/${{ matrix.program }}/target/
-          key: ${{ runner.os }}-program-${{ matrix.program }}-dev-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
-          restore-keys: |
-            ${{ runner.os }}-program-${{ matrix.program }}-dev
-            ${{ runner.os }}-program-${{ matrix.program }}-${{ hashFiles(format('./programs/{0}/Cargo.lock', matrix.program)) }}
-            ${{ runner.os }}-program-${{ matrix.program }}
-
+          folder: ./programs/${{ matrix.program }}
+          key: program-${{ matrix.program }}
+        
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
