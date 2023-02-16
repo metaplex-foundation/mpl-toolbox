@@ -32,7 +32,7 @@ jobs:
         env:
           ORIGINAL: ${{ vars.PROGRAMS }}
         run: |
-          CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) | sed 's/-/_/g' }})
+          CHANGES=$(echo ${{ toJSON(steps.changes.outputs.changes) }} | sed 's/-/_/g')
           echo "CHANGES=$CHANGES"
           ORIGINAL_KEYS=$(echo $ORIGINAL | jq -c '.[]' | sed 's/"//g')
           echo "ORIGINAL_KEYS=$ORIGINAL_KEYS"
