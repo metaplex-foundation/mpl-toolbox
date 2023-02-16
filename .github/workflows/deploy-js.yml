@@ -107,7 +107,7 @@ jobs:
     needs: deploy_js
     environment:
       name: js-client-documentation
-      url: https://mpl-essentials-js-docs.vercel.app/
+      url: steps.deploy.outputs.url
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -115,8 +115,9 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Deploy to Vercel
+        id: deploy
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         working-directory: ./clients/js
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: echo url=$(vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}) >> $GITHUB_OUTPUT
