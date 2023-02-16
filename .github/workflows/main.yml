@@ -32,7 +32,7 @@ jobs:
         uses: metaplex-foundation/actions/filter-matrix@v1
         with:
           matrix: ${{ vars.PROGRAMS }}
-          filter: ${{ steps.changes.outputs.changes }}
+          changes: ${{ steps.changes.outputs.changes }}
           suffix: _program
 
   build_programs:
