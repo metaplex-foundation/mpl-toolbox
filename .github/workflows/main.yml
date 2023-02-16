@@ -52,7 +52,7 @@ jobs:
       program_matrix: ${{ needs.changes.outputs.program_matrix }}
 
   generate_clients:
-    name: Generate clients | Test
+    name: Generate clients
     if: ${{ needs.changes.outputs.any == 'true' }}
     needs: build_programs
     runs-on: ubuntu-latest
