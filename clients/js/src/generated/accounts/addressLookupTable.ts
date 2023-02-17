@@ -18,6 +18,7 @@ import {
   assertAccountExists,
   deserializeAccount,
   gpaBuilder,
+  mapSerializer,
 } from '@metaplex-foundation/umi-core';
 
 export type AddressLookupTable = Account<AddressLookupTableAccountData>;
@@ -33,7 +34,6 @@ export type AddressLookupTableAccountData = {
 };
 
 export type AddressLookupTableAccountArgs = {
-  discriminator: number;
   deactivationSlot: number | bigint;
   lastExtendedSlot: number | bigint;
   lastExtendedStartIndex: number;
@@ -113,7 +113,8 @@ export function getAddressLookupTableGpaBuilder(
     ])
     .deserializeUsing<AddressLookupTable>((account) =>
       deserializeAddressLookupTable(context, account)
-    );
+    )
+    .whereField('discriminator', 0);
 }
 
 export function deserializeAddressLookupTable(
@@ -130,17 +131,24 @@ export function getAddressLookupTableAccountDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<AddressLookupTableAccountArgs, AddressLookupTableAccountData> {
   const s = context.serializer;
-  return s.struct<AddressLookupTableAccountData>(
-    [
-      ['discriminator', s.u32],
-      ['deactivationSlot', s.u64],
-      ['lastExtendedSlot', s.u64],
-      ['lastExtendedStartIndex', s.u8],
-      ['padding', s.u64],
-      ['authority', s.fixedOption(s.publicKey, s.u32)],
-      ['addresses', s.vec(s.publicKey)],
-    ],
-    'AddressLookupTable'
+  return mapSerializer<
+    AddressLookupTableAccountArgs,
+    AddressLookupTableAccountData,
+    AddressLookupTableAccountData
+  >(
+    s.struct<AddressLookupTableAccountData>(
+      [
+        ['discriminator', s.u32],
+        ['deactivationSlot', s.u64],
+        ['lastExtendedSlot', s.u64],
+        ['lastExtendedStartIndex', s.u8],
+        ['padding', s.u64],
+        ['authority', s.fixedOption(s.publicKey, s.u32)],
+        ['addresses', s.vec(s.publicKey)],
+      ],
+      'AddressLookupTable'
+    ),
+    (value) => ({ ...value, discriminator: 0 } as AddressLookupTableAccountData)
   ) as Serializer<AddressLookupTableAccountArgs, AddressLookupTableAccountData>;
 }
 

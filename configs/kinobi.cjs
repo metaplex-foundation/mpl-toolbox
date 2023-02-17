@@ -6,6 +6,8 @@ const {
   UpdateAccountsVisitor,
   UpdateInstructionsVisitor,
   UpdateProgramsVisitor,
+  SetAccountDiscriminatorFromFieldVisitor,
+  vScalar,
 } = require("@metaplex-foundation/kinobi");
 
 // Paths.
@@ -42,6 +44,16 @@ kinobi.update(
     "splToken.mint": { discriminator: { kind: "size" } },
     "splToken.token": { discriminator: { kind: "size" } },
     "splToken.multisig": { discriminator: { kind: "size" } },
+  })
+);
+
+// Update accounts.
+kinobi.update(
+  new SetAccountDiscriminatorFromFieldVisitor({
+    "splAddressLookupTable.addressLookupTable": {
+      field: "discriminator",
+      value: vScalar(0),
+    },
   })
 );
 
