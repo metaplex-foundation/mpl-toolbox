@@ -94,7 +94,9 @@
       "args": [
         {
           "name": "addresses",
-          "vec": "publicKey"
+          "type": {
+            "vec": "publicKey"
+          }
         }
       ]
     },
@@ -167,7 +169,7 @@
             "type": "u8"
           },
           {
-            "name": "lastExtendedSlot",
+            "name": "padding",
             "type": "u64"
           },
           {

@@ -8,6 +8,7 @@
 
 export * from './mplSystemExtras';
 export * from './mplTokenExtras';
+export * from './splAddressLookupTable';
 export * from './splAssociatedToken';
 export * from './splMemo';
 export * from './splSystem';
