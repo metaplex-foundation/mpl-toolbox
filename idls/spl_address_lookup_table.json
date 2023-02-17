@@ -1,0 +1,193 @@
+{
+  "version": "0.0.1",
+  "name": "spl_address_lookup_table",
+  "instructions": [
+    {
+      "name": "createLut",
+      "accounts": [
+        {
+          "name": "address",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "discriminant": {
+        "value": 0,
+        "type": "u32"
+      },
+      "args": [
+        {
+          "name": "recentSlot",
+          "type": "u64"
+        },
+        {
+          "name": "bump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "freezeLut",
+      "accounts": [
+        {
+          "name": "address",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "discriminant": {
+        "value": 1,
+        "type": "u32"
+      },
+      "args": []
+    },
+    {
+      "name": "extendLut",
+      "accounts": [
+        {
+          "name": "address",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "optional": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "optional": true
+        }
+      ],
+      "discriminant": {
+        "value": 2,
+        "type": "u32"
+      },
+      "args": [
+        {
+          "name": "addresses",
+          "vec": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "deactivateLut",
+      "accounts": [
+        {
+          "name": "address",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "discriminant": {
+        "value": 3,
+        "type": "u32"
+      },
+      "args": []
+    },
+    {
+      "name": "closeLut",
+      "accounts": [
+        {
+          "name": "address",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "recipient",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "discriminant": {
+        "value": 4,
+        "type": "u32"
+      },
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AddressLookupTable",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "discriminator",
+            "type": "u32"
+          },
+          {
+            "name": "deactivationSlot",
+            "type": "u64"
+          },
+          {
+            "name": "lastExtendedSlot",
+            "type": "u64"
+          },
+          {
+            "name": "lastExtendedStartIndex",
+            "type": "u8"
+          },
+          {
+            "name": "lastExtendedSlot",
+            "type": "u64"
+          },
+          {
+            "name": "authority",
+            "type": {
+              "coption": "publicKey"
+            }
+          },
+          {
+            "name": "addresses",
+            "type": {
+              "vec": "publicKey"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "address": "AddressLookupTab1e1111111111111111111111111",
+    "origin": "shank"
+  }
+}
