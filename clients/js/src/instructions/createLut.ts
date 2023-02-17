@@ -1,4 +1,8 @@
-import { publicKey, WrappedInstruction } from '@metaplex-foundation/umi-core';
+import {
+  ACCOUNT_HEADER_SIZE,
+  publicKey,
+  WrappedInstruction,
+} from '@metaplex-foundation/umi-core';
 import { findAddressLookupTablePda } from '../generated';
 import {
   getCreateLutInstructionDataSerializer,
@@ -30,8 +34,11 @@ export const createLut = (
     recentSlot: input.recentSlot,
   });
 
-  return baseCreateLut(context, {
-    ...input,
-    bump: input.bump ?? defaultAddress.bump,
-  });
+  return {
+    ...baseCreateLut(context, {
+      ...input,
+      bump: input.bump ?? defaultAddress.bump,
+    }),
+    bytesCreatedOnChain: ACCOUNT_HEADER_SIZE + 56,
+  };
 };

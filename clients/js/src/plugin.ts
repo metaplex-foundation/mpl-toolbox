@@ -2,6 +2,7 @@ import { UmiPlugin } from '@metaplex-foundation/umi-core';
 import {
   getMplSystemExtrasProgram,
   getMplTokenExtrasProgram,
+  getSplAddressLookupTableProgram,
   getSplAssociatedTokenProgram,
   getSplMemoProgram,
   getSplSystemProgram,
@@ -14,6 +15,7 @@ export const mplEssentials = (): UmiPlugin => ({
     umi.programs.add(getSplMemoProgram(), false);
     umi.programs.add(getSplTokenProgram(), false);
     umi.programs.add(getSplAssociatedTokenProgram(), false);
+    umi.programs.add(getSplAddressLookupTableProgram(), false);
     umi.programs.add(getMplSystemExtrasProgram(), false);
     umi.programs.add(getMplTokenExtrasProgram(), false);
   },
