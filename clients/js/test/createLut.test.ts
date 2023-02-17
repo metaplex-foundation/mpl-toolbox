@@ -23,7 +23,9 @@ test('it can create a new empty LUT with minimum configuration', async (t) => {
     recentSlot,
   });
   const lutAccount = await fetchAddressLookupTable(umi, lut);
+  console.log({ address: lut, authority: umi.identity.publicKey });
   console.log(lutAccount);
+  t.pass();
 
   // // Then the account was created with the correct data.
   // const mintAccount = await fetchMint(metaplex, newAccount.publicKey);

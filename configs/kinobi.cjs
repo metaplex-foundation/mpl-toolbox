@@ -69,7 +69,7 @@ kinobi.update(
   new SetAccountDiscriminatorFromFieldVisitor({
     "splAddressLookupTable.addressLookupTable": {
       field: "discriminator",
-      value: vScalar(0),
+      value: vScalar(1),
     },
   })
 );

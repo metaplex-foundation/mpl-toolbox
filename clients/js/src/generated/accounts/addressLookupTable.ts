@@ -29,7 +29,6 @@ export type AddressLookupTableAccountData = {
   deactivationSlot: bigint;
   lastExtendedSlot: bigint;
   lastExtendedStartIndex: number;
-  padding: bigint;
   authority: Option<PublicKey>;
   addresses: Array<PublicKey>;
 };
@@ -38,7 +37,6 @@ export type AddressLookupTableAccountArgs = {
   deactivationSlot: number | bigint;
   lastExtendedSlot: number | bigint;
   lastExtendedStartIndex: number;
-  padding: number | bigint;
   authority: Option<PublicKey>;
   addresses: Array<PublicKey>;
 };
@@ -100,7 +98,6 @@ export function getAddressLookupTableGpaBuilder(
       deactivationSlot: number | bigint;
       lastExtendedSlot: number | bigint;
       lastExtendedStartIndex: number;
-      padding: number | bigint;
       authority: Option<PublicKey>;
       addresses: Array<PublicKey>;
     }>([
@@ -108,14 +105,13 @@ export function getAddressLookupTableGpaBuilder(
       ['deactivationSlot', s.u64],
       ['lastExtendedSlot', s.u64],
       ['lastExtendedStartIndex', s.u8],
-      ['padding', s.u64],
-      ['authority', s.fixedOption(s.publicKey, s.u32)],
+      ['authority', s.option(s.publicKey)],
       ['addresses', s.vec(s.publicKey)],
     ])
     .deserializeUsing<AddressLookupTable>((account) =>
       deserializeAddressLookupTable(context, account)
     )
-    .whereField('discriminator', 0);
+    .whereField('discriminator', 1);
 }
 
 export function deserializeAddressLookupTable(
@@ -143,13 +139,12 @@ export function getAddressLookupTableAccountDataSerializer(
         ['deactivationSlot', s.u64],
         ['lastExtendedSlot', s.u64],
         ['lastExtendedStartIndex', s.u8],
-        ['padding', s.u64],
-        ['authority', s.fixedOption(s.publicKey, s.u32)],
+        ['authority', s.option(s.publicKey)],
         ['addresses', s.vec(s.publicKey)],
       ],
       'AddressLookupTable'
     ),
-    (value) => ({ ...value, discriminator: 0 } as AddressLookupTableAccountData)
+    (value) => ({ ...value, discriminator: 1 } as AddressLookupTableAccountData)
   ) as Serializer<AddressLookupTableAccountArgs, AddressLookupTableAccountData>;
 }
 
