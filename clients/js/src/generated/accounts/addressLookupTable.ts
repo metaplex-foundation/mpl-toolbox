@@ -10,6 +10,7 @@ import {
   Account,
   Context,
   Option,
+  Pda,
   PublicKey,
   RpcAccount,
   RpcGetAccountOptions,
@@ -156,4 +157,23 @@ export function getAddressLookupTableSize(
   context: Pick<Context, 'serializer'>
 ): number | null {
   return getAddressLookupTableAccountDataSerializer(context).fixedSize;
+}
+
+export function findAddressLookupTablePda(
+  context: Pick<Context, 'eddsa' | 'programs' | 'serializer'>,
+  seeds: {
+    /** The address of the LUT's authority */
+    authority: PublicKey;
+    /** The recent slot associated with the LUT */
+    recentSlot: number | bigint;
+  }
+): Pda {
+  const s = context.serializer;
+  const programId: PublicKey = context.programs.get(
+    'splAddressLookupTable'
+  ).publicKey;
+  return context.eddsa.findPda(programId, [
+    s.publicKey.serialize(seeds.authority),
+    s.u64.serialize(seeds.recentSlot),
+  ]);
 }

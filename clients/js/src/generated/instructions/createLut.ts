@@ -15,11 +15,13 @@ import {
   WrappedInstruction,
   checkForIsWritableOverride as isWritable,
   mapSerializer,
+  publicKey,
 } from '@metaplex-foundation/umi-core';
+import { findAddressLookupTablePda } from '../accounts';
 
 // Accounts.
 export type CreateLutInstructionAccounts = {
-  address: PublicKey;
+  address?: PublicKey;
   authority?: Signer;
   payer?: Signer;
   systemProgram?: PublicKey;
@@ -60,7 +62,10 @@ export function getCreateLutInstructionDataSerializer(
 
 // Instruction.
 export function createLut(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
+  context: Pick<
+    Context,
+    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
+  >,
   input: CreateLutInstructionAccounts & CreateLutInstructionArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
@@ -72,8 +77,13 @@ export function createLut(
   ).publicKey;
 
   // Resolved accounts.
-  const addressAccount = input.address;
   const authorityAccount = input.authority ?? context.identity;
+  const addressAccount =
+    input.address ??
+    findAddressLookupTablePda(context, {
+      authority: publicKey(authorityAccount),
+      recentSlot: input.recentSlot,
+    });
   const payerAccount = input.payer ?? context.payer;
   const systemProgramAccount = input.systemProgram ?? {
     ...context.programs.get('splSystem').publicKey,

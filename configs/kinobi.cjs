@@ -8,6 +8,7 @@ const {
   UpdateProgramsVisitor,
   SetAccountDiscriminatorFromFieldVisitor,
   vScalar,
+  TypeLeafNode,
 } = require("@metaplex-foundation/kinobi");
 
 // Paths.
@@ -44,6 +45,22 @@ kinobi.update(
     "splToken.mint": { discriminator: { kind: "size" } },
     "splToken.token": { discriminator: { kind: "size" } },
     "splToken.multisig": { discriminator: { kind: "size" } },
+    "splAddressLookupTable.addressLookupTable": {
+      seeds: [
+        {
+          kind: "variable",
+          name: "authority",
+          description: "The address of the LUT's authority",
+          type: new TypeLeafNode({ kind: "publicKey" }),
+        },
+        {
+          kind: "variable",
+          name: "recentSlot",
+          description: "The recent slot associated with the LUT",
+          type: new TypeLeafNode({ kind: "number", number: "u64" }),
+        },
+      ],
+    },
   })
 );
 
@@ -69,39 +86,47 @@ const ataPdaDefaults = {
 };
 kinobi.update(
   new UpdateInstructionsVisitor({
-    TransferSol: {
+    transferSol: {
       accounts: {
         source: { defaultsTo: { kind: "identity" } },
       },
     },
-    TransferAllSol: {
+    transferAllSol: {
       accounts: {
         source: { defaultsTo: { kind: "identity" } },
       },
     },
-    MintTokensTo: {
+    mintTokensTo: {
       accounts: {
         mintAuthority: { defaultsTo: { kind: "identity" } },
       },
     },
-    CreateAccount: {
+    createAccount: {
       bytesCreatedOnChain: { kind: "arg", name: "space" },
     },
-    CreateAccountWithRent: {
+    createAccountWithRent: {
       bytesCreatedOnChain: { kind: "arg", name: "space" },
     },
-    CreateAssociatedToken: {
+    createAssociatedToken: {
       bytesCreatedOnChain: { kind: "account", name: "Token" },
       accounts: {
         owner: { defaultsTo: { kind: "identity" } },
         ata: { defaultsTo: ataPdaDefaults },
       },
     },
-    CreateTokenIfMissing: {
+    createTokenIfMissing: {
       accounts: {
         ata: { defaultsTo: ataPdaDefaults },
         token: { defaultsTo: { kind: "account", name: "ata" } },
         owner: { defaultsTo: { kind: "identity" } },
+      },
+    },
+    createLut: {
+      internal: true,
+      accounts: {
+        address: {
+          defaultsTo: { kind: "pda", pdaAccount: "addressLookupTable" },
+        },
       },
     },
   })

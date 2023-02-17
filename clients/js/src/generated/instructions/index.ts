@@ -18,7 +18,6 @@ export * from './createAccount';
 export * from './createAccountWithRent';
 export * from './createAssociatedToken';
 export * from './createIdempotentAssociatedToken';
-export * from './createLut';
 export * from './createTokenIfMissing';
 export * from './deactivateLut';
 export * from './extendLut';
