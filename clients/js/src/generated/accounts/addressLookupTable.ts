@@ -30,6 +30,7 @@ export type AddressLookupTableAccountData = {
   lastExtendedSlot: bigint;
   lastExtendedStartIndex: number;
   authority: Option<PublicKey>;
+  padding: number;
   addresses: Array<PublicKey>;
 };
 
@@ -38,6 +39,7 @@ export type AddressLookupTableAccountDataArgs = {
   lastExtendedSlot: number | bigint;
   lastExtendedStartIndex: number;
   authority: Option<PublicKey>;
+  padding: number;
   addresses: Array<PublicKey>;
 };
 
@@ -59,8 +61,9 @@ export function getAddressLookupTableAccountDataSerializer(
         ['deactivationSlot', s.u64()],
         ['lastExtendedSlot', s.u64()],
         ['lastExtendedStartIndex', s.u8()],
-        ['authority', s.option(s.publicKey())],
-        ['addresses', s.array(s.publicKey())],
+        ['authority', s.option(s.publicKey(), { fixed: true })],
+        ['padding', s.u16()],
+        ['addresses', s.array(s.publicKey(), { size: 'remainder' })],
       ],
       { description: 'AddressLookupTable' }
     ),
@@ -139,14 +142,16 @@ export function getAddressLookupTableGpaBuilder(
       lastExtendedSlot: number | bigint;
       lastExtendedStartIndex: number;
       authority: Option<PublicKey>;
+      padding: number;
       addresses: Array<PublicKey>;
     }>([
       ['discriminator', s.u32()],
       ['deactivationSlot', s.u64()],
       ['lastExtendedSlot', s.u64()],
       ['lastExtendedStartIndex', s.u8()],
-      ['authority', s.option(s.publicKey())],
-      ['addresses', s.array(s.publicKey())],
+      ['authority', s.option(s.publicKey(), { fixed: true })],
+      ['padding', s.u16()],
+      ['addresses', s.array(s.publicKey(), { size: 'remainder' })],
     ])
     .deserializeUsing<AddressLookupTable>((account) =>
       deserializeAddressLookupTable(context, account)

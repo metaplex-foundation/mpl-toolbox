@@ -175,6 +175,10 @@
             }
           },
           {
+            "name": "padding",
+            "type": "u16"
+          },
+          {
             "name": "addresses",
             "type": {
               "vec": "publicKey"

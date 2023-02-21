@@ -10,6 +10,12 @@ const {
   vScalar,
   TypePublicKeyNode,
   TypeNumberNode,
+  assertTypeStructNode,
+  TypeStructFieldNode,
+  TypeOptionNode,
+  AccountNode,
+  TypeArrayNode,
+  TypeStructNode,
 } = require("@metaplex-foundation/kinobi");
 
 // Paths.
@@ -129,6 +135,40 @@ kinobi.update(
           defaultsTo: { kind: "pda", pdaAccount: "addressLookupTable" },
         },
       },
+    },
+  })
+);
+
+kinobi.update(
+  new UpdateAccountsVisitor({
+    addressLookupTable: (account) => {
+      assertTypeStructNode(account.type);
+      return new AccountNode(
+        account.metadata,
+        new TypeStructNode(
+          account.type.name,
+          account.type.fields.map((field) => {
+            if (field.name === "authority") {
+              return new TypeStructFieldNode(
+                field.metadata,
+                new TypeOptionNode(new TypePublicKeyNode(), {
+                  prefix: new TypeNumberNode("u8"),
+                  fixed: true,
+                })
+              );
+            }
+            if (field.name === "addresses") {
+              return new TypeStructFieldNode(
+                field.metadata,
+                new TypeArrayNode(new TypePublicKeyNode(), {
+                  size: { kind: "remainder" },
+                })
+              );
+            }
+            return field;
+          })
+        )
+      );
     },
   })
 );
