@@ -28,31 +28,31 @@ export type UiAmountToAmountInstructionData = {
   uiAmount: bigint;
 };
 
-export type UiAmountToAmountInstructionArgs = { uiAmount: number | bigint };
+export type UiAmountToAmountInstructionDataArgs = { uiAmount: number | bigint };
 
 export function getUiAmountToAmountInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  UiAmountToAmountInstructionArgs,
+  UiAmountToAmountInstructionDataArgs,
   UiAmountToAmountInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    UiAmountToAmountInstructionArgs,
+    UiAmountToAmountInstructionDataArgs,
     UiAmountToAmountInstructionData,
     UiAmountToAmountInstructionData
   >(
     s.struct<UiAmountToAmountInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['uiAmount', s.u64],
+        ['discriminator', s.u8()],
+        ['uiAmount', s.u64()],
       ],
-      'UiAmountToAmountInstructionArgs'
+      { description: 'UiAmountToAmountInstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 24 } as UiAmountToAmountInstructionData)
   ) as Serializer<
-    UiAmountToAmountInstructionArgs,
+    UiAmountToAmountInstructionDataArgs,
     UiAmountToAmountInstructionData
   >;
 }
@@ -60,7 +60,8 @@ export function getUiAmountToAmountInstructionDataSerializer(
 // Instruction.
 export function uiAmountToAmount(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: UiAmountToAmountInstructionAccounts & UiAmountToAmountInstructionArgs
+  input: UiAmountToAmountInstructionAccounts &
+    UiAmountToAmountInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

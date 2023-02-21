@@ -27,23 +27,22 @@ export type FreezeTokenInstructionAccounts = {
 // Arguments.
 export type FreezeTokenInstructionData = { discriminator: number };
 
-export type FreezeTokenInstructionArgs = {};
+export type FreezeTokenInstructionDataArgs = {};
 
 export function getFreezeTokenInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<FreezeTokenInstructionArgs, FreezeTokenInstructionData> {
+): Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    FreezeTokenInstructionArgs,
+    FreezeTokenInstructionDataArgs,
     FreezeTokenInstructionData,
     FreezeTokenInstructionData
   >(
-    s.struct<FreezeTokenInstructionData>(
-      [['discriminator', s.u8]],
-      'FreezeTokenInstructionArgs'
-    ),
+    s.struct<FreezeTokenInstructionData>([['discriminator', s.u8()]], {
+      description: 'FreezeTokenInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 10 } as FreezeTokenInstructionData)
-  ) as Serializer<FreezeTokenInstructionArgs, FreezeTokenInstructionData>;
+  ) as Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData>;
 }
 
 // Instruction.

@@ -32,7 +32,7 @@ export type TransferTokensCheckedInstructionData = {
   decimals: number;
 };
 
-export type TransferTokensCheckedInstructionArgs = {
+export type TransferTokensCheckedInstructionDataArgs = {
   amount: number | bigint;
   decimals: number;
 };
@@ -40,27 +40,27 @@ export type TransferTokensCheckedInstructionArgs = {
 export function getTransferTokensCheckedInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  TransferTokensCheckedInstructionArgs,
+  TransferTokensCheckedInstructionDataArgs,
   TransferTokensCheckedInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    TransferTokensCheckedInstructionArgs,
+    TransferTokensCheckedInstructionDataArgs,
     TransferTokensCheckedInstructionData,
     TransferTokensCheckedInstructionData
   >(
     s.struct<TransferTokensCheckedInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
-        ['decimals', s.u8],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
+        ['decimals', s.u8()],
       ],
-      'TransferTokensCheckedInstructionArgs'
+      { description: 'TransferTokensCheckedInstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 12 } as TransferTokensCheckedInstructionData)
   ) as Serializer<
-    TransferTokensCheckedInstructionArgs,
+    TransferTokensCheckedInstructionDataArgs,
     TransferTokensCheckedInstructionData
   >;
 }
@@ -69,7 +69,7 @@ export function getTransferTokensCheckedInstructionDataSerializer(
 export function transferTokensChecked(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
   input: TransferTokensCheckedInstructionAccounts &
-    TransferTokensCheckedInstructionArgs
+    TransferTokensCheckedInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

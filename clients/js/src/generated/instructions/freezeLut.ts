@@ -26,23 +26,22 @@ export type FreezeLutInstructionAccounts = {
 // Arguments.
 export type FreezeLutInstructionData = { discriminator: number };
 
-export type FreezeLutInstructionArgs = {};
+export type FreezeLutInstructionDataArgs = {};
 
 export function getFreezeLutInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<FreezeLutInstructionArgs, FreezeLutInstructionData> {
+): Serializer<FreezeLutInstructionDataArgs, FreezeLutInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    FreezeLutInstructionArgs,
+    FreezeLutInstructionDataArgs,
     FreezeLutInstructionData,
     FreezeLutInstructionData
   >(
-    s.struct<FreezeLutInstructionData>(
-      [['discriminator', s.u32]],
-      'FreezeLutInstructionArgs'
-    ),
+    s.struct<FreezeLutInstructionData>([['discriminator', s.u32()]], {
+      description: 'FreezeLutInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 1 } as FreezeLutInstructionData)
-  ) as Serializer<FreezeLutInstructionArgs, FreezeLutInstructionData>;
+  ) as Serializer<FreezeLutInstructionDataArgs, FreezeLutInstructionData>;
 }
 
 // Instruction.

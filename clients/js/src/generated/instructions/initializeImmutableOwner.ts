@@ -25,23 +25,23 @@ export type InitializeImmutableOwnerInstructionAccounts = {
 // Arguments.
 export type InitializeImmutableOwnerInstructionData = { discriminator: number };
 
-export type InitializeImmutableOwnerInstructionArgs = {};
+export type InitializeImmutableOwnerInstructionDataArgs = {};
 
 export function getInitializeImmutableOwnerInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  InitializeImmutableOwnerInstructionArgs,
+  InitializeImmutableOwnerInstructionDataArgs,
   InitializeImmutableOwnerInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    InitializeImmutableOwnerInstructionArgs,
+    InitializeImmutableOwnerInstructionDataArgs,
     InitializeImmutableOwnerInstructionData,
     InitializeImmutableOwnerInstructionData
   >(
     s.struct<InitializeImmutableOwnerInstructionData>(
-      [['discriminator', s.u8]],
-      'InitializeImmutableOwnerInstructionArgs'
+      [['discriminator', s.u8()]],
+      { description: 'InitializeImmutableOwnerInstructionData' }
     ),
     (value) =>
       ({
@@ -49,7 +49,7 @@ export function getInitializeImmutableOwnerInstructionDataSerializer(
         discriminator: 22,
       } as InitializeImmutableOwnerInstructionData)
   ) as Serializer<
-    InitializeImmutableOwnerInstructionArgs,
+    InitializeImmutableOwnerInstructionDataArgs,
     InitializeImmutableOwnerInstructionData
   >;
 }

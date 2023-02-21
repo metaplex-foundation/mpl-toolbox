@@ -28,6 +28,33 @@ export type MultisigAccountData = {
   signers: Array<PublicKey>;
 };
 
+export type MultisigAccountDataArgs = MultisigAccountData;
+
+export function getMultisigAccountDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<MultisigAccountDataArgs, MultisigAccountData> {
+  const s = context.serializer;
+  return s.struct<MultisigAccountData>(
+    [
+      ['m', s.u8()],
+      ['n', s.u8()],
+      ['isInitialized', s.bool()],
+      ['signers', s.array(s.publicKey(), { size: 11 })],
+    ],
+    { description: 'Multisig' }
+  ) as Serializer<MultisigAccountDataArgs, MultisigAccountData>;
+}
+
+export function deserializeMultisig(
+  context: Pick<Context, 'serializer'>,
+  rawAccount: RpcAccount
+): Multisig {
+  return deserializeAccount(
+    rawAccount,
+    getMultisigAccountDataSerializer(context)
+  );
+}
+
 export async function fetchMultisig(
   context: Pick<Context, 'rpc' | 'serializer'>,
   publicKey: PublicKey,
@@ -86,40 +113,15 @@ export function getMultisigGpaBuilder(
       isInitialized: boolean;
       signers: Array<PublicKey>;
     }>([
-      ['m', s.u8],
-      ['n', s.u8],
+      ['m', s.u8()],
+      ['n', s.u8()],
       ['isInitialized', s.bool()],
-      ['signers', s.array(s.publicKey, 11)],
+      ['signers', s.array(s.publicKey(), { size: 11 })],
     ])
     .deserializeUsing<Multisig>((account) =>
       deserializeMultisig(context, account)
     )
     .whereSize(355);
-}
-
-export function deserializeMultisig(
-  context: Pick<Context, 'serializer'>,
-  rawAccount: RpcAccount
-): Multisig {
-  return deserializeAccount(
-    rawAccount,
-    getMultisigAccountDataSerializer(context)
-  );
-}
-
-export function getMultisigAccountDataSerializer(
-  context: Pick<Context, 'serializer'>
-): Serializer<MultisigAccountData> {
-  const s = context.serializer;
-  return s.struct<MultisigAccountData>(
-    [
-      ['m', s.u8],
-      ['n', s.u8],
-      ['isInitialized', s.bool()],
-      ['signers', s.array(s.publicKey, 11)],
-    ],
-    'Multisig'
-  );
 }
 
 export function getMultisigSize(_context = {}): number {

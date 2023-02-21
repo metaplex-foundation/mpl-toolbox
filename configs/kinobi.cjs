@@ -8,7 +8,8 @@ const {
   UpdateProgramsVisitor,
   SetAccountDiscriminatorFromFieldVisitor,
   vScalar,
-  TypeLeafNode,
+  TypePublicKeyNode,
+  TypeNumberNode,
 } = require("@metaplex-foundation/kinobi");
 
 // Paths.
@@ -51,13 +52,13 @@ kinobi.update(
           kind: "variable",
           name: "authority",
           description: "The address of the LUT's authority",
-          type: new TypeLeafNode({ kind: "publicKey" }),
+          type: new TypePublicKeyNode(),
         },
         {
           kind: "variable",
           name: "recentSlot",
           description: "The recent slot associated with the LUT",
-          type: new TypeLeafNode({ kind: "number", number: "u64" }),
+          type: new TypeNumberNode("u64"),
         },
       ],
     },

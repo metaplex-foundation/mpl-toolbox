@@ -26,23 +26,25 @@ export type DeactivateLutInstructionAccounts = {
 // Arguments.
 export type DeactivateLutInstructionData = { discriminator: number };
 
-export type DeactivateLutInstructionArgs = {};
+export type DeactivateLutInstructionDataArgs = {};
 
 export function getDeactivateLutInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<DeactivateLutInstructionArgs, DeactivateLutInstructionData> {
+): Serializer<DeactivateLutInstructionDataArgs, DeactivateLutInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    DeactivateLutInstructionArgs,
+    DeactivateLutInstructionDataArgs,
     DeactivateLutInstructionData,
     DeactivateLutInstructionData
   >(
-    s.struct<DeactivateLutInstructionData>(
-      [['discriminator', s.u32]],
-      'DeactivateLutInstructionArgs'
-    ),
+    s.struct<DeactivateLutInstructionData>([['discriminator', s.u32()]], {
+      description: 'DeactivateLutInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 3 } as DeactivateLutInstructionData)
-  ) as Serializer<DeactivateLutInstructionArgs, DeactivateLutInstructionData>;
+  ) as Serializer<
+    DeactivateLutInstructionDataArgs,
+    DeactivateLutInstructionData
+  >;
 }
 
 // Instruction.

@@ -27,23 +27,22 @@ export type CloseLutInstructionAccounts = {
 // Arguments.
 export type CloseLutInstructionData = { discriminator: number };
 
-export type CloseLutInstructionArgs = {};
+export type CloseLutInstructionDataArgs = {};
 
 export function getCloseLutInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CloseLutInstructionArgs, CloseLutInstructionData> {
+): Serializer<CloseLutInstructionDataArgs, CloseLutInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    CloseLutInstructionArgs,
+    CloseLutInstructionDataArgs,
     CloseLutInstructionData,
     CloseLutInstructionData
   >(
-    s.struct<CloseLutInstructionData>(
-      [['discriminator', s.u32]],
-      'CloseLutInstructionArgs'
-    ),
+    s.struct<CloseLutInstructionData>([['discriminator', s.u32()]], {
+      description: 'CloseLutInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 4 } as CloseLutInstructionData)
-  ) as Serializer<CloseLutInstructionArgs, CloseLutInstructionData>;
+  ) as Serializer<CloseLutInstructionDataArgs, CloseLutInstructionData>;
 }
 
 // Instruction.

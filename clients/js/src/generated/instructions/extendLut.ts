@@ -31,32 +31,32 @@ export type ExtendLutInstructionData = {
   addresses: Array<PublicKey>;
 };
 
-export type ExtendLutInstructionArgs = { addresses: Array<PublicKey> };
+export type ExtendLutInstructionDataArgs = { addresses: Array<PublicKey> };
 
 export function getExtendLutInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<ExtendLutInstructionArgs, ExtendLutInstructionData> {
+): Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    ExtendLutInstructionArgs,
+    ExtendLutInstructionDataArgs,
     ExtendLutInstructionData,
     ExtendLutInstructionData
   >(
     s.struct<ExtendLutInstructionData>(
       [
-        ['discriminator', s.u32],
-        ['addresses', s.vec(s.publicKey)],
+        ['discriminator', s.u32()],
+        ['addresses', s.array(s.publicKey())],
       ],
-      'ExtendLutInstructionArgs'
+      { description: 'ExtendLutInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 2 } as ExtendLutInstructionData)
-  ) as Serializer<ExtendLutInstructionArgs, ExtendLutInstructionData>;
+  ) as Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData>;
 }
 
 // Instruction.
 export function extendLut(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: ExtendLutInstructionAccounts & ExtendLutInstructionArgs
+  input: ExtendLutInstructionAccounts & ExtendLutInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

@@ -34,30 +34,30 @@ export type CreateLutInstructionData = {
   bump: number;
 };
 
-export type CreateLutInstructionArgs = {
+export type CreateLutInstructionDataArgs = {
   recentSlot: number | bigint;
   bump: number;
 };
 
 export function getCreateLutInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CreateLutInstructionArgs, CreateLutInstructionData> {
+): Serializer<CreateLutInstructionDataArgs, CreateLutInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    CreateLutInstructionArgs,
+    CreateLutInstructionDataArgs,
     CreateLutInstructionData,
     CreateLutInstructionData
   >(
     s.struct<CreateLutInstructionData>(
       [
-        ['discriminator', s.u32],
-        ['recentSlot', s.u64],
-        ['bump', s.u8],
+        ['discriminator', s.u32()],
+        ['recentSlot', s.u64()],
+        ['bump', s.u8()],
       ],
-      'CreateLutInstructionArgs'
+      { description: 'CreateLutInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 0 } as CreateLutInstructionData)
-  ) as Serializer<CreateLutInstructionArgs, CreateLutInstructionData>;
+  ) as Serializer<CreateLutInstructionDataArgs, CreateLutInstructionData>;
 }
 
 // Instruction.
@@ -66,7 +66,7 @@ export function createLut(
     Context,
     'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
   >,
-  input: CreateLutInstructionAccounts & CreateLutInstructionArgs
+  input: CreateLutInstructionAccounts & CreateLutInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

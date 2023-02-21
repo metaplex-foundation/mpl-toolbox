@@ -30,13 +30,42 @@ export type MintAccountData = {
   freezeAuthority: Option<PublicKey>;
 };
 
-export type MintAccountArgs = {
+export type MintAccountDataArgs = {
   mintAuthority: Option<PublicKey>;
   supply: number | bigint;
   decimals: number;
   isInitialized: boolean;
   freezeAuthority: Option<PublicKey>;
 };
+
+export function getMintAccountDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<MintAccountDataArgs, MintAccountData> {
+  const s = context.serializer;
+  return s.struct<MintAccountData>(
+    [
+      [
+        'mintAuthority',
+        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+      ],
+      ['supply', s.u64()],
+      ['decimals', s.u8()],
+      ['isInitialized', s.bool()],
+      [
+        'freezeAuthority',
+        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+      ],
+    ],
+    { description: 'Mint' }
+  ) as Serializer<MintAccountDataArgs, MintAccountData>;
+}
+
+export function deserializeMint(
+  context: Pick<Context, 'serializer'>,
+  rawAccount: RpcAccount
+): Mint {
+  return deserializeAccount(rawAccount, getMintAccountDataSerializer(context));
+}
 
 export async function fetchMint(
   context: Pick<Context, 'rpc' | 'serializer'>,
@@ -95,37 +124,20 @@ export function getMintGpaBuilder(
       isInitialized: boolean;
       freezeAuthority: Option<PublicKey>;
     }>([
-      ['mintAuthority', s.fixedOption(s.publicKey, s.u32)],
-      ['supply', s.u64],
-      ['decimals', s.u8],
+      [
+        'mintAuthority',
+        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+      ],
+      ['supply', s.u64()],
+      ['decimals', s.u8()],
       ['isInitialized', s.bool()],
-      ['freezeAuthority', s.fixedOption(s.publicKey, s.u32)],
+      [
+        'freezeAuthority',
+        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+      ],
     ])
     .deserializeUsing<Mint>((account) => deserializeMint(context, account))
     .whereSize(82);
-}
-
-export function deserializeMint(
-  context: Pick<Context, 'serializer'>,
-  rawAccount: RpcAccount
-): Mint {
-  return deserializeAccount(rawAccount, getMintAccountDataSerializer(context));
-}
-
-export function getMintAccountDataSerializer(
-  context: Pick<Context, 'serializer'>
-): Serializer<MintAccountArgs, MintAccountData> {
-  const s = context.serializer;
-  return s.struct<MintAccountData>(
-    [
-      ['mintAuthority', s.fixedOption(s.publicKey, s.u32)],
-      ['supply', s.u64],
-      ['decimals', s.u8],
-      ['isInitialized', s.bool()],
-      ['freezeAuthority', s.fixedOption(s.publicKey, s.u32)],
-    ],
-    'Mint'
-  ) as Serializer<MintAccountArgs, MintAccountData>;
 }
 
 export function getMintSize(_context = {}): number {

@@ -27,23 +27,22 @@ export type ThawTokenInstructionAccounts = {
 // Arguments.
 export type ThawTokenInstructionData = { discriminator: number };
 
-export type ThawTokenInstructionArgs = {};
+export type ThawTokenInstructionDataArgs = {};
 
 export function getThawTokenInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<ThawTokenInstructionArgs, ThawTokenInstructionData> {
+): Serializer<ThawTokenInstructionDataArgs, ThawTokenInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    ThawTokenInstructionArgs,
+    ThawTokenInstructionDataArgs,
     ThawTokenInstructionData,
     ThawTokenInstructionData
   >(
-    s.struct<ThawTokenInstructionData>(
-      [['discriminator', s.u8]],
-      'ThawTokenInstructionArgs'
-    ),
+    s.struct<ThawTokenInstructionData>([['discriminator', s.u8()]], {
+      description: 'ThawTokenInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 11 } as ThawTokenInstructionData)
-  ) as Serializer<ThawTokenInstructionArgs, ThawTokenInstructionData>;
+  ) as Serializer<ThawTokenInstructionDataArgs, ThawTokenInstructionData>;
 }
 
 // Instruction.

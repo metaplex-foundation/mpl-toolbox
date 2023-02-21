@@ -17,7 +17,7 @@ import {
   mapSerializer,
   publicKey,
 } from '@metaplex-foundation/umi-core';
-import { findAssociatedTokenPda } from '../../hooked';
+import { findAssociatedTokenPda } from 'rootHooked';
 
 // Accounts.
 export type CreateTokenIfMissingInstructionAccounts = {
@@ -42,28 +42,27 @@ export type CreateTokenIfMissingInstructionAccounts = {
 // Arguments.
 export type CreateTokenIfMissingInstructionData = { discriminator: number };
 
-export type CreateTokenIfMissingInstructionArgs = {};
+export type CreateTokenIfMissingInstructionDataArgs = {};
 
 export function getCreateTokenIfMissingInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  CreateTokenIfMissingInstructionArgs,
+  CreateTokenIfMissingInstructionDataArgs,
   CreateTokenIfMissingInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    CreateTokenIfMissingInstructionArgs,
+    CreateTokenIfMissingInstructionDataArgs,
     CreateTokenIfMissingInstructionData,
     CreateTokenIfMissingInstructionData
   >(
-    s.struct<CreateTokenIfMissingInstructionData>(
-      [['discriminator', s.u8]],
-      'CreateTokenIfMissingInstructionArgs'
-    ),
+    s.struct<CreateTokenIfMissingInstructionData>([['discriminator', s.u8()]], {
+      description: 'CreateTokenIfMissingInstructionData',
+    }),
     (value) =>
       ({ ...value, discriminator: 0 } as CreateTokenIfMissingInstructionData)
   ) as Serializer<
-    CreateTokenIfMissingInstructionArgs,
+    CreateTokenIfMissingInstructionDataArgs,
     CreateTokenIfMissingInstructionData
   >;
 }

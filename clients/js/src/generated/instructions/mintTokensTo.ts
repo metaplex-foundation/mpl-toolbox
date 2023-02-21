@@ -30,32 +30,32 @@ export type MintTokensToInstructionData = {
   amount: bigint;
 };
 
-export type MintTokensToInstructionArgs = { amount: number | bigint };
+export type MintTokensToInstructionDataArgs = { amount: number | bigint };
 
 export function getMintTokensToInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<MintTokensToInstructionArgs, MintTokensToInstructionData> {
+): Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    MintTokensToInstructionArgs,
+    MintTokensToInstructionDataArgs,
     MintTokensToInstructionData,
     MintTokensToInstructionData
   >(
     s.struct<MintTokensToInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
       ],
-      'MintTokensToInstructionArgs'
+      { description: 'MintTokensToInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 7 } as MintTokensToInstructionData)
-  ) as Serializer<MintTokensToInstructionArgs, MintTokensToInstructionData>;
+  ) as Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData>;
 }
 
 // Instruction.
 export function mintTokensTo(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: MintTokensToInstructionAccounts & MintTokensToInstructionArgs
+  input: MintTokensToInstructionAccounts & MintTokensToInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

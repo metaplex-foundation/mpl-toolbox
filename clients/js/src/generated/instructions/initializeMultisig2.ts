@@ -29,31 +29,31 @@ export type InitializeMultisig2InstructionData = {
   m: number;
 };
 
-export type InitializeMultisig2InstructionArgs = { m: number };
+export type InitializeMultisig2InstructionDataArgs = { m: number };
 
 export function getInitializeMultisig2InstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  InitializeMultisig2InstructionArgs,
+  InitializeMultisig2InstructionDataArgs,
   InitializeMultisig2InstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    InitializeMultisig2InstructionArgs,
+    InitializeMultisig2InstructionDataArgs,
     InitializeMultisig2InstructionData,
     InitializeMultisig2InstructionData
   >(
     s.struct<InitializeMultisig2InstructionData>(
       [
-        ['discriminator', s.u8],
-        ['m', s.u8],
+        ['discriminator', s.u8()],
+        ['m', s.u8()],
       ],
-      'InitializeMultisig2InstructionArgs'
+      { description: 'InitializeMultisig2InstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 19 } as InitializeMultisig2InstructionData)
   ) as Serializer<
-    InitializeMultisig2InstructionArgs,
+    InitializeMultisig2InstructionDataArgs,
     InitializeMultisig2InstructionData
   >;
 }
@@ -62,7 +62,7 @@ export function getInitializeMultisig2InstructionDataSerializer(
 export function initializeMultisig2(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: InitializeMultisig2InstructionAccounts &
-    InitializeMultisig2InstructionArgs
+    InitializeMultisig2InstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

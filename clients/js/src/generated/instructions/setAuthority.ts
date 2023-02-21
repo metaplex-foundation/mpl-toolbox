@@ -17,7 +17,11 @@ import {
   checkForIsWritableOverride as isWritable,
   mapSerializer,
 } from '@metaplex-foundation/umi-core';
-import { AuthorityType, getAuthorityTypeSerializer } from '../types';
+import {
+  AuthorityType,
+  AuthorityTypeArgs,
+  getAuthorityTypeSerializer,
+} from '../types';
 
 // Accounts.
 export type SetAuthorityInstructionAccounts = {
@@ -33,36 +37,36 @@ export type SetAuthorityInstructionData = {
   newAuthority: Option<PublicKey>;
 };
 
-export type SetAuthorityInstructionArgs = {
-  authorityType: AuthorityType;
+export type SetAuthorityInstructionDataArgs = {
+  authorityType: AuthorityTypeArgs;
   newAuthority: Option<PublicKey>;
 };
 
 export function getSetAuthorityInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<SetAuthorityInstructionArgs, SetAuthorityInstructionData> {
+): Serializer<SetAuthorityInstructionDataArgs, SetAuthorityInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    SetAuthorityInstructionArgs,
+    SetAuthorityInstructionDataArgs,
     SetAuthorityInstructionData,
     SetAuthorityInstructionData
   >(
     s.struct<SetAuthorityInstructionData>(
       [
-        ['discriminator', s.u8],
+        ['discriminator', s.u8()],
         ['authorityType', getAuthorityTypeSerializer(context)],
-        ['newAuthority', s.option(s.publicKey)],
+        ['newAuthority', s.option(s.publicKey())],
       ],
-      'SetAuthorityInstructionArgs'
+      { description: 'SetAuthorityInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 6 } as SetAuthorityInstructionData)
-  ) as Serializer<SetAuthorityInstructionArgs, SetAuthorityInstructionData>;
+  ) as Serializer<SetAuthorityInstructionDataArgs, SetAuthorityInstructionData>;
 }
 
 // Instruction.
 export function setAuthority(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: SetAuthorityInstructionAccounts & SetAuthorityInstructionArgs
+  input: SetAuthorityInstructionAccounts & SetAuthorityInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

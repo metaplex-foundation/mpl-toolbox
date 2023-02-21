@@ -33,13 +33,53 @@ export type AddressLookupTableAccountData = {
   addresses: Array<PublicKey>;
 };
 
-export type AddressLookupTableAccountArgs = {
+export type AddressLookupTableAccountDataArgs = {
   deactivationSlot: number | bigint;
   lastExtendedSlot: number | bigint;
   lastExtendedStartIndex: number;
   authority: Option<PublicKey>;
   addresses: Array<PublicKey>;
 };
+
+export function getAddressLookupTableAccountDataSerializer(
+  context: Pick<Context, 'serializer'>
+): Serializer<
+  AddressLookupTableAccountDataArgs,
+  AddressLookupTableAccountData
+> {
+  const s = context.serializer;
+  return mapSerializer<
+    AddressLookupTableAccountDataArgs,
+    AddressLookupTableAccountData,
+    AddressLookupTableAccountData
+  >(
+    s.struct<AddressLookupTableAccountData>(
+      [
+        ['discriminator', s.u32()],
+        ['deactivationSlot', s.u64()],
+        ['lastExtendedSlot', s.u64()],
+        ['lastExtendedStartIndex', s.u8()],
+        ['authority', s.option(s.publicKey())],
+        ['addresses', s.array(s.publicKey())],
+      ],
+      { description: 'AddressLookupTable' }
+    ),
+    (value) => ({ ...value, discriminator: 1 } as AddressLookupTableAccountData)
+  ) as Serializer<
+    AddressLookupTableAccountDataArgs,
+    AddressLookupTableAccountData
+  >;
+}
+
+export function deserializeAddressLookupTable(
+  context: Pick<Context, 'serializer'>,
+  rawAccount: RpcAccount
+): AddressLookupTable {
+  return deserializeAccount(
+    rawAccount,
+    getAddressLookupTableAccountDataSerializer(context)
+  );
+}
 
 export async function fetchAddressLookupTable(
   context: Pick<Context, 'rpc' | 'serializer'>,
@@ -101,51 +141,17 @@ export function getAddressLookupTableGpaBuilder(
       authority: Option<PublicKey>;
       addresses: Array<PublicKey>;
     }>([
-      ['discriminator', s.u32],
-      ['deactivationSlot', s.u64],
-      ['lastExtendedSlot', s.u64],
-      ['lastExtendedStartIndex', s.u8],
-      ['authority', s.option(s.publicKey)],
-      ['addresses', s.vec(s.publicKey)],
+      ['discriminator', s.u32()],
+      ['deactivationSlot', s.u64()],
+      ['lastExtendedSlot', s.u64()],
+      ['lastExtendedStartIndex', s.u8()],
+      ['authority', s.option(s.publicKey())],
+      ['addresses', s.array(s.publicKey())],
     ])
     .deserializeUsing<AddressLookupTable>((account) =>
       deserializeAddressLookupTable(context, account)
     )
     .whereField('discriminator', 1);
-}
-
-export function deserializeAddressLookupTable(
-  context: Pick<Context, 'serializer'>,
-  rawAccount: RpcAccount
-): AddressLookupTable {
-  return deserializeAccount(
-    rawAccount,
-    getAddressLookupTableAccountDataSerializer(context)
-  );
-}
-
-export function getAddressLookupTableAccountDataSerializer(
-  context: Pick<Context, 'serializer'>
-): Serializer<AddressLookupTableAccountArgs, AddressLookupTableAccountData> {
-  const s = context.serializer;
-  return mapSerializer<
-    AddressLookupTableAccountArgs,
-    AddressLookupTableAccountData,
-    AddressLookupTableAccountData
-  >(
-    s.struct<AddressLookupTableAccountData>(
-      [
-        ['discriminator', s.u32],
-        ['deactivationSlot', s.u64],
-        ['lastExtendedSlot', s.u64],
-        ['lastExtendedStartIndex', s.u8],
-        ['authority', s.option(s.publicKey)],
-        ['addresses', s.vec(s.publicKey)],
-      ],
-      'AddressLookupTable'
-    ),
-    (value) => ({ ...value, discriminator: 1 } as AddressLookupTableAccountData)
-  ) as Serializer<AddressLookupTableAccountArgs, AddressLookupTableAccountData>;
 }
 
 export function getAddressLookupTableSize(
@@ -168,7 +174,7 @@ export function findAddressLookupTablePda(
     'splAddressLookupTable'
   ).publicKey;
   return context.eddsa.findPda(programId, [
-    s.publicKey.serialize(seeds.authority),
-    s.u64.serialize(seeds.recentSlot),
+    s.publicKey().serialize(seeds.authority),
+    s.u64().serialize(seeds.recentSlot),
   ]);
 }

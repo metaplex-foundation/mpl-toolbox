@@ -27,23 +27,22 @@ export type CloseTokenInstructionAccounts = {
 // Arguments.
 export type CloseTokenInstructionData = { discriminator: number };
 
-export type CloseTokenInstructionArgs = {};
+export type CloseTokenInstructionDataArgs = {};
 
 export function getCloseTokenInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CloseTokenInstructionArgs, CloseTokenInstructionData> {
+): Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    CloseTokenInstructionArgs,
+    CloseTokenInstructionDataArgs,
     CloseTokenInstructionData,
     CloseTokenInstructionData
   >(
-    s.struct<CloseTokenInstructionData>(
-      [['discriminator', s.u8]],
-      'CloseTokenInstructionArgs'
-    ),
+    s.struct<CloseTokenInstructionData>([['discriminator', s.u8()]], {
+      description: 'CloseTokenInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 9 } as CloseTokenInstructionData)
-  ) as Serializer<CloseTokenInstructionArgs, CloseTokenInstructionData>;
+  ) as Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData>;
 }
 
 // Instruction.

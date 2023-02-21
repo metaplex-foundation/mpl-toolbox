@@ -29,25 +29,27 @@ export type InitializeTokenInstructionAccounts = {
 // Arguments.
 export type InitializeTokenInstructionData = { discriminator: number };
 
-export type InitializeTokenInstructionArgs = {};
+export type InitializeTokenInstructionDataArgs = {};
 
 export function getInitializeTokenInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeTokenInstructionArgs, InitializeTokenInstructionData> {
+): Serializer<
+  InitializeTokenInstructionDataArgs,
+  InitializeTokenInstructionData
+> {
   const s = context.serializer;
   return mapSerializer<
-    InitializeTokenInstructionArgs,
+    InitializeTokenInstructionDataArgs,
     InitializeTokenInstructionData,
     InitializeTokenInstructionData
   >(
-    s.struct<InitializeTokenInstructionData>(
-      [['discriminator', s.u8]],
-      'InitializeTokenInstructionArgs'
-    ),
+    s.struct<InitializeTokenInstructionData>([['discriminator', s.u8()]], {
+      description: 'InitializeTokenInstructionData',
+    }),
     (value) =>
       ({ ...value, discriminator: 1 } as InitializeTokenInstructionData)
   ) as Serializer<
-    InitializeTokenInstructionArgs,
+    InitializeTokenInstructionDataArgs,
     InitializeTokenInstructionData
   >;
 }

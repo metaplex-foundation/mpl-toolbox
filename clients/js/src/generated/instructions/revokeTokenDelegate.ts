@@ -26,28 +26,27 @@ export type RevokeTokenDelegateInstructionAccounts = {
 // Arguments.
 export type RevokeTokenDelegateInstructionData = { discriminator: number };
 
-export type RevokeTokenDelegateInstructionArgs = {};
+export type RevokeTokenDelegateInstructionDataArgs = {};
 
 export function getRevokeTokenDelegateInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  RevokeTokenDelegateInstructionArgs,
+  RevokeTokenDelegateInstructionDataArgs,
   RevokeTokenDelegateInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    RevokeTokenDelegateInstructionArgs,
+    RevokeTokenDelegateInstructionDataArgs,
     RevokeTokenDelegateInstructionData,
     RevokeTokenDelegateInstructionData
   >(
-    s.struct<RevokeTokenDelegateInstructionData>(
-      [['discriminator', s.u8]],
-      'RevokeTokenDelegateInstructionArgs'
-    ),
+    s.struct<RevokeTokenDelegateInstructionData>([['discriminator', s.u8()]], {
+      description: 'RevokeTokenDelegateInstructionData',
+    }),
     (value) =>
       ({ ...value, discriminator: 5 } as RevokeTokenDelegateInstructionData)
   ) as Serializer<
-    RevokeTokenDelegateInstructionArgs,
+    RevokeTokenDelegateInstructionDataArgs,
     RevokeTokenDelegateInstructionData
   >;
 }
