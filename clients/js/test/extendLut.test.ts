@@ -32,14 +32,15 @@ test('it can add addresses to an empty LUT', async (t) => {
   const payer = await generateSignerWithSol(umi, sol(1));
 
   // When we create an empty LUT and add 2 addresses.
+  const extendLutBuilder = transactionBuilder(umi).add(
+    extendLut(
+      { ...umi, payer },
+      { address: lut, addresses: [addressA, addressB] }
+    )
+  );
   await transactionBuilder(umi)
     .add(createLut(umi, { recentSlot }))
-    .add(
-      extendLut(
-        { ...umi, payer },
-        { address: lut, addresses: [addressA, addressB] }
-      )
-    )
+    .add(extendLutBuilder)
     .sendAndConfirm();
 
   // Then the LUT has the correct addresses.
@@ -56,6 +57,9 @@ test('it can add addresses to an empty LUT', async (t) => {
     includesHeaderBytes: true,
   });
   t.deepEqual(payerAccount, subtractAmounts(sol(1), rentFor2PublicKeys));
+
+  // And the transaction builder had the right storage expectations.
+  t.deepEqual(extendLutBuilder.getBytesCreatedOnChain(), 32 * 2);
 });
 
 test('it can add more addresses to an existing LUT', async (t) => {
@@ -78,9 +82,10 @@ test('it can add more addresses to an existing LUT', async (t) => {
 
   // When we add one more address to the LUT.
   const addressC = generateSigner(umi).publicKey;
-  await transactionBuilder(umi)
-    .add(extendLut({ ...umi, payer }, { address: lut, addresses: [addressC] }))
-    .sendAndConfirm();
+  const extendLutBuilder = transactionBuilder(umi).add(
+    extendLut({ ...umi, payer }, { address: lut, addresses: [addressC] })
+  );
+  await extendLutBuilder.sendAndConfirm();
 
   // Then the LUT has the correct addresses.
   const lutAccount = await fetchAddressLookupTable(umi, lut);
@@ -96,4 +101,7 @@ test('it can add more addresses to an existing LUT', async (t) => {
     includesHeaderBytes: true,
   });
   t.deepEqual(payerAccount, subtractAmounts(sol(1), rentFor1PublicKey));
+
+  // And the transaction builder had the right storage expectations.
+  t.deepEqual(extendLutBuilder.getBytesCreatedOnChain(), 32);
 });

@@ -132,6 +132,9 @@ kinobi.update(
         },
       },
     },
+    extendLut: {
+      internal: true,
+    },
   })
 );
 
