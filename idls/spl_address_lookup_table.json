@@ -77,14 +77,12 @@
         {
           "name": "payer",
           "isMut": true,
-          "isSigner": true,
-          "optional": true
+          "isSigner": true
         },
         {
           "name": "systemProgram",
           "isMut": false,
-          "isSigner": false,
-          "optional": true
+          "isSigner": false
         }
       ],
       "discriminant": {
@@ -95,7 +93,8 @@
         {
           "name": "addresses",
           "type": {
-            "vec": "publicKey"
+            "vec": "publicKey",
+            "size": "u64"
           }
         }
       ]

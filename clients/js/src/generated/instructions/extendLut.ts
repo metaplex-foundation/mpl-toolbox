@@ -45,7 +45,7 @@ export function getExtendLutInstructionDataSerializer(
     s.struct<ExtendLutInstructionData>(
       [
         ['discriminator', s.u32()],
-        ['addresses', s.array(s.publicKey())],
+        ['addresses', s.array(s.publicKey(), { size: s.u64() })],
       ],
       { description: 'ExtendLutInstructionData' }
     ),
@@ -55,7 +55,7 @@ export function getExtendLutInstructionDataSerializer(
 
 // Instruction.
 export function extendLut(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
   input: ExtendLutInstructionAccounts & ExtendLutInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
@@ -69,8 +69,11 @@ export function extendLut(
   // Resolved accounts.
   const addressAccount = input.address;
   const authorityAccount = input.authority ?? context.identity;
-  const payerAccount = input.payer;
-  const systemProgramAccount = input.systemProgram;
+  const payerAccount = input.payer ?? context.payer;
+  const systemProgramAccount = input.systemProgram ?? {
+    ...context.programs.get('splSystem').publicKey,
+    isWritable: false,
+  };
 
   // Address.
   keys.push({
@@ -87,24 +90,20 @@ export function extendLut(
     isWritable: isWritable(authorityAccount, false),
   });
 
-  // Payer (optional).
-  if (payerAccount) {
-    signers.push(payerAccount);
-    keys.push({
-      pubkey: payerAccount.publicKey,
-      isSigner: true,
-      isWritable: isWritable(payerAccount, true),
-    });
-  }
+  // Payer.
+  signers.push(payerAccount);
+  keys.push({
+    pubkey: payerAccount.publicKey,
+    isSigner: true,
+    isWritable: isWritable(payerAccount, true),
+  });
 
-  // System Program (optional).
-  if (systemProgramAccount) {
-    keys.push({
-      pubkey: systemProgramAccount,
-      isSigner: false,
-      isWritable: isWritable(systemProgramAccount, false),
-    });
-  }
+  // System Program.
+  keys.push({
+    pubkey: systemProgramAccount,
+    isSigner: false,
+    isWritable: isWritable(systemProgramAccount, false),
+  });
 
   // Data.
   const data = getExtendLutInstructionDataSerializer(context).serialize(input);
