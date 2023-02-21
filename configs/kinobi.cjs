@@ -158,6 +158,15 @@ kinobi.update(
                 })
               );
             }
+            if (field.name === "padding") {
+              return new TypeStructFieldNode(
+                {
+                  ...field.metadata,
+                  defaultsTo: { value: vScalar(0), strategy: "omitted" },
+                },
+                field.type
+              );
+            }
             if (field.name === "addresses") {
               return new TypeStructFieldNode(
                 field.metadata,
