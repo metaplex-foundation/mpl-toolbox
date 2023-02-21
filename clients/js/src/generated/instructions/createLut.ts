@@ -7,8 +7,10 @@
  */
 
 import {
+  ACCOUNT_HEADER_SIZE,
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -21,7 +23,7 @@ import { findAddressLookupTablePda } from '../accounts';
 
 // Accounts.
 export type CreateLutInstructionAccounts = {
-  address?: PublicKey;
+  address?: Pda;
   authority?: Signer;
   payer?: Signer;
   systemProgram?: PublicKey;
@@ -66,7 +68,8 @@ export function createLut(
     Context,
     'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
   >,
-  input: CreateLutInstructionAccounts & CreateLutInstructionDataArgs
+  input: CreateLutInstructionAccounts &
+    Omit<CreateLutInstructionDataArgs, 'bump'>
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
@@ -121,10 +124,13 @@ export function createLut(
   });
 
   // Data.
-  const data = getCreateLutInstructionDataSerializer(context).serialize(input);
+  const data = getCreateLutInstructionDataSerializer(context).serialize({
+    ...input,
+    bump: addressAccount.bump,
+  });
 
   // Bytes Created On Chain.
-  const bytesCreatedOnChain = 0;
+  const bytesCreatedOnChain = 56 + ACCOUNT_HEADER_SIZE;
 
   return {
     instruction: { keys, programId, data },

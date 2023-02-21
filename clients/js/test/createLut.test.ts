@@ -1,4 +1,9 @@
-import { transactionBuilder } from '@metaplex-foundation/umi-test';
+import {
+  base58PublicKey,
+  PublicKey,
+  Some,
+  transactionBuilder,
+} from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import {
   createLut,
@@ -23,8 +28,17 @@ test('it can create a new empty LUT with minimum configuration', async (t) => {
     recentSlot,
   });
   const lutAccount = await fetchAddressLookupTable(umi, lut);
-  console.log({ address: lut, authority: umi.identity.publicKey });
+  console.log({
+    address: base58PublicKey(lut),
+    authority: base58PublicKey(umi.identity),
+  });
   console.log(lutAccount);
+  console.log({
+    lutAddress: base58PublicKey(lutAccount),
+    lutAuthority: base58PublicKey(
+      (lutAccount.authority as Some<PublicKey>).value
+    ),
+  });
   t.pass();
 
   // // Then the account was created with the correct data.

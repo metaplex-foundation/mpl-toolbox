@@ -129,10 +129,11 @@ kinobi.update(
       },
     },
     createLut: {
-      internal: true,
+      bytesCreatedOnChain: { kind: "number", value: 56 },
       accounts: {
         address: {
           defaultsTo: { kind: "pda", pdaAccount: "addressLookupTable" },
+          pdaBumpArg: "bump",
         },
       },
     },
