@@ -16,7 +16,7 @@ import {
   checkForIsWritableOverride as isWritable,
   publicKey,
 } from '@metaplex-foundation/umi-core';
-import { findAssociatedTokenPda } from 'rootHooked';
+import { findAssociatedTokenPda } from '../../hooked';
 import { getTokenSize } from '../accounts';
 
 // Accounts.

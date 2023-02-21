@@ -8,14 +8,14 @@ import {
   getCreateLutInstructionDataSerializer,
   createLut as baseCreateLut,
   CreateLutInstructionAccounts,
-  CreateLutInstructionArgs,
+  CreateLutInstructionDataArgs,
   CreateLutInstructionData,
 } from '../generated/instructions/createLut';
 
 export {
   CreateLutInstructionAccounts,
   CreateLutInstructionData,
-  CreateLutInstructionArgs,
+  CreateLutInstructionDataArgs,
   getCreateLutInstructionDataSerializer,
 };
 

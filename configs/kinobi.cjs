@@ -79,7 +79,7 @@ kinobi.update(
 const ataPdaDefaults = {
   kind: "pda",
   pdaAccount: "AssociatedToken",
-  dependency: "rootHooked",
+  dependency: "hooked",
   seeds: {
     owner: { kind: "account", name: "owner" },
     mint: { kind: "account", name: "mint" },

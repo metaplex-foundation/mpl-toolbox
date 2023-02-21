@@ -17,7 +17,7 @@ import {
   mapSerializer,
   publicKey,
 } from '@metaplex-foundation/umi-core';
-import { findAssociatedTokenPda } from 'rootHooked';
+import { findAssociatedTokenPda } from '../../hooked';
 
 // Accounts.
 export type CreateTokenIfMissingInstructionAccounts = {
