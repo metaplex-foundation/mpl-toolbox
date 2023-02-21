@@ -171,7 +171,8 @@
           {
             "name": "authority",
             "type": {
-              "option": "publicKey"
+              "option": "publicKey",
+              "fixed": true
             }
           },
           {
@@ -181,7 +182,8 @@
           {
             "name": "addresses",
             "type": {
-              "vec": "publicKey"
+              "vec": "publicKey",
+              "size": "remainder"
             }
           }
         ]

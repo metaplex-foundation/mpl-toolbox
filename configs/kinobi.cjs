@@ -2,7 +2,7 @@ const path = require("path");
 const {
   Kinobi,
   RenderJavaScriptVisitor,
-  SetLeafWrappersVisitor,
+  SetNumberWrappersVisitor,
   UpdateAccountsVisitor,
   UpdateInstructionsVisitor,
   UpdateProgramsVisitor,
@@ -10,12 +10,7 @@ const {
   vScalar,
   TypePublicKeyNode,
   TypeNumberNode,
-  assertTypeStructNode,
-  TypeStructFieldNode,
-  TypeOptionNode,
-  AccountNode,
-  TypeArrayNode,
-  TypeStructNode,
+  SetStructDefaultValuesVisitor,
 } = require("@metaplex-foundation/kinobi");
 
 // Paths.
@@ -141,51 +136,16 @@ kinobi.update(
 );
 
 kinobi.update(
-  new UpdateAccountsVisitor({
-    addressLookupTable: (account) => {
-      assertTypeStructNode(account.type);
-      return new AccountNode(
-        account.metadata,
-        new TypeStructNode(
-          account.type.name,
-          account.type.fields.map((field) => {
-            if (field.name === "authority") {
-              return new TypeStructFieldNode(
-                field.metadata,
-                new TypeOptionNode(new TypePublicKeyNode(), {
-                  prefix: new TypeNumberNode("u8"),
-                  fixed: true,
-                })
-              );
-            }
-            if (field.name === "padding") {
-              return new TypeStructFieldNode(
-                {
-                  ...field.metadata,
-                  defaultsTo: { value: vScalar(0), strategy: "omitted" },
-                },
-                field.type
-              );
-            }
-            if (field.name === "addresses") {
-              return new TypeStructFieldNode(
-                field.metadata,
-                new TypeArrayNode(new TypePublicKeyNode(), {
-                  size: { kind: "remainder" },
-                })
-              );
-            }
-            return field;
-          })
-        )
-      );
+  new SetStructDefaultValuesVisitor({
+    addressLookupTable: {
+      padding: { ...vScalar(0), strategy: "omitted" },
     },
   })
 );
 
-// Wrap leaves.
+// Wrap numbers.
 kinobi.update(
-  new SetLeafWrappersVisitor({
+  new SetNumberWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
     "splSystem.TransferSol.amount": { kind: "SolAmount" },
   })
