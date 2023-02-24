@@ -7,7 +7,7 @@ import test from 'ava';
 import { createLut, extendLut, findAddressLookupTablePda } from '../src';
 import { createUmi } from './_setup';
 
-type CreateLutForTransactionBuilderResponse = {
+export type CreateLutForTransactionBuilderResponse = {
   createLutBuilders: TransactionBuilder[];
   builder: TransactionBuilder;
   closeLutBuilders: TransactionBuilder[];
@@ -31,14 +31,11 @@ test('it can create a new empty LUT with minimum configuration', async (t) => {
     .add(createLut(umi, { recentSlot }))
     .add(extendLut(umi, { address: lut, addresses }));
 
-  const txSize = umi.transactions.serialize(
-    builder.setBlockhash('11111111111111111111111111111111').build()
-  ).length;
-
   console.log({
-    txSize,
+    getTransactionSize: builder.getTransactionSize(),
     minimumTransactionsRequired: builder.minimumTransactionsRequired(),
   });
+
   await builder.sendAndConfirm();
 
   t.pass();
