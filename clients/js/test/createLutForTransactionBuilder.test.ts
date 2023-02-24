@@ -7,7 +7,7 @@ import { createLut, extendLut, findAddressLookupTablePda } from '../src';
 import { createUmi } from './_setup';
 
 test('it can create a new empty LUT with minimum configuration', async (t) => {
-  // Given a recent slot.
+  // Given
   const umi = await createUmi();
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
   const lut = findAddressLookupTablePda(umi, {
@@ -15,16 +15,23 @@ test('it can create a new empty LUT with minimum configuration', async (t) => {
     recentSlot,
   });
 
-  const addresses = Array(31)
+  const addresses = Array(30)
     .fill(0)
     .map(() => generateSigner(umi).publicKey);
 
-  // When we create a new LUT using that slot.
+  // When
   const builder = transactionBuilder(umi)
     .add(createLut(umi, { recentSlot }))
     .add(extendLut(umi, { address: lut, addresses }));
 
-  console.log(builder.getTransactionSize());
+  const txSize = umi.transactions.serialize(
+    builder.setBlockhash('11111111111111111111111111111111').build()
+  ).length;
+
+  console.log({
+    txSize,
+    minimumTransactionsRequired: builder.minimumTransactionsRequired(),
+  });
   await builder.sendAndConfirm();
 
   t.pass();
