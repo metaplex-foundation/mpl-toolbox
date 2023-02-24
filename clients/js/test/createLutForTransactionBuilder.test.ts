@@ -1,10 +1,17 @@
 import {
   generateSigner,
   transactionBuilder,
+  TransactionBuilder,
 } from '@metaplex-foundation/umi-test';
 import test from 'ava';
 import { createLut, extendLut, findAddressLookupTablePda } from '../src';
 import { createUmi } from './_setup';
+
+type CreateLutForTransactionBuilderResponse = {
+  createLutBuilders: TransactionBuilder[];
+  builder: TransactionBuilder;
+  closeLutBuilders: TransactionBuilder[];
+};
 
 test('it can create a new empty LUT with minimum configuration', async (t) => {
   // Given
