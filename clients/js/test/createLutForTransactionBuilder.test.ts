@@ -9,12 +9,13 @@ import {
   createAssociatedToken,
   createLutForTransactionBuilder,
   createMint,
+  extendLut,
   findAddressLookupTablePda,
   findAssociatedTokenPda,
 } from '../src';
 import { createUmi } from './_setup';
 
-test('it generates create and close LUT builder for a given transaction builder', async (t) => {
+test('it generates create and close LUT builders for a given transaction builder', async (t) => {
   // Given a recent slot.
   const umi = await createUmi();
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
@@ -69,6 +70,30 @@ test('it generates create and close LUT builder for a given transaction builder'
   t.false(hasPublicKey(lutAccounts[0].addresses, umi.identity.publicKey));
 });
 
+test.skip('it generates multiple lut builders such that they each fit under one transaction', async (t) => {
+  // Given a recent slot.
+  const umi = await createUmi();
+  const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
+
+  // And a base builder that requires 300 addresses.
+  const lut = generateSigner(umi);
+  const generatePublicKey = () => generateSigner(umi).publicKey;
+  const addressesA = Array.from({ length: 256 }, generatePublicKey);
+  const addressesB = Array.from({ length: 44 }, generatePublicKey);
+  const baseBuilder = transactionBuilder(umi)
+    .add(extendLut(umi, { address: lut.publicKey, addresses: addressesA }))
+    .add(extendLut(umi, { address: lut.publicKey, addresses: addressesB }));
+
+  // When we create LUT builders for that builder.
+  const { lutAccounts, createLutBuilders, builder, closeLutBuilders } =
+    createLutForTransactionBuilder(umi, baseBuilder, recentSlot);
+
+  console.log({ lutAccounts, createLutBuilders, builder, closeLutBuilders });
+});
+
 function hasPublicKey(haystack: PublicKey[], needle: PublicKey): boolean {
   return haystack.some((address) => samePublicKey(address, needle));
 }
+
+// Test: with more than 256 addresses.
+// Test: with making the call to create and close the LUTs.

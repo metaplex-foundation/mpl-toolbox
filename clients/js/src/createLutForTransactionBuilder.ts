@@ -34,8 +34,7 @@ export const createLutForTransactionBuilder = (
   const lutRecipient = recipient ?? context.payer.publicKey;
 
   const tx = builder.setBlockhash('11111111111111111111111111111111').build();
-  const addresses = tx.message.accounts;
-  const extractableAddresses = addresses.slice(
+  const extractableAddresses = tx.message.accounts.slice(
     tx.message.header.numRequiredSignatures
   );
 
@@ -43,22 +42,22 @@ export const createLutForTransactionBuilder = (
   const createLutBuilders = [] as TransactionBuilder[];
   let closeLutBuilder = transactionBuilder(context);
 
-  chunk(extractableAddresses, 256).forEach((lutAddresses, index) => {
-    const lutRecentSlot = recentSlot - index;
+  chunk(extractableAddresses, 256).forEach((addresses, index) => {
+    const localRecentSlot = recentSlot - index;
     const lut = findAddressLookupTablePda(context, {
       authority: lutAuthority.publicKey,
-      recentSlot: lutRecentSlot,
+      recentSlot: localRecentSlot,
     });
-    lutAccounts.push({ publicKey: lut, addresses: lutAddresses });
+    lutAccounts.push({ publicKey: lut, addresses });
     createLutBuilders.push(
       ...generateCreateLutBuilders(
         context,
         transactionBuilder(context).add(
-          createLut(context, { recentSlot: lutRecentSlot })
+          createLut(context, { recentSlot: localRecentSlot })
         ),
         lut,
         lutAuthority,
-        lutAddresses
+        addresses
       )
     );
     closeLutBuilder = closeLutBuilder.add(
