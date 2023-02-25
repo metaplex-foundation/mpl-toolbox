@@ -1,5 +1,4 @@
 import {
-  base58PublicKey,
   chunk,
   Context,
   PublicKey,
@@ -25,6 +24,7 @@ export const createLutForTransactionBuilder = (
   recentSlot: number,
   authority?: Signer
 ): {
+  lutAccounts: { publicKey: PublicKey; addresses: PublicKey[] }[];
   createLutBuilders: TransactionBuilder[];
   builder: TransactionBuilder;
   closeLutBuilders: TransactionBuilder[];
@@ -38,17 +38,16 @@ export const createLutForTransactionBuilder = (
   );
 
   const lutAccounts = [] as { publicKey: PublicKey; addresses: PublicKey[] }[];
-  const lutBuilders = [] as TransactionBuilder[];
-  const chunks = chunk(extractableAddresses, 256);
+  const createLutBuilders = [] as TransactionBuilder[];
 
-  chunks.forEach((lutAddresses, index) => {
+  chunk(extractableAddresses, 256).forEach((lutAddresses, index) => {
     const lutRecentSlot = recentSlot - index;
     const lut = findAddressLookupTablePda(context, {
       authority: lutAuthority.publicKey,
       recentSlot: lutRecentSlot,
     });
     lutAccounts.push({ publicKey: lut, addresses: lutAddresses });
-    lutBuilders.push(
+    createLutBuilders.push(
       ...generateCreateLutBuilders(
         context,
         transactionBuilder(context).add(
@@ -62,19 +61,12 @@ export const createLutForTransactionBuilder = (
   });
 
   // TODO: Close builders.
+  const closeLutBuilders = [] as TransactionBuilder[];
 
-  console.log({
-    addresses: addresses.map(base58PublicKey),
-    extractableAddresses: extractableAddresses.map(base58PublicKey),
-    header: tx.message.header,
-    lutAccounts,
-    lutBuilders: lutBuilders[0].items,
-  });
+  // Set address lookup tables on the original builder.
+  builder = builder.setAddressLookupTables(lutAccounts);
 
-  return {
-    lutBuilders,
-    builder,
-  } as any;
+  return { lutAccounts, createLutBuilders, builder, closeLutBuilders };
 };
 
 function generateCreateLutBuilders(
