@@ -1,4 +1,5 @@
 import {
+  base58PublicKey,
   generateSigner,
   transactionBuilder,
 } from '@metaplex-foundation/umi-test';
@@ -7,6 +8,7 @@ import {
   createAssociatedToken,
   createLutForTransactionBuilder,
   createMint,
+  findAssociatedTokenPda,
 } from '../src';
 import { createUmi } from './_setup';
 
@@ -17,6 +19,15 @@ test('dummy', async (t) => {
 
   const mint = generateSigner(umi);
   const owner = generateSigner(umi).publicKey;
+  console.log({
+    identity: base58PublicKey(umi.identity),
+    mint: base58PublicKey(mint),
+    owner: base58PublicKey(owner),
+    ata: base58PublicKey(
+      findAssociatedTokenPda(umi, { mint: mint.publicKey, owner })
+    ),
+  });
+
   const builder = transactionBuilder(umi)
     .add(createMint(umi, { mint }))
     .add(createAssociatedToken(umi, { mint: mint.publicKey, owner }));
