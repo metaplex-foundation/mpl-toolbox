@@ -46,10 +46,10 @@ test('it generates create and close LUT builder for a given transaction builder'
   t.true(createLutBuilders[0].fitsInOneTransaction());
   t.is(createLutBuilders[0].getInstructions().length, 2);
 
-  // TODO: And we get builders for closing these LUTs if needed.
-  t.is(closeLutBuilders.length, 0);
-  // t.true(closeLutBuilders[0].fitsInOneTransaction());
-  // t.is(closeLutBuilders[0].getInstructions().length, 1);
+  // And we get builders for closing these LUTs if needed.
+  t.is(closeLutBuilders.length, 1);
+  t.true(closeLutBuilders[0].fitsInOneTransaction());
+  t.is(closeLutBuilders[0].getInstructions().length, 1);
 
   // And we get the public key and addresses of the LUT created.
   const splSystem = umi.programs.get('splSystem').publicKey;

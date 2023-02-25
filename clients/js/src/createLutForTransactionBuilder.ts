@@ -6,7 +6,7 @@ import {
   transactionBuilder,
   TransactionBuilder,
 } from '@metaplex-foundation/umi-core';
-import { createLut, findAddressLookupTablePda } from './generated';
+import { closeLut, createLut, findAddressLookupTablePda } from './generated';
 import { extendLut } from './instructions';
 
 export const createLutForTransactionBuilder = (
@@ -22,7 +22,8 @@ export const createLutForTransactionBuilder = (
   >,
   builder: TransactionBuilder,
   recentSlot: number,
-  authority?: Signer
+  authority?: Signer,
+  recipient?: PublicKey
 ): {
   lutAccounts: { publicKey: PublicKey; addresses: PublicKey[] }[];
   createLutBuilders: TransactionBuilder[];
@@ -30,6 +31,7 @@ export const createLutForTransactionBuilder = (
   closeLutBuilders: TransactionBuilder[];
 } => {
   const lutAuthority = authority ?? context.identity;
+  const lutRecipient = recipient ?? context.payer.publicKey;
 
   const tx = builder.setBlockhash('11111111111111111111111111111111').build();
   const addresses = tx.message.accounts;
@@ -39,6 +41,7 @@ export const createLutForTransactionBuilder = (
 
   const lutAccounts = [] as { publicKey: PublicKey; addresses: PublicKey[] }[];
   const createLutBuilders = [] as TransactionBuilder[];
+  let closeLutBuilder = transactionBuilder(context);
 
   chunk(extractableAddresses, 256).forEach((lutAddresses, index) => {
     const lutRecentSlot = recentSlot - index;
@@ -58,15 +61,24 @@ export const createLutForTransactionBuilder = (
         lutAddresses
       )
     );
+    closeLutBuilder = closeLutBuilder.add(
+      closeLut(context, {
+        address: lut,
+        authority: lutAuthority,
+        recipient: lutRecipient,
+      })
+    );
   });
-
-  // TODO: Close builders.
-  const closeLutBuilders = [] as TransactionBuilder[];
 
   // Set address lookup tables on the original builder.
   builder = builder.setAddressLookupTables(lutAccounts);
 
-  return { lutAccounts, createLutBuilders, builder, closeLutBuilders };
+  return {
+    lutAccounts,
+    createLutBuilders,
+    builder,
+    closeLutBuilders: [closeLutBuilder],
+  };
 };
 
 function generateCreateLutBuilders(
