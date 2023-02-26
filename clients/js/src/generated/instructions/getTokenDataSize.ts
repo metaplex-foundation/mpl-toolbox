@@ -25,28 +25,27 @@ export type GetTokenDataSizeInstructionAccounts = {
 // Arguments.
 export type GetTokenDataSizeInstructionData = { discriminator: number };
 
-export type GetTokenDataSizeInstructionArgs = {};
+export type GetTokenDataSizeInstructionDataArgs = {};
 
 export function getGetTokenDataSizeInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  GetTokenDataSizeInstructionArgs,
+  GetTokenDataSizeInstructionDataArgs,
   GetTokenDataSizeInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    GetTokenDataSizeInstructionArgs,
+    GetTokenDataSizeInstructionDataArgs,
     GetTokenDataSizeInstructionData,
     GetTokenDataSizeInstructionData
   >(
-    s.struct<GetTokenDataSizeInstructionData>(
-      [['discriminator', s.u8]],
-      'GetTokenDataSizeInstructionArgs'
-    ),
+    s.struct<GetTokenDataSizeInstructionData>([['discriminator', s.u8()]], {
+      description: 'GetTokenDataSizeInstructionData',
+    }),
     (value) =>
       ({ ...value, discriminator: 21 } as GetTokenDataSizeInstructionData)
   ) as Serializer<
-    GetTokenDataSizeInstructionArgs,
+    GetTokenDataSizeInstructionDataArgs,
     GetTokenDataSizeInstructionData
   >;
 }

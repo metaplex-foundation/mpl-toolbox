@@ -2,10 +2,15 @@ const path = require("path");
 const {
   Kinobi,
   RenderJavaScriptVisitor,
-  SetLeafWrappersVisitor,
+  SetNumberWrappersVisitor,
   UpdateAccountsVisitor,
   UpdateInstructionsVisitor,
   UpdateProgramsVisitor,
+  SetAccountDiscriminatorFromFieldVisitor,
+  vScalar,
+  TypePublicKeyNode,
+  TypeNumberNode,
+  SetStructDefaultValuesVisitor,
 } = require("@metaplex-foundation/kinobi");
 
 // Paths.
@@ -18,6 +23,7 @@ const kinobi = new Kinobi([
   path.join(idlDir, "spl_memo.json"),
   path.join(idlDir, "spl_token.json"),
   path.join(idlDir, "spl_associated_token.json"),
+  path.join(idlDir, "spl_address_lookup_table.json"),
   path.join(idlDir, "mpl_system_extras.json"),
   path.join(idlDir, "mpl_token_extras.json"),
 ]);
@@ -29,6 +35,7 @@ kinobi.update(
     splMemo: { prefix: "Memo" },
     splToken: { prefix: "Tok" },
     splAssociatedToken: { prefix: "Ata" },
+    splAddressLookupTable: { prefix: "Lut" },
     mplSystemExtras: { prefix: "SysEx" },
     mplTokenExtras: { prefix: "TokEx" },
   })
@@ -40,6 +47,32 @@ kinobi.update(
     "splToken.mint": { discriminator: { kind: "size" } },
     "splToken.token": { discriminator: { kind: "size" } },
     "splToken.multisig": { discriminator: { kind: "size" } },
+    "splAddressLookupTable.addressLookupTable": {
+      seeds: [
+        {
+          kind: "variable",
+          name: "authority",
+          description: "The address of the LUT's authority",
+          type: new TypePublicKeyNode(),
+        },
+        {
+          kind: "variable",
+          name: "recentSlot",
+          description: "The recent slot associated with the LUT",
+          type: new TypeNumberNode("u64"),
+        },
+      ],
+    },
+  })
+);
+
+// Update accounts.
+kinobi.update(
+  new SetAccountDiscriminatorFromFieldVisitor({
+    "splAddressLookupTable.addressLookupTable": {
+      field: "discriminator",
+      value: vScalar(1),
+    },
   })
 );
 
@@ -47,7 +80,7 @@ kinobi.update(
 const ataPdaDefaults = {
   kind: "pda",
   pdaAccount: "AssociatedToken",
-  dependency: "rootHooked",
+  dependency: "hooked",
   seeds: {
     owner: { kind: "account", name: "owner" },
     mint: { kind: "account", name: "mint" },
@@ -55,47 +88,67 @@ const ataPdaDefaults = {
 };
 kinobi.update(
   new UpdateInstructionsVisitor({
-    TransferSol: {
+    transferSol: {
       accounts: {
         source: { defaultsTo: { kind: "identity" } },
       },
     },
-    TransferAllSol: {
+    transferAllSol: {
       accounts: {
         source: { defaultsTo: { kind: "identity" } },
       },
     },
-    MintTokensTo: {
+    mintTokensTo: {
       accounts: {
         mintAuthority: { defaultsTo: { kind: "identity" } },
       },
     },
-    CreateAccount: {
+    createAccount: {
       bytesCreatedOnChain: { kind: "arg", name: "space" },
     },
-    CreateAccountWithRent: {
+    createAccountWithRent: {
       bytesCreatedOnChain: { kind: "arg", name: "space" },
     },
-    CreateAssociatedToken: {
+    createAssociatedToken: {
       bytesCreatedOnChain: { kind: "account", name: "Token" },
       accounts: {
         owner: { defaultsTo: { kind: "identity" } },
         ata: { defaultsTo: ataPdaDefaults },
       },
     },
-    CreateTokenIfMissing: {
+    createTokenIfMissing: {
       accounts: {
         ata: { defaultsTo: ataPdaDefaults },
         token: { defaultsTo: { kind: "account", name: "ata" } },
         owner: { defaultsTo: { kind: "identity" } },
       },
     },
+    createLut: {
+      bytesCreatedOnChain: { kind: "number", value: 56 },
+      accounts: {
+        address: {
+          defaultsTo: { kind: "pda", pdaAccount: "addressLookupTable" },
+          pdaBumpArg: "bump",
+        },
+      },
+    },
+    extendLut: {
+      internal: true,
+    },
   })
 );
 
-// Wrap leaves.
 kinobi.update(
-  new SetLeafWrappersVisitor({
+  new SetStructDefaultValuesVisitor({
+    addressLookupTable: {
+      padding: { ...vScalar(0), strategy: "omitted" },
+    },
+  })
+);
+
+// Wrap numbers.
+kinobi.update(
+  new SetNumberWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
     "splSystem.TransferSol.amount": { kind: "SolAmount" },
   })

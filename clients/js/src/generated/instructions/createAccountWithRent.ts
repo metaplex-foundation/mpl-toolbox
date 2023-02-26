@@ -35,7 +35,7 @@ export type CreateAccountWithRentInstructionData = {
   programId: PublicKey;
 };
 
-export type CreateAccountWithRentInstructionArgs = {
+export type CreateAccountWithRentInstructionDataArgs = {
   space: number | bigint;
   programId: PublicKey;
 };
@@ -43,27 +43,27 @@ export type CreateAccountWithRentInstructionArgs = {
 export function getCreateAccountWithRentInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  CreateAccountWithRentInstructionArgs,
+  CreateAccountWithRentInstructionDataArgs,
   CreateAccountWithRentInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    CreateAccountWithRentInstructionArgs,
+    CreateAccountWithRentInstructionDataArgs,
     CreateAccountWithRentInstructionData,
     CreateAccountWithRentInstructionData
   >(
     s.struct<CreateAccountWithRentInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['space', s.u64],
-        ['programId', s.publicKey],
+        ['discriminator', s.u8()],
+        ['space', s.u64()],
+        ['programId', s.publicKey()],
       ],
-      'CreateAccountWithRentInstructionArgs'
+      { description: 'CreateAccountWithRentInstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 0 } as CreateAccountWithRentInstructionData)
   ) as Serializer<
-    CreateAccountWithRentInstructionArgs,
+    CreateAccountWithRentInstructionDataArgs,
     CreateAccountWithRentInstructionData
   >;
 }
@@ -72,7 +72,7 @@ export function getCreateAccountWithRentInstructionDataSerializer(
 export function createAccountWithRent(
   context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateAccountWithRentInstructionAccounts &
-    CreateAccountWithRentInstructionArgs
+    CreateAccountWithRentInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

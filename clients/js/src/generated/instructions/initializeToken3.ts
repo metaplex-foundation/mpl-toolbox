@@ -29,31 +29,31 @@ export type InitializeToken3InstructionData = {
   owner: PublicKey;
 };
 
-export type InitializeToken3InstructionArgs = { owner: PublicKey };
+export type InitializeToken3InstructionDataArgs = { owner: PublicKey };
 
 export function getInitializeToken3InstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  InitializeToken3InstructionArgs,
+  InitializeToken3InstructionDataArgs,
   InitializeToken3InstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    InitializeToken3InstructionArgs,
+    InitializeToken3InstructionDataArgs,
     InitializeToken3InstructionData,
     InitializeToken3InstructionData
   >(
     s.struct<InitializeToken3InstructionData>(
       [
-        ['discriminator', s.u8],
-        ['owner', s.publicKey],
+        ['discriminator', s.u8()],
+        ['owner', s.publicKey()],
       ],
-      'InitializeToken3InstructionArgs'
+      { description: 'InitializeToken3InstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 18 } as InitializeToken3InstructionData)
   ) as Serializer<
-    InitializeToken3InstructionArgs,
+    InitializeToken3InstructionDataArgs,
     InitializeToken3InstructionData
   >;
 }
@@ -61,7 +61,8 @@ export function getInitializeToken3InstructionDataSerializer(
 // Instruction.
 export function initializeToken3(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: InitializeToken3InstructionAccounts & InitializeToken3InstructionArgs
+  input: InitializeToken3InstructionAccounts &
+    InitializeToken3InstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

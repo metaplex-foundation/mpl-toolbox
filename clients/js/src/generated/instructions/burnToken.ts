@@ -30,32 +30,32 @@ export type BurnTokenInstructionData = {
   amount: bigint;
 };
 
-export type BurnTokenInstructionArgs = { amount: number | bigint };
+export type BurnTokenInstructionDataArgs = { amount: number | bigint };
 
 export function getBurnTokenInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<BurnTokenInstructionArgs, BurnTokenInstructionData> {
+): Serializer<BurnTokenInstructionDataArgs, BurnTokenInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    BurnTokenInstructionArgs,
+    BurnTokenInstructionDataArgs,
     BurnTokenInstructionData,
     BurnTokenInstructionData
   >(
     s.struct<BurnTokenInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
       ],
-      'BurnTokenInstructionArgs'
+      { description: 'BurnTokenInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 8 } as BurnTokenInstructionData)
-  ) as Serializer<BurnTokenInstructionArgs, BurnTokenInstructionData>;
+  ) as Serializer<BurnTokenInstructionDataArgs, BurnTokenInstructionData>;
 }
 
 // Instruction.
 export function burnToken(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: BurnTokenInstructionAccounts & BurnTokenInstructionArgs
+  input: BurnTokenInstructionAccounts & BurnTokenInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

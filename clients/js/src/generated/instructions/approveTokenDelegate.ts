@@ -30,31 +30,33 @@ export type ApproveTokenDelegateInstructionData = {
   amount: bigint;
 };
 
-export type ApproveTokenDelegateInstructionArgs = { amount: number | bigint };
+export type ApproveTokenDelegateInstructionDataArgs = {
+  amount: number | bigint;
+};
 
 export function getApproveTokenDelegateInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  ApproveTokenDelegateInstructionArgs,
+  ApproveTokenDelegateInstructionDataArgs,
   ApproveTokenDelegateInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    ApproveTokenDelegateInstructionArgs,
+    ApproveTokenDelegateInstructionDataArgs,
     ApproveTokenDelegateInstructionData,
     ApproveTokenDelegateInstructionData
   >(
     s.struct<ApproveTokenDelegateInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
       ],
-      'ApproveTokenDelegateInstructionArgs'
+      { description: 'ApproveTokenDelegateInstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 4 } as ApproveTokenDelegateInstructionData)
   ) as Serializer<
-    ApproveTokenDelegateInstructionArgs,
+    ApproveTokenDelegateInstructionDataArgs,
     ApproveTokenDelegateInstructionData
   >;
 }
@@ -63,7 +65,7 @@ export function getApproveTokenDelegateInstructionDataSerializer(
 export function approveTokenDelegate(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: ApproveTokenDelegateInstructionAccounts &
-    ApproveTokenDelegateInstructionArgs
+    ApproveTokenDelegateInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

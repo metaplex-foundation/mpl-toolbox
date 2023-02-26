@@ -34,7 +34,7 @@ export type CreateAccountInstructionData = {
   programId: PublicKey;
 };
 
-export type CreateAccountInstructionArgs = {
+export type CreateAccountInstructionDataArgs = {
   lamports: SolAmount;
   space: number | bigint;
   programId: PublicKey;
@@ -42,30 +42,33 @@ export type CreateAccountInstructionArgs = {
 
 export function getCreateAccountInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CreateAccountInstructionArgs, CreateAccountInstructionData> {
+): Serializer<CreateAccountInstructionDataArgs, CreateAccountInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    CreateAccountInstructionArgs,
+    CreateAccountInstructionDataArgs,
     CreateAccountInstructionData,
     CreateAccountInstructionData
   >(
     s.struct<CreateAccountInstructionData>(
       [
-        ['discriminator', s.u32],
-        ['lamports', mapAmountSerializer(s.u64, 'SOL', 9)],
-        ['space', s.u64],
-        ['programId', s.publicKey],
+        ['discriminator', s.u32()],
+        ['lamports', mapAmountSerializer(s.u64(), 'SOL', 9)],
+        ['space', s.u64()],
+        ['programId', s.publicKey()],
       ],
-      'CreateAccountInstructionArgs'
+      { description: 'CreateAccountInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 0 } as CreateAccountInstructionData)
-  ) as Serializer<CreateAccountInstructionArgs, CreateAccountInstructionData>;
+  ) as Serializer<
+    CreateAccountInstructionDataArgs,
+    CreateAccountInstructionData
+  >;
 }
 
 // Instruction.
 export function createAccount(
   context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
-  input: CreateAccountInstructionAccounts & CreateAccountInstructionArgs
+  input: CreateAccountInstructionAccounts & CreateAccountInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

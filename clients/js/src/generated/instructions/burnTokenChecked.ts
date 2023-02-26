@@ -31,7 +31,7 @@ export type BurnTokenCheckedInstructionData = {
   decimals: number;
 };
 
-export type BurnTokenCheckedInstructionArgs = {
+export type BurnTokenCheckedInstructionDataArgs = {
   amount: number | bigint;
   decimals: number;
 };
@@ -39,27 +39,27 @@ export type BurnTokenCheckedInstructionArgs = {
 export function getBurnTokenCheckedInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  BurnTokenCheckedInstructionArgs,
+  BurnTokenCheckedInstructionDataArgs,
   BurnTokenCheckedInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    BurnTokenCheckedInstructionArgs,
+    BurnTokenCheckedInstructionDataArgs,
     BurnTokenCheckedInstructionData,
     BurnTokenCheckedInstructionData
   >(
     s.struct<BurnTokenCheckedInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
-        ['decimals', s.u8],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
+        ['decimals', s.u8()],
       ],
-      'BurnTokenCheckedInstructionArgs'
+      { description: 'BurnTokenCheckedInstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 15 } as BurnTokenCheckedInstructionData)
   ) as Serializer<
-    BurnTokenCheckedInstructionArgs,
+    BurnTokenCheckedInstructionDataArgs,
     BurnTokenCheckedInstructionData
   >;
 }
@@ -67,7 +67,8 @@ export function getBurnTokenCheckedInstructionDataSerializer(
 // Instruction.
 export function burnTokenChecked(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: BurnTokenCheckedInstructionAccounts & BurnTokenCheckedInstructionArgs
+  input: BurnTokenCheckedInstructionAccounts &
+    BurnTokenCheckedInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

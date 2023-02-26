@@ -33,7 +33,7 @@ export type InitializeMintInstructionData = {
   freezeAuthority: Option<PublicKey>;
 };
 
-export type InitializeMintInstructionArgs = {
+export type InitializeMintInstructionDataArgs = {
   decimals: number;
   mintAuthority: PublicKey;
   freezeAuthority: Option<PublicKey>;
@@ -41,30 +41,36 @@ export type InitializeMintInstructionArgs = {
 
 export function getInitializeMintInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<InitializeMintInstructionArgs, InitializeMintInstructionData> {
+): Serializer<
+  InitializeMintInstructionDataArgs,
+  InitializeMintInstructionData
+> {
   const s = context.serializer;
   return mapSerializer<
-    InitializeMintInstructionArgs,
+    InitializeMintInstructionDataArgs,
     InitializeMintInstructionData,
     InitializeMintInstructionData
   >(
     s.struct<InitializeMintInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['decimals', s.u8],
-        ['mintAuthority', s.publicKey],
-        ['freezeAuthority', s.option(s.publicKey)],
+        ['discriminator', s.u8()],
+        ['decimals', s.u8()],
+        ['mintAuthority', s.publicKey()],
+        ['freezeAuthority', s.option(s.publicKey())],
       ],
-      'InitializeMintInstructionArgs'
+      { description: 'InitializeMintInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 0 } as InitializeMintInstructionData)
-  ) as Serializer<InitializeMintInstructionArgs, InitializeMintInstructionData>;
+  ) as Serializer<
+    InitializeMintInstructionDataArgs,
+    InitializeMintInstructionData
+  >;
 }
 
 // Instruction.
 export function initializeMint(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: InitializeMintInstructionAccounts & InitializeMintInstructionArgs
+  input: InitializeMintInstructionAccounts & InitializeMintInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

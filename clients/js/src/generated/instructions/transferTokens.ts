@@ -30,32 +30,38 @@ export type TransferTokensInstructionData = {
   amount: bigint;
 };
 
-export type TransferTokensInstructionArgs = { amount: number | bigint };
+export type TransferTokensInstructionDataArgs = { amount: number | bigint };
 
 export function getTransferTokensInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TransferTokensInstructionArgs, TransferTokensInstructionData> {
+): Serializer<
+  TransferTokensInstructionDataArgs,
+  TransferTokensInstructionData
+> {
   const s = context.serializer;
   return mapSerializer<
-    TransferTokensInstructionArgs,
+    TransferTokensInstructionDataArgs,
     TransferTokensInstructionData,
     TransferTokensInstructionData
   >(
     s.struct<TransferTokensInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
       ],
-      'TransferTokensInstructionArgs'
+      { description: 'TransferTokensInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 3 } as TransferTokensInstructionData)
-  ) as Serializer<TransferTokensInstructionArgs, TransferTokensInstructionData>;
+  ) as Serializer<
+    TransferTokensInstructionDataArgs,
+    TransferTokensInstructionData
+  >;
 }
 
 // Instruction.
 export function transferTokens(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: TransferTokensInstructionAccounts & TransferTokensInstructionArgs
+  input: TransferTokensInstructionAccounts & TransferTokensInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

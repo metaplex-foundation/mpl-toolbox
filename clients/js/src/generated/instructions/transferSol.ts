@@ -31,32 +31,32 @@ export type TransferSolInstructionData = {
   amount: SolAmount;
 };
 
-export type TransferSolInstructionArgs = { amount: SolAmount };
+export type TransferSolInstructionDataArgs = { amount: SolAmount };
 
 export function getTransferSolInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TransferSolInstructionArgs, TransferSolInstructionData> {
+): Serializer<TransferSolInstructionDataArgs, TransferSolInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    TransferSolInstructionArgs,
+    TransferSolInstructionDataArgs,
     TransferSolInstructionData,
     TransferSolInstructionData
   >(
     s.struct<TransferSolInstructionData>(
       [
-        ['discriminator', s.u32],
-        ['amount', mapAmountSerializer(s.u64, 'SOL', 9)],
+        ['discriminator', s.u32()],
+        ['amount', mapAmountSerializer(s.u64(), 'SOL', 9)],
       ],
-      'TransferSolInstructionArgs'
+      { description: 'TransferSolInstructionData' }
     ),
     (value) => ({ ...value, discriminator: 2 } as TransferSolInstructionData)
-  ) as Serializer<TransferSolInstructionArgs, TransferSolInstructionData>;
+  ) as Serializer<TransferSolInstructionDataArgs, TransferSolInstructionData>;
 }
 
 // Instruction.
 export function transferSol(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: TransferSolInstructionAccounts & TransferSolInstructionArgs
+  input: TransferSolInstructionAccounts & TransferSolInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

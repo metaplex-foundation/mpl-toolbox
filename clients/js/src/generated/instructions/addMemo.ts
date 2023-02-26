@@ -18,20 +18,21 @@ import {
 // Arguments.
 export type AddMemoInstructionData = { memo: string };
 
+export type AddMemoInstructionDataArgs = AddMemoInstructionData;
+
 export function getAddMemoInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<AddMemoInstructionData> {
+): Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData> {
   const s = context.serializer;
-  return s.struct<AddMemoInstructionData>(
-    [['memo', s.string()]],
-    'AddMemoInstructionArgs'
-  );
+  return s.struct<AddMemoInstructionData>([['memo', s.string()]], {
+    description: 'AddMemoInstructionData',
+  }) as Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData>;
 }
 
 // Instruction.
 export function addMemo(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: AddMemoInstructionData
+  input: AddMemoInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

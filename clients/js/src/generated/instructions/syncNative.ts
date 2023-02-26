@@ -25,23 +25,22 @@ export type SyncNativeInstructionAccounts = {
 // Arguments.
 export type SyncNativeInstructionData = { discriminator: number };
 
-export type SyncNativeInstructionArgs = {};
+export type SyncNativeInstructionDataArgs = {};
 
 export function getSyncNativeInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<SyncNativeInstructionArgs, SyncNativeInstructionData> {
+): Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData> {
   const s = context.serializer;
   return mapSerializer<
-    SyncNativeInstructionArgs,
+    SyncNativeInstructionDataArgs,
     SyncNativeInstructionData,
     SyncNativeInstructionData
   >(
-    s.struct<SyncNativeInstructionData>(
-      [['discriminator', s.u8]],
-      'SyncNativeInstructionArgs'
-    ),
+    s.struct<SyncNativeInstructionData>([['discriminator', s.u8()]], {
+      description: 'SyncNativeInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 17 } as SyncNativeInstructionData)
-  ) as Serializer<SyncNativeInstructionArgs, SyncNativeInstructionData>;
+  ) as Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData>;
 }
 
 // Instruction.

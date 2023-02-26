@@ -32,7 +32,7 @@ export type ApproveTokenDelegateCheckedInstructionData = {
   decimals: number;
 };
 
-export type ApproveTokenDelegateCheckedInstructionArgs = {
+export type ApproveTokenDelegateCheckedInstructionDataArgs = {
   amount: number | bigint;
   decimals: number;
 };
@@ -40,22 +40,22 @@ export type ApproveTokenDelegateCheckedInstructionArgs = {
 export function getApproveTokenDelegateCheckedInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  ApproveTokenDelegateCheckedInstructionArgs,
+  ApproveTokenDelegateCheckedInstructionDataArgs,
   ApproveTokenDelegateCheckedInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    ApproveTokenDelegateCheckedInstructionArgs,
+    ApproveTokenDelegateCheckedInstructionDataArgs,
     ApproveTokenDelegateCheckedInstructionData,
     ApproveTokenDelegateCheckedInstructionData
   >(
     s.struct<ApproveTokenDelegateCheckedInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
-        ['decimals', s.u8],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
+        ['decimals', s.u8()],
       ],
-      'ApproveTokenDelegateCheckedInstructionArgs'
+      { description: 'ApproveTokenDelegateCheckedInstructionData' }
     ),
     (value) =>
       ({
@@ -63,7 +63,7 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(
         discriminator: 13,
       } as ApproveTokenDelegateCheckedInstructionData)
   ) as Serializer<
-    ApproveTokenDelegateCheckedInstructionArgs,
+    ApproveTokenDelegateCheckedInstructionDataArgs,
     ApproveTokenDelegateCheckedInstructionData
   >;
 }
@@ -72,7 +72,7 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(
 export function approveTokenDelegateChecked(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: ApproveTokenDelegateCheckedInstructionAccounts &
-    ApproveTokenDelegateCheckedInstructionArgs
+    ApproveTokenDelegateCheckedInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

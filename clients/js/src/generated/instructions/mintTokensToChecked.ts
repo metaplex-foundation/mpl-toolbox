@@ -31,7 +31,7 @@ export type MintTokensToCheckedInstructionData = {
   decimals: number;
 };
 
-export type MintTokensToCheckedInstructionArgs = {
+export type MintTokensToCheckedInstructionDataArgs = {
   amount: number | bigint;
   decimals: number;
 };
@@ -39,27 +39,27 @@ export type MintTokensToCheckedInstructionArgs = {
 export function getMintTokensToCheckedInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
 ): Serializer<
-  MintTokensToCheckedInstructionArgs,
+  MintTokensToCheckedInstructionDataArgs,
   MintTokensToCheckedInstructionData
 > {
   const s = context.serializer;
   return mapSerializer<
-    MintTokensToCheckedInstructionArgs,
+    MintTokensToCheckedInstructionDataArgs,
     MintTokensToCheckedInstructionData,
     MintTokensToCheckedInstructionData
   >(
     s.struct<MintTokensToCheckedInstructionData>(
       [
-        ['discriminator', s.u8],
-        ['amount', s.u64],
-        ['decimals', s.u8],
+        ['discriminator', s.u8()],
+        ['amount', s.u64()],
+        ['decimals', s.u8()],
       ],
-      'MintTokensToCheckedInstructionArgs'
+      { description: 'MintTokensToCheckedInstructionData' }
     ),
     (value) =>
       ({ ...value, discriminator: 14 } as MintTokensToCheckedInstructionData)
   ) as Serializer<
-    MintTokensToCheckedInstructionArgs,
+    MintTokensToCheckedInstructionDataArgs,
     MintTokensToCheckedInstructionData
   >;
 }
@@ -68,7 +68,7 @@ export function getMintTokensToCheckedInstructionDataSerializer(
 export function mintTokensToChecked(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: MintTokensToCheckedInstructionAccounts &
-    MintTokensToCheckedInstructionArgs
+    MintTokensToCheckedInstructionDataArgs
 ): WrappedInstruction {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];

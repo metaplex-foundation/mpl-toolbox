@@ -30,23 +30,28 @@ export type TransferAllSolInstructionAccounts = {
 // Arguments.
 export type TransferAllSolInstructionData = { discriminator: number };
 
-export type TransferAllSolInstructionArgs = {};
+export type TransferAllSolInstructionDataArgs = {};
 
 export function getTransferAllSolInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<TransferAllSolInstructionArgs, TransferAllSolInstructionData> {
+): Serializer<
+  TransferAllSolInstructionDataArgs,
+  TransferAllSolInstructionData
+> {
   const s = context.serializer;
   return mapSerializer<
-    TransferAllSolInstructionArgs,
+    TransferAllSolInstructionDataArgs,
     TransferAllSolInstructionData,
     TransferAllSolInstructionData
   >(
-    s.struct<TransferAllSolInstructionData>(
-      [['discriminator', s.u8]],
-      'TransferAllSolInstructionArgs'
-    ),
+    s.struct<TransferAllSolInstructionData>([['discriminator', s.u8()]], {
+      description: 'TransferAllSolInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 1 } as TransferAllSolInstructionData)
-  ) as Serializer<TransferAllSolInstructionArgs, TransferAllSolInstructionData>;
+  ) as Serializer<
+    TransferAllSolInstructionDataArgs,
+    TransferAllSolInstructionData
+  >;
 }
 
 // Instruction.

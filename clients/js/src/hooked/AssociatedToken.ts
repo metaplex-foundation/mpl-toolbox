@@ -14,8 +14,8 @@ export function findAssociatedTokenPda(
     context.programs.get('splAssociatedToken').publicKey;
   const tokenProgramId = context.programs.get('splToken').publicKey;
   return context.eddsa.findPda(associatedTokenProgramId, [
-    s.publicKey.serialize(seeds.owner),
+    s.publicKey().serialize(seeds.owner),
     tokenProgramId.bytes,
-    s.publicKey.serialize(seeds.mint),
+    s.publicKey().serialize(seeds.mint),
   ]);
 }
