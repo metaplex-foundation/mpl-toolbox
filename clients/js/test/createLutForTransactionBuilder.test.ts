@@ -71,13 +71,13 @@ test('it generates create and close LUT builders for a given transaction builder
   t.false(hasPublicKey(lutAccounts[0].addresses, umi.identity.publicKey));
 });
 
-test.only('it generates multiple lut builders such that they each fit under one transaction', async (t) => {
+test('it generates multiple lut builders such that they each fit under one transaction', async (t) => {
   // Given a recent slot.
   const umi = await createUmi();
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
 
-  // And a base builder that requires 200 transfer instructions to different addresses.
-  const instructions = Array.from({ length: 200 }, () =>
+  // And a base builder that requires 1000 transfer instructions to different addresses.
+  const instructions = Array.from({ length: 1000 }, () =>
     transferSol(umi, {
       destination: generateSigner(umi).publicKey,
       amount: sol(0.01),
@@ -86,12 +86,30 @@ test.only('it generates multiple lut builders such that they each fit under one 
   const baseBuilder = transactionBuilder(umi).add(instructions);
 
   // When we create LUT builders for that builder.
-  const { lutAccounts, createLutBuilders, builder, closeLutBuilders } =
+  const { lutAccounts, createLutBuilders, closeLutBuilders } =
     createLutForTransactionBuilder(umi, baseBuilder, recentSlot);
 
-  // Then
-  console.log({ lutAccounts, createLutBuilders, builder, closeLutBuilders });
-  t.pass();
+  // Then we get 4 LUTs.
+  t.is(lutAccounts.length, 4);
+
+  // And their addresses are using recent slots substracted from the provided recent slot.
+  lutAccounts.forEach((lut, i) => {
+    t.deepEqual(
+      lut.publicKey,
+      findAddressLookupTablePda(umi, {
+        authority: umi.identity.publicKey,
+        recentSlot: recentSlot - i,
+      })
+    );
+  });
+
+  // And we get 35 create LUT builders that fit in one transaction.
+  t.is(createLutBuilders.length, 35);
+  t.true(createLutBuilders.every((builder) => builder.fitsInOneTransaction()));
+
+  // And we get 1 close LUT builder that fits in one transaction.
+  t.is(closeLutBuilders.length, 1);
+  t.true(closeLutBuilders.every((builder) => builder.fitsInOneTransaction()));
 });
 
 function hasPublicKey(haystack: PublicKey[], needle: PublicKey): boolean {

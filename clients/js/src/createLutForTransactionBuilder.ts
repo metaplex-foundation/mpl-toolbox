@@ -5,6 +5,7 @@ import {
   Signer,
   transactionBuilder,
   TransactionBuilder,
+  uniquePublicKeys,
 } from '@metaplex-foundation/umi-core';
 import { closeLut, createLut, findAddressLookupTablePda } from './generated';
 import { extendLut } from './instructions';
@@ -33,10 +34,21 @@ export const createLutForTransactionBuilder = (
   const lutAuthority = authority ?? context.identity;
   const lutRecipient = recipient ?? context.payer.publicKey;
 
-  const tx = builder.setBlockhash('11111111111111111111111111111111').build();
-  const extractableAddresses = tx.message.accounts.slice(
-    tx.message.header.numRequiredSignatures
-  );
+  const signerAddresses = uniquePublicKeys([
+    builder.context.payer.publicKey,
+    ...builder.items.flatMap(({ instruction }) =>
+      instruction.keys
+        .filter((meta) => meta.isSigner)
+        .map((meta) => meta.pubkey)
+    ),
+  ]);
+
+  const extractableAddresses = uniquePublicKeys(
+    builder.items.flatMap(({ instruction }) => [
+      instruction.programId,
+      ...instruction.keys.map((meta) => meta.pubkey),
+    ])
+  ).filter((address) => !signerAddresses.includes(address));
 
   const lutAccounts = [] as { publicKey: PublicKey; addresses: PublicKey[] }[];
   const createLutBuilders = [] as TransactionBuilder[];
