@@ -1,5 +1,4 @@
 import {
-  base58PublicKey,
   chunk,
   Context,
   PublicKey,
