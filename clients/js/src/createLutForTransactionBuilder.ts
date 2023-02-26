@@ -1,4 +1,5 @@
 import {
+  base58PublicKey,
   chunk,
   Context,
   PublicKey,
@@ -76,7 +77,7 @@ export const createLutForTransactionBuilder = (
     lutAccounts,
     createLutBuilders,
     builder,
-    closeLutBuilders: [closeLutBuilder],
+    closeLutBuilders: closeLutBuilder.unsafeSplitByTransactionSize(),
   };
 };
 
