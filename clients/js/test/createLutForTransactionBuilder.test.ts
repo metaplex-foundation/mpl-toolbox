@@ -115,6 +115,3 @@ test('it generates multiple lut builders such that they each fit under one trans
 function hasPublicKey(haystack: PublicKey[], needle: PublicKey): boolean {
   return haystack.some((address) => samePublicKey(address, needle));
 }
-
-// Test: with more than 256 addresses.
-// Test: with making the call to create and close the LUTs.
