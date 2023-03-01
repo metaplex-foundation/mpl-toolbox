@@ -1,12 +1,12 @@
-import { subtractAmounts } from '@metaplex-foundation/umi-core';
 import {
+  subtractAmounts,
   generateSigner,
-  generateSignerWithSol,
   publicKey,
   sol,
   some,
   transactionBuilder,
-} from '@metaplex-foundation/umi-test';
+} from '@metaplex-foundation/umi';
+import { generateSignerWithSol } from '@metaplex-foundation/umi-bundle-tests';
 import test from 'ava';
 import {
   AddressLookupTable,

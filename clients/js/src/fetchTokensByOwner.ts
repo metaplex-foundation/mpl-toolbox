@@ -7,7 +7,7 @@ import {
   publicKey,
   RpcCallOptions,
   RpcResultWithContext,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import { deserializeToken, Token } from './generated';
 
 export const fetchTokensByOwner = async (

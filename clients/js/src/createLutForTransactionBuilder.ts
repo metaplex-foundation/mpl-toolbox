@@ -6,7 +6,7 @@ import {
   transactionBuilder,
   TransactionBuilder,
   uniquePublicKeys,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import { closeLut, createLut, findAddressLookupTablePda } from './generated';
 import { extendLut } from './instructions';
 

@@ -1,11 +1,11 @@
-import { generateSigner } from '@metaplex-foundation/umi-core';
 import {
-  generateSignerWithSol,
+  generateSigner,
   isEqualToAmount,
   isLessThanAmount,
   sol,
   transactionBuilder,
-} from '@metaplex-foundation/umi-test';
+} from '@metaplex-foundation/umi';
+import { generateSignerWithSol } from '@metaplex-foundation/umi-bundle-tests';
 import test from 'ava';
 import { transferSol } from '../src';
 import { createUmi } from './_setup';

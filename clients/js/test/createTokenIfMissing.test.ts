@@ -1,10 +1,10 @@
 import {
   generateSigner,
-  generateSignerWithSol,
   sol,
   subtractAmounts,
   transactionBuilder,
-} from '@metaplex-foundation/umi-test';
+} from '@metaplex-foundation/umi';
+import { generateSignerWithSol } from '@metaplex-foundation/umi-bundle-tests';
 import test from 'ava';
 import {
   createAssociatedToken,
@@ -22,7 +22,7 @@ import {
   TokExInvalidTokenOwnerError,
   TokExInvalidTokenProgramError,
 } from '../src';
-import { createUmi, createMint } from './_setup';
+import { createMint, createUmi } from './_setup';
 
 test('it creates a new associated token if missing', async (t) => {
   // Given an existing mint and owner with no associated token account.

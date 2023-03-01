@@ -13,7 +13,7 @@ import {
   Serializer,
   Signer,
   WrappedInstruction,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 
 // Arguments.
 export type AddMemoInstructionData = { memo: string };

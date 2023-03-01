@@ -5,20 +5,20 @@ importers:
   .:
     specifiers:
       '@metaplex-foundation/amman': ^0.12.1
-      '@metaplex-foundation/kinobi': ^0.2.2
+      '@metaplex-foundation/kinobi': ^0.3.0
       '@metaplex-foundation/shank-js': ^0.1.0
       typescript: ^4.9.4
     devDependencies:
       '@metaplex-foundation/amman': 0.12.1_typescript@4.9.4
-      '@metaplex-foundation/kinobi': 0.2.2
+      '@metaplex-foundation/kinobi': 0.3.0
       '@metaplex-foundation/shank-js': 0.1.0
       typescript: 4.9.4
 
   clients/js:
     specifiers:
       '@ava/typescript': ^3.0.1
+      '@metaplex-foundation/umi-bundle-tests': ^0.1.3
       '@metaplex-foundation/umi-core': ^0.1.2
-      '@metaplex-foundation/umi-test': ^0.1.3
       '@solana/web3.js': ^1.73.0
       '@typescript-eslint/eslint-plugin': ^5.0.0
       '@typescript-eslint/parser': ^5.46.1
@@ -36,7 +36,7 @@ importers:
       '@metaplex-foundation/umi-core': 0.1.2
     devDependencies:
       '@ava/typescript': 3.0.1
-      '@metaplex-foundation/umi-test': 0.1.3_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-bundle-tests': 0.1.3_@solana+web3.js@1.73.0
       '@solana/web3.js': 1.73.0
       '@typescript-eslint/eslint-plugin': 5.48.2_caon6io6stgpr7lz2rtbhekxqy
       '@typescript-eslint/parser': 5.48.2_7uibuqfxkfaozanbtbziikiqje
@@ -183,8 +183,8 @@ packages:
     resolution: {integrity: sha512-S9RulC2fFCFOQraz61bij+5YCHhSO9llJegK8c8Y6731fSi6snUSQJdCUqYS8AIgR0TKbQvdvgSyIIdbDFZbBA==}
     dev: true
 
-  /@metaplex-foundation/kinobi/0.2.2:
-    resolution: {integrity: sha512-q64pSu2sUujvya98PnUQVS+heh0XIF/uAiVlYwcdQexycy274t3/0o9k/JKtWkcjJkUZYAKdD5AwH9FWBwmQtA==}
+  /@metaplex-foundation/kinobi/0.3.0:
+    resolution: {integrity: sha512-f3ryQkdGgLsE7b/GUzSVcekZysSHONQjXABbymzHMYwam+ASkUpkl0CQh94SQEUAM/k3DHseipiF94f9iN27lA==}
     dependencies:
       '@noble/hashes': 1.1.5
       chalk: 4.1.2
@@ -212,6 +212,25 @@ packages:
       ansi-colors: 4.1.3
       debug: 4.3.4
     transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@metaplex-foundation/umi-bundle-tests/0.1.3_@solana+web3.js@1.73.0:
+    resolution: {integrity: sha512-dQJ9MM0PiNcA6pRM1or3yY0Hww3YU+M2sYn8akRnB8RI1QXJNnPHc1Ly8mdsupEwEQrxKlX8qiAY58WuL83CBw==}
+    peerDependencies:
+      '@solana/web3.js': ^1.72.0
+    dependencies:
+      '@metaplex-foundation/umi-core': 0.1.2
+      '@metaplex-foundation/umi-eddsa-web3js': 0.1.2_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-http-fetch': 0.1.2
+      '@metaplex-foundation/umi-program-repository': 0.1.2
+      '@metaplex-foundation/umi-rpc-web3js': 0.1.2_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-serializer-beet': 0.1.2_@solana+web3.js@1.73.0
+      '@metaplex-foundation/umi-storage-mock': 0.1.2
+      '@metaplex-foundation/umi-transaction-factory-web3js': 0.1.2_@solana+web3.js@1.73.0
+      '@solana/web3.js': 1.73.0
+    transitivePeerDependencies:
+      - encoding
       - supports-color
     dev: true
 
@@ -271,25 +290,6 @@ packages:
     resolution: {integrity: sha512-Fj4QuFnp5iWOL/BrBrymahPoIaYEzMC2EucUsn+sWelgTXUuOTDCERSQTcgBtH6J2sxQ+FGD+aF9Zpg82HvPMw==}
     dependencies:
       '@metaplex-foundation/umi-core': 0.1.2
-    dev: true
-
-  /@metaplex-foundation/umi-test/0.1.3_@solana+web3.js@1.73.0:
-    resolution: {integrity: sha512-dQJ9MM0PiNcA6pRM1or3yY0Hww3YU+M2sYn8akRnB8RI1QXJNnPHc1Ly8mdsupEwEQrxKlX8qiAY58WuL83CBw==}
-    peerDependencies:
-      '@solana/web3.js': ^1.72.0
-    dependencies:
-      '@metaplex-foundation/umi-core': 0.1.2
-      '@metaplex-foundation/umi-eddsa-web3js': 0.1.2_@solana+web3.js@1.73.0
-      '@metaplex-foundation/umi-http-fetch': 0.1.2
-      '@metaplex-foundation/umi-program-repository': 0.1.2
-      '@metaplex-foundation/umi-rpc-web3js': 0.1.2_@solana+web3.js@1.73.0
-      '@metaplex-foundation/umi-serializer-beet': 0.1.2_@solana+web3.js@1.73.0
-      '@metaplex-foundation/umi-storage-mock': 0.1.2
-      '@metaplex-foundation/umi-transaction-factory-web3js': 0.1.2_@solana+web3.js@1.73.0
-      '@solana/web3.js': 1.73.0
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
     dev: true
 
   /@metaplex-foundation/umi-transaction-factory-web3js/0.1.2_@solana+web3.js@1.73.0:

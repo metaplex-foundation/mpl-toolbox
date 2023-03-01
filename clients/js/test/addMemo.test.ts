@@ -1,4 +1,4 @@
-import { transactionBuilder } from '@metaplex-foundation/umi-test';
+import { transactionBuilder } from '@metaplex-foundation/umi';
 import test from 'ava';
 import { addMemo } from '../src';
 import { createUmi } from './_setup';

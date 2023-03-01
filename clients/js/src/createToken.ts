@@ -3,7 +3,7 @@ import {
   PublicKey,
   Signer,
   WrappedInstruction,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 import {
   createAccountWithRent,
   getTokenSize,

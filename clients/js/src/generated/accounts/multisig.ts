@@ -17,7 +17,7 @@ import {
   assertAccountExists,
   deserializeAccount,
   gpaBuilder,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 
 export type Multisig = Account<MultisigAccountData>;
 

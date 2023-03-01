@@ -18,7 +18,7 @@ import {
   checkForIsWritableOverride as isWritable,
   mapAmountSerializer,
   mapSerializer,
-} from '@metaplex-foundation/umi-core';
+} from '@metaplex-foundation/umi';
 
 // Accounts.
 export type CreateAccountInstructionAccounts = {

@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  createUmi as basecreateUmi,
   generateSigner,
   Option,
   PublicKey,
   Signer,
   transactionBuilder,
   Umi,
-} from '@metaplex-foundation/umi-test';
+} from '@metaplex-foundation/umi';
+import { createUmi as basecreateUmi } from '@metaplex-foundation/umi-bundle-tests';
 import {
   createMint as baseCreateMint,
   createToken as baseCreateToken,

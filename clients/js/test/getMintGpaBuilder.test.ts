@@ -1,4 +1,4 @@
-import { generateSigner, some } from '@metaplex-foundation/umi-test';
+import { generateSigner, some } from '@metaplex-foundation/umi';
 import test from 'ava';
 import { getMintGpaBuilder } from '../src';
 import { createUmi, createMint } from './_setup';
