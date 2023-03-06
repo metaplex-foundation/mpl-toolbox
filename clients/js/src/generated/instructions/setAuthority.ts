@@ -72,7 +72,10 @@ export function setAuthority(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('splToken').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Resolved accounts.
   const ownedAccount = input.owned;

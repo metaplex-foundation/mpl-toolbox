@@ -122,7 +122,10 @@ export function getTokenGpaBuilder(
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
-  const programId = context.programs.get('splToken').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
   return gpaBuilder(context, programId)
     .registerFields<{
       mint: PublicKey;
@@ -133,23 +136,23 @@ export function getTokenGpaBuilder(
       isNative: Option<number | bigint>;
       delegatedAmount: number | bigint;
       closeAuthority: Option<PublicKey>;
-    }>([
-      ['mint', s.publicKey()],
-      ['owner', s.publicKey()],
-      ['amount', s.u64()],
-      ['delegate', s.option(s.publicKey(), { prefix: s.u32(), fixed: true })],
-      ['state', getTokenStateSerializer(context)],
-      ['isNative', s.option(s.u64(), { prefix: s.u32(), fixed: true })],
-      ['delegatedAmount', s.u64()],
-      [
-        'closeAuthority',
+    }>({
+      mint: [0, s.publicKey()],
+      owner: [32, s.publicKey()],
+      amount: [64, s.u64()],
+      delegate: [72, s.option(s.publicKey(), { prefix: s.u32(), fixed: true })],
+      state: [108, getTokenStateSerializer(context)],
+      isNative: [109, s.option(s.u64(), { prefix: s.u32(), fixed: true })],
+      delegatedAmount: [121, s.u64()],
+      closeAuthority: [
+        129,
         s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
       ],
-    ])
+    })
     .deserializeUsing<Token>((account) => deserializeToken(context, account))
     .whereSize(165);
 }
 
-export function getTokenSize(_context = {}): number {
+export function getTokenSize(): number {
   return 165;
 }

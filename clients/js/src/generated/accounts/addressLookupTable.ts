@@ -138,7 +138,10 @@ export function getAddressLookupTableGpaBuilder(
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
-  const programId = context.programs.get('splAddressLookupTable').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splAddressLookupTable',
+    'AddressLookupTab1e1111111111111111111111111'
+  );
   return gpaBuilder(context, programId)
     .registerFields<{
       discriminator: number;
@@ -148,25 +151,19 @@ export function getAddressLookupTableGpaBuilder(
       authority: Option<PublicKey>;
       padding: number;
       addresses: Array<PublicKey>;
-    }>([
-      ['discriminator', s.u32()],
-      ['deactivationSlot', s.u64()],
-      ['lastExtendedSlot', s.u64()],
-      ['lastExtendedStartIndex', s.u8()],
-      ['authority', s.option(s.publicKey(), { fixed: true })],
-      ['padding', s.u16()],
-      ['addresses', s.array(s.publicKey(), { size: 'remainder' })],
-    ])
+    }>({
+      discriminator: [0, s.u32()],
+      deactivationSlot: [4, s.u64()],
+      lastExtendedSlot: [12, s.u64()],
+      lastExtendedStartIndex: [20, s.u8()],
+      authority: [21, s.option(s.publicKey(), { fixed: true })],
+      padding: [54, s.u16()],
+      addresses: [56, s.array(s.publicKey(), { size: 'remainder' })],
+    })
     .deserializeUsing<AddressLookupTable>((account) =>
       deserializeAddressLookupTable(context, account)
     )
     .whereField('discriminator', 1);
-}
-
-export function getAddressLookupTableSize(
-  context: Pick<Context, 'serializer'>
-): number | null {
-  return getAddressLookupTableAccountDataSerializer(context).fixedSize;
 }
 
 export function findAddressLookupTablePda(
@@ -179,9 +176,10 @@ export function findAddressLookupTablePda(
   }
 ): Pda {
   const s = context.serializer;
-  const programId: PublicKey = context.programs.get(
-    'splAddressLookupTable'
-  ).publicKey;
+  const programId = context.programs.getPublicKey(
+    'splAddressLookupTable',
+    'AddressLookupTab1e1111111111111111111111111'
+  );
   return context.eddsa.findPda(programId, [
     s.publicKey().serialize(seeds.authority),
     s.u64().serialize(seeds.recentSlot),

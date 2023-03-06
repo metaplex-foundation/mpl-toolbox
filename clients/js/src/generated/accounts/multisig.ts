@@ -105,25 +105,28 @@ export function getMultisigGpaBuilder(
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
-  const programId = context.programs.get('splToken').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
   return gpaBuilder(context, programId)
     .registerFields<{
       m: number;
       n: number;
       isInitialized: boolean;
       signers: Array<PublicKey>;
-    }>([
-      ['m', s.u8()],
-      ['n', s.u8()],
-      ['isInitialized', s.bool()],
-      ['signers', s.array(s.publicKey(), { size: 11 })],
-    ])
+    }>({
+      m: [0, s.u8()],
+      n: [1, s.u8()],
+      isInitialized: [2, s.bool()],
+      signers: [3, s.array(s.publicKey(), { size: 11 })],
+    })
     .deserializeUsing<Multisig>((account) =>
       deserializeMultisig(context, account)
     )
     .whereSize(355);
 }
 
-export function getMultisigSize(_context = {}): number {
+export function getMultisigSize(): number {
   return 355;
 }

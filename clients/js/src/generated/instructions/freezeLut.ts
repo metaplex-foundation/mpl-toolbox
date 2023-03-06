@@ -53,9 +53,10 @@ export function freezeLut(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get(
-    'splAddressLookupTable'
-  ).publicKey;
+  const programId = context.programs.getPublicKey(
+    'splAddressLookupTable',
+    'AddressLookupTab1e1111111111111111111111111'
+  );
 
   // Resolved accounts.
   const addressAccount = input.address;

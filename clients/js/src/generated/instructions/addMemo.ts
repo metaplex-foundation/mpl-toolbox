@@ -9,7 +9,6 @@
 import {
   AccountMeta,
   Context,
-  PublicKey,
   Serializer,
   Signer,
   WrappedInstruction,
@@ -38,7 +37,10 @@ export function addMemo(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get('splMemo').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splMemo',
+    'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
+  );
 
   // Data.
   const data = getAddMemoInstructionDataSerializer(context).serialize(input);

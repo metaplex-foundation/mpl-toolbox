@@ -34,8 +34,10 @@ export function createIdempotentAssociatedToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey =
-    context.programs.get('splAssociatedToken').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splAssociatedToken',
+    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+  );
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
@@ -43,11 +45,17 @@ export function createIdempotentAssociatedToken(
   const ownerAccount = input.owner;
   const mintAccount = input.mint;
   const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.get('splSystem').publicKey,
+    ...context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
     isWritable: false,
   };
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...context.programs.get('splToken').publicKey,
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
     isWritable: false,
   };
 

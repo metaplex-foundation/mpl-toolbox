@@ -35,8 +35,10 @@ export function recoverNestedAssociatedToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey =
-    context.programs.get('splAssociatedToken').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splAssociatedToken',
+    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+  );
 
   // Resolved accounts.
   const nestedAssociatedAccountAddressAccount =
@@ -49,7 +51,10 @@ export function recoverNestedAssociatedToken(
   const ownerTokenMintAddressAccount = input.ownerTokenMintAddress;
   const walletAddressAccount = input.walletAddress;
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...context.programs.get('splToken').publicKey,
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
     isWritable: false,
   };
 

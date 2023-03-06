@@ -115,7 +115,10 @@ export function getMintGpaBuilder(
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
 ) {
   const s = context.serializer;
-  const programId = context.programs.get('splToken').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
   return gpaBuilder(context, programId)
     .registerFields<{
       mintAuthority: Option<PublicKey>;
@@ -123,23 +126,23 @@ export function getMintGpaBuilder(
       decimals: number;
       isInitialized: boolean;
       freezeAuthority: Option<PublicKey>;
-    }>([
-      [
-        'mintAuthority',
+    }>({
+      mintAuthority: [
+        0,
         s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
       ],
-      ['supply', s.u64()],
-      ['decimals', s.u8()],
-      ['isInitialized', s.bool()],
-      [
-        'freezeAuthority',
+      supply: [36, s.u64()],
+      decimals: [44, s.u8()],
+      isInitialized: [45, s.bool()],
+      freezeAuthority: [
+        46,
         s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
       ],
-    ])
+    })
     .deserializeUsing<Mint>((account) => deserializeMint(context, account))
     .whereSize(82);
 }
 
-export function getMintSize(_context = {}): number {
+export function getMintSize(): number {
   return 82;
 }

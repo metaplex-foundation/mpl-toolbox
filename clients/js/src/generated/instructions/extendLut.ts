@@ -62,16 +62,20 @@ export function extendLut(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey = context.programs.get(
-    'splAddressLookupTable'
-  ).publicKey;
+  const programId = context.programs.getPublicKey(
+    'splAddressLookupTable',
+    'AddressLookupTab1e1111111111111111111111111'
+  );
 
   // Resolved accounts.
   const addressAccount = input.address;
   const authorityAccount = input.authority ?? context.identity;
   const payerAccount = input.payer ?? context.payer;
   const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.get('splSystem').publicKey,
+    ...context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
     isWritable: false,
   };
 

@@ -41,8 +41,10 @@ export function createAssociatedToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey =
-    context.programs.get('splAssociatedToken').publicKey;
+  const programId = context.programs.getPublicKey(
+    'splAssociatedToken',
+    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+  );
 
   // Resolved accounts.
   const payerAccount = input.payer ?? context.payer;
@@ -55,11 +57,17 @@ export function createAssociatedToken(
       mint: publicKey(mintAccount),
     });
   const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.get('splSystem').publicKey,
+    ...context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
     isWritable: false,
   };
   const tokenProgramAccount = input.tokenProgram ?? {
-    ...context.programs.get('splToken').publicKey,
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
     isWritable: false,
   };
 
@@ -110,8 +118,7 @@ export function createAssociatedToken(
   const data = new Uint8Array();
 
   // Bytes Created On Chain.
-  const bytesCreatedOnChain =
-    (getTokenSize(context) ?? 0) + ACCOUNT_HEADER_SIZE;
+  const bytesCreatedOnChain = getTokenSize() + ACCOUNT_HEADER_SIZE;
 
   return {
     instruction: { keys, programId, data },

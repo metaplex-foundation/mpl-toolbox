@@ -63,14 +63,19 @@ export function transferAllSol(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId: PublicKey =
-    context.programs.get('mplSystemExtras').publicKey;
+  const programId = context.programs.getPublicKey(
+    'mplSystemExtras',
+    'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
+  );
 
   // Resolved accounts.
   const sourceAccount = input.source ?? context.identity;
   const destinationAccount = input.destination;
   const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.get('splSystem').publicKey,
+    ...context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
     isWritable: false,
   };
 
