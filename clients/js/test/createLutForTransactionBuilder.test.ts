@@ -16,7 +16,7 @@ import {
 } from '../src';
 import { createUmi } from './_setup';
 
-test('it generates create and close LUT builders for a given transaction builder', async (t) => {
+test('it generates LUT builders for a given transaction builder', async (t) => {
   // Given a recent slot.
   const umi = await createUmi();
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
@@ -30,7 +30,7 @@ test('it generates create and close LUT builders for a given transaction builder
     .add(createAssociatedToken(umi, { mint: mint.publicKey, owner }));
 
   // When we create LUT builders for that builder.
-  const { lutAccounts, createLutBuilders, builder, closeLutBuilders } =
+  const { lutAccounts, createLutBuilders, builder } =
     createLutForTransactionBuilder(umi, baseBuilder, recentSlot);
 
   // Then we get an updated version of the base builder that includes an LUT.
@@ -47,11 +47,6 @@ test('it generates create and close LUT builders for a given transaction builder
   t.is(createLutBuilders.length, 1);
   t.true(createLutBuilders[0].fitsInOneTransaction());
   t.is(createLutBuilders[0].getInstructions().length, 2);
-
-  // And we get builders for closing these LUTs if needed.
-  t.is(closeLutBuilders.length, 1);
-  t.true(closeLutBuilders[0].fitsInOneTransaction());
-  t.is(closeLutBuilders[0].getInstructions().length, 1);
 
   // And we get the public key and addresses of the LUT created.
   const splSystem = umi.programs.get('splSystem').publicKey;
@@ -86,8 +81,11 @@ test('it generates multiple lut builders such that they each fit under one trans
   const baseBuilder = transactionBuilder(umi).add(instructions);
 
   // When we create LUT builders for that builder.
-  const { lutAccounts, createLutBuilders, closeLutBuilders } =
-    createLutForTransactionBuilder(umi, baseBuilder, recentSlot);
+  const { lutAccounts, createLutBuilders } = createLutForTransactionBuilder(
+    umi,
+    baseBuilder,
+    recentSlot
+  );
 
   // Then we get 4 LUTs.
   t.is(lutAccounts.length, 4);
@@ -106,10 +104,6 @@ test('it generates multiple lut builders such that they each fit under one trans
   // And we get 35 create LUT builders that fit in one transaction.
   t.is(createLutBuilders.length, 35);
   t.true(createLutBuilders.every((builder) => builder.fitsInOneTransaction()));
-
-  // And we get 1 close LUT builder that fits in one transaction.
-  t.is(closeLutBuilders.length, 1);
-  t.true(closeLutBuilders.every((builder) => builder.fitsInOneTransaction()));
 });
 
 function hasPublicKey(haystack: PublicKey[], needle: PublicKey): boolean {

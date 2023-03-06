@@ -7,7 +7,7 @@ import {
   TransactionBuilder,
   uniquePublicKeys,
 } from '@metaplex-foundation/umi';
-import { closeLut, createLut, findAddressLookupTablePda } from './generated';
+import { createLut, findAddressLookupTablePda } from './generated';
 import { extendLut } from './instructions';
 
 export const createLutForTransactionBuilder = (
@@ -23,16 +23,13 @@ export const createLutForTransactionBuilder = (
   >,
   builder: TransactionBuilder,
   recentSlot: number,
-  authority?: Signer,
-  recipient?: PublicKey
+  authority?: Signer
 ): {
   lutAccounts: { publicKey: PublicKey; addresses: PublicKey[] }[];
   createLutBuilders: TransactionBuilder[];
   builder: TransactionBuilder;
-  closeLutBuilders: TransactionBuilder[];
 } => {
   const lutAuthority = authority ?? context.identity;
-  const lutRecipient = recipient ?? context.payer.publicKey;
 
   const signerAddresses = uniquePublicKeys([
     builder.context.payer.publicKey,
@@ -52,7 +49,6 @@ export const createLutForTransactionBuilder = (
 
   const lutAccounts = [] as { publicKey: PublicKey; addresses: PublicKey[] }[];
   const createLutBuilders = [] as TransactionBuilder[];
-  let closeLutBuilder = transactionBuilder(context);
 
   chunk(extractableAddresses, 256).forEach((addresses, index) => {
     const localRecentSlot = recentSlot - index;
@@ -72,13 +68,6 @@ export const createLutForTransactionBuilder = (
         addresses
       )
     );
-    closeLutBuilder = closeLutBuilder.add(
-      closeLut(context, {
-        address: lut,
-        authority: lutAuthority,
-        recipient: lutRecipient,
-      })
-    );
   });
 
   // Set address lookup tables on the original builder.
@@ -88,7 +77,6 @@ export const createLutForTransactionBuilder = (
     lutAccounts,
     createLutBuilders,
     builder,
-    closeLutBuilders: closeLutBuilder.unsafeSplitByTransactionSize(),
   };
 };
 
