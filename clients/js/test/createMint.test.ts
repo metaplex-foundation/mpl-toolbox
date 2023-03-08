@@ -13,35 +13,33 @@ import { createUmi } from './_setup';
 
 test('it can create new mint accounts with minimum configuration', async (t) => {
   // Given a payer and an account signer.
-  const metaplex = await createUmi();
-  const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
-  const newAccount = generateSigner(metaplex);
+  const umi = await createUmi();
+  const payerBalance = await umi.rpc.getBalance(umi.payer.publicKey);
+  const newAccount = generateSigner(umi);
 
   // When we create a new mint account at this address with no additional configuration.
-  await transactionBuilder(metaplex)
-    .add(createMint(metaplex, { mint: newAccount }))
+  await transactionBuilder(umi)
+    .add(createMint(umi, { mint: newAccount }))
     .sendAndConfirm();
 
   // Then the account was created with the correct data.
-  const mintAccount = await fetchMint(metaplex, newAccount.publicKey);
-  const rentExemptBalance = await metaplex.rpc.getRent(getMintSize());
+  const mintAccount = await fetchMint(umi, newAccount.publicKey);
+  const rentExemptBalance = await umi.rpc.getRent(getMintSize());
   t.like(mintAccount, <Mint>{
     publicKey: newAccount.publicKey,
     header: {
-      owner: metaplex.programs.get('splToken').publicKey,
+      owner: umi.programs.get('splToken').publicKey,
       lamports: rentExemptBalance,
     },
-    mintAuthority: some({ ...metaplex.identity.publicKey }),
+    mintAuthority: some({ ...umi.identity.publicKey }),
     supply: 0n,
     decimals: 0,
     isInitialized: true,
-    freezeAuthority: some({ ...metaplex.identity.publicKey }),
+    freezeAuthority: some({ ...umi.identity.publicKey }),
   });
 
   // And the payer was charged for the creation of the account.
-  const newPayerBalance = await metaplex.rpc.getBalance(
-    metaplex.payer.publicKey
-  );
+  const newPayerBalance = await umi.rpc.getBalance(umi.payer.publicKey);
   t.true(
     isEqualToAmount(
       newPayerBalance,
@@ -53,14 +51,14 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
 
 test('it can create new mint accounts with maximum configuration', async (t) => {
   // Given an account signer and a mint authority.
-  const metaplex = await createUmi();
-  const newAccount = generateSigner(metaplex);
-  const mintAuthority = generateSigner(metaplex).publicKey;
+  const umi = await createUmi();
+  const newAccount = generateSigner(umi);
+  const mintAuthority = generateSigner(umi).publicKey;
 
   // When we create a new mint account with all configuration options.
-  await transactionBuilder(metaplex)
+  await transactionBuilder(umi)
     .add(
-      createMint(metaplex, {
+      createMint(umi, {
         mint: newAccount,
         decimals: 9,
         mintAuthority,
@@ -70,12 +68,12 @@ test('it can create new mint accounts with maximum configuration', async (t) => 
     .sendAndConfirm();
 
   // Then the account was created with the correct data.
-  const mintAccount = await fetchMint(metaplex, newAccount.publicKey);
-  const rentExemptBalance = await metaplex.rpc.getRent(getMintSize());
+  const mintAccount = await fetchMint(umi, newAccount.publicKey);
+  const rentExemptBalance = await umi.rpc.getRent(getMintSize());
   t.like(mintAccount, <Mint>{
     publicKey: newAccount.publicKey,
     header: {
-      owner: metaplex.programs.get('splToken').publicKey,
+      owner: umi.programs.get('splToken').publicKey,
       lamports: rentExemptBalance,
     },
     mintAuthority: some(mintAuthority),

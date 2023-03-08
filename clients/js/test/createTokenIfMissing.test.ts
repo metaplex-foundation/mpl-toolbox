@@ -26,18 +26,18 @@ import { createMint, createUmi } from './_setup';
 
 test('it creates a new associated token if missing', async (t) => {
   // Given an existing mint and owner with no associated token account.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const owner = generateSigner(metaplex).publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const owner = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction.
-  await transactionBuilder(metaplex)
-    .add(createTokenIfMissing(metaplex, { mint, owner }))
+  await transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, owner }))
     .sendAndConfirm();
 
   // Then a new associated token account was created.
-  const ata = findAssociatedTokenPda(metaplex, { mint, owner });
-  const ataAccount = await fetchToken(metaplex, ata);
+  const ata = findAssociatedTokenPda(umi, { mint, owner });
+  const ataAccount = await fetchToken(umi, ata);
   t.like(ataAccount, {
     publicKey: ata,
     mint,
@@ -49,18 +49,18 @@ test('it creates a new associated token if missing', async (t) => {
 
 test('it defaults to the identity if no owner is provided', async (t) => {
   // Given an existing mint without an associated token account with the identity.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const identity = metaplex.identity.publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const identity = umi.identity.publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction without an owner.
-  await transactionBuilder(metaplex)
-    .add(createTokenIfMissing(metaplex, { mint }))
+  await transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint }))
     .sendAndConfirm();
 
   // Then a new associated token account was created for the identity.
-  const ata = findAssociatedTokenPda(metaplex, { mint, owner: identity });
-  const ataAccount = await fetchToken(metaplex, ata);
+  const ata = findAssociatedTokenPda(umi, { mint, owner: identity });
+  const ataAccount = await fetchToken(umi, ata);
   t.like(ataAccount, {
     publicKey: ata,
     mint,
@@ -72,96 +72,96 @@ test('it defaults to the identity if no owner is provided', async (t) => {
 
 test('the payer pays for the storage fees if a token account gets created', async (t) => {
   // Given an existing mint and a payer.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const payer = await generateSignerWithSol(metaplex, sol(100));
-  const identity = metaplex.identity.publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const payer = await generateSignerWithSol(umi, sol(100));
+  const identity = umi.identity.publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with an explicit payer.
-  await transactionBuilder(metaplex)
-    .add(createTokenIfMissing({ ...metaplex, payer }, { mint }))
+  await transactionBuilder(umi)
+    .add(createTokenIfMissing({ ...umi, payer }, { mint }))
     .sendAndConfirm();
 
   // Then the payer paid for the storage fee.
-  const storageFee = await metaplex.rpc.getRent(getTokenSize());
-  const payerBalance = await metaplex.rpc.getBalance(payer.publicKey);
+  const storageFee = await umi.rpc.getRent(getTokenSize());
+  const payerBalance = await umi.rpc.getBalance(payer.publicKey);
   t.deepEqual(payerBalance, subtractAmounts(sol(100), storageFee));
 
   // And this matches the lamports on the ATA account.
-  const ata = findAssociatedTokenPda(metaplex, { mint, owner: identity });
-  const ataAccount = await fetchToken(metaplex, ata);
+  const ata = findAssociatedTokenPda(umi, { mint, owner: identity });
+  const ataAccount = await fetchToken(umi, ata);
   t.deepEqual(ataAccount.header.lamports, storageFee);
 });
 
 test('it does not create an account if an associated token account already exists', async (t) => {
   // Given an existing mint, owner and associated token account.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const owner = generateSigner(metaplex).publicKey;
-  const ata = findAssociatedTokenPda(metaplex, { mint, owner });
-  await transactionBuilder(metaplex)
-    .add(createAssociatedToken(metaplex, { mint, owner }))
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const owner = generateSigner(umi).publicKey;
+  const ata = findAssociatedTokenPda(umi, { mint, owner });
+  await transactionBuilder(umi)
+    .add(createAssociatedToken(umi, { mint, owner }))
     .sendAndConfirm();
-  t.true(await metaplex.rpc.accountExists(ata));
+  t.true(await umi.rpc.accountExists(ata));
 
   // And given an explicit payer to ensure it was not charged for the storage fee.
-  const payer = await generateSignerWithSol(metaplex, sol(100));
+  const payer = await generateSignerWithSol(umi, sol(100));
 
   // When we execute the "CreateTokenIfMissing" instruction on that mint/owner pair.
-  await transactionBuilder(metaplex)
-    .add(createTokenIfMissing({ ...metaplex, payer }, { mint, owner }))
+  await transactionBuilder(umi)
+    .add(createTokenIfMissing({ ...umi, payer }, { mint, owner }))
     .sendAndConfirm();
 
   // Then the ata still exists.
-  t.true(await metaplex.rpc.accountExists(ata));
+  t.true(await umi.rpc.accountExists(ata));
 
   // And the payer was not charged for the storage fee of a new account as no new account was created.
-  const payerBalance = await metaplex.rpc.getBalance(payer.publicKey);
+  const payerBalance = await umi.rpc.getBalance(payer.publicKey);
   t.deepEqual(payerBalance, sol(100));
 });
 
 test('it does not create an account if a regular token account already exists', async (t) => {
   // Given an existing mint, owner and a regular token account between them.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const owner = generateSigner(metaplex).publicKey;
-  const token = generateSigner(metaplex);
-  await transactionBuilder(metaplex)
-    .add(createToken(metaplex, { mint, owner, token }))
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const owner = generateSigner(umi).publicKey;
+  const token = generateSigner(umi);
+  await transactionBuilder(umi)
+    .add(createToken(umi, { mint, owner, token }))
     .sendAndConfirm();
-  t.true(await metaplex.rpc.accountExists(token.publicKey));
+  t.true(await umi.rpc.accountExists(token.publicKey));
 
   // And given an explicit payer to ensure it was not charged for the storage fee.
-  const payer = await generateSignerWithSol(metaplex, sol(100));
+  const payer = await generateSignerWithSol(umi, sol(100));
 
   // When we execute the "CreateTokenIfMissing" instruction on that mint/owner pair
   // whilst explicitly providing the token account.
-  await transactionBuilder(metaplex)
+  await transactionBuilder(umi)
     .add(
       createTokenIfMissing(
-        { ...metaplex, payer },
+        { ...umi, payer },
         { mint, owner, token: token.publicKey }
       )
     )
     .sendAndConfirm();
 
   // Then the token account still exists.
-  t.true(await metaplex.rpc.accountExists(token.publicKey));
+  t.true(await umi.rpc.accountExists(token.publicKey));
 
   // And the payer was not charged for the storage fee of a new account as no new account was created.
-  const payerBalance = await metaplex.rpc.getBalance(payer.publicKey);
+  const payerBalance = await umi.rpc.getBalance(payer.publicKey);
   t.deepEqual(payerBalance, sol(100));
 });
 
 test('it fail if we provide the wrong system program', async (t) => {
   // Given an existing mint and a wrong system program.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const systemProgram = generateSigner(metaplex).publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const systemProgram = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong system program.
-  const promise = transactionBuilder(metaplex)
-    .add(createTokenIfMissing(metaplex, { mint, systemProgram }))
+  const promise = transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, systemProgram }))
     .sendAndConfirm();
 
   // Then we expect a custom program error.
@@ -170,13 +170,13 @@ test('it fail if we provide the wrong system program', async (t) => {
 
 test('it fail if we provide the wrong token program', async (t) => {
   // Given an existing mint and a wrong token program.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const tokenProgram = generateSigner(metaplex).publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const tokenProgram = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong token program.
-  const promise = transactionBuilder(metaplex)
-    .add(createTokenIfMissing(metaplex, { mint, tokenProgram }))
+  const promise = transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, tokenProgram }))
     .sendAndConfirm();
 
   // Then we expect a custom program error.
@@ -185,13 +185,13 @@ test('it fail if we provide the wrong token program', async (t) => {
 
 test('it fail if we provide the wrong ata program', async (t) => {
   // Given an existing mint and a wrong ata program.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const ataProgram = generateSigner(metaplex).publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const ataProgram = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong ata program.
-  const promise = transactionBuilder(metaplex)
-    .add(createTokenIfMissing(metaplex, { mint, ataProgram }))
+  const promise = transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, ataProgram }))
     .sendAndConfirm();
 
   // Then we expect a custom program error.
@@ -202,14 +202,14 @@ test('it fail if we provide the wrong ata program', async (t) => {
 
 test('it fail if the ata account does not match the mint and owner', async (t) => {
   // Given a mint, an owner and an invalid ata address.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const owner = generateSigner(metaplex).publicKey;
-  const invalidAta = generateSigner(metaplex).publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const owner = generateSigner(umi).publicKey;
+  const invalidAta = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong ata address.
-  const promise = transactionBuilder(metaplex)
-    .add(createTokenIfMissing(metaplex, { mint, owner, ata: invalidAta }))
+  const promise = transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, owner, ata: invalidAta }))
     .sendAndConfirm();
 
   // Then we expect a custom program error.
@@ -220,20 +220,18 @@ test('it fail if the ata account does not match the mint and owner', async (t) =
 
 test('it fail if the existing token account is not associated with the given mint', async (t) => {
   // Given a mint, an owner and a token account associated with the wrong mint.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const wrongMint = (await createMint(metaplex)).publicKey;
-  const owner = generateSigner(metaplex).publicKey;
-  const token = generateSigner(metaplex);
-  await transactionBuilder(metaplex)
-    .add(createToken(metaplex, { mint: wrongMint, owner, token }))
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const wrongMint = (await createMint(umi)).publicKey;
+  const owner = generateSigner(umi).publicKey;
+  const token = generateSigner(umi);
+  await transactionBuilder(umi)
+    .add(createToken(umi, { mint: wrongMint, owner, token }))
     .sendAndConfirm();
 
   // When we execute the "CreateTokenIfMissing" instruction on that token account.
-  const promise = transactionBuilder(metaplex)
-    .add(
-      createTokenIfMissing(metaplex, { mint, owner, token: token.publicKey })
-    )
+  const promise = transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, owner, token: token.publicKey }))
     .sendAndConfirm();
 
   // Then we expect a custom program error.
@@ -242,20 +240,18 @@ test('it fail if the existing token account is not associated with the given min
 
 test('it fail if the existing token account is not associated with the given owner', async (t) => {
   // Given a mint, an owner and a token account associated with the wrong owner.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const owner = generateSigner(metaplex).publicKey;
-  const wrongOwner = generateSigner(metaplex).publicKey;
-  const token = generateSigner(metaplex);
-  await transactionBuilder(metaplex)
-    .add(createToken(metaplex, { mint, owner: wrongOwner, token }))
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const owner = generateSigner(umi).publicKey;
+  const wrongOwner = generateSigner(umi).publicKey;
+  const token = generateSigner(umi);
+  await transactionBuilder(umi)
+    .add(createToken(umi, { mint, owner: wrongOwner, token }))
     .sendAndConfirm();
 
   // When we execute the "CreateTokenIfMissing" instruction on that token account.
-  const promise = transactionBuilder(metaplex)
-    .add(
-      createTokenIfMissing(metaplex, { mint, owner, token: token.publicKey })
-    )
+  const promise = transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, owner, token: token.publicKey }))
     .sendAndConfirm();
 
   // Then we expect a custom program error.
@@ -264,16 +260,16 @@ test('it fail if the existing token account is not associated with the given own
 
 test('it fail if the non existing token account is not an ata account', async (t) => {
   // Given an existing mint/owner pair with no token account.
-  const metaplex = await createUmi();
-  const mint = (await createMint(metaplex)).publicKey;
-  const owner = generateSigner(metaplex).publicKey;
+  const umi = await createUmi();
+  const mint = (await createMint(umi)).publicKey;
+  const owner = generateSigner(umi).publicKey;
 
   // And given a new address for a regular (non-associated) token account.
-  const token = generateSigner(metaplex).publicKey;
+  const token = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction on that token account.
-  const promise = transactionBuilder(metaplex)
-    .add(createTokenIfMissing(metaplex, { mint, owner, token }))
+  const promise = transactionBuilder(umi)
+    .add(createTokenIfMissing(umi, { mint, owner, token }))
     .sendAndConfirm();
 
   // Then we expect a custom program error because we need the token account

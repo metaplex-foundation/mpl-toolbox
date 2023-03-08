@@ -5,20 +5,20 @@ import { createUmi } from './_setup';
 
 test('it can mint tokens to an existing token account', async (t) => {
   // Given an empty token account.
-  const metaplex = await createUmi();
-  const mintAuthority = generateSigner(metaplex);
-  const mint = generateSigner(metaplex);
-  const token = generateSigner(metaplex);
-  await transactionBuilder(metaplex)
-    .add(createMint(metaplex, { mint, mintAuthority: mintAuthority.publicKey }))
-    .add(createToken(metaplex, { token, mint: mint.publicKey }))
+  const umi = await createUmi();
+  const mintAuthority = generateSigner(umi);
+  const mint = generateSigner(umi);
+  const token = generateSigner(umi);
+  await transactionBuilder(umi)
+    .add(createMint(umi, { mint, mintAuthority: mintAuthority.publicKey }))
+    .add(createToken(umi, { token, mint: mint.publicKey }))
     .sendAndConfirm();
-  t.is((await fetchToken(metaplex, token.publicKey)).amount, 0n);
+  t.is((await fetchToken(umi, token.publicKey)).amount, 0n);
 
   // When we mint tokens to the account.
-  await transactionBuilder(metaplex)
+  await transactionBuilder(umi)
     .add(
-      mintTokensTo(metaplex, {
+      mintTokensTo(umi, {
         mintAuthority,
         mint: mint.publicKey,
         token: token.publicKey,
@@ -28,5 +28,5 @@ test('it can mint tokens to an existing token account', async (t) => {
     .sendAndConfirm();
 
   // Then the account has the correct amount of tokens.
-  t.is((await fetchToken(metaplex, token.publicKey)).amount, 42n);
+  t.is((await fetchToken(umi, token.publicKey)).amount, 42n);
 });

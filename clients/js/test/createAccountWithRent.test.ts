@@ -12,29 +12,29 @@ import { createUmi } from './_setup';
 
 test('it can create new accounts at the current rent-exemption price', async (t) => {
   // Given a payer and an account signer.
-  const metaplex = await createUmi();
-  const payerBalance = await metaplex.rpc.getBalance(metaplex.payer.publicKey);
-  const newAccount = generateSigner(metaplex);
+  const umi = await createUmi();
+  const payerBalance = await umi.rpc.getBalance(umi.payer.publicKey);
+  const newAccount = generateSigner(umi);
 
   // When we create a new account at this address
   // and let the program calculate the rent-exemption price.
-  await transactionBuilder(metaplex)
+  await transactionBuilder(umi)
     .add(
-      createAccountWithRent(metaplex, {
+      createAccountWithRent(umi, {
         newAccount,
         space: 4200,
-        programId: metaplex.programs.get('splSystem').publicKey,
+        programId: umi.programs.get('splSystem').publicKey,
       })
     )
     .sendAndConfirm();
 
   // Then the account was created with the correct data and the correct lamports.
-  const rentBalance = await metaplex.rpc.getRent(4200);
-  const account = await metaplex.rpc.getAccount(newAccount.publicKey);
+  const rentBalance = await umi.rpc.getRent(4200);
+  const account = await umi.rpc.getAccount(newAccount.publicKey);
   t.like(account, {
     exists: true,
     executable: false,
-    owner: metaplex.programs.get('splSystem').publicKey,
+    owner: umi.programs.get('splSystem').publicKey,
     publicKey: newAccount.publicKey,
     lamports: rentBalance,
     data: new Uint8Array(4200),
@@ -42,9 +42,7 @@ test('it can create new accounts at the current rent-exemption price', async (t)
 
   // And the payer was charged the appropriate rent-exemption
   // for the creation of the account.
-  const newPayerBalance = await metaplex.rpc.getBalance(
-    metaplex.payer.publicKey
-  );
+  const newPayerBalance = await umi.rpc.getBalance(umi.payer.publicKey);
   t.true(
     isEqualToAmount(
       newPayerBalance,
@@ -56,12 +54,12 @@ test('it can create new accounts at the current rent-exemption price', async (t)
 
 test('it knows how much space will be created on chain', async (t) => {
   // Given a transaction builder creating a new account with rent with 42 bytes of data.
-  const metaplex = await createUmi();
-  const builder = transactionBuilder(metaplex).add(
-    createAccountWithRent(metaplex, {
-      newAccount: generateSigner(metaplex),
+  const umi = await createUmi();
+  const builder = transactionBuilder(umi).add(
+    createAccountWithRent(umi, {
+      newAccount: generateSigner(umi),
       space: 42,
-      programId: metaplex.programs.get('splSystem').publicKey,
+      programId: umi.programs.get('splSystem').publicKey,
     })
   );
 
@@ -73,6 +71,6 @@ test('it knows how much space will be created on chain', async (t) => {
   t.is(bytes, 42 + ACCOUNT_HEADER_SIZE);
 
   // And the rent reflects that.
-  const expectedRent = await metaplex.rpc.getRent(42);
+  const expectedRent = await umi.rpc.getRent(42);
   t.deepEqual(rent, expectedRent);
 });
