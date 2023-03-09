@@ -10,6 +10,7 @@ export * from './mplSystemExtras';
 export * from './mplTokenExtras';
 export * from './splAddressLookupTable';
 export * from './splAssociatedToken';
+export * from './splComputeBudget';
 export * from './splMemo';
 export * from './splSystem';
 export * from './splToken';

@@ -24,6 +24,7 @@ const kinobi = new Kinobi([
   path.join(idlDir, "spl_token.json"),
   path.join(idlDir, "spl_associated_token.json"),
   path.join(idlDir, "spl_address_lookup_table.json"),
+  path.join(idlDir, "spl_compute_budget.json"),
   path.join(idlDir, "mpl_system_extras.json"),
   path.join(idlDir, "mpl_token_extras.json"),
 ]);
@@ -36,6 +37,7 @@ kinobi.update(
     splToken: { prefix: "Tok" },
     splAssociatedToken: { prefix: "Ata" },
     splAddressLookupTable: { prefix: "Lut" },
+    splComputeBudget: { prefix: "Cb" },
     mplSystemExtras: { prefix: "SysEx" },
     mplTokenExtras: { prefix: "TokEx" },
   })
@@ -151,6 +153,7 @@ kinobi.update(
   new SetNumberWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
     "splSystem.TransferSol.amount": { kind: "SolAmount" },
+    "splComputeBudget.SetComputeUnitPrice.lamports": { kind: "SolAmount" },
   })
 );
 
