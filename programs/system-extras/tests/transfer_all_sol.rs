@@ -8,11 +8,13 @@ mod transfer_all_sol {
     use borsh::BorshSerialize;
     use mpl_system_extras::instruction::{transfer_all_sol_instruction, SystemExtrasInstruction};
     use solana_program::instruction::{AccountMeta, Instruction, InstructionError::Custom};
+    use solana_program::native_token::LAMPORTS_PER_SOL;
     use solana_program_test::*;
     use solana_sdk::{
         signature::{Keypair, Signer},
         transaction::{Transaction, TransactionError},
     };
+    use solana_sdk::account::{Account, AccountSharedData};
 
     #[tokio::test]
     async fn test_it_transfers_all_lamports_from_a_source_account() {
@@ -116,21 +118,15 @@ mod transfer_all_sol {
         // Given a source account owner by the token program.
         let mut context = program_test().start_with_context().await;
         let source = Keypair::new();
-        let source_owner = Keypair::new();
-        let transaction = Transaction::new_signed_with_payer(
-            &[solana_program::system_instruction::create_account(
-                &context.payer.pubkey(),
-                &source.pubkey(),
-                10_000_000_000,
-                0,
-                &source_owner.pubkey(),
-            )],
-            Some(&source.pubkey()),
-            &[&source],
-            context.last_blockhash,
-        );
-        let result = send_transaction(&mut context, transaction).await;
-        assert_matches!(result, Ok(()));
+        let source_account = Account {
+            lamports: LAMPORTS_PER_SOL,
+            data: vec![],
+            owner: spl_token::id(),
+            executable: false,
+            rent_epoch: 1,
+        };
+        let source_account_shared_data: AccountSharedData = source_account.into();
+        context.set_account(&source.pubkey(), &source_account_shared_data);
 
         // And a destination account.
         let destination = Keypair::new();
