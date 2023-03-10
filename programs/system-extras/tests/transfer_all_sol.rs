@@ -130,7 +130,7 @@ mod transfer_all_sol {
             context.last_blockhash,
         );
         let result = send_transaction(&mut context, transaction).await;
-        assert_matches!(result,Ok(()));
+        assert_matches!(result, Ok(()));
 
         // And a destination account.
         let destination = Keypair::new();

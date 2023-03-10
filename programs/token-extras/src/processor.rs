@@ -82,7 +82,5 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
             token_program.key,
         ),
         &[payer.clone(), owner.clone(), mint.clone(), token.clone()],
-    )?;
-
-    Ok(())
+    )
 }
