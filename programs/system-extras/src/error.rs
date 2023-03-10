@@ -10,6 +10,8 @@ use thiserror::Error;
 pub enum SystemExtrasError {
     #[error("Invalid System Program")]
     InvalidSystemProgram,
+    #[error("Invalid Program Owner For The Source Account")]
+    InvalidOwnerForSource,
 }
 
 impl PrintProgramError for SystemExtrasError {

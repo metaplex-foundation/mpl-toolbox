@@ -1,5 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use shank::{ShankAccount, ShankInstruction};
+use shank::ShankInstruction;
 use solana_program::{
     instruction::{AccountMeta, Instruction},
     pubkey::Pubkey,

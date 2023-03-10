@@ -110,4 +110,47 @@ mod transfer_all_sol {
             TransactionError::InstructionError(0, Custom(0))
         );
     }
+
+    #[tokio::test]
+    async fn test_it_fail_if_we_provide_a_source_that_is_not_owned_by_the_system_program() {
+        // Given a source account owner by the token program.
+        let mut context = program_test().start_with_context().await;
+        let source = Keypair::new();
+        let source_owner = Keypair::new();
+        let transaction = Transaction::new_signed_with_payer(
+            &[solana_program::system_instruction::create_account(
+                &context.payer.pubkey(),
+                &source.pubkey(),
+                10_000_000_000,
+                0,
+                &source_owner.pubkey(),
+            )],
+            Some(&source.pubkey()),
+            &[&source],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+        assert_matches!(result,Ok(()));
+
+        // And a destination account.
+        let destination = Keypair::new();
+
+        // When we transfer all the lamports from the source account to the destination account
+        let transaction = Transaction::new_signed_with_payer(
+            &[transfer_all_sol_instruction(
+                &source.pubkey(),
+                &destination.pubkey(),
+            )],
+            Some(&source.pubkey()),
+            &[&source],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(1))
+        );
+    }
 }
