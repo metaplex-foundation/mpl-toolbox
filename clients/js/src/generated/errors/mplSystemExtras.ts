@@ -28,6 +28,19 @@ export class SysExInvalidSystemProgramError extends ProgramError {
 codeToErrorMap.set(0x0, SysExInvalidSystemProgramError);
 nameToErrorMap.set('InvalidSystemProgram', SysExInvalidSystemProgramError);
 
+/** InvalidOwnerForSource: 'Invalid Program Owner For The Source Account' */
+export class SysExInvalidOwnerForSourceError extends ProgramError {
+  readonly name: string = 'InvalidOwnerForSource';
+
+  readonly code: number = 0x1; // 1
+
+  constructor(program: Program, cause?: Error) {
+    super('Invalid Program Owner For The Source Account', program, cause);
+  }
+}
+codeToErrorMap.set(0x1, SysExInvalidOwnerForSourceError);
+nameToErrorMap.set('InvalidOwnerForSource', SysExInvalidOwnerForSourceError);
+
 /**
  * Attempts to resolve a custom program error from the provided error code.
  * @category Errors

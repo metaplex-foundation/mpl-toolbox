@@ -61,9 +61,7 @@ fn create_account_with_rent(
             &program_owner,
         ),
         &[payer.clone(), new_account.clone(), system_program.clone()],
-    )?;
-
-    Ok(())
+    )
 }
 
 fn transfer_all_sol(accounts: &[AccountInfo]) -> ProgramResult {
@@ -77,12 +75,13 @@ fn transfer_all_sol(accounts: &[AccountInfo]) -> ProgramResult {
     if *system_program.key != system_program::id() {
         return Err(SystemExtrasError::InvalidSystemProgram.into());
     }
+    if *source.owner != system_program::id() {
+        return Err(SystemExtrasError::InvalidOwnerForSource.into());
+    }
 
     // CPI to the System Program.
     invoke(
         &system_instruction::transfer(source.key, destination.key, source.lamports()),
         &[source.clone(), destination.clone(), system_program.clone()],
-    )?;
-
-    Ok(())
+    )
 }

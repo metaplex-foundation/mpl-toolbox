@@ -8,6 +8,7 @@ mod transfer_all_sol {
     use borsh::BorshSerialize;
     use mpl_system_extras::instruction::{transfer_all_sol_instruction, SystemExtrasInstruction};
     use solana_program::instruction::{AccountMeta, Instruction, InstructionError::Custom};
+    use solana_program::system_instruction::create_account;
     use solana_program_test::*;
     use solana_sdk::{
         signature::{Keypair, Signer},
@@ -108,6 +109,47 @@ mod transfer_all_sol {
         assert_matches!(
             result.unwrap_err().unwrap(),
             TransactionError::InstructionError(0, Custom(0))
+        );
+    }
+
+    #[tokio::test]
+    async fn test_it_fail_if_we_provide_a_source_that_is_not_owned_by_the_system_program() {
+        // Given a destination account with 0 SOL.
+        let mut context = program_test().start_with_context().await;
+        let destination = Keypair::new();
+
+        // And a source account with 5 SOL owner by the token program.
+        let source = Keypair::new();
+        let transaction = Transaction::new_signed_with_payer(
+            &[create_account(
+                &context.payer.pubkey(),
+                &source.pubkey(),
+                5_000_000_000,
+                1_000,
+                &spl_token::id(),
+            )],
+            Some(&context.payer.pubkey()),
+            &[&context.payer, &source],
+            context.last_blockhash,
+        );
+        send_transaction(&mut context, transaction).await.unwrap();
+
+        // When we try to transfer all the lamports from the source account to the destination account.
+        let transaction = Transaction::new_signed_with_payer(
+            &[transfer_all_sol_instruction(
+                &source.pubkey(),
+                &destination.pubkey(),
+            )],
+            Some(&context.payer.pubkey()),
+            &[&context.payer, &source],
+            context.last_blockhash,
+        );
+        let result = send_transaction(&mut context, transaction).await;
+
+        // Then we expect a custom program error.
+        assert_matches!(
+            result.unwrap_err().unwrap(),
+            TransactionError::InstructionError(0, Custom(1))
         );
     }
 }
