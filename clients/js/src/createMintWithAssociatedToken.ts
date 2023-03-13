@@ -8,26 +8,35 @@ import { createAssociatedToken, mintTokensTo } from './generated';
 import { findAssociatedTokenPda } from './hooked';
 
 // Inputs.
-export type CreateMintWithSingleTokenArgs = CreateMintArgs & {
+export type CreateMintWithAssociatedTokenArgs = CreateMintArgs & {
   owner: PublicKey;
+  amount?: number | bigint;
 };
 
 // Instruction.
-export function createMintWithSingleToken(
+export function createMintWithAssociatedToken(
   context: Pick<
     Context,
     'serializer' | 'programs' | 'identity' | 'payer' | 'eddsa'
   >,
-  input: CreateMintWithSingleTokenArgs
+  input: CreateMintWithAssociatedTokenArgs
 ): WrappedInstruction[] {
   const mintAndOwner = { mint: input.mint.publicKey, owner: input.owner };
-  return [
+  const amount = input.amount ?? 0;
+  const instructions: WrappedInstruction[] = [
     ...createMint(context, input),
     createAssociatedToken(context, mintAndOwner),
-    mintTokensTo(context, {
-      amount: 1,
-      mint: input.mint.publicKey,
-      token: findAssociatedTokenPda(context, mintAndOwner),
-    }),
   ];
+
+  if (amount > 0) {
+    instructions.push(
+      mintTokensTo(context, {
+        amount,
+        mint: input.mint.publicKey,
+        token: findAssociatedTokenPda(context, mintAndOwner),
+      })
+    );
+  }
+
+  return instructions;
 }

@@ -4,7 +4,7 @@ export * from './instructions';
 
 export * from './createLutForTransactionBuilder';
 export * from './createMint';
-export * from './createMintWithSingleToken';
+export * from './createMintWithAssociatedToken';
 export * from './createToken';
 export * from './fetchTokensByOwner';
 export * from './findLargestTokensByMint';
