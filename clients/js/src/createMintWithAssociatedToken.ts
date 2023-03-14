@@ -9,7 +9,7 @@ import { findAssociatedTokenPda } from './hooked';
 
 // Inputs.
 export type CreateMintWithAssociatedTokenArgs = CreateMintArgs & {
-  owner: PublicKey;
+  owner?: PublicKey;
   amount?: number | bigint;
 };
 
@@ -21,7 +21,10 @@ export function createMintWithAssociatedToken(
   >,
   input: CreateMintWithAssociatedTokenArgs
 ): WrappedInstruction[] {
-  const mintAndOwner = { mint: input.mint.publicKey, owner: input.owner };
+  const mintAndOwner = {
+    mint: input.mint.publicKey,
+    owner: input.owner ?? context.identity.publicKey,
+  };
   const amount = input.amount ?? 0;
   const instructions: WrappedInstruction[] = [
     ...createMint(context, input),

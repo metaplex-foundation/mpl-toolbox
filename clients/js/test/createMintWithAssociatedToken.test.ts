@@ -175,3 +175,43 @@ test('it can create a new mint and token account with decimals', async (t) => {
     closeAuthority: none(),
   });
 });
+
+test('it defaults to using the identity as the owner', async (t) => {
+  // Given a mint address.
+  const umi = await createUmi();
+  const mint = generateSigner(umi);
+
+  // When we create a new mint and token account without specifying an owner.
+  await transactionBuilder(umi)
+    .add(createMintWithAssociatedToken(umi, { mint }))
+    .sendAndConfirm();
+
+  // Then it created a new mint account with a supply of 0.
+  const mintAccount = await fetchMint(umi, mint.publicKey);
+  t.like(mintAccount, <Mint>{
+    publicKey: publicKey(mint),
+    mintAuthority: some(publicKey(umi.identity)),
+    supply: 0n,
+    decimals: 0,
+    isInitialized: true,
+    freezeAuthority: some(publicKey(umi.identity)),
+  });
+
+  // And a new associated token account for the identity.
+  const ata = findAssociatedTokenPda(umi, {
+    mint: mint.publicKey,
+    owner: umi.identity.publicKey,
+  });
+  const tokenAccount = await fetchToken(umi, ata);
+  t.like(tokenAccount, <Token>{
+    publicKey: publicKey(ata),
+    mint: publicKey(mint),
+    owner: publicKey(umi.identity),
+    amount: 0n,
+    delegate: none(),
+    state: TokenState.Initialized,
+    isNative: none(),
+    delegatedAmount: 0n,
+    closeAuthority: none(),
+  });
+});
