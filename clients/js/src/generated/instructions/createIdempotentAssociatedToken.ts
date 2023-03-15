@@ -11,8 +11,9 @@ import {
   Context,
   PublicKey,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
   checkForIsWritableOverride as isWritable,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Accounts.
@@ -29,7 +30,7 @@ export type CreateIdempotentAssociatedTokenInstructionAccounts = {
 export function createIdempotentAssociatedToken(
   context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateIdempotentAssociatedTokenInstructionAccounts
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -108,9 +109,7 @@ export function createIdempotentAssociatedToken(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

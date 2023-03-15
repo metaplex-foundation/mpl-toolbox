@@ -2,7 +2,6 @@ import {
   generateSigner,
   none,
   subtractAmounts,
-  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { generateSignerWithSol } from '@metaplex-foundation/umi-bundle-tests';
 import test from 'ava';
@@ -23,19 +22,13 @@ test('it can create new token accounts with minimum configuration', async (t) =>
   const payerBalance = await umi.rpc.getBalance(payer.publicKey);
   const newMint = generateSigner(umi);
   const newToken = generateSigner(umi);
-  await transactionBuilder(umi)
-    .add(createMint(umi, { mint: newMint }))
-    .sendAndConfirm();
+  await createMint(umi, { mint: newMint }).sendAndConfirm(umi);
 
   // When we create a new token account with minimum configuration.
-  await transactionBuilder(umi)
-    .add(
-      createToken(
-        { ...umi, payer }, // <- Our custom payer only pays for the Token storage.
-        { token: newToken, mint: newMint.publicKey }
-      )
-    )
-    .sendAndConfirm();
+  await createToken(
+    { ...umi, payer }, // <- Our custom payer only pays for the Token storage.
+    { token: newToken, mint: newMint.publicKey }
+  ).sendAndConfirm(umi);
 
   // Then the account was created with the correct data.
   const tokenAccount = await fetchToken(umi, newToken.publicKey);
@@ -70,20 +63,14 @@ test('it can create new token accounts with maximum configuration', async (t) =>
   const newOwner = generateSigner(umi);
   const newMint = generateSigner(umi);
   const newToken = generateSigner(umi);
-  await transactionBuilder(umi)
-    .add(createMint(umi, { mint: newMint }))
-    .sendAndConfirm();
+  await createMint(umi, { mint: newMint }).sendAndConfirm(umi);
 
   // When we create a new token account with maximum configuration.
-  await transactionBuilder(umi)
-    .add(
-      createToken(umi, {
-        token: newToken,
-        mint: newMint.publicKey,
-        owner: newOwner.publicKey,
-      })
-    )
-    .sendAndConfirm();
+  await createToken(umi, {
+    token: newToken,
+    mint: newMint.publicKey,
+    owner: newOwner.publicKey,
+  }).sendAndConfirm(umi);
 
   // Then the account was created with the correct data.
   const tokenAccount = await fetchToken(umi, newToken.publicKey);

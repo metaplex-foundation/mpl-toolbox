@@ -7,7 +7,7 @@ import {
 import test from 'ava';
 import {
   AddressLookupTable,
-  createLut,
+  createEmptyLut,
   deactivateLut,
   extendLut,
   fetchAddressLookupTable,
@@ -25,15 +25,15 @@ test('it can deactivate a LUT', async (t) => {
     authority: umi.identity.publicKey,
     recentSlot,
   });
-  await transactionBuilder(umi)
-    .add(createLut(umi, { recentSlot }))
+  await transactionBuilder()
+    .add(createEmptyLut(umi, { recentSlot }))
     .add(extendLut(umi, { address: lut, addresses: [addressA, addressB] }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // When we deactivate the LUT.
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(deactivateLut(umi, { address: lut }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then the LUT account has been deactivated.
   const lutAccount = await fetchAddressLookupTable(umi, lut);

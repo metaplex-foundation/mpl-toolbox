@@ -1,38 +1,28 @@
 import {
+  AddressLookupTableInput,
   chunk,
   Context,
   PublicKey,
   Signer,
-  transactionBuilder,
   TransactionBuilder,
   uniquePublicKeys,
 } from '@metaplex-foundation/umi';
-import { createLut, findAddressLookupTablePda } from './generated';
+import { createEmptyLut, findAddressLookupTablePda } from './generated';
 import { extendLut } from './instructions';
 
 export const createLutForTransactionBuilder = (
   context: Pick<
     Context,
-    | 'rpc'
-    | 'eddsa'
-    | 'programs'
-    | 'serializer'
-    | 'transactions'
-    | 'identity'
-    | 'payer'
+    'eddsa' | 'programs' | 'serializer' | 'transactions' | 'identity' | 'payer'
   >,
   builder: TransactionBuilder,
   recentSlot: number,
   authority?: Signer
-): {
-  lutAccounts: { publicKey: PublicKey; addresses: PublicKey[] }[];
-  createLutBuilders: TransactionBuilder[];
-  builder: TransactionBuilder;
-} => {
+): [TransactionBuilder[], AddressLookupTableInput[]] => {
   const lutAuthority = authority ?? context.identity;
 
   const signerAddresses = uniquePublicKeys([
-    builder.context.payer.publicKey,
+    builder.getFeePayer(context).publicKey,
     ...builder.items.flatMap(({ instruction }) =>
       instruction.keys
         .filter((meta) => meta.isSigner)
@@ -58,11 +48,9 @@ export const createLutForTransactionBuilder = (
     });
     lutAccounts.push({ publicKey: lut, addresses });
     createLutBuilders.push(
-      ...generateCreateLutBuilders(
+      ...generatecreateLutBuilders(
         context,
-        transactionBuilder(context).add(
-          createLut(context, { recentSlot: localRecentSlot })
-        ),
+        createEmptyLut(context, { recentSlot: localRecentSlot }),
         lut,
         lutAuthority,
         addresses
@@ -70,18 +58,14 @@ export const createLutForTransactionBuilder = (
     );
   });
 
-  // Set address lookup tables on the original builder.
-  builder = builder.setAddressLookupTables(lutAccounts);
-
-  return {
-    lutAccounts,
-    createLutBuilders,
-    builder,
-  };
+  return [createLutBuilders, lutAccounts];
 };
 
-function generateCreateLutBuilders(
-  context: Pick<Context, 'programs' | 'serializer' | 'identity' | 'payer'>,
+function generatecreateLutBuilders(
+  context: Pick<
+    Context,
+    'programs' | 'serializer' | 'identity' | 'payer' | 'transactions'
+  >,
   builder: TransactionBuilder,
   lutAddress: PublicKey,
   lutAuthority: Signer,
@@ -99,7 +83,7 @@ function generateCreateLutBuilders(
         authority: lutAuthority,
       })
     );
-    if (newBuilder.fitsInOneTransaction()) {
+    if (newBuilder.fitsInOneTransaction(context)) {
       addressesThatFit.push(address);
       lastValidBuilder = newBuilder;
     } else {

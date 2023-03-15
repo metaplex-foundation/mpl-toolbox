@@ -12,9 +12,10 @@ import {
   Context,
   PublicKey,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
   checkForIsWritableOverride as isWritable,
   publicKey,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { findAssociatedTokenPda } from '../../hooked';
 import { getTokenSize } from '../accounts';
@@ -36,7 +37,7 @@ export function createAssociatedToken(
     'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
   >,
   input: CreateAssociatedTokenInstructionAccounts
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -120,9 +121,7 @@ export function createAssociatedToken(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = getTokenSize() + ACCOUNT_HEADER_SIZE;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

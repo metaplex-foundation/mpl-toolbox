@@ -7,7 +7,7 @@ import {
 import test from 'ava';
 import {
   AddressLookupTable,
-  createLut,
+  createEmptyLut,
   extendLut,
   fetchAddressLookupTable,
   findAddressLookupTablePda,
@@ -25,15 +25,15 @@ test('it can freeze a LUT', async (t) => {
     authority: umi.identity.publicKey,
     recentSlot,
   });
-  await transactionBuilder(umi)
-    .add(createLut(umi, { recentSlot }))
+  await transactionBuilder()
+    .add(createEmptyLut(umi, { recentSlot }))
     .add(extendLut(umi, { address: lut, addresses: [addressA, addressB] }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // When we freeze the LUT.
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(freezeLut(umi, { address: lut }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then the LUT account no longer has an authority.
   const lutAccount = await fetchAddressLookupTable(umi, lut);

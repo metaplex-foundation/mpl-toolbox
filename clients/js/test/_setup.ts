@@ -27,9 +27,7 @@ export const createMint = async (
   } = {}
 ): Promise<Signer> => {
   const mint = generateSigner(umi);
-  await transactionBuilder(umi)
-    .add(baseCreateMint(umi, { mint, ...input }))
-    .sendAndConfirm();
+  await baseCreateMint(umi, { mint, ...input }).sendAndConfirm(umi);
   return mint;
 };
 
@@ -43,7 +41,7 @@ export const createToken = async (
   }
 ): Promise<Signer> => {
   const token = generateSigner(umi);
-  let builder = transactionBuilder(umi).add(
+  let builder = transactionBuilder().add(
     baseCreateToken(umi, {
       token,
       mint: input.mint,
@@ -60,7 +58,7 @@ export const createToken = async (
       })
     );
   }
-  await builder.sendAndConfirm();
+  await builder.sendAndConfirm(umi);
   return token;
 };
 

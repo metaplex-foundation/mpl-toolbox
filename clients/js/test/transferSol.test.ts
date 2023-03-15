@@ -18,7 +18,7 @@ test('it can create transfer SOLs', async (t) => {
   const payerBalance = await umi.rpc.getBalance(umi.payer.publicKey);
 
   // When wallet A transfers 10 SOL to wallet B.
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(
       transferSol(umi, {
         source: walletA,
@@ -26,7 +26,7 @@ test('it can create transfer SOLs', async (t) => {
         amount: sol(10),
       })
     )
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then wallet A now has 40 SOL.
   const balanceA = await umi.rpc.getBalance(walletA.publicKey);
@@ -51,14 +51,14 @@ test('it defaults to transferring from the identity', async (t) => {
   t.true(isEqualToAmount(identityBalance, sol(100)));
 
   // When we transfer 10 SOL to the destination without specifying a source.
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(
       transferSol(umi, {
         destination: destination.publicKey,
         amount: sol(10),
       })
     )
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then the destination now has 10 SOL.
   const destinationBalance = await umi.rpc.getBalance(destination.publicKey);

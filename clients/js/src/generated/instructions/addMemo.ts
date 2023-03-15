@@ -11,7 +11,8 @@ import {
   Context,
   Serializer,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Arguments.
@@ -32,7 +33,7 @@ export function getAddMemoInstructionDataSerializer(
 export function addMemo(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: AddMemoInstructionDataArgs
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -48,9 +49,7 @@ export function addMemo(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

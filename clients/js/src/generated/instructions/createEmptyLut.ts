@@ -14,15 +14,16 @@ import {
   PublicKey,
   Serializer,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
   checkForIsWritableOverride as isWritable,
   mapSerializer,
   publicKey,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { findAddressLookupTablePda } from '../accounts';
 
 // Accounts.
-export type CreateLutInstructionAccounts = {
+export type CreateEmptyLutInstructionAccounts = {
   address?: Pda;
   authority?: Signer;
   payer?: Signer;
@@ -30,47 +31,53 @@ export type CreateLutInstructionAccounts = {
 };
 
 // Arguments.
-export type CreateLutInstructionData = {
+export type CreateEmptyLutInstructionData = {
   discriminator: number;
   recentSlot: bigint;
   bump: number;
 };
 
-export type CreateLutInstructionDataArgs = {
+export type CreateEmptyLutInstructionDataArgs = {
   recentSlot: number | bigint;
   bump: number;
 };
 
-export function getCreateLutInstructionDataSerializer(
+export function getCreateEmptyLutInstructionDataSerializer(
   context: Pick<Context, 'serializer'>
-): Serializer<CreateLutInstructionDataArgs, CreateLutInstructionData> {
+): Serializer<
+  CreateEmptyLutInstructionDataArgs,
+  CreateEmptyLutInstructionData
+> {
   const s = context.serializer;
   return mapSerializer<
-    CreateLutInstructionDataArgs,
-    CreateLutInstructionData,
-    CreateLutInstructionData
+    CreateEmptyLutInstructionDataArgs,
+    CreateEmptyLutInstructionData,
+    CreateEmptyLutInstructionData
   >(
-    s.struct<CreateLutInstructionData>(
+    s.struct<CreateEmptyLutInstructionData>(
       [
         ['discriminator', s.u32()],
         ['recentSlot', s.u64()],
         ['bump', s.u8()],
       ],
-      { description: 'CreateLutInstructionData' }
+      { description: 'CreateEmptyLutInstructionData' }
     ),
-    (value) => ({ ...value, discriminator: 0 } as CreateLutInstructionData)
-  ) as Serializer<CreateLutInstructionDataArgs, CreateLutInstructionData>;
+    (value) => ({ ...value, discriminator: 0 } as CreateEmptyLutInstructionData)
+  ) as Serializer<
+    CreateEmptyLutInstructionDataArgs,
+    CreateEmptyLutInstructionData
+  >;
 }
 
 // Instruction.
-export function createLut(
+export function createEmptyLut(
   context: Pick<
     Context,
     'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
   >,
-  input: CreateLutInstructionAccounts &
-    Omit<CreateLutInstructionDataArgs, 'bump'>
-): WrappedInstruction {
+  input: CreateEmptyLutInstructionAccounts &
+    Omit<CreateEmptyLutInstructionDataArgs, 'bump'>
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -128,7 +135,7 @@ export function createLut(
   });
 
   // Data.
-  const data = getCreateLutInstructionDataSerializer(context).serialize({
+  const data = getCreateEmptyLutInstructionDataSerializer(context).serialize({
     ...input,
     bump: addressAccount.bump,
   });
@@ -136,9 +143,7 @@ export function createLut(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 56 + ACCOUNT_HEADER_SIZE;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

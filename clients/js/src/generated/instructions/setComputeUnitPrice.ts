@@ -12,9 +12,10 @@ import {
   Serializer,
   Signer,
   SolAmount,
-  WrappedInstruction,
+  TransactionBuilder,
   mapAmountSerializer,
   mapSerializer,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Arguments.
@@ -60,7 +61,7 @@ export function getSetComputeUnitPriceInstructionDataSerializer(
 export function setComputeUnitPrice(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: SetComputeUnitPriceInstructionDataArgs
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -77,9 +78,7 @@ export function setComputeUnitPrice(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

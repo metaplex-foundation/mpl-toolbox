@@ -2,7 +2,8 @@ import {
   Context,
   PublicKey,
   Signer,
-  WrappedInstruction,
+  transactionBuilder,
+  TransactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
   createAccountWithRent,
@@ -21,17 +22,20 @@ export type CreateTokenArgs = {
 export function createToken(
   context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
   input: CreateTokenArgs
-): WrappedInstruction[] {
-  return [
-    createAccountWithRent(context, {
-      newAccount: input.token,
-      space: getTokenSize(),
-      programId: context.programs.get('splToken').publicKey,
-    }),
-    initializeToken3(context, {
-      account: input.token.publicKey,
-      mint: input.mint,
-      owner: input.owner ?? context.identity.publicKey,
-    }),
-  ];
+): TransactionBuilder {
+  return transactionBuilder()
+    .add(
+      createAccountWithRent(context, {
+        newAccount: input.token,
+        space: getTokenSize(),
+        programId: context.programs.get('splToken').publicKey,
+      })
+    )
+    .add(
+      initializeToken3(context, {
+        account: input.token.publicKey,
+        mint: input.mint,
+        owner: input.owner ?? context.identity.publicKey,
+      })
+    );
 }

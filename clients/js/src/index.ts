@@ -2,6 +2,7 @@ export * from './generated';
 export * from './hooked';
 export * from './instructions';
 
+export * from './createLut';
 export * from './createLutForTransactionBuilder';
 export * from './createMint';
 export * from './createMintWithAssociatedToken';

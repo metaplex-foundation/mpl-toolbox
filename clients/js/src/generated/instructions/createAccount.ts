@@ -14,10 +14,11 @@ import {
   Serializer,
   Signer,
   SolAmount,
-  WrappedInstruction,
+  TransactionBuilder,
   checkForIsWritableOverride as isWritable,
   mapAmountSerializer,
   mapSerializer,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Accounts.
@@ -69,7 +70,7 @@ export function getCreateAccountInstructionDataSerializer(
 export function createAccount(
   context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateAccountInstructionAccounts & CreateAccountInstructionDataArgs
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -106,9 +107,7 @@ export function createAccount(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }
