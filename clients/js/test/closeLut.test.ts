@@ -2,7 +2,7 @@ import { generateSigner, transactionBuilder } from '@metaplex-foundation/umi';
 import test from 'ava';
 import {
   closeLut,
-  createLut,
+  createEmptyLut,
   deactivateLut,
   findAddressLookupTablePda,
 } from '../src';
@@ -16,7 +16,7 @@ test('it cannot close a LUT that is not deactivated', async (t) => {
     authority: umi.identity.publicKey,
     recentSlot,
   });
-  await createLut(umi, { recentSlot }).sendAndConfirm(umi);
+  await createEmptyLut(umi, { recentSlot }).sendAndConfirm(umi);
 
   // When we try to close it.
   const recipient = generateSigner(umi).publicKey;
@@ -40,7 +40,7 @@ test('it cannot close a LUT that has just been deactivated', async (t) => {
     recentSlot,
   });
   await transactionBuilder()
-    .add(createLut(umi, { recentSlot }))
+    .add(createEmptyLut(umi, { recentSlot }))
     .add(deactivateLut(umi, { address: lut }))
     .sendAndConfirm(umi);
 

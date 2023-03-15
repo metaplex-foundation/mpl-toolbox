@@ -7,7 +7,7 @@ import {
 import test from 'ava';
 import {
   AddressLookupTable,
-  createLut,
+  createEmptyLut,
   fetchAddressLookupTable,
   findAddressLookupTablePda,
 } from '../src';
@@ -19,7 +19,7 @@ test('it can create a new empty LUT with minimum configuration', async (t) => {
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
 
   // When we create a new LUT using that slot.
-  await createLut(umi, { recentSlot }).sendAndConfirm(umi);
+  await createEmptyLut(umi, { recentSlot }).sendAndConfirm(umi);
 
   // Then a new account was created with the correct data.
   const lut = findAddressLookupTablePda(umi, {
@@ -44,7 +44,7 @@ test('it can create a new empty LUT with a custom authority', async (t) => {
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
 
   // When we create a new LUT from that authority.
-  await createLut(umi, { recentSlot, authority }).sendAndConfirm(umi);
+  await createEmptyLut(umi, { recentSlot, authority }).sendAndConfirm(umi);
 
   // Then the created LUT has the correct authority.
   const lut = findAddressLookupTablePda(umi, {

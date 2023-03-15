@@ -125,7 +125,7 @@ kinobi.update(
         owner: { defaultsTo: { kind: "identity" } },
       },
     },
-    createLut: {
+    createEmptyLut: {
       bytesCreatedOnChain: { kind: "number", value: 56 },
       accounts: {
         address: {

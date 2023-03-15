@@ -30,7 +30,7 @@ test('it generates LUT builders for a given transaction builder', async (t) => {
     .add(createAssociatedToken(umi, { mint: mint.publicKey, owner }));
 
   // When we create LUT builders for that builder.
-  const { lutAccounts, createLutBuilders, builder } =
+  const { lutAccounts, createEmptyLutBuilders, builder } =
     createLutForTransactionBuilder(umi, baseBuilder, recentSlot);
 
   // Then we get an updated version of the base builder that includes an LUT.
@@ -44,9 +44,9 @@ test('it generates LUT builders for a given transaction builder', async (t) => {
 
   // And we get builders for creating the LUT depending
   // on the number of addresses to extract.
-  t.is(createLutBuilders.length, 1);
-  t.true(createLutBuilders[0].fitsInOneTransaction(umi));
-  t.is(createLutBuilders[0].getInstructions().length, 2);
+  t.is(createEmptyLutBuilders.length, 1);
+  t.true(createEmptyLutBuilders[0].fitsInOneTransaction(umi));
+  t.is(createEmptyLutBuilders[0].getInstructions().length, 2);
 
   // And we get the public key and addresses of the LUT created.
   const splSystem = umi.programs.get('splSystem').publicKey;
@@ -81,11 +81,8 @@ test('it generates multiple lut builders such that they each fit under one trans
   const baseBuilder = transactionBuilder().add(instructions);
 
   // When we create LUT builders for that builder.
-  const { lutAccounts, createLutBuilders } = createLutForTransactionBuilder(
-    umi,
-    baseBuilder,
-    recentSlot
-  );
+  const { lutAccounts, createEmptyLutBuilders } =
+    createLutForTransactionBuilder(umi, baseBuilder, recentSlot);
 
   // Then we get 4 LUTs.
   t.is(lutAccounts.length, 4);
@@ -102,9 +99,9 @@ test('it generates multiple lut builders such that they each fit under one trans
   });
 
   // And we get 35 create LUT builders that fit in one transaction.
-  t.is(createLutBuilders.length, 35);
+  t.is(createEmptyLutBuilders.length, 35);
   t.true(
-    createLutBuilders.every((builder) => builder.fitsInOneTransaction(umi))
+    createEmptyLutBuilders.every((builder) => builder.fitsInOneTransaction(umi))
   );
 });
 

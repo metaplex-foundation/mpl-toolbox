@@ -6,7 +6,7 @@ import {
   TransactionBuilder,
   uniquePublicKeys,
 } from '@metaplex-foundation/umi';
-import { createLut, findAddressLookupTablePda } from './generated';
+import { createEmptyLut, findAddressLookupTablePda } from './generated';
 import { extendLut } from './instructions';
 
 export const createLutForTransactionBuilder = (
@@ -19,7 +19,7 @@ export const createLutForTransactionBuilder = (
   authority?: Signer
 ): {
   lutAccounts: { publicKey: PublicKey; addresses: PublicKey[] }[];
-  createLutBuilders: TransactionBuilder[];
+  createEmptyLutBuilders: TransactionBuilder[];
   builder: TransactionBuilder;
 } => {
   const lutAuthority = authority ?? context.identity;
@@ -41,7 +41,7 @@ export const createLutForTransactionBuilder = (
   ).filter((address) => !signerAddresses.includes(address));
 
   const lutAccounts = [] as { publicKey: PublicKey; addresses: PublicKey[] }[];
-  const createLutBuilders = [] as TransactionBuilder[];
+  const createEmptyLutBuilders = [] as TransactionBuilder[];
 
   chunk(extractableAddresses, 256).forEach((addresses, index) => {
     const localRecentSlot = recentSlot - index;
@@ -50,10 +50,10 @@ export const createLutForTransactionBuilder = (
       recentSlot: localRecentSlot,
     });
     lutAccounts.push({ publicKey: lut, addresses });
-    createLutBuilders.push(
-      ...generateCreateLutBuilders(
+    createEmptyLutBuilders.push(
+      ...generatecreateEmptyLutBuilders(
         context,
-        createLut(context, { recentSlot: localRecentSlot }),
+        createEmptyLut(context, { recentSlot: localRecentSlot }),
         lut,
         lutAuthority,
         addresses
@@ -66,12 +66,12 @@ export const createLutForTransactionBuilder = (
 
   return {
     lutAccounts,
-    createLutBuilders,
+    createEmptyLutBuilders,
     builder,
   };
 };
 
-function generateCreateLutBuilders(
+function generatecreateEmptyLutBuilders(
   context: Pick<
     Context,
     'programs' | 'serializer' | 'identity' | 'payer' | 'transactions'

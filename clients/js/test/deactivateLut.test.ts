@@ -7,7 +7,7 @@ import {
 import test from 'ava';
 import {
   AddressLookupTable,
-  createLut,
+  createEmptyLut,
   deactivateLut,
   extendLut,
   fetchAddressLookupTable,
@@ -26,7 +26,7 @@ test('it can deactivate a LUT', async (t) => {
     recentSlot,
   });
   await transactionBuilder()
-    .add(createLut(umi, { recentSlot }))
+    .add(createEmptyLut(umi, { recentSlot }))
     .add(extendLut(umi, { address: lut, addresses: [addressA, addressB] }))
     .sendAndConfirm(umi);
 

@@ -10,7 +10,7 @@ import { generateSignerWithSol } from '@metaplex-foundation/umi-bundle-tests';
 import test from 'ava';
 import {
   AddressLookupTable,
-  createLut,
+  createEmptyLut,
   extendLut,
   fetchAddressLookupTable,
   findAddressLookupTablePda,
@@ -39,7 +39,7 @@ test('it can add addresses to an empty LUT', async (t) => {
     )
   );
   await transactionBuilder()
-    .add(createLut(umi, { recentSlot }))
+    .add(createEmptyLut(umi, { recentSlot }))
     .add(extendLutBuilder)
     .sendAndConfirm(umi);
 
@@ -73,7 +73,7 @@ test('it can add more addresses to an existing LUT', async (t) => {
     recentSlot,
   });
   await transactionBuilder()
-    .add(createLut(umi, { recentSlot }))
+    .add(createEmptyLut(umi, { recentSlot }))
     .add(extendLut(umi, { address: lut, addresses: [addressA, addressB] }))
     .sendAndConfirm(umi);
 
