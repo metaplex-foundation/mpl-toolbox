@@ -5,7 +5,6 @@ import {
   sol,
   some,
   subtractAmounts,
-  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import test from 'ava';
 import { createMint, fetchMint, getMintSize, Mint } from '../src';
@@ -18,9 +17,7 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
   const newAccount = generateSigner(umi);
 
   // When we create a new mint account at this address with no additional configuration.
-  await transactionBuilder(umi)
-    .add(createMint(umi, { mint: newAccount }))
-    .sendAndConfirm();
+  await createMint(umi, { mint: newAccount }).sendAndConfirm(umi);
 
   // Then the account was created with the correct data.
   const mintAccount = await fetchMint(umi, newAccount.publicKey);
@@ -56,16 +53,12 @@ test('it can create new mint accounts with maximum configuration', async (t) => 
   const mintAuthority = generateSigner(umi).publicKey;
 
   // When we create a new mint account with all configuration options.
-  await transactionBuilder(umi)
-    .add(
-      createMint(umi, {
-        mint: newAccount,
-        decimals: 9,
-        mintAuthority,
-        freezeAuthority: none(),
-      })
-    )
-    .sendAndConfirm();
+  await createMint(umi, {
+    mint: newAccount,
+    decimals: 9,
+    mintAuthority,
+    freezeAuthority: none(),
+  }).sendAndConfirm(umi);
 
   // Then the account was created with the correct data.
   const mintAccount = await fetchMint(umi, newAccount.publicKey);

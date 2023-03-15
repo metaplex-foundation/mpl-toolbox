@@ -3,7 +3,6 @@ import {
   Context,
   PublicKey,
   Signer,
-  transactionBuilder,
   TransactionBuilder,
   uniquePublicKeys,
 } from '@metaplex-foundation/umi';
@@ -13,13 +12,7 @@ import { extendLut } from './instructions';
 export const createLutForTransactionBuilder = (
   context: Pick<
     Context,
-    | 'rpc'
-    | 'eddsa'
-    | 'programs'
-    | 'serializer'
-    | 'transactions'
-    | 'identity'
-    | 'payer'
+    'eddsa' | 'programs' | 'serializer' | 'transactions' | 'identity' | 'payer'
   >,
   builder: TransactionBuilder,
   recentSlot: number,
@@ -32,7 +25,7 @@ export const createLutForTransactionBuilder = (
   const lutAuthority = authority ?? context.identity;
 
   const signerAddresses = uniquePublicKeys([
-    builder.context.payer.publicKey,
+    builder.getFeePayer(context).publicKey,
     ...builder.items.flatMap(({ instruction }) =>
       instruction.keys
         .filter((meta) => meta.isSigner)
@@ -60,9 +53,7 @@ export const createLutForTransactionBuilder = (
     createLutBuilders.push(
       ...generateCreateLutBuilders(
         context,
-        transactionBuilder(context).add(
-          createLut(context, { recentSlot: localRecentSlot })
-        ),
+        createLut(context, { recentSlot: localRecentSlot }),
         lut,
         lutAuthority,
         addresses
@@ -81,7 +72,10 @@ export const createLutForTransactionBuilder = (
 };
 
 function generateCreateLutBuilders(
-  context: Pick<Context, 'programs' | 'serializer' | 'identity' | 'payer'>,
+  context: Pick<
+    Context,
+    'programs' | 'serializer' | 'identity' | 'payer' | 'transactions'
+  >,
   builder: TransactionBuilder,
   lutAddress: PublicKey,
   lutAuthority: Signer,
@@ -99,7 +93,7 @@ function generateCreateLutBuilders(
         authority: lutAuthority,
       })
     );
-    if (newBuilder.fitsInOneTransaction()) {
+    if (newBuilder.fitsInOneTransaction(context)) {
       addressesThatFit.push(address);
       lastValidBuilder = newBuilder;
     } else {

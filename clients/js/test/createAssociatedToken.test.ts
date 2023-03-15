@@ -2,7 +2,6 @@ import {
   generateSigner,
   none,
   subtractAmounts,
-  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { generateSignerWithSol } from '@metaplex-foundation/umi-bundle-tests';
 import test from 'ava';
@@ -21,14 +20,12 @@ test('it can create new associated token accounts with minimum configuration', a
   // Given an existing mint.
   const umi = await createUmi();
   const newMint = generateSigner(umi);
-  await transactionBuilder(umi)
-    .add(createMint(umi, { mint: newMint }))
-    .sendAndConfirm();
+  await createMint(umi, { mint: newMint }).sendAndConfirm(umi);
 
   // When we create a new associated token account with minimum configuration.
-  await transactionBuilder(umi)
-    .add(createAssociatedToken(umi, { mint: newMint.publicKey }))
-    .sendAndConfirm();
+  await createAssociatedToken(umi, {
+    mint: newMint.publicKey,
+  }).sendAndConfirm(umi);
 
   // Then the account was created with the correct data
   // And the token account is associated to the identity.
@@ -66,21 +63,15 @@ test('it can create new associated token accounts with maximum configuration', a
     mint: newMint.publicKey,
     owner: newOwner.publicKey,
   });
-  await transactionBuilder(umi)
-    .add(createMint(umi, { mint: newMint }))
-    .sendAndConfirm();
+  await createMint(umi, { mint: newMint }).sendAndConfirm(umi);
 
   // When we create a new associated token account with maximum configuration.
-  await transactionBuilder(umi)
-    .add(
-      createAssociatedToken(umi, {
-        payer,
-        mint: newMint.publicKey,
-        owner: newOwner.publicKey,
-        ata,
-      })
-    )
-    .sendAndConfirm();
+  await createAssociatedToken(umi, {
+    payer,
+    mint: newMint.publicKey,
+    owner: newOwner.publicKey,
+    ata,
+  }).sendAndConfirm(umi);
 
   // Then the account was created with the correct data.
   const tokenAccount = await fetchToken(umi, ata);

@@ -31,9 +31,7 @@ test('it creates a new associated token if missing', async (t) => {
   const owner = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction.
-  await transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, owner }))
-    .sendAndConfirm();
+  await createTokenIfMissing(umi, { mint, owner }).sendAndConfirm(umi);
 
   // Then a new associated token account was created.
   const ata = findAssociatedTokenPda(umi, { mint, owner });
@@ -54,9 +52,7 @@ test('it defaults to the identity if no owner is provided', async (t) => {
   const identity = umi.identity.publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction without an owner.
-  await transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint }))
-    .sendAndConfirm();
+  await createTokenIfMissing(umi, { mint }).sendAndConfirm(umi);
 
   // Then a new associated token account was created for the identity.
   const ata = findAssociatedTokenPda(umi, { mint, owner: identity });
@@ -78,9 +74,7 @@ test('the payer pays for the storage fees if a token account gets created', asyn
   const identity = umi.identity.publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with an explicit payer.
-  await transactionBuilder(umi)
-    .add(createTokenIfMissing({ ...umi, payer }, { mint }))
-    .sendAndConfirm();
+  await createTokenIfMissing({ ...umi, payer }, { mint }).sendAndConfirm(umi);
 
   // Then the payer paid for the storage fee.
   const storageFee = await umi.rpc.getRent(getTokenSize());
@@ -99,18 +93,16 @@ test('it does not create an account if an associated token account already exist
   const mint = (await createMint(umi)).publicKey;
   const owner = generateSigner(umi).publicKey;
   const ata = findAssociatedTokenPda(umi, { mint, owner });
-  await transactionBuilder(umi)
-    .add(createAssociatedToken(umi, { mint, owner }))
-    .sendAndConfirm();
+  await createAssociatedToken(umi, { mint, owner }).sendAndConfirm(umi);
   t.true(await umi.rpc.accountExists(ata));
 
   // And given an explicit payer to ensure it was not charged for the storage fee.
   const payer = await generateSignerWithSol(umi, sol(100));
 
   // When we execute the "CreateTokenIfMissing" instruction on that mint/owner pair.
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(createTokenIfMissing({ ...umi, payer }, { mint, owner }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then the ata still exists.
   t.true(await umi.rpc.accountExists(ata));
@@ -126,9 +118,7 @@ test('it does not create an account if a regular token account already exists', 
   const mint = (await createMint(umi)).publicKey;
   const owner = generateSigner(umi).publicKey;
   const token = generateSigner(umi);
-  await transactionBuilder(umi)
-    .add(createToken(umi, { mint, owner, token }))
-    .sendAndConfirm();
+  await createToken(umi, { mint, owner, token }).sendAndConfirm(umi);
   t.true(await umi.rpc.accountExists(token.publicKey));
 
   // And given an explicit payer to ensure it was not charged for the storage fee.
@@ -136,14 +126,10 @@ test('it does not create an account if a regular token account already exists', 
 
   // When we execute the "CreateTokenIfMissing" instruction on that mint/owner pair
   // whilst explicitly providing the token account.
-  await transactionBuilder(umi)
-    .add(
-      createTokenIfMissing(
-        { ...umi, payer },
-        { mint, owner, token: token.publicKey }
-      )
-    )
-    .sendAndConfirm();
+  await createTokenIfMissing(
+    { ...umi, payer },
+    { mint, owner, token: token.publicKey }
+  ).sendAndConfirm(umi);
 
   // Then the token account still exists.
   t.true(await umi.rpc.accountExists(token.publicKey));
@@ -160,9 +146,10 @@ test('it fail if we provide the wrong system program', async (t) => {
   const systemProgram = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong system program.
-  const promise = transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, systemProgram }))
-    .sendAndConfirm();
+  const promise = createTokenIfMissing(umi, {
+    mint,
+    systemProgram,
+  }).sendAndConfirm(umi);
 
   // Then we expect a custom program error.
   await t.throwsAsync(promise, { instanceOf: TokExInvalidSystemProgramError });
@@ -175,9 +162,10 @@ test('it fail if we provide the wrong token program', async (t) => {
   const tokenProgram = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong token program.
-  const promise = transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, tokenProgram }))
-    .sendAndConfirm();
+  const promise = createTokenIfMissing(umi, {
+    mint,
+    tokenProgram,
+  }).sendAndConfirm(umi);
 
   // Then we expect a custom program error.
   await t.throwsAsync(promise, { instanceOf: TokExInvalidTokenProgramError });
@@ -190,9 +178,10 @@ test('it fail if we provide the wrong ata program', async (t) => {
   const ataProgram = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong ata program.
-  const promise = transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, ataProgram }))
-    .sendAndConfirm();
+  const promise = createTokenIfMissing(umi, {
+    mint,
+    ataProgram,
+  }).sendAndConfirm(umi);
 
   // Then we expect a custom program error.
   await t.throwsAsync(promise, {
@@ -208,9 +197,11 @@ test('it fail if the ata account does not match the mint and owner', async (t) =
   const invalidAta = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction with the wrong ata address.
-  const promise = transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, owner, ata: invalidAta }))
-    .sendAndConfirm();
+  const promise = createTokenIfMissing(umi, {
+    mint,
+    owner,
+    ata: invalidAta,
+  }).sendAndConfirm(umi);
 
   // Then we expect a custom program error.
   await t.throwsAsync(promise, {
@@ -225,14 +216,14 @@ test('it fail if the existing token account is not associated with the given min
   const wrongMint = (await createMint(umi)).publicKey;
   const owner = generateSigner(umi).publicKey;
   const token = generateSigner(umi);
-  await transactionBuilder(umi)
-    .add(createToken(umi, { mint: wrongMint, owner, token }))
-    .sendAndConfirm();
+  await createToken(umi, { mint: wrongMint, owner, token }).sendAndConfirm(umi);
 
   // When we execute the "CreateTokenIfMissing" instruction on that token account.
-  const promise = transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, owner, token: token.publicKey }))
-    .sendAndConfirm();
+  const promise = createTokenIfMissing(umi, {
+    mint,
+    owner,
+    token: token.publicKey,
+  }).sendAndConfirm(umi);
 
   // Then we expect a custom program error.
   await t.throwsAsync(promise, { instanceOf: TokExInvalidTokenMintError });
@@ -245,14 +236,18 @@ test('it fail if the existing token account is not associated with the given own
   const owner = generateSigner(umi).publicKey;
   const wrongOwner = generateSigner(umi).publicKey;
   const token = generateSigner(umi);
-  await transactionBuilder(umi)
-    .add(createToken(umi, { mint, owner: wrongOwner, token }))
-    .sendAndConfirm();
+  await createToken(umi, {
+    mint,
+    owner: wrongOwner,
+    token,
+  }).sendAndConfirm(umi);
 
   // When we execute the "CreateTokenIfMissing" instruction on that token account.
-  const promise = transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, owner, token: token.publicKey }))
-    .sendAndConfirm();
+  const promise = createTokenIfMissing(umi, {
+    mint,
+    owner,
+    token: token.publicKey,
+  }).sendAndConfirm(umi);
 
   // Then we expect a custom program error.
   await t.throwsAsync(promise, { instanceOf: TokExInvalidTokenOwnerError });
@@ -268,9 +263,11 @@ test('it fail if the non existing token account is not an ata account', async (t
   const token = generateSigner(umi).publicKey;
 
   // When we execute the "CreateTokenIfMissing" instruction on that token account.
-  const promise = transactionBuilder(umi)
-    .add(createTokenIfMissing(umi, { mint, owner, token }))
-    .sendAndConfirm();
+  const promise = createTokenIfMissing(umi, {
+    mint,
+    owner,
+    token,
+  }).sendAndConfirm(umi);
 
   // Then we expect a custom program error because we need the token account
   // as a Signer in order to create it.

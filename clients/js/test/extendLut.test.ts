@@ -32,16 +32,16 @@ test('it can add addresses to an empty LUT', async (t) => {
   const payer = await generateSignerWithSol(umi, sol(1));
 
   // When we create an empty LUT and add 2 addresses.
-  const extendLutBuilder = transactionBuilder(umi).add(
+  const extendLutBuilder = transactionBuilder().add(
     extendLut(
       { ...umi, payer },
       { address: lut, addresses: [addressA, addressB] }
     )
   );
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(createLut(umi, { recentSlot }))
     .add(extendLutBuilder)
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then the LUT has the correct addresses.
   const lutAccount = await fetchAddressLookupTable(umi, lut);
@@ -72,20 +72,20 @@ test('it can add more addresses to an existing LUT', async (t) => {
     authority: umi.identity.publicKey,
     recentSlot,
   });
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(createLut(umi, { recentSlot }))
     .add(extendLut(umi, { address: lut, addresses: [addressA, addressB] }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // And a payer with 1 SOL only use to extend the LUT.
   const payer = await generateSignerWithSol(umi, sol(1));
 
   // When we add one more address to the LUT.
   const addressC = generateSigner(umi).publicKey;
-  const extendLutBuilder = transactionBuilder(umi).add(
+  const extendLutBuilder = transactionBuilder().add(
     extendLut({ ...umi, payer }, { address: lut, addresses: [addressC] })
   );
-  await extendLutBuilder.sendAndConfirm();
+  await extendLutBuilder.sendAndConfirm(umi);
 
   // Then the LUT has the correct addresses.
   const lutAccount = await fetchAddressLookupTable(umi, lut);

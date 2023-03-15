@@ -25,7 +25,7 @@ test('it generates LUT builders for a given transaction builder', async (t) => {
   const mint = generateSigner(umi);
   const owner = generateSigner(umi).publicKey;
   const ata = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
-  const baseBuilder = transactionBuilder(umi)
+  const baseBuilder = transactionBuilder()
     .add(createMint(umi, { mint }))
     .add(createAssociatedToken(umi, { mint: mint.publicKey, owner }));
 
@@ -45,7 +45,7 @@ test('it generates LUT builders for a given transaction builder', async (t) => {
   // And we get builders for creating the LUT depending
   // on the number of addresses to extract.
   t.is(createLutBuilders.length, 1);
-  t.true(createLutBuilders[0].fitsInOneTransaction());
+  t.true(createLutBuilders[0].fitsInOneTransaction(umi));
   t.is(createLutBuilders[0].getInstructions().length, 2);
 
   // And we get the public key and addresses of the LUT created.
@@ -78,7 +78,7 @@ test('it generates multiple lut builders such that they each fit under one trans
       amount: sol(0.01),
     })
   );
-  const baseBuilder = transactionBuilder(umi).add(instructions);
+  const baseBuilder = transactionBuilder().add(instructions);
 
   // When we create LUT builders for that builder.
   const { lutAccounts, createLutBuilders } = createLutForTransactionBuilder(
@@ -103,7 +103,9 @@ test('it generates multiple lut builders such that they each fit under one trans
 
   // And we get 35 create LUT builders that fit in one transaction.
   t.is(createLutBuilders.length, 35);
-  t.true(createLutBuilders.every((builder) => builder.fitsInOneTransaction()));
+  t.true(
+    createLutBuilders.every((builder) => builder.fitsInOneTransaction(umi))
+  );
 });
 
 function hasPublicKey(haystack: PublicKey[], needle: PublicKey): boolean {

@@ -12,21 +12,21 @@ test('it can transfer tokens from one account to another', async (t) => {
   const ownerA = generateSigner(umi);
   const ownerAPublicKey = ownerA.publicKey;
   const tokenA = generateSigner(umi);
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(createToken(umi, { mint, token: tokenA, owner: ownerAPublicKey }))
     .add(mintTokensTo(umi, { mint, token: tokenA.publicKey, amount: 50 }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // And a token account B from owner B with 10 tokens.
   const ownerB = generateSigner(umi).publicKey;
   const tokenB = generateSigner(umi);
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(createToken(umi, { mint, token: tokenB, owner: ownerB }))
     .add(mintTokensTo(umi, { mint, token: tokenB.publicKey, amount: 10 }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // When owner A transfers 30 tokens to owner B.
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(
       transferTokens(umi, {
         source: tokenA.publicKey,
@@ -35,7 +35,7 @@ test('it can transfer tokens from one account to another', async (t) => {
         amount: 30,
       })
     )
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then token account A now has 20 tokens.
   t.is((await fetchToken(umi, tokenA.publicKey)).amount, 20n);

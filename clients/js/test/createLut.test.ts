@@ -3,7 +3,6 @@ import {
   PublicKey,
   publicKey,
   some,
-  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import test from 'ava';
 import {
@@ -20,9 +19,7 @@ test('it can create a new empty LUT with minimum configuration', async (t) => {
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
 
   // When we create a new LUT using that slot.
-  await transactionBuilder(umi)
-    .add(createLut(umi, { recentSlot }))
-    .sendAndConfirm();
+  await createLut(umi, { recentSlot }).sendAndConfirm(umi);
 
   // Then a new account was created with the correct data.
   const lut = findAddressLookupTablePda(umi, {
@@ -47,9 +44,7 @@ test('it can create a new empty LUT with a custom authority', async (t) => {
   const recentSlot = await umi.rpc.getSlot({ commitment: 'finalized' });
 
   // When we create a new LUT from that authority.
-  await transactionBuilder(umi)
-    .add(createLut(umi, { recentSlot, authority }))
-    .sendAndConfirm();
+  await createLut(umi, { recentSlot, authority }).sendAndConfirm(umi);
 
   // Then the created LUT has the correct authority.
   const lut = findAddressLookupTablePda(umi, {

@@ -3,7 +3,6 @@ import {
   none,
   publicKey,
   some,
-  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import test from 'ava';
 import {
@@ -24,9 +23,7 @@ test('it can create a new mint and token account with no tokens', async (t) => {
   const owner = generateSigner(umi).publicKey;
 
   // When we create a new mint and token account without specifying an amount.
-  await transactionBuilder(umi)
-    .add(createMintWithAssociatedToken(umi, { mint, owner }))
-    .sendAndConfirm();
+  await createMintWithAssociatedToken(umi, { mint, owner }).sendAndConfirm(umi);
 
   // Then it created a new mint account with a supply of 0.
   const mintAccount = await fetchMint(umi, mint.publicKey);
@@ -62,9 +59,11 @@ test('it can create a new mint and token account with a single token', async (t)
   const owner = generateSigner(umi).publicKey;
 
   // When we create a new mint and token account with a single token.
-  await transactionBuilder(umi)
-    .add(createMintWithAssociatedToken(umi, { mint, owner, amount: 1 }))
-    .sendAndConfirm();
+  await createMintWithAssociatedToken(umi, {
+    mint,
+    owner,
+    amount: 1,
+  }).sendAndConfirm(umi);
 
   // Then it created a new mint account with a supply of 1.
   const mintAccount = await fetchMint(umi, mint.publicKey);
@@ -100,9 +99,11 @@ test('it can create a new mint and token account with many tokens', async (t) =>
   const owner = generateSigner(umi).publicKey;
 
   // When we create a new mint and token account with 42 tokens.
-  await transactionBuilder(umi)
-    .add(createMintWithAssociatedToken(umi, { mint, owner, amount: 42 }))
-    .sendAndConfirm();
+  await createMintWithAssociatedToken(umi, {
+    mint,
+    owner,
+    amount: 42,
+  }).sendAndConfirm(umi);
 
   // Then it created a new mint account with a supply of 42.
   const mintAccount = await fetchMint(umi, mint.publicKey);
@@ -138,16 +139,12 @@ test('it can create a new mint and token account with decimals', async (t) => {
   const owner = generateSigner(umi).publicKey;
 
   // When we create a new mint and token account with 42 tokens and one decimal.
-  await transactionBuilder(umi)
-    .add(
-      createMintWithAssociatedToken(umi, {
-        mint,
-        owner,
-        amount: 42,
-        decimals: 1,
-      })
-    )
-    .sendAndConfirm();
+  await createMintWithAssociatedToken(umi, {
+    mint,
+    owner,
+    amount: 42,
+    decimals: 1,
+  }).sendAndConfirm(umi);
 
   // Then it created a new mint account with a supply of 42 and one decimal.
   const mintAccount = await fetchMint(umi, mint.publicKey);
@@ -182,9 +179,7 @@ test('it defaults to using the identity as the owner', async (t) => {
   const mint = generateSigner(umi);
 
   // When we create a new mint and token account without specifying an owner.
-  await transactionBuilder(umi)
-    .add(createMintWithAssociatedToken(umi, { mint }))
-    .sendAndConfirm();
+  await createMintWithAssociatedToken(umi, { mint }).sendAndConfirm(umi);
 
   // Then it created a new mint account with a supply of 0.
   const mintAccount = await fetchMint(umi, mint.publicKey);

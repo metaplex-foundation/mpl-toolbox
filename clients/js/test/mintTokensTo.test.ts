@@ -9,14 +9,14 @@ test('it can mint tokens to an existing token account', async (t) => {
   const mintAuthority = generateSigner(umi);
   const mint = generateSigner(umi);
   const token = generateSigner(umi);
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(createMint(umi, { mint, mintAuthority: mintAuthority.publicKey }))
     .add(createToken(umi, { token, mint: mint.publicKey }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
   t.is((await fetchToken(umi, token.publicKey)).amount, 0n);
 
   // When we mint tokens to the account.
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(
       mintTokensTo(umi, {
         mintAuthority,
@@ -25,7 +25,7 @@ test('it can mint tokens to an existing token account', async (t) => {
         amount: 42,
       })
     )
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // Then the account has the correct amount of tokens.
   t.is((await fetchToken(umi, token.publicKey)).amount, 42n);

@@ -16,15 +16,14 @@ test('it cannot close a LUT that is not deactivated', async (t) => {
     authority: umi.identity.publicKey,
     recentSlot,
   });
-  await transactionBuilder(umi)
-    .add(createLut(umi, { recentSlot }))
-    .sendAndConfirm();
+  await createLut(umi, { recentSlot }).sendAndConfirm(umi);
 
   // When we try to close it.
   const recipient = generateSigner(umi).publicKey;
-  const promise = transactionBuilder(umi)
-    .add(closeLut(umi, { address: lut, recipient }))
-    .sendAndConfirm();
+  const promise = closeLut(umi, {
+    address: lut,
+    recipient,
+  }).sendAndConfirm(umi);
 
   // Then we expect a program error.
   const error: any = await t.throwsAsync(promise);
@@ -40,16 +39,17 @@ test('it cannot close a LUT that has just been deactivated', async (t) => {
     authority: umi.identity.publicKey,
     recentSlot,
   });
-  await transactionBuilder(umi)
+  await transactionBuilder()
     .add(createLut(umi, { recentSlot }))
     .add(deactivateLut(umi, { address: lut }))
-    .sendAndConfirm();
+    .sendAndConfirm(umi);
 
   // When we try to close it.
   const recipient = generateSigner(umi).publicKey;
-  const promise = transactionBuilder(umi)
-    .add(closeLut(umi, { address: lut, recipient }))
-    .sendAndConfirm();
+  const promise = closeLut(umi, {
+    address: lut,
+    recipient,
+  }).sendAndConfirm(umi);
 
   // Then we expect a program error.
   const error: any = await t.throwsAsync(promise);

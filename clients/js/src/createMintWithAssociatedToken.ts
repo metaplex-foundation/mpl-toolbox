@@ -1,7 +1,8 @@
 import {
   Context,
   PublicKey,
-  WrappedInstruction,
+  TransactionBuilder,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { createMint, CreateMintArgs } from './createMint';
 import { createAssociatedToken, mintTokensTo } from './generated';
@@ -20,19 +21,18 @@ export function createMintWithAssociatedToken(
     'serializer' | 'programs' | 'identity' | 'payer' | 'eddsa'
   >,
   input: CreateMintWithAssociatedTokenArgs
-): WrappedInstruction[] {
+): TransactionBuilder {
   const mintAndOwner = {
     mint: input.mint.publicKey,
     owner: input.owner ?? context.identity.publicKey,
   };
   const amount = input.amount ?? 0;
-  const instructions: WrappedInstruction[] = [
-    ...createMint(context, input),
-    createAssociatedToken(context, mintAndOwner),
-  ];
+  let builder = transactionBuilder()
+    .add(createMint(context, input))
+    .add(createAssociatedToken(context, mintAndOwner));
 
   if (amount > 0) {
-    instructions.push(
+    builder = builder.add(
       mintTokensTo(context, {
         amount,
         mint: input.mint.publicKey,
@@ -41,5 +41,5 @@ export function createMintWithAssociatedToken(
     );
   }
 
-  return instructions;
+  return builder;
 }
