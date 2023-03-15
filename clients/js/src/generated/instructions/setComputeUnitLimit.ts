@@ -11,8 +11,9 @@ import {
   Context,
   Serializer,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
   mapSerializer,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Arguments.
@@ -58,7 +59,7 @@ export function getSetComputeUnitLimitInstructionDataSerializer(
 export function setComputeUnitLimit(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: SetComputeUnitLimitInstructionDataArgs
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -75,9 +76,7 @@ export function setComputeUnitLimit(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

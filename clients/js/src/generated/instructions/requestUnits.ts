@@ -11,8 +11,9 @@ import {
   Context,
   Serializer,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
   mapSerializer,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Arguments.
@@ -56,7 +57,7 @@ export function getRequestUnitsInstructionDataSerializer(
 export function requestUnits(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: RequestUnitsInstructionDataArgs
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -73,9 +74,7 @@ export function requestUnits(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

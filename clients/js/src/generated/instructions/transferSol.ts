@@ -13,10 +13,11 @@ import {
   Serializer,
   Signer,
   SolAmount,
-  WrappedInstruction,
+  TransactionBuilder,
   checkForIsWritableOverride as isWritable,
   mapAmountSerializer,
   mapSerializer,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Accounts.
@@ -57,7 +58,7 @@ export function getTransferSolInstructionDataSerializer(
 export function transferSol(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
   input: TransferSolInstructionAccounts & TransferSolInstructionDataArgs
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -93,9 +94,7 @@ export function transferSol(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

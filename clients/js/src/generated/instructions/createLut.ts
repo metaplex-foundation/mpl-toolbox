@@ -14,10 +14,11 @@ import {
   PublicKey,
   Serializer,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
   checkForIsWritableOverride as isWritable,
   mapSerializer,
   publicKey,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { findAddressLookupTablePda } from '../accounts';
 
@@ -70,7 +71,7 @@ export function createLut(
   >,
   input: CreateLutInstructionAccounts &
     Omit<CreateLutInstructionDataArgs, 'bump'>
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -136,9 +137,7 @@ export function createLut(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 56 + ACCOUNT_HEADER_SIZE;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }

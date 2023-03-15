@@ -11,8 +11,9 @@ import {
   Context,
   Serializer,
   Signer,
-  WrappedInstruction,
+  TransactionBuilder,
   mapSerializer,
+  transactionBuilder,
 } from '@metaplex-foundation/umi';
 
 // Arguments.
@@ -64,7 +65,7 @@ export function getRequestHeapFrameInstructionDataSerializer(
 export function requestHeapFrame(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: RequestHeapFrameInstructionDataArgs
-): WrappedInstruction {
+): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
@@ -81,9 +82,7 @@ export function requestHeapFrame(
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
 
-  return {
-    instruction: { keys, programId, data },
-    signers,
-    bytesCreatedOnChain,
-  };
+  return transactionBuilder([
+    { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },
+  ]);
 }
