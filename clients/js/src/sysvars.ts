@@ -18,7 +18,7 @@ export const getSysvar = (sysvar: Sysvar): PublicKey => {
     case 'epochSchedule':
       return publicKey('SysvarEpochSchedu1e111111111111111111111111');
     case 'instructions':
-      return publicKey('SysvarC1ock11111111111111111111111111111111');
+      return publicKey('Sysvar1nstructions1111111111111111111111111');
     case 'recentBlockhashes':
       return publicKey('SysvarRecentB1ockHashes11111111111111111111');
     case 'rent':
