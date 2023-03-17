@@ -6,13 +6,23 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Program, publicKey } from '@metaplex-foundation/umi';
+import {
+  ClusterFilter,
+  Context,
+  Program,
+  PublicKey,
+  publicKey,
+} from '@metaplex-foundation/umi';
 import { getSplTokenErrorFromCode, getSplTokenErrorFromName } from '../errors';
 
-export function getSplTokenProgram(): Program {
+export const SPL_TOKEN_PROGRAM_ID = publicKey(
+  'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+);
+
+export function createSplTokenProgram(): Program {
   return {
     name: 'splToken',
-    publicKey: publicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+    publicKey: SPL_TOKEN_PROGRAM_ID,
     getErrorFromCode(code: number, cause?: Error) {
       return getSplTokenErrorFromCode(code, this, cause);
     },
@@ -23,4 +33,22 @@ export function getSplTokenProgram(): Program {
       return true;
     },
   };
+}
+
+export function getSplTokenProgram<T extends Program = Program>(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): T {
+  return context.programs.get<T>('splToken', clusterFilter);
+}
+
+export function getSplTokenProgramId(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): PublicKey {
+  return context.programs.getPublicKey(
+    'splToken',
+    SPL_TOKEN_PROGRAM_ID,
+    clusterFilter
+  );
 }

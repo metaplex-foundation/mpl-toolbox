@@ -6,16 +6,26 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Program, publicKey } from '@metaplex-foundation/umi';
+import {
+  ClusterFilter,
+  Context,
+  Program,
+  PublicKey,
+  publicKey,
+} from '@metaplex-foundation/umi';
 import {
   getSplAssociatedTokenErrorFromCode,
   getSplAssociatedTokenErrorFromName,
 } from '../errors';
 
-export function getSplAssociatedTokenProgram(): Program {
+export const SPL_ASSOCIATED_TOKEN_PROGRAM_ID = publicKey(
+  'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+);
+
+export function createSplAssociatedTokenProgram(): Program {
   return {
     name: 'splAssociatedToken',
-    publicKey: publicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'),
+    publicKey: SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
     getErrorFromCode(code: number, cause?: Error) {
       return getSplAssociatedTokenErrorFromCode(code, this, cause);
     },
@@ -26,4 +36,22 @@ export function getSplAssociatedTokenProgram(): Program {
       return true;
     },
   };
+}
+
+export function getSplAssociatedTokenProgram<T extends Program = Program>(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): T {
+  return context.programs.get<T>('splAssociatedToken', clusterFilter);
+}
+
+export function getSplAssociatedTokenProgramId(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): PublicKey {
+  return context.programs.getPublicKey(
+    'splAssociatedToken',
+    SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
+    clusterFilter
+  );
 }

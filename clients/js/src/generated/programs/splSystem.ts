@@ -6,16 +6,26 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Program, publicKey } from '@metaplex-foundation/umi';
+import {
+  ClusterFilter,
+  Context,
+  Program,
+  PublicKey,
+  publicKey,
+} from '@metaplex-foundation/umi';
 import {
   getSplSystemErrorFromCode,
   getSplSystemErrorFromName,
 } from '../errors';
 
-export function getSplSystemProgram(): Program {
+export const SPL_SYSTEM_PROGRAM_ID = publicKey(
+  '11111111111111111111111111111111'
+);
+
+export function createSplSystemProgram(): Program {
   return {
     name: 'splSystem',
-    publicKey: publicKey('11111111111111111111111111111111'),
+    publicKey: SPL_SYSTEM_PROGRAM_ID,
     getErrorFromCode(code: number, cause?: Error) {
       return getSplSystemErrorFromCode(code, this, cause);
     },
@@ -26,4 +36,22 @@ export function getSplSystemProgram(): Program {
       return true;
     },
   };
+}
+
+export function getSplSystemProgram<T extends Program = Program>(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): T {
+  return context.programs.get<T>('splSystem', clusterFilter);
+}
+
+export function getSplSystemProgramId(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): PublicKey {
+  return context.programs.getPublicKey(
+    'splSystem',
+    SPL_SYSTEM_PROGRAM_ID,
+    clusterFilter
+  );
 }

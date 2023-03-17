@@ -6,16 +6,26 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Program, publicKey } from '@metaplex-foundation/umi';
+import {
+  ClusterFilter,
+  Context,
+  Program,
+  PublicKey,
+  publicKey,
+} from '@metaplex-foundation/umi';
 import {
   getMplSystemExtrasErrorFromCode,
   getMplSystemExtrasErrorFromName,
 } from '../errors';
 
-export function getMplSystemExtrasProgram(): Program {
+export const MPL_SYSTEM_EXTRAS_PROGRAM_ID = publicKey(
+  'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
+);
+
+export function createMplSystemExtrasProgram(): Program {
   return {
     name: 'mplSystemExtras',
-    publicKey: publicKey('SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'),
+    publicKey: MPL_SYSTEM_EXTRAS_PROGRAM_ID,
     getErrorFromCode(code: number, cause?: Error) {
       return getMplSystemExtrasErrorFromCode(code, this, cause);
     },
@@ -26,4 +36,22 @@ export function getMplSystemExtrasProgram(): Program {
       return true;
     },
   };
+}
+
+export function getMplSystemExtrasProgram<T extends Program = Program>(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): T {
+  return context.programs.get<T>('mplSystemExtras', clusterFilter);
+}
+
+export function getMplSystemExtrasProgramId(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): PublicKey {
+  return context.programs.getPublicKey(
+    'mplSystemExtras',
+    MPL_SYSTEM_EXTRAS_PROGRAM_ID,
+    clusterFilter
+  );
 }

@@ -6,16 +6,26 @@
  * @see https://github.com/metaplex-foundation/kinobi
  */
 
-import { Program, publicKey } from '@metaplex-foundation/umi';
+import {
+  ClusterFilter,
+  Context,
+  Program,
+  PublicKey,
+  publicKey,
+} from '@metaplex-foundation/umi';
 import {
   getSplAddressLookupTableErrorFromCode,
   getSplAddressLookupTableErrorFromName,
 } from '../errors';
 
-export function getSplAddressLookupTableProgram(): Program {
+export const SPL_ADDRESS_LOOKUP_TABLE_PROGRAM_ID = publicKey(
+  'AddressLookupTab1e1111111111111111111111111'
+);
+
+export function createSplAddressLookupTableProgram(): Program {
   return {
     name: 'splAddressLookupTable',
-    publicKey: publicKey('AddressLookupTab1e1111111111111111111111111'),
+    publicKey: SPL_ADDRESS_LOOKUP_TABLE_PROGRAM_ID,
     getErrorFromCode(code: number, cause?: Error) {
       return getSplAddressLookupTableErrorFromCode(code, this, cause);
     },
@@ -26,4 +36,22 @@ export function getSplAddressLookupTableProgram(): Program {
       return true;
     },
   };
+}
+
+export function getSplAddressLookupTableProgram<T extends Program = Program>(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): T {
+  return context.programs.get<T>('splAddressLookupTable', clusterFilter);
+}
+
+export function getSplAddressLookupTableProgramId(
+  context: Pick<Context, 'programs'>,
+  clusterFilter?: ClusterFilter
+): PublicKey {
+  return context.programs.getPublicKey(
+    'splAddressLookupTable',
+    SPL_ADDRESS_LOOKUP_TABLE_PROGRAM_ID,
+    clusterFilter
+  );
 }
