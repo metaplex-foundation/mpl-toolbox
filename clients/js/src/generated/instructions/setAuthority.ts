@@ -15,7 +15,9 @@ import {
   Signer,
   TransactionBuilder,
   checkForIsWritableOverride as isWritable,
+  isSigner,
   mapSerializer,
+  publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
@@ -27,8 +29,7 @@ import {
 // Accounts.
 export type SetAuthorityInstructionAccounts = {
   owned: PublicKey;
-  owner: Signer;
-  signer: Signer;
+  owner: PublicKey | Signer;
 };
 
 // Arguments.
@@ -81,7 +82,6 @@ export function setAuthority(
   // Resolved accounts.
   const ownedAccount = input.owned;
   const ownerAccount = input.owner;
-  const signerAccount = input.signer;
 
   // Owned.
   keys.push({
@@ -91,19 +91,13 @@ export function setAuthority(
   });
 
   // Owner.
-  signers.push(ownerAccount);
+  if (isSigner(ownerAccount)) {
+    signers.push(ownerAccount);
+  }
   keys.push({
-    pubkey: ownerAccount.publicKey,
-    isSigner: true,
+    pubkey: publicKey(ownerAccount),
+    isSigner: isSigner(ownerAccount),
     isWritable: isWritable(ownerAccount, false),
-  });
-
-  // Signer.
-  signers.push(signerAccount);
-  keys.push({
-    pubkey: signerAccount.publicKey,
-    isSigner: true,
-    isWritable: isWritable(signerAccount, false),
   });
 
   // Data.

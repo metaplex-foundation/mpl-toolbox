@@ -183,12 +183,8 @@
         {
           "name": "owner",
           "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "signer",
-          "isMut": false,
-          "isSigner": true
+          "isSigner": true,
+          "isOptionalSigner": true
         }
       ],
       "args": [
