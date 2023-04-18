@@ -49,7 +49,7 @@ type RawTokenAccountByOwner = {
 const getTokenAccountsByOwnerCall = async (
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
   owner: PublicKey,
-  amountFilter: FetchTokenAmountFilter,
+  tokenAmountFilter: FetchTokenAmountFilter,
   options: RpcBaseOptions & { mint?: PublicKey } = {}
 ): Promise<RawTokenAccountByOwner[]> => {
   const splToken = context.programs.get('splToken').publicKey;
@@ -66,7 +66,7 @@ const getTokenAccountsByOwnerCall = async (
     const data = base64.serialize(account.data[0]);
     const u64 = context.serializer.u64();
     const amount = u64.deserialize(data.slice(64, 72))[0];
-    return amountFilter(amount);
+    return tokenAmountFilter(amount);
   });
 };
 
@@ -75,22 +75,22 @@ export const fetchAllTokenByOwner = async (
   owner: PublicKey,
   options: RpcBaseOptions & {
     mint?: PublicKey;
-    strategy?: FetchTokenStrategy;
-    amountFilter?: FetchTokenAmountFilter;
+    tokenStrategy?: FetchTokenStrategy;
+    tokenAmountFilter?: FetchTokenAmountFilter;
   } = {}
 ): Promise<Array<Token>> => {
   const {
     mint,
-    strategy = 'getProgramAccounts',
-    amountFilter = (amount) => amount > 0,
+    tokenStrategy = 'getProgramAccounts',
+    tokenAmountFilter = (amount) => amount > 0,
     ...rpcOptions
   } = options;
 
-  if (strategy === 'getTokenAccountsByOwner') {
+  if (tokenStrategy === 'getTokenAccountsByOwner') {
     const result = await getTokenAccountsByOwnerCall(
       context,
       owner,
-      amountFilter,
+      tokenAmountFilter,
       { mint, ...rpcOptions }
     );
     return result.map(({ pubkey, account }) =>
@@ -113,7 +113,7 @@ export const fetchAllTokenByOwner = async (
     .filter((account) => {
       const u64 = context.serializer.u64();
       const amount = u64.deserialize(account.data.slice(64, 72))[0];
-      return amountFilter(amount);
+      return tokenAmountFilter(amount);
     })
     .map((account) => deserializeToken(context, account));
 };
@@ -123,8 +123,8 @@ export const fetchAllTokenByOwnerAndMint = (
   owner: PublicKey,
   mint: PublicKey,
   options: RpcBaseOptions & {
-    strategy?: FetchTokenStrategy;
-    amountFilter?: FetchTokenAmountFilter;
+    tokenStrategy?: FetchTokenStrategy;
+    tokenAmountFilter?: FetchTokenAmountFilter;
   } = {}
 ): Promise<Array<Token>> =>
   fetchAllTokenByOwner(context, owner, { ...options, mint });
@@ -133,21 +133,21 @@ export const fetchAllMintPublicKeyByOwner = async (
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
   owner: PublicKey,
   options: RpcBaseOptions & {
-    strategy?: FetchTokenStrategy;
-    amountFilter?: FetchTokenAmountFilter;
+    tokenStrategy?: FetchTokenStrategy;
+    tokenAmountFilter?: FetchTokenAmountFilter;
   } = {}
 ): Promise<Array<PublicKey>> => {
   const {
-    strategy = 'getProgramAccounts',
-    amountFilter = (amount) => amount > 0,
+    tokenStrategy = 'getProgramAccounts',
+    tokenAmountFilter = (amount) => amount > 0,
     ...rpcOptions
   } = options;
 
-  if (strategy === 'getTokenAccountsByOwner') {
+  if (tokenStrategy === 'getTokenAccountsByOwner') {
     const result = await getTokenAccountsByOwnerCall(
       context,
       owner,
-      amountFilter,
+      tokenAmountFilter,
       rpcOptions
     );
     return result.map(({ account }) =>
@@ -164,7 +164,7 @@ export const fetchAllMintPublicKeyByOwner = async (
     .filter((account) => {
       const u64 = context.serializer.u64();
       const amount = u64.deserialize(account.data.slice(64, 72))[0];
-      return amountFilter(amount);
+      return tokenAmountFilter(amount);
     })
     .map((account) => publicKey(account.data.slice(0, 32)));
 };
