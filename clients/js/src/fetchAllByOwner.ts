@@ -18,15 +18,15 @@ import {
 
 /**
  * The strategy to use when fetching token accounts.
- * - `getProgramAccounts` is the default and uses the `getProgramAccounts` RPC call.
- * It is faster but may be disabled on some RPC nodes.
- * - `getTokenAccountsByOwner` uses the `getTokenAccountsByOwner` RPC call.
+ * - `getTokenAccountsByOwner` is the default and uses the `getTokenAccountsByOwner` RPC call.
+ * - `getProgramAccounts` uses a `getProgramAccounts` RPC call to fetch the tokens.
+ * It is slightly faster but may be disabled on some RPC nodes.
  *
- * @defaultValue `'getProgramAccounts'`
+ * @defaultValue `'getTokenAccountsByOwner'`
  */
 export type FetchTokenStrategy =
-  | 'getProgramAccounts'
-  | 'getTokenAccountsByOwner';
+  | 'getTokenAccountsByOwner'
+  | 'getProgramAccounts';
 
 /**
  * A callback to filter token accounts by their amount.
