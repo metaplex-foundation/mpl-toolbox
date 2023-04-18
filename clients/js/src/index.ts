@@ -7,7 +7,7 @@ export * from './createLutForTransactionBuilder';
 export * from './createMint';
 export * from './createMintWithAssociatedToken';
 export * from './createToken';
-export * from './fetchTokensByOwner';
+export * from './fetchAllByOwner';
 export * from './findLargestTokensByMint';
 export * from './plugin';
 export * from './sysvars';

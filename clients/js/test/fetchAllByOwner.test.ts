@@ -1,6 +1,6 @@
 import { base58PublicKey, generateSigner } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { fetchTokensByOwner, fetchTokensByOwnerAndMint } from '../src';
+import { fetchAllTokenByOwner, fetchAllTokenByOwnerAndMint } from '../src';
 import {
   createUmi,
   createMint,
@@ -22,7 +22,7 @@ test('it fetches all token account owned by a given owner', async (t) => {
   await createMintAndToken(mx, { owner: ownerB });
 
   // When we fetch all tokens owned by owner A.
-  const tokens = await fetchTokensByOwner(mx, ownerA);
+  const tokens = await fetchAllTokenByOwner(mx, ownerA);
 
   // Then we only get back the two tokens owned by owner A.
   t.is(tokens.length, 2);
@@ -53,7 +53,7 @@ test('it fetches all token account owned by a given mint/owner pair', async (t) 
   await createToken(mx, { mint: mintV, owner: ownerB });
 
   // When we fetch all mint U tokens owned by owner A.
-  const tokens = await fetchTokensByOwnerAndMint(mx, ownerA, mintU);
+  const tokens = await fetchAllTokenByOwnerAndMint(mx, ownerA, mintU);
 
   // Then we only get back the two tokens owned by owner A from mint U.
   t.is(tokens.length, 2);
