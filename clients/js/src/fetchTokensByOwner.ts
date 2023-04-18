@@ -8,49 +8,125 @@ import {
   RpcCallOptions,
   RpcResultWithContext,
 } from '@metaplex-foundation/umi';
-import { deserializeToken, Token } from './generated';
+import { deserializeToken, getTokenGpaBuilder, Token } from './generated';
 
-export const fetchTokensByOwner = async (
+/**
+ * The strategy to use when fetching token accounts.
+ * - `getProgramAccounts` is the default and uses the `getProgramAccounts` RPC call.
+ * It is faster but may be disabled on some RPC nodes.
+ * - `getTokenAccountsByOwner` uses the `getTokenAccountsByOwner` RPC call.
+ *
+ * @defaultValue `'getProgramAccounts'`
+ */
+export type FetchTokenStrategy =
+  | 'getProgramAccounts'
+  | 'getTokenAccountsByOwner';
+
+/**
+ * A callback to filter token accounts by their amount.
+ *
+ * @defaultValue `(amount) => amount > 0`
+ */
+export type FetchTokenAmountFilter = (amount: bigint) => boolean;
+
+type RawTokenAccountByOwner = {
+  pubkey: string;
+  account: {
+    data: [string, string];
+    executable: boolean;
+    lamports: number;
+    owner: string;
+    rentEpoch: number;
+  };
+};
+
+const getTokenAccountsByOwnerCall = async (
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
   owner: PublicKey,
-  options: RpcCallOptions & { mint?: PublicKey } = {}
-): Promise<Array<Token>> => {
+  amountFilter: FetchTokenAmountFilter,
+  options: RpcCallOptions & {
+    mint?: PublicKey;
+  } = {}
+): Promise<RawTokenAccountByOwner[]> => {
   const splToken = context.programs.get('splToken').publicKey;
   const filter = options.mint
     ? { mint: base58PublicKey(options.mint) }
     : { programId: base58PublicKey(splToken) };
   const result = await context.rpc.call<
-    RpcResultWithContext<
-      Array<{
-        pubkey: string;
-        account: {
-          data: [string, string];
-          executable: boolean;
-          lamports: number;
-          owner: string;
-          rentEpoch: number;
-        };
-      }>
-    >
+    RpcResultWithContext<RawTokenAccountByOwner[]>
   >('getTokenAccountsByOwner', [base58PublicKey(owner), filter], {
     ...options,
     extra: { ...options.extra, encoding: 'base64' },
   });
-  return result.value.map(({ pubkey, account }) =>
-    deserializeToken(context, {
-      ...account,
-      data: base64.serialize(account.data[0]),
-      publicKey: publicKey(pubkey),
-      owner: publicKey(account.owner),
-      lamports: lamports(account.lamports),
-    })
-  );
+  return result.value.filter(({ account }) => {
+    const data = base64.serialize(account.data[0]);
+    const u64 = context.serializer.u64();
+    const amount = u64.deserialize(data.slice(64, 72))[0];
+    return amountFilter(amount);
+  });
 };
 
-export const fetchTokensByOwnerAndMint = (
+export const fetchAllTokenByOwner = async (
+  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  owner: PublicKey,
+  options: RpcCallOptions & {
+    mint?: PublicKey;
+    strategy?: FetchTokenStrategy;
+    amountFilter?: FetchTokenAmountFilter;
+  } = {}
+): Promise<Array<Token>> => {
+  const {
+    mint,
+    strategy = 'getProgramAccounts',
+    amountFilter = (amount) => amount > 0,
+    ...rpcOptions
+  } = options;
+
+  if (strategy === 'getTokenAccountsByOwner') {
+    const result = await getTokenAccountsByOwnerCall(
+      context,
+      owner,
+      amountFilter,
+      { mint, ...rpcOptions }
+    );
+    return result.map(({ pubkey, account }) =>
+      deserializeToken(context, {
+        ...account,
+        data: base64.serialize(account.data[0]),
+        publicKey: publicKey(pubkey),
+        owner: publicKey(account.owner),
+        lamports: lamports(account.lamports),
+      })
+    );
+  }
+
+  let builder = getTokenGpaBuilder(context).whereField('owner', owner);
+  if (mint) {
+    builder = builder.whereField('mint', mint);
+  }
+
+  return (await builder.get())
+    .filter((account) => {
+      const u64 = context.serializer.u64();
+      const amount = u64.deserialize(account.data.slice(64, 72))[0];
+      return amountFilter(amount);
+    })
+    .map((account) => deserializeToken(context, account));
+};
+
+export const fetchAllTokenByOwnerAndMint = (
   context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
   owner: PublicKey,
   mint: PublicKey,
-  options: RpcCallOptions = {}
+  options: RpcCallOptions & {
+    strategy?: FetchTokenStrategy;
+    amountFilter?: FetchTokenAmountFilter;
+  } = {}
 ): Promise<Array<Token>> =>
-  fetchTokensByOwner(context, owner, { ...options, mint });
+  fetchAllTokenByOwner(context, owner, { ...options, mint });
+
+/** @deprecated Use fetchAllTokenByOwner instead. Worry not, it has the same signature. */
+export const fetchTokensByOwner = fetchAllTokenByOwner;
+
+/** @deprecated Use fetchAllTokenByOwnerAndMint instead. Worry not, it has the same signature. */
+export const fetchTokensByOwnerAndMint = fetchAllTokenByOwnerAndMint;
