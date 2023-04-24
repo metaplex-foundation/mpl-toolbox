@@ -116,7 +116,9 @@ kinobi.update(
       },
     },
     extendLut: {
-      internal: true,
+      bytesCreatedOnChain: k.resolverDefault("resolveExtendLutBytes", [
+        k.dependsOnArg("addresses"),
+      ]),
     },
   })
 );

@@ -7,8 +7,11 @@ import {
   TransactionBuilder,
   uniquePublicKeys,
 } from '@metaplex-foundation/umi';
-import { createEmptyLut, findAddressLookupTablePda } from './generated';
-import { extendLut } from './instructions';
+import {
+  createEmptyLut,
+  extendLut,
+  findAddressLookupTablePda,
+} from './generated';
 
 export const createLutForTransactionBuilder = (
   context: Pick<

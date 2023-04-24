@@ -16,6 +16,7 @@ import {
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { resolveExtendLutBytes } from '../../hooked';
 import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
@@ -132,7 +133,12 @@ export function extendLut(
     getExtendLutInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
-  const bytesCreatedOnChain = 0;
+  const bytesCreatedOnChain = resolveExtendLutBytes(
+    context,
+    resolvedAccounts,
+    resolvedArgs,
+    programId
+  );
 
   return transactionBuilder([
     { instruction: { keys, programId, data }, signers, bytesCreatedOnChain },

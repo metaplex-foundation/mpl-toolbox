@@ -5,8 +5,11 @@ import {
   transactionBuilder,
   TransactionBuilder,
 } from '@metaplex-foundation/umi';
-import { createEmptyLut, findAddressLookupTablePda } from './generated';
-import { extendLut } from './instructions';
+import {
+  createEmptyLut,
+  extendLut,
+  findAddressLookupTablePda,
+} from './generated';
 
 // Inputs.
 export type CreateLutArgs = Parameters<typeof createEmptyLut>[1] & {

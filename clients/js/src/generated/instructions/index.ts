@@ -21,6 +21,7 @@ export * from './createEmptyLut';
 export * from './createIdempotentAssociatedToken';
 export * from './createTokenIfMissing';
 export * from './deactivateLut';
+export * from './extendLut';
 export * from './freezeLut';
 export * from './freezeToken';
 export * from './getTokenDataSize';
