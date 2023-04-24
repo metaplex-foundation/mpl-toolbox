@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type ExtendLutInstructionAccounts = {
@@ -26,7 +26,7 @@ export type ExtendLutInstructionAccounts = {
   systemProgram?: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type ExtendLutInstructionData = {
   discriminator: number;
   addresses: Array<PublicKey>;
@@ -54,64 +54,82 @@ export function getExtendLutInstructionDataSerializer(
   ) as Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData>;
 }
 
+// Args.
+export type ExtendLutInstructionArgs = ExtendLutInstructionDataArgs;
+
 // Instruction.
 export function extendLut(
   context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
-  input: ExtendLutInstructionAccounts & ExtendLutInstructionDataArgs
+  input: ExtendLutInstructionAccounts & ExtendLutInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splAddressLookupTable',
-    'AddressLookupTab1e1111111111111111111111111'
-  );
-
-  // Resolved accounts.
-  const addressAccount = input.address;
-  const authorityAccount = input.authority ?? context.identity;
-  const payerAccount = input.payer ?? context.payer;
-  const systemProgramAccount = input.systemProgram ?? {
+  const programId = {
     ...context.programs.getPublicKey(
-      'splSystem',
-      '11111111111111111111111111111111'
+      'splAddressLookupTable',
+      'AddressLookupTab1e1111111111111111111111111'
     ),
     isWritable: false,
   };
 
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'authority',
+    input.authority ?? context.identity
+  );
+  addObjectProperty(resolvingAccounts, 'payer', input.payer ?? context.payer);
+  addObjectProperty(
+    resolvingAccounts,
+    'systemProgram',
+    input.systemProgram ?? {
+      ...context.programs.getPublicKey(
+        'splSystem',
+        '11111111111111111111111111111111'
+      ),
+      isWritable: false,
+    }
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
+
   // Address.
   keys.push({
-    pubkey: addressAccount,
+    pubkey: resolvedAccounts.address,
     isSigner: false,
-    isWritable: isWritable(addressAccount, true),
+    isWritable: isWritable(resolvedAccounts.address, true),
   });
 
   // Authority.
-  signers.push(authorityAccount);
+  signers.push(resolvedAccounts.authority);
   keys.push({
-    pubkey: authorityAccount.publicKey,
+    pubkey: resolvedAccounts.authority.publicKey,
     isSigner: true,
-    isWritable: isWritable(authorityAccount, false),
+    isWritable: isWritable(resolvedAccounts.authority, false),
   });
 
   // Payer.
-  signers.push(payerAccount);
+  signers.push(resolvedAccounts.payer);
   keys.push({
-    pubkey: payerAccount.publicKey,
+    pubkey: resolvedAccounts.payer.publicKey,
     isSigner: true,
-    isWritable: isWritable(payerAccount, true),
+    isWritable: isWritable(resolvedAccounts.payer, true),
   });
 
   // System Program.
   keys.push({
-    pubkey: systemProgramAccount,
+    pubkey: resolvedAccounts.systemProgram,
     isSigner: false,
-    isWritable: isWritable(systemProgramAccount, false),
+    isWritable: isWritable(resolvedAccounts.systemProgram, false),
   });
 
   // Data.
-  const data = getExtendLutInstructionDataSerializer(context).serialize(input);
+  const data =
+    getExtendLutInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

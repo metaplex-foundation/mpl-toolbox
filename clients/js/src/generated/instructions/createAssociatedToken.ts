@@ -13,12 +13,12 @@ import {
   PublicKey,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { findAssociatedTokenPda } from '../../hooked';
 import { getTokenSize } from '../accounts';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type CreateAssociatedTokenInstructionAccounts = {
@@ -42,77 +42,96 @@ export function createAssociatedToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splAssociatedToken',
-    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splAssociatedToken',
+      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const payerAccount = input.payer ?? context.payer;
-  const ownerAccount = input.owner ?? context.identity.publicKey;
-  const mintAccount = input.mint;
-  const ataAccount =
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  addObjectProperty(resolvingAccounts, 'payer', input.payer ?? context.payer);
+  addObjectProperty(
+    resolvingAccounts,
+    'owner',
+    input.owner ?? context.identity.publicKey
+  );
+  addObjectProperty(
+    resolvingAccounts,
+    'ata',
     input.ata ??
-    findAssociatedTokenPda(context, {
-      owner: publicKey(ownerAccount),
-      mint: publicKey(mintAccount),
-    });
-  const systemProgramAccount = input.systemProgram ?? {
-    ...context.programs.getPublicKey(
-      'splSystem',
-      '11111111111111111111111111111111'
-    ),
-    isWritable: false,
-  };
-  const tokenProgramAccount = input.tokenProgram ?? {
-    ...context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
-    isWritable: false,
-  };
+      findAssociatedTokenPda(context, {
+        owner: publicKey(resolvingAccounts.owner),
+        mint: publicKey(input.mint),
+      })
+  );
+  addObjectProperty(
+    resolvingAccounts,
+    'systemProgram',
+    input.systemProgram ?? {
+      ...context.programs.getPublicKey(
+        'splSystem',
+        '11111111111111111111111111111111'
+      ),
+      isWritable: false,
+    }
+  );
+  addObjectProperty(
+    resolvingAccounts,
+    'tokenProgram',
+    input.tokenProgram ?? {
+      ...context.programs.getPublicKey(
+        'splToken',
+        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+      ),
+      isWritable: false,
+    }
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
   // Payer.
-  signers.push(payerAccount);
+  signers.push(resolvedAccounts.payer);
   keys.push({
-    pubkey: payerAccount.publicKey,
+    pubkey: resolvedAccounts.payer.publicKey,
     isSigner: true,
-    isWritable: isWritable(payerAccount, true),
+    isWritable: isWritable(resolvedAccounts.payer, true),
   });
 
   // Ata.
   keys.push({
-    pubkey: ataAccount,
+    pubkey: resolvedAccounts.ata,
     isSigner: false,
-    isWritable: isWritable(ataAccount, true),
+    isWritable: isWritable(resolvedAccounts.ata, true),
   });
 
   // Owner.
   keys.push({
-    pubkey: ownerAccount,
+    pubkey: resolvedAccounts.owner,
     isSigner: false,
-    isWritable: isWritable(ownerAccount, false),
+    isWritable: isWritable(resolvedAccounts.owner, false),
   });
 
   // Mint.
   keys.push({
-    pubkey: mintAccount,
+    pubkey: resolvedAccounts.mint,
     isSigner: false,
-    isWritable: isWritable(mintAccount, false),
+    isWritable: isWritable(resolvedAccounts.mint, false),
   });
 
   // System Program.
   keys.push({
-    pubkey: systemProgramAccount,
+    pubkey: resolvedAccounts.systemProgram,
     isSigner: false,
-    isWritable: isWritable(systemProgramAccount, false),
+    isWritable: isWritable(resolvedAccounts.systemProgram, false),
   });
 
   // Token Program.
   keys.push({
-    pubkey: tokenProgramAccount,
+    pubkey: resolvedAccounts.tokenProgram,
     isSigner: false,
-    isWritable: isWritable(tokenProgramAccount, false),
+    isWritable: isWritable(resolvedAccounts.tokenProgram, false),
   });
 
   // Data.

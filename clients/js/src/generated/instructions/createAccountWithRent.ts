@@ -14,10 +14,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type CreateAccountWithRentInstructionAccounts = {
@@ -29,7 +29,7 @@ export type CreateAccountWithRentInstructionAccounts = {
   systemProgram?: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type CreateAccountWithRentInstructionData = {
   discriminator: number;
   space: bigint;
@@ -69,58 +69,74 @@ export function getCreateAccountWithRentInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type CreateAccountWithRentInstructionArgs =
+  CreateAccountWithRentInstructionDataArgs;
+
 // Instruction.
 export function createAccountWithRent(
   context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
   input: CreateAccountWithRentInstructionAccounts &
-    CreateAccountWithRentInstructionDataArgs
+    CreateAccountWithRentInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'mplSystemExtras',
-    'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
-  );
-
-  // Resolved accounts.
-  const payerAccount = input.payer ?? context.payer;
-  const newAccountAccount = input.newAccount;
-  const systemProgramAccount = input.systemProgram ?? {
+  const programId = {
     ...context.programs.getPublicKey(
-      'splSystem',
-      '11111111111111111111111111111111'
+      'mplSystemExtras',
+      'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
     ),
     isWritable: false,
   };
 
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(resolvingAccounts, 'payer', input.payer ?? context.payer);
+  addObjectProperty(
+    resolvingAccounts,
+    'systemProgram',
+    input.systemProgram ?? {
+      ...context.programs.getPublicKey(
+        'splSystem',
+        '11111111111111111111111111111111'
+      ),
+      isWritable: false,
+    }
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
+
   // Payer.
-  signers.push(payerAccount);
+  signers.push(resolvedAccounts.payer);
   keys.push({
-    pubkey: payerAccount.publicKey,
+    pubkey: resolvedAccounts.payer.publicKey,
     isSigner: true,
-    isWritable: isWritable(payerAccount, true),
+    isWritable: isWritable(resolvedAccounts.payer, true),
   });
 
   // New Account.
-  signers.push(newAccountAccount);
+  signers.push(resolvedAccounts.newAccount);
   keys.push({
-    pubkey: newAccountAccount.publicKey,
+    pubkey: resolvedAccounts.newAccount.publicKey,
     isSigner: true,
-    isWritable: isWritable(newAccountAccount, true),
+    isWritable: isWritable(resolvedAccounts.newAccount, true),
   });
 
   // System Program.
   keys.push({
-    pubkey: systemProgramAccount,
+    pubkey: resolvedAccounts.systemProgram,
     isSigner: false,
-    isWritable: isWritable(systemProgramAccount, false),
+    isWritable: isWritable(resolvedAccounts.systemProgram, false),
   });
 
   // Data.
   const data =
-    getCreateAccountWithRentInstructionDataSerializer(context).serialize(input);
+    getCreateAccountWithRentInstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;

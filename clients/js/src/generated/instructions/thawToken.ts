@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 
 // Accounts.
 export type ThawTokenInstructionAccounts = {
@@ -25,7 +25,7 @@ export type ThawTokenInstructionAccounts = {
   owner: Signer;
 };
 
-// Arguments.
+// Data.
 export type ThawTokenInstructionData = { discriminator: number };
 
 export type ThawTokenInstructionDataArgs = {};
@@ -55,36 +55,38 @@ export function thawToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const accountAccount = input.account;
-  const mintAccount = input.mint;
-  const ownerAccount = input.owner;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
   // Account.
   keys.push({
-    pubkey: accountAccount,
+    pubkey: resolvedAccounts.account,
     isSigner: false,
-    isWritable: isWritable(accountAccount, true),
+    isWritable: isWritable(resolvedAccounts.account, true),
   });
 
   // Mint.
   keys.push({
-    pubkey: mintAccount,
+    pubkey: resolvedAccounts.mint,
     isSigner: false,
-    isWritable: isWritable(mintAccount, false),
+    isWritable: isWritable(resolvedAccounts.mint, false),
   });
 
   // Owner.
-  signers.push(ownerAccount);
+  signers.push(resolvedAccounts.owner);
   keys.push({
-    pubkey: ownerAccount.publicKey,
+    pubkey: resolvedAccounts.owner.publicKey,
     isSigner: true,
-    isWritable: isWritable(ownerAccount, false),
+    isWritable: isWritable(resolvedAccounts.owner, false),
   });
 
   // Data.

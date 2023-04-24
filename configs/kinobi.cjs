@@ -1,24 +1,12 @@
 const path = require("path");
-const {
-  Kinobi,
-  RenderJavaScriptVisitor,
-  SetNumberWrappersVisitor,
-  UpdateAccountsVisitor,
-  UpdateInstructionsVisitor,
-  UpdateProgramsVisitor,
-  SetAccountDiscriminatorFromFieldVisitor,
-  vScalar,
-  TypePublicKeyNode,
-  TypeNumberNode,
-  SetStructDefaultValuesVisitor,
-} = require("@metaplex-foundation/kinobi");
+const k = require("@metaplex-foundation/kinobi");
 
 // Paths.
 const clientDir = path.join(__dirname, "..", "clients");
 const idlDir = path.join(__dirname, "..", "idls");
 
 // Instanciate Kinobi.
-const kinobi = new Kinobi([
+const kinobi = k.createFromIdls([
   path.join(idlDir, "spl_system.json"),
   path.join(idlDir, "spl_memo.json"),
   path.join(idlDir, "spl_token.json"),
@@ -31,7 +19,7 @@ const kinobi = new Kinobi([
 
 // Update programs.
 kinobi.update(
-  new UpdateProgramsVisitor({
+  new k.UpdateProgramsVisitor({
     splSystem: { prefix: "Sys" },
     splMemo: { prefix: "Memo" },
     splToken: { prefix: "Tok" },
@@ -45,24 +33,18 @@ kinobi.update(
 
 // Update accounts.
 kinobi.update(
-  new UpdateAccountsVisitor({
-    "splToken.mint": { discriminator: { kind: "size" } },
-    "splToken.token": { discriminator: { kind: "size" } },
-    "splToken.multisig": { discriminator: { kind: "size" } },
+  new k.UpdateAccountsVisitor({
+    "splToken.mint": { discriminator: k.sizeAccountDiscriminator() },
+    "splToken.token": { discriminator: k.sizeAccountDiscriminator() },
+    "splToken.multisig": { discriminator: k.sizeAccountDiscriminator() },
     "splAddressLookupTable.addressLookupTable": {
       seeds: [
-        {
-          kind: "variable",
-          name: "authority",
-          description: "The address of the LUT's authority",
-          type: new TypePublicKeyNode(),
-        },
-        {
-          kind: "variable",
-          name: "recentSlot",
-          description: "The recent slot associated with the LUT",
-          type: new TypeNumberNode("u64"),
-        },
+        k.publicKeySeed("authority", "The address of the LUT's authority"),
+        k.variableSeed(
+          "recentSlot",
+          k.numberTypeNode("u64"),
+          "The recent slot associated with the LUT"
+        ),
       ],
     },
   })
@@ -70,67 +52,66 @@ kinobi.update(
 
 // Update accounts.
 kinobi.update(
-  new SetAccountDiscriminatorFromFieldVisitor({
+  new k.SetAccountDiscriminatorFromFieldVisitor({
     "splAddressLookupTable.addressLookupTable": {
       field: "discriminator",
-      value: vScalar(1),
+      value: k.vScalar(1),
     },
   })
 );
 
 // Update instructions.
-const ataPdaDefaults = {
-  kind: "pda",
-  pdaAccount: "AssociatedToken",
-  dependency: "hooked",
-  seeds: {
-    owner: { kind: "account", name: "owner" },
-    mint: { kind: "account", name: "mint" },
-  },
-};
+const ataPdaDefaults = k.pdaDefault("AssociatedToken", {
+  importFrom: "hooked",
+  seeds: { owner: k.accountDefault("owner"), mint: k.accountDefault("mint") },
+});
 kinobi.update(
-  new UpdateInstructionsVisitor({
+  new k.UpdateInstructionsVisitor({
     transferSol: {
       accounts: {
-        source: { defaultsTo: { kind: "identity" } },
+        source: { defaultsTo: k.identityDefault() },
       },
     },
     transferAllSol: {
       accounts: {
-        source: { defaultsTo: { kind: "identity" } },
+        source: { defaultsTo: k.identityDefault() },
       },
     },
     mintTokensTo: {
       accounts: {
-        mintAuthority: { defaultsTo: { kind: "identity" } },
+        mintAuthority: { defaultsTo: k.identityDefault() },
       },
     },
     createAccount: {
-      bytesCreatedOnChain: { kind: "arg", name: "space" },
+      bytesCreatedOnChain: k.bytesFromArg("space"),
     },
     createAccountWithRent: {
-      bytesCreatedOnChain: { kind: "arg", name: "space" },
+      bytesCreatedOnChain: k.bytesFromArg("space"),
     },
     createAssociatedToken: {
-      bytesCreatedOnChain: { kind: "account", name: "Token" },
+      bytesCreatedOnChain: k.bytesFromAccount("token"),
       accounts: {
-        owner: { defaultsTo: { kind: "identity" } },
+        owner: { defaultsTo: k.identityDefault() },
         ata: { defaultsTo: ataPdaDefaults },
       },
     },
     createTokenIfMissing: {
       accounts: {
         ata: { defaultsTo: ataPdaDefaults },
-        token: { defaultsTo: { kind: "account", name: "ata" } },
-        owner: { defaultsTo: { kind: "identity" } },
+        token: { defaultsTo: k.accountDefault("ata") },
+        owner: { defaultsTo: k.identityDefault() },
       },
     },
     createEmptyLut: {
-      bytesCreatedOnChain: { kind: "number", value: 56 },
+      bytesCreatedOnChain: k.bytesFromNumber(56),
       accounts: {
         address: {
-          defaultsTo: { kind: "pda", pdaAccount: "addressLookupTable" },
-          pdaBumpArg: "bump",
+          defaultsTo: k.pdaDefault("addressLookupTable"),
+        },
+      },
+      args: {
+        bump: {
+          defaultsTo: k.accountBumpDefault("address"),
         },
       },
     },
@@ -141,16 +122,16 @@ kinobi.update(
 );
 
 kinobi.update(
-  new SetStructDefaultValuesVisitor({
+  new k.SetStructDefaultValuesVisitor({
     addressLookupTable: {
-      padding: { ...vScalar(0), strategy: "omitted" },
+      padding: { ...k.vScalar(0), strategy: "omitted" },
     },
   })
 );
 
 // Wrap numbers.
 kinobi.update(
-  new SetNumberWrappersVisitor({
+  new k.SetNumberWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
     "splSystem.TransferSol.amount": { kind: "SolAmount" },
     "splComputeBudget.SetComputeUnitPrice.lamports": { kind: "SolAmount" },
@@ -160,4 +141,4 @@ kinobi.update(
 // Render JavaScript.
 const jsDir = path.join(clientDir, "js", "src", "generated");
 const prettier = require(path.join(clientDir, "js", ".prettierrc.json"));
-kinobi.accept(new RenderJavaScriptVisitor(jsDir, { prettier }));
+kinobi.accept(new k.RenderJavaScriptVisitor(jsDir, { prettier }));

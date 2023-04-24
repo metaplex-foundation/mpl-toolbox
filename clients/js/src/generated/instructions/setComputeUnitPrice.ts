@@ -18,7 +18,7 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 
-// Arguments.
+// Data.
 export type SetComputeUnitPriceInstructionData = {
   discriminator: number;
   /** Transaction compute unit price used for prioritization fees. */
@@ -57,23 +57,36 @@ export function getSetComputeUnitPriceInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type SetComputeUnitPriceInstructionArgs =
+  SetComputeUnitPriceInstructionDataArgs;
+
 // Instruction.
 export function setComputeUnitPrice(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: SetComputeUnitPriceInstructionDataArgs
+  input: SetComputeUnitPriceInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splComputeBudget',
-    'ComputeBudget111111111111111111111111111111'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splComputeBudget',
+      'ComputeBudget111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
+
+  // Resolved inputs.
+  const resolvingArgs = {};
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Data.
   const data =
-    getSetComputeUnitPriceInstructionDataSerializer(context).serialize(input);
+    getSetComputeUnitPriceInstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

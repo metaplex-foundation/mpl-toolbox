@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 
 // Accounts.
 export type RevokeTokenDelegateInstructionAccounts = {
@@ -24,7 +24,7 @@ export type RevokeTokenDelegateInstructionAccounts = {
   owner: Signer;
 };
 
-// Arguments.
+// Data.
 export type RevokeTokenDelegateInstructionData = { discriminator: number };
 
 export type RevokeTokenDelegateInstructionDataArgs = {};
@@ -61,28 +61,31 @@ export function revokeTokenDelegate(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const sourceAccount = input.source;
-  const ownerAccount = input.owner;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
   // Source.
   keys.push({
-    pubkey: sourceAccount,
+    pubkey: resolvedAccounts.source,
     isSigner: false,
-    isWritable: isWritable(sourceAccount, true),
+    isWritable: isWritable(resolvedAccounts.source, true),
   });
 
   // Owner.
-  signers.push(ownerAccount);
+  signers.push(resolvedAccounts.owner);
   keys.push({
-    pubkey: ownerAccount.publicKey,
+    pubkey: resolvedAccounts.owner.publicKey,
     isSigner: true,
-    isWritable: isWritable(ownerAccount, false),
+    isWritable: isWritable(resolvedAccounts.owner, false),
   });
 
   // Data.

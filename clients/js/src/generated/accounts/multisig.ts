@@ -41,7 +41,7 @@ export function getMultisigAccountDataSerializer(
       ['isInitialized', s.bool()],
       ['signers', s.array(s.publicKey(), { size: 11 })],
     ],
-    { description: 'Multisig' }
+    { description: 'MultisigAccountData' }
   ) as Serializer<MultisigAccountDataArgs, MultisigAccountData>;
 }
 

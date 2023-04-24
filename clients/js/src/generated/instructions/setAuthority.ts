@@ -14,12 +14,12 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   isSigner,
   mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 import {
   AuthorityType,
   AuthorityTypeArgs,
@@ -32,7 +32,7 @@ export type SetAuthorityInstructionAccounts = {
   owner: PublicKey | Signer;
 };
 
-// Arguments.
+// Data.
 export type SetAuthorityInstructionData = {
   discriminator: number;
   authorityType: AuthorityType;
@@ -65,44 +65,52 @@ export function getSetAuthorityInstructionDataSerializer(
   ) as Serializer<SetAuthorityInstructionDataArgs, SetAuthorityInstructionData>;
 }
 
+// Args.
+export type SetAuthorityInstructionArgs = SetAuthorityInstructionDataArgs;
+
 // Instruction.
 export function setAuthority(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: SetAuthorityInstructionAccounts & SetAuthorityInstructionDataArgs
+  input: SetAuthorityInstructionAccounts & SetAuthorityInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const ownedAccount = input.owned;
-  const ownerAccount = input.owner;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Owned.
   keys.push({
-    pubkey: ownedAccount,
+    pubkey: resolvedAccounts.owned,
     isSigner: false,
-    isWritable: isWritable(ownedAccount, true),
+    isWritable: isWritable(resolvedAccounts.owned, true),
   });
 
   // Owner.
-  if (isSigner(ownerAccount)) {
-    signers.push(ownerAccount);
+  if (isSigner(resolvedAccounts.owner)) {
+    signers.push(resolvedAccounts.owner);
   }
   keys.push({
-    pubkey: publicKey(ownerAccount),
-    isSigner: isSigner(ownerAccount),
-    isWritable: isWritable(ownerAccount, false),
+    pubkey: publicKey(resolvedAccounts.owner),
+    isSigner: isSigner(resolvedAccounts.owner),
+    isWritable: isWritable(resolvedAccounts.owner, false),
   });
 
   // Data.
   const data =
-    getSetAuthorityInstructionDataSerializer(context).serialize(input);
+    getSetAuthorityInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -12,9 +12,9 @@ import {
   PublicKey,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type RecoverNestedAssociatedTokenInstructionAccounts = {
@@ -36,77 +36,86 @@ export function recoverNestedAssociatedToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splAssociatedToken',
-    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-  );
-
-  // Resolved accounts.
-  const nestedAssociatedAccountAddressAccount =
-    input.nestedAssociatedAccountAddress;
-  const nestedTokenMintAddressAccount = input.nestedTokenMintAddress;
-  const destinationAssociatedAccountAddressAccount =
-    input.destinationAssociatedAccountAddress;
-  const ownerAssociatedAccountAddressAccount =
-    input.ownerAssociatedAccountAddress;
-  const ownerTokenMintAddressAccount = input.ownerTokenMintAddress;
-  const walletAddressAccount = input.walletAddress;
-  const tokenProgramAccount = input.tokenProgram ?? {
+  const programId = {
     ...context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+      'splAssociatedToken',
+      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
     ),
     isWritable: false,
   };
 
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'tokenProgram',
+    input.tokenProgram ?? {
+      ...context.programs.getPublicKey(
+        'splToken',
+        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+      ),
+      isWritable: false,
+    }
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+
   // Nested Associated Account Address.
   keys.push({
-    pubkey: nestedAssociatedAccountAddressAccount,
+    pubkey: resolvedAccounts.nestedAssociatedAccountAddress,
     isSigner: false,
-    isWritable: isWritable(nestedAssociatedAccountAddressAccount, true),
+    isWritable: isWritable(
+      resolvedAccounts.nestedAssociatedAccountAddress,
+      true
+    ),
   });
 
   // Nested Token Mint Address.
   keys.push({
-    pubkey: nestedTokenMintAddressAccount,
+    pubkey: resolvedAccounts.nestedTokenMintAddress,
     isSigner: false,
-    isWritable: isWritable(nestedTokenMintAddressAccount, false),
+    isWritable: isWritable(resolvedAccounts.nestedTokenMintAddress, false),
   });
 
   // Destination Associated Account Address.
   keys.push({
-    pubkey: destinationAssociatedAccountAddressAccount,
+    pubkey: resolvedAccounts.destinationAssociatedAccountAddress,
     isSigner: false,
-    isWritable: isWritable(destinationAssociatedAccountAddressAccount, true),
+    isWritable: isWritable(
+      resolvedAccounts.destinationAssociatedAccountAddress,
+      true
+    ),
   });
 
   // Owner Associated Account Address.
   keys.push({
-    pubkey: ownerAssociatedAccountAddressAccount,
+    pubkey: resolvedAccounts.ownerAssociatedAccountAddress,
     isSigner: false,
-    isWritable: isWritable(ownerAssociatedAccountAddressAccount, false),
+    isWritable: isWritable(
+      resolvedAccounts.ownerAssociatedAccountAddress,
+      false
+    ),
   });
 
   // Owner Token Mint Address.
   keys.push({
-    pubkey: ownerTokenMintAddressAccount,
+    pubkey: resolvedAccounts.ownerTokenMintAddress,
     isSigner: false,
-    isWritable: isWritable(ownerTokenMintAddressAccount, false),
+    isWritable: isWritable(resolvedAccounts.ownerTokenMintAddress, false),
   });
 
   // Wallet Address.
-  signers.push(walletAddressAccount);
+  signers.push(resolvedAccounts.walletAddress);
   keys.push({
-    pubkey: walletAddressAccount.publicKey,
+    pubkey: resolvedAccounts.walletAddress.publicKey,
     isSigner: true,
-    isWritable: isWritable(walletAddressAccount, true),
+    isWritable: isWritable(resolvedAccounts.walletAddress, true),
   });
 
   // Token Program.
   keys.push({
-    pubkey: tokenProgramAccount,
+    pubkey: resolvedAccounts.tokenProgram,
     isSigner: false,
-    isWritable: isWritable(tokenProgramAccount, false),
+    isWritable: isWritable(resolvedAccounts.tokenProgram, false),
   });
 
   // Data.

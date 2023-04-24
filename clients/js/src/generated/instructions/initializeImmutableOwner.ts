@@ -13,17 +13,17 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 
 // Accounts.
 export type InitializeImmutableOwnerInstructionAccounts = {
   account: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type InitializeImmutableOwnerInstructionData = { discriminator: number };
 
 export type InitializeImmutableOwnerInstructionDataArgs = {};
@@ -64,19 +64,23 @@ export function initializeImmutableOwner(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const accountAccount = input.account;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
   // Account.
   keys.push({
-    pubkey: accountAccount,
+    pubkey: resolvedAccounts.account,
     isSigner: false,
-    isWritable: isWritable(accountAccount, true),
+    isWritable: isWritable(resolvedAccounts.account, true),
   });
 
   // Data.

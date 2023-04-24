@@ -13,11 +13,11 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type InitializeMultisigInstructionAccounts = {
@@ -25,7 +25,7 @@ export type InitializeMultisigInstructionAccounts = {
   rent?: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type InitializeMultisigInstructionData = {
   discriminator: number;
   m: number;
@@ -60,43 +60,58 @@ export function getInitializeMultisigInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type InitializeMultisigInstructionArgs =
+  InitializeMultisigInstructionDataArgs;
+
 // Instruction.
 export function initializeMultisig(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: InitializeMultisigInstructionAccounts &
-    InitializeMultisigInstructionDataArgs
+    InitializeMultisigInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const multisigAccount = input.multisig;
-  const rentAccount =
-    input.rent ?? publicKey('SysvarRent111111111111111111111111111111111');
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'rent',
+    input.rent ?? publicKey('SysvarRent111111111111111111111111111111111')
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Multisig.
   keys.push({
-    pubkey: multisigAccount,
+    pubkey: resolvedAccounts.multisig,
     isSigner: false,
-    isWritable: isWritable(multisigAccount, true),
+    isWritable: isWritable(resolvedAccounts.multisig, true),
   });
 
   // Rent.
   keys.push({
-    pubkey: rentAccount,
+    pubkey: resolvedAccounts.rent,
     isSigner: false,
-    isWritable: isWritable(rentAccount, false),
+    isWritable: isWritable(resolvedAccounts.rent, false),
   });
 
   // Data.
   const data =
-    getInitializeMultisigInstructionDataSerializer(context).serialize(input);
+    getInitializeMultisigInstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

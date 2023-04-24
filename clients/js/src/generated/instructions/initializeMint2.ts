@@ -14,17 +14,17 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 
 // Accounts.
 export type InitializeMint2InstructionAccounts = {
   mint: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type InitializeMint2InstructionData = {
   discriminator: number;
   decimals: number;
@@ -67,33 +67,44 @@ export function getInitializeMint2InstructionDataSerializer(
   >;
 }
 
+// Args.
+export type InitializeMint2InstructionArgs = InitializeMint2InstructionDataArgs;
+
 // Instruction.
 export function initializeMint2(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: InitializeMint2InstructionAccounts & InitializeMint2InstructionDataArgs
+  input: InitializeMint2InstructionAccounts & InitializeMint2InstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const mintAccount = input.mint;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Mint.
   keys.push({
-    pubkey: mintAccount,
+    pubkey: resolvedAccounts.mint,
     isSigner: false,
-    isWritable: isWritable(mintAccount, true),
+    isWritable: isWritable(resolvedAccounts.mint, true),
   });
 
   // Data.
   const data =
-    getInitializeMint2InstructionDataSerializer(context).serialize(input);
+    getInitializeMint2InstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

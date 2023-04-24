@@ -15,11 +15,11 @@ import {
   Signer,
   SolAmount,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapAmountSerializer,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type CreateAccountInstructionAccounts = {
@@ -27,7 +27,7 @@ export type CreateAccountInstructionAccounts = {
   newAccount: Signer;
 };
 
-// Arguments.
+// Data.
 export type CreateAccountInstructionData = {
   discriminator: number;
   lamports: SolAmount;
@@ -66,43 +66,52 @@ export function getCreateAccountInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type CreateAccountInstructionArgs = CreateAccountInstructionDataArgs;
+
 // Instruction.
 export function createAccount(
   context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
-  input: CreateAccountInstructionAccounts & CreateAccountInstructionDataArgs
+  input: CreateAccountInstructionAccounts & CreateAccountInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splSystem',
-    '11111111111111111111111111111111'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const payerAccount = input.payer ?? context.payer;
-  const newAccountAccount = input.newAccount;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(resolvingAccounts, 'payer', input.payer ?? context.payer);
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Payer.
-  signers.push(payerAccount);
+  signers.push(resolvedAccounts.payer);
   keys.push({
-    pubkey: payerAccount.publicKey,
+    pubkey: resolvedAccounts.payer.publicKey,
     isSigner: true,
-    isWritable: isWritable(payerAccount, true),
+    isWritable: isWritable(resolvedAccounts.payer, true),
   });
 
   // New Account.
-  signers.push(newAccountAccount);
+  signers.push(resolvedAccounts.newAccount);
   keys.push({
-    pubkey: newAccountAccount.publicKey,
+    pubkey: resolvedAccounts.newAccount.publicKey,
     isSigner: true,
-    isWritable: isWritable(newAccountAccount, true),
+    isWritable: isWritable(resolvedAccounts.newAccount, true),
   });
 
   // Data.
   const data =
-    getCreateAccountInstructionDataSerializer(context).serialize(input);
+    getCreateAccountInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;

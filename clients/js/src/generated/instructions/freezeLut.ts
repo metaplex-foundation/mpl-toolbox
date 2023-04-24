@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type FreezeLutInstructionAccounts = {
@@ -24,7 +24,7 @@ export type FreezeLutInstructionAccounts = {
   authority?: Signer;
 };
 
-// Arguments.
+// Data.
 export type FreezeLutInstructionData = { discriminator: number };
 
 export type FreezeLutInstructionDataArgs = {};
@@ -54,28 +54,36 @@ export function freezeLut(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splAddressLookupTable',
-    'AddressLookupTab1e1111111111111111111111111'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splAddressLookupTable',
+      'AddressLookupTab1e1111111111111111111111111'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const addressAccount = input.address;
-  const authorityAccount = input.authority ?? context.identity;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'authority',
+    input.authority ?? context.identity
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
   // Address.
   keys.push({
-    pubkey: addressAccount,
+    pubkey: resolvedAccounts.address,
     isSigner: false,
-    isWritable: isWritable(addressAccount, true),
+    isWritable: isWritable(resolvedAccounts.address, true),
   });
 
   // Authority.
-  signers.push(authorityAccount);
+  signers.push(resolvedAccounts.authority);
   keys.push({
-    pubkey: authorityAccount.publicKey,
+    pubkey: resolvedAccounts.authority.publicKey,
     isSigner: true,
-    isWritable: isWritable(authorityAccount, false),
+    isWritable: isWritable(resolvedAccounts.authority, false),
   });
 
   // Data.

@@ -56,7 +56,7 @@ export function getMintAccountDataSerializer(
         s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
       ],
     ],
-    { description: 'Mint' }
+    { description: 'MintAccountData' }
   ) as Serializer<MintAccountDataArgs, MintAccountData>;
 }
 

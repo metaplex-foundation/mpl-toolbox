@@ -16,7 +16,7 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 
-// Arguments.
+// Data.
 export type RequestUnitsInstructionData = {
   discriminator: number;
   /** Units to request for transaction-wide compute. */
@@ -53,23 +53,33 @@ export function getRequestUnitsInstructionDataSerializer(
   ) as Serializer<RequestUnitsInstructionDataArgs, RequestUnitsInstructionData>;
 }
 
+// Args.
+export type RequestUnitsInstructionArgs = RequestUnitsInstructionDataArgs;
+
 // Instruction.
 export function requestUnits(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: RequestUnitsInstructionDataArgs
+  input: RequestUnitsInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splComputeBudget',
-    'ComputeBudget111111111111111111111111111111'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splComputeBudget',
+      'ComputeBudget111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
+
+  // Resolved inputs.
+  const resolvingArgs = {};
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Data.
   const data =
-    getRequestUnitsInstructionDataSerializer(context).serialize(input);
+    getRequestUnitsInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

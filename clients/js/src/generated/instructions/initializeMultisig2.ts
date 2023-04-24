@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 
 // Accounts.
 export type InitializeMultisig2InstructionAccounts = {
@@ -24,7 +24,7 @@ export type InitializeMultisig2InstructionAccounts = {
   signer: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type InitializeMultisig2InstructionData = {
   discriminator: number;
   m: number;
@@ -59,42 +59,53 @@ export function getInitializeMultisig2InstructionDataSerializer(
   >;
 }
 
+// Args.
+export type InitializeMultisig2InstructionArgs =
+  InitializeMultisig2InstructionDataArgs;
+
 // Instruction.
 export function initializeMultisig2(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: InitializeMultisig2InstructionAccounts &
-    InitializeMultisig2InstructionDataArgs
+    InitializeMultisig2InstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const multisigAccount = input.multisig;
-  const signerAccount = input.signer;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Multisig.
   keys.push({
-    pubkey: multisigAccount,
+    pubkey: resolvedAccounts.multisig,
     isSigner: false,
-    isWritable: isWritable(multisigAccount, true),
+    isWritable: isWritable(resolvedAccounts.multisig, true),
   });
 
   // Signer.
   keys.push({
-    pubkey: signerAccount,
+    pubkey: resolvedAccounts.signer,
     isSigner: false,
-    isWritable: isWritable(signerAccount, false),
+    isWritable: isWritable(resolvedAccounts.signer, false),
   });
 
   // Data.
   const data =
-    getInitializeMultisig2InstructionDataSerializer(context).serialize(input);
+    getInitializeMultisig2InstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

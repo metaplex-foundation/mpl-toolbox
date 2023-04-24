@@ -63,7 +63,7 @@ export function getTokenAccountDataSerializer(
         s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
       ],
     ],
-    { description: 'Token' }
+    { description: 'TokenAccountData' }
   ) as Serializer<TokenAccountDataArgs, TokenAccountData>;
 }
 

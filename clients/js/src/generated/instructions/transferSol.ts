@@ -14,11 +14,11 @@ import {
   Signer,
   SolAmount,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapAmountSerializer,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type TransferSolInstructionAccounts = {
@@ -26,7 +26,7 @@ export type TransferSolInstructionAccounts = {
   destination: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type TransferSolInstructionData = {
   discriminator: number;
   amount: SolAmount;
@@ -54,42 +54,55 @@ export function getTransferSolInstructionDataSerializer(
   ) as Serializer<TransferSolInstructionDataArgs, TransferSolInstructionData>;
 }
 
+// Args.
+export type TransferSolInstructionArgs = TransferSolInstructionDataArgs;
+
 // Instruction.
 export function transferSol(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: TransferSolInstructionAccounts & TransferSolInstructionDataArgs
+  input: TransferSolInstructionAccounts & TransferSolInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splSystem',
-    '11111111111111111111111111111111'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const sourceAccount = input.source ?? context.identity;
-  const destinationAccount = input.destination;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'source',
+    input.source ?? context.identity
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Source.
-  signers.push(sourceAccount);
+  signers.push(resolvedAccounts.source);
   keys.push({
-    pubkey: sourceAccount.publicKey,
+    pubkey: resolvedAccounts.source.publicKey,
     isSigner: true,
-    isWritable: isWritable(sourceAccount, true),
+    isWritable: isWritable(resolvedAccounts.source, true),
   });
 
   // Destination.
   keys.push({
-    pubkey: destinationAccount,
+    pubkey: resolvedAccounts.destination,
     isSigner: false,
-    isWritable: isWritable(destinationAccount, true),
+    isWritable: isWritable(resolvedAccounts.destination, true),
   });
 
   // Data.
   const data =
-    getTransferSolInstructionDataSerializer(context).serialize(input);
+    getTransferSolInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

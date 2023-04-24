@@ -64,7 +64,7 @@ export function getAddressLookupTableAccountDataSerializer(
         ['padding', s.u16()],
         ['addresses', s.array(s.publicKey(), { size: 'remainder' })],
       ],
-      { description: 'AddressLookupTable' }
+      { description: 'AddressLookupTableAccountData' }
     ),
     (value) =>
       ({

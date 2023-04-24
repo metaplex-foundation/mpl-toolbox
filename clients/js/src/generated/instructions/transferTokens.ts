@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type TransferTokensInstructionAccounts = {
@@ -25,7 +25,7 @@ export type TransferTokensInstructionAccounts = {
   authority?: Signer;
 };
 
-// Arguments.
+// Data.
 export type TransferTokensInstructionData = {
   discriminator: number;
   amount: bigint;
@@ -59,50 +59,62 @@ export function getTransferTokensInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type TransferTokensInstructionArgs = TransferTokensInstructionDataArgs;
+
 // Instruction.
 export function transferTokens(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: TransferTokensInstructionAccounts & TransferTokensInstructionDataArgs
+  input: TransferTokensInstructionAccounts & TransferTokensInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const sourceAccount = input.source;
-  const destinationAccount = input.destination;
-  const authorityAccount = input.authority ?? context.identity;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'authority',
+    input.authority ?? context.identity
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Source.
   keys.push({
-    pubkey: sourceAccount,
+    pubkey: resolvedAccounts.source,
     isSigner: false,
-    isWritable: isWritable(sourceAccount, true),
+    isWritable: isWritable(resolvedAccounts.source, true),
   });
 
   // Destination.
   keys.push({
-    pubkey: destinationAccount,
+    pubkey: resolvedAccounts.destination,
     isSigner: false,
-    isWritable: isWritable(destinationAccount, true),
+    isWritable: isWritable(resolvedAccounts.destination, true),
   });
 
   // Authority.
-  signers.push(authorityAccount);
+  signers.push(resolvedAccounts.authority);
   keys.push({
-    pubkey: authorityAccount.publicKey,
+    pubkey: resolvedAccounts.authority.publicKey,
     isSigner: true,
-    isWritable: isWritable(authorityAccount, false),
+    isWritable: isWritable(resolvedAccounts.authority, false),
   });
 
   // Data.
   const data =
-    getTransferTokensInstructionDataSerializer(context).serialize(input);
+    getTransferTokensInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -15,7 +15,7 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 
-// Arguments.
+// Data.
 export type AddMemoInstructionData = { memo: string };
 
 export type AddMemoInstructionDataArgs = AddMemoInstructionData;
@@ -29,22 +29,33 @@ export function getAddMemoInstructionDataSerializer(
   }) as Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData>;
 }
 
+// Args.
+export type AddMemoInstructionArgs = AddMemoInstructionDataArgs;
+
 // Instruction.
 export function addMemo(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: AddMemoInstructionDataArgs
+  input: AddMemoInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splMemo',
-    'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splMemo',
+      'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
+    ),
+    isWritable: false,
+  };
+
+  // Resolved inputs.
+  const resolvingArgs = {};
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Data.
-  const data = getAddMemoInstructionDataSerializer(context).serialize(input);
+  const data =
+    getAddMemoInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

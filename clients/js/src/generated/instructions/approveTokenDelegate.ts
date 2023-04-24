@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 
 // Accounts.
 export type ApproveTokenDelegateInstructionAccounts = {
@@ -25,7 +25,7 @@ export type ApproveTokenDelegateInstructionAccounts = {
   owner: Signer;
 };
 
-// Arguments.
+// Data.
 export type ApproveTokenDelegateInstructionData = {
   discriminator: number;
   amount: bigint;
@@ -62,51 +62,61 @@ export function getApproveTokenDelegateInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type ApproveTokenDelegateInstructionArgs =
+  ApproveTokenDelegateInstructionDataArgs;
+
 // Instruction.
 export function approveTokenDelegate(
   context: Pick<Context, 'serializer' | 'programs'>,
   input: ApproveTokenDelegateInstructionAccounts &
-    ApproveTokenDelegateInstructionDataArgs
+    ApproveTokenDelegateInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const sourceAccount = input.source;
-  const delegateAccount = input.delegate;
-  const ownerAccount = input.owner;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Source.
   keys.push({
-    pubkey: sourceAccount,
+    pubkey: resolvedAccounts.source,
     isSigner: false,
-    isWritable: isWritable(sourceAccount, true),
+    isWritable: isWritable(resolvedAccounts.source, true),
   });
 
   // Delegate.
   keys.push({
-    pubkey: delegateAccount,
+    pubkey: resolvedAccounts.delegate,
     isSigner: false,
-    isWritable: isWritable(delegateAccount, false),
+    isWritable: isWritable(resolvedAccounts.delegate, false),
   });
 
   // Owner.
-  signers.push(ownerAccount);
+  signers.push(resolvedAccounts.owner);
   keys.push({
-    pubkey: ownerAccount.publicKey,
+    pubkey: resolvedAccounts.owner.publicKey,
     isSigner: true,
-    isWritable: isWritable(ownerAccount, false),
+    isWritable: isWritable(resolvedAccounts.owner, false),
   });
 
   // Data.
   const data =
-    getApproveTokenDelegateInstructionDataSerializer(context).serialize(input);
+    getApproveTokenDelegateInstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type TransferAllSolInstructionAccounts = {
@@ -28,7 +28,7 @@ export type TransferAllSolInstructionAccounts = {
   systemProgram?: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type TransferAllSolInstructionData = { discriminator: number };
 
 export type TransferAllSolInstructionDataArgs = {};
@@ -64,42 +64,54 @@ export function transferAllSol(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'mplSystemExtras',
-    'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
-  );
-
-  // Resolved accounts.
-  const sourceAccount = input.source ?? context.identity;
-  const destinationAccount = input.destination;
-  const systemProgramAccount = input.systemProgram ?? {
+  const programId = {
     ...context.programs.getPublicKey(
-      'splSystem',
-      '11111111111111111111111111111111'
+      'mplSystemExtras',
+      'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
     ),
     isWritable: false,
   };
 
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'source',
+    input.source ?? context.identity
+  );
+  addObjectProperty(
+    resolvingAccounts,
+    'systemProgram',
+    input.systemProgram ?? {
+      ...context.programs.getPublicKey(
+        'splSystem',
+        '11111111111111111111111111111111'
+      ),
+      isWritable: false,
+    }
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+
   // Source.
-  signers.push(sourceAccount);
+  signers.push(resolvedAccounts.source);
   keys.push({
-    pubkey: sourceAccount.publicKey,
+    pubkey: resolvedAccounts.source.publicKey,
     isSigner: true,
-    isWritable: isWritable(sourceAccount, true),
+    isWritable: isWritable(resolvedAccounts.source, true),
   });
 
   // Destination.
   keys.push({
-    pubkey: destinationAccount,
+    pubkey: resolvedAccounts.destination,
     isSigner: false,
-    isWritable: isWritable(destinationAccount, true),
+    isWritable: isWritable(resolvedAccounts.destination, true),
   });
 
   // System Program.
   keys.push({
-    pubkey: systemProgramAccount,
+    pubkey: resolvedAccounts.systemProgram,
     isSigner: false,
-    isWritable: isWritable(systemProgramAccount, false),
+    isWritable: isWritable(resolvedAccounts.systemProgram, false),
   });
 
   // Data.

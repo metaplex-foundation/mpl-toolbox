@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type MintTokensToInstructionAccounts = {
@@ -25,7 +25,7 @@ export type MintTokensToInstructionAccounts = {
   mintAuthority?: Signer;
 };
 
-// Arguments.
+// Data.
 export type MintTokensToInstructionData = {
   discriminator: number;
   amount: bigint;
@@ -53,50 +53,62 @@ export function getMintTokensToInstructionDataSerializer(
   ) as Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData>;
 }
 
+// Args.
+export type MintTokensToInstructionArgs = MintTokensToInstructionDataArgs;
+
 // Instruction.
 export function mintTokensTo(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
-  input: MintTokensToInstructionAccounts & MintTokensToInstructionDataArgs
+  input: MintTokensToInstructionAccounts & MintTokensToInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const mintAccount = input.mint;
-  const tokenAccount = input.token;
-  const mintAuthorityAccount = input.mintAuthority ?? context.identity;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'mintAuthority',
+    input.mintAuthority ?? context.identity
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Mint.
   keys.push({
-    pubkey: mintAccount,
+    pubkey: resolvedAccounts.mint,
     isSigner: false,
-    isWritable: isWritable(mintAccount, true),
+    isWritable: isWritable(resolvedAccounts.mint, true),
   });
 
   // Token.
   keys.push({
-    pubkey: tokenAccount,
+    pubkey: resolvedAccounts.token,
     isSigner: false,
-    isWritable: isWritable(tokenAccount, true),
+    isWritable: isWritable(resolvedAccounts.token, true),
   });
 
   // Mint Authority.
-  signers.push(mintAuthorityAccount);
+  signers.push(resolvedAccounts.mintAuthority);
   keys.push({
-    pubkey: mintAuthorityAccount.publicKey,
+    pubkey: resolvedAccounts.mintAuthority.publicKey,
     isSigner: true,
-    isWritable: isWritable(mintAuthorityAccount, false),
+    isWritable: isWritable(resolvedAccounts.mintAuthority, false),
   });
 
   // Data.
   const data =
-    getMintTokensToInstructionDataSerializer(context).serialize(input);
+    getMintTokensToInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

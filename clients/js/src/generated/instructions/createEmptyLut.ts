@@ -15,12 +15,12 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import { findAddressLookupTablePda } from '../accounts';
+import { PickPartial, addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type CreateEmptyLutInstructionAccounts = {
@@ -30,7 +30,7 @@ export type CreateEmptyLutInstructionAccounts = {
   systemProgram?: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type CreateEmptyLutInstructionData = {
   discriminator: number;
   recentSlot: bigint;
@@ -69,76 +69,102 @@ export function getCreateEmptyLutInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type CreateEmptyLutInstructionArgs = PickPartial<
+  CreateEmptyLutInstructionDataArgs,
+  'bump'
+>;
+
 // Instruction.
 export function createEmptyLut(
   context: Pick<
     Context,
     'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
   >,
-  input: CreateEmptyLutInstructionAccounts &
-    Omit<CreateEmptyLutInstructionDataArgs, 'bump'>
+  input: CreateEmptyLutInstructionAccounts & CreateEmptyLutInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splAddressLookupTable',
-    'AddressLookupTab1e1111111111111111111111111'
-  );
-
-  // Resolved accounts.
-  const authorityAccount = input.authority ?? context.identity;
-  const addressAccount =
-    input.address ??
-    findAddressLookupTablePda(context, {
-      authority: publicKey(authorityAccount),
-      recentSlot: input.recentSlot,
-    });
-  const payerAccount = input.payer ?? context.payer;
-  const systemProgramAccount = input.systemProgram ?? {
+  const programId = {
     ...context.programs.getPublicKey(
-      'splSystem',
-      '11111111111111111111111111111111'
+      'splAddressLookupTable',
+      'AddressLookupTab1e1111111111111111111111111'
     ),
     isWritable: false,
   };
 
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'authority',
+    input.authority ?? context.identity
+  );
+  addObjectProperty(
+    resolvingAccounts,
+    'address',
+    input.address ??
+      findAddressLookupTablePda(context, {
+        authority: publicKey(resolvingAccounts.authority),
+        recentSlot: input.recentSlot,
+      })
+  );
+  addObjectProperty(resolvingAccounts, 'payer', input.payer ?? context.payer);
+  addObjectProperty(
+    resolvingAccounts,
+    'systemProgram',
+    input.systemProgram ?? {
+      ...context.programs.getPublicKey(
+        'splSystem',
+        '11111111111111111111111111111111'
+      ),
+      isWritable: false,
+    }
+  );
+  addObjectProperty(
+    resolvingArgs,
+    'bump',
+    input.bump ?? resolvingAccounts.address.bump
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
+
   // Address.
   keys.push({
-    pubkey: addressAccount,
+    pubkey: resolvedAccounts.address,
     isSigner: false,
-    isWritable: isWritable(addressAccount, true),
+    isWritable: isWritable(resolvedAccounts.address, true),
   });
 
   // Authority.
-  signers.push(authorityAccount);
+  signers.push(resolvedAccounts.authority);
   keys.push({
-    pubkey: authorityAccount.publicKey,
+    pubkey: resolvedAccounts.authority.publicKey,
     isSigner: true,
-    isWritable: isWritable(authorityAccount, false),
+    isWritable: isWritable(resolvedAccounts.authority, false),
   });
 
   // Payer.
-  signers.push(payerAccount);
+  signers.push(resolvedAccounts.payer);
   keys.push({
-    pubkey: payerAccount.publicKey,
+    pubkey: resolvedAccounts.payer.publicKey,
     isSigner: true,
-    isWritable: isWritable(payerAccount, true),
+    isWritable: isWritable(resolvedAccounts.payer, true),
   });
 
   // System Program.
   keys.push({
-    pubkey: systemProgramAccount,
+    pubkey: resolvedAccounts.systemProgram,
     isSigner: false,
-    isWritable: isWritable(systemProgramAccount, false),
+    isWritable: isWritable(resolvedAccounts.systemProgram, false),
   });
 
   // Data.
-  const data = getCreateEmptyLutInstructionDataSerializer(context).serialize({
-    ...input,
-    bump: addressAccount.bump,
-  });
+  const data =
+    getCreateEmptyLutInstructionDataSerializer(context).serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 56 + ACCOUNT_HEADER_SIZE;

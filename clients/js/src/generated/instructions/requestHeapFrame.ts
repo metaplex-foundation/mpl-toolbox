@@ -16,7 +16,7 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 
-// Arguments.
+// Data.
 export type RequestHeapFrameInstructionData = {
   discriminator: number;
   /**
@@ -61,23 +61,36 @@ export function getRequestHeapFrameInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type RequestHeapFrameInstructionArgs =
+  RequestHeapFrameInstructionDataArgs;
+
 // Instruction.
 export function requestHeapFrame(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: RequestHeapFrameInstructionDataArgs
+  input: RequestHeapFrameInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splComputeBudget',
-    'ComputeBudget111111111111111111111111111111'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splComputeBudget',
+      'ComputeBudget111111111111111111111111111111'
+    ),
+    isWritable: false,
+  };
+
+  // Resolved inputs.
+  const resolvingArgs = {};
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Data.
   const data =
-    getRequestHeapFrameInstructionDataSerializer(context).serialize(input);
+    getRequestHeapFrameInstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

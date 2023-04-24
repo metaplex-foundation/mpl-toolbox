@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { isWritable } from '../shared';
 
 // Accounts.
 export type InitializeToken3InstructionAccounts = {
@@ -24,7 +24,7 @@ export type InitializeToken3InstructionAccounts = {
   mint: PublicKey;
 };
 
-// Arguments.
+// Data.
 export type InitializeToken3InstructionData = {
   discriminator: number;
   owner: PublicKey;
@@ -59,42 +59,52 @@ export function getInitializeToken3InstructionDataSerializer(
   >;
 }
 
+// Args.
+export type InitializeToken3InstructionArgs =
+  InitializeToken3InstructionDataArgs;
+
 // Instruction.
 export function initializeToken3(
   context: Pick<Context, 'serializer' | 'programs'>,
-  input: InitializeToken3InstructionAccounts &
-    InitializeToken3InstructionDataArgs
+  input: InitializeToken3InstructionAccounts & InitializeToken3InstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const accountAccount = input.account;
-  const mintAccount = input.mint;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Account.
   keys.push({
-    pubkey: accountAccount,
+    pubkey: resolvedAccounts.account,
     isSigner: false,
-    isWritable: isWritable(accountAccount, true),
+    isWritable: isWritable(resolvedAccounts.account, true),
   });
 
   // Mint.
   keys.push({
-    pubkey: mintAccount,
+    pubkey: resolvedAccounts.mint,
     isSigner: false,
-    isWritable: isWritable(mintAccount, false),
+    isWritable: isWritable(resolvedAccounts.mint, false),
   });
 
   // Data.
   const data =
-    getInitializeToken3InstructionDataSerializer(context).serialize(input);
+    getInitializeToken3InstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

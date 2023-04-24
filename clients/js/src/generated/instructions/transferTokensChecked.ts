@@ -13,10 +13,10 @@ import {
   Serializer,
   Signer,
   TransactionBuilder,
-  checkForIsWritableOverride as isWritable,
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import { addObjectProperty, isWritable } from '../shared';
 
 // Accounts.
 export type TransferTokensCheckedInstructionAccounts = {
@@ -26,7 +26,7 @@ export type TransferTokensCheckedInstructionAccounts = {
   authority?: Signer;
 };
 
-// Arguments.
+// Data.
 export type TransferTokensCheckedInstructionData = {
   discriminator: number;
   amount: bigint;
@@ -66,59 +66,73 @@ export function getTransferTokensCheckedInstructionDataSerializer(
   >;
 }
 
+// Args.
+export type TransferTokensCheckedInstructionArgs =
+  TransferTokensCheckedInstructionDataArgs;
+
 // Instruction.
 export function transferTokensChecked(
   context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
   input: TransferTokensCheckedInstructionAccounts &
-    TransferTokensCheckedInstructionDataArgs
+    TransferTokensCheckedInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = {
+    ...context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    ),
+    isWritable: false,
+  };
 
-  // Resolved accounts.
-  const sourceAccount = input.source;
-  const mintAccount = input.mint;
-  const destinationAccount = input.destination;
-  const authorityAccount = input.authority ?? context.identity;
+  // Resolved inputs.
+  const resolvingAccounts = {};
+  const resolvingArgs = {};
+  addObjectProperty(
+    resolvingAccounts,
+    'authority',
+    input.authority ?? context.identity
+  );
+  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Source.
   keys.push({
-    pubkey: sourceAccount,
+    pubkey: resolvedAccounts.source,
     isSigner: false,
-    isWritable: isWritable(sourceAccount, true),
+    isWritable: isWritable(resolvedAccounts.source, true),
   });
 
   // Mint.
   keys.push({
-    pubkey: mintAccount,
+    pubkey: resolvedAccounts.mint,
     isSigner: false,
-    isWritable: isWritable(mintAccount, false),
+    isWritable: isWritable(resolvedAccounts.mint, false),
   });
 
   // Destination.
   keys.push({
-    pubkey: destinationAccount,
+    pubkey: resolvedAccounts.destination,
     isSigner: false,
-    isWritable: isWritable(destinationAccount, true),
+    isWritable: isWritable(resolvedAccounts.destination, true),
   });
 
   // Authority.
-  signers.push(authorityAccount);
+  signers.push(resolvedAccounts.authority);
   keys.push({
-    pubkey: authorityAccount.publicKey,
+    pubkey: resolvedAccounts.authority.publicKey,
     isSigner: true,
-    isWritable: isWritable(authorityAccount, false),
+    isWritable: isWritable(resolvedAccounts.authority, false),
   });
 
   // Data.
   const data =
-    getTransferTokensCheckedInstructionDataSerializer(context).serialize(input);
+    getTransferTokensCheckedInstructionDataSerializer(context).serialize(
+      resolvedArgs
+    );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
