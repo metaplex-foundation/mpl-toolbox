@@ -35,13 +35,13 @@ export function getFreezeLutInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     FreezeLutInstructionDataArgs,
-    FreezeLutInstructionData,
+    any,
     FreezeLutInstructionData
   >(
     s.struct<FreezeLutInstructionData>([['discriminator', s.u32()]], {
       description: 'FreezeLutInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 1 } as FreezeLutInstructionData)
+    (value) => ({ ...value, discriminator: 1 })
   ) as Serializer<FreezeLutInstructionDataArgs, FreezeLutInstructionData>;
 }
 

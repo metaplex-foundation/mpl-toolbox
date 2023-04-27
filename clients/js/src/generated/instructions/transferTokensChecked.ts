@@ -47,7 +47,7 @@ export function getTransferTokensCheckedInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     TransferTokensCheckedInstructionDataArgs,
-    TransferTokensCheckedInstructionData,
+    any,
     TransferTokensCheckedInstructionData
   >(
     s.struct<TransferTokensCheckedInstructionData>(
@@ -58,8 +58,7 @@ export function getTransferTokensCheckedInstructionDataSerializer(
       ],
       { description: 'TransferTokensCheckedInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 12 } as TransferTokensCheckedInstructionData)
+    (value) => ({ ...value, discriminator: 12 })
   ) as Serializer<
     TransferTokensCheckedInstructionDataArgs,
     TransferTokensCheckedInstructionData

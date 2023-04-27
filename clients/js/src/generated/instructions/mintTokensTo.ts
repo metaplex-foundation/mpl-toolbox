@@ -39,7 +39,7 @@ export function getMintTokensToInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     MintTokensToInstructionDataArgs,
-    MintTokensToInstructionData,
+    any,
     MintTokensToInstructionData
   >(
     s.struct<MintTokensToInstructionData>(
@@ -49,7 +49,7 @@ export function getMintTokensToInstructionDataSerializer(
       ],
       { description: 'MintTokensToInstructionData' }
     ),
-    (value) => ({ ...value, discriminator: 7 } as MintTokensToInstructionData)
+    (value) => ({ ...value, discriminator: 7 })
   ) as Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData>;
 }
 

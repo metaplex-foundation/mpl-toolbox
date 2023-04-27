@@ -38,14 +38,13 @@ export function getRevokeTokenDelegateInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     RevokeTokenDelegateInstructionDataArgs,
-    RevokeTokenDelegateInstructionData,
+    any,
     RevokeTokenDelegateInstructionData
   >(
     s.struct<RevokeTokenDelegateInstructionData>([['discriminator', s.u8()]], {
       description: 'RevokeTokenDelegateInstructionData',
     }),
-    (value) =>
-      ({ ...value, discriminator: 5 } as RevokeTokenDelegateInstructionData)
+    (value) => ({ ...value, discriminator: 5 })
   ) as Serializer<
     RevokeTokenDelegateInstructionDataArgs,
     RevokeTokenDelegateInstructionData

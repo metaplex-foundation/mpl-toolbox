@@ -46,7 +46,7 @@ export function getMintTokensToCheckedInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     MintTokensToCheckedInstructionDataArgs,
-    MintTokensToCheckedInstructionData,
+    any,
     MintTokensToCheckedInstructionData
   >(
     s.struct<MintTokensToCheckedInstructionData>(
@@ -57,8 +57,7 @@ export function getMintTokensToCheckedInstructionDataSerializer(
       ],
       { description: 'MintTokensToCheckedInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 14 } as MintTokensToCheckedInstructionData)
+    (value) => ({ ...value, discriminator: 14 })
   ) as Serializer<
     MintTokensToCheckedInstructionDataArgs,
     MintTokensToCheckedInstructionData

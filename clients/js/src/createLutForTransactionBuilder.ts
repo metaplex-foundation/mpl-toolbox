@@ -67,7 +67,7 @@ export const createLutForTransactionBuilder = (
 function generatecreateLutBuilders(
   context: Pick<
     Context,
-    'programs' | 'serializer' | 'identity' | 'payer' | 'transactions'
+    'programs' | 'serializer' | 'eddsa' | 'identity' | 'payer' | 'transactions'
   >,
   builder: TransactionBuilder,
   lutAddress: PublicKey,

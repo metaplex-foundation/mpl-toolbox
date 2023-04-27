@@ -43,7 +43,7 @@ export function getRequestHeapFrameInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     RequestHeapFrameInstructionDataArgs,
-    RequestHeapFrameInstructionData,
+    any,
     RequestHeapFrameInstructionData
   >(
     s.struct<RequestHeapFrameInstructionData>(
@@ -53,8 +53,7 @@ export function getRequestHeapFrameInstructionDataSerializer(
       ],
       { description: 'RequestHeapFrameInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 1 } as RequestHeapFrameInstructionData)
+    (value) => ({ ...value, discriminator: 1 })
   ) as Serializer<
     RequestHeapFrameInstructionDataArgs,
     RequestHeapFrameInstructionData

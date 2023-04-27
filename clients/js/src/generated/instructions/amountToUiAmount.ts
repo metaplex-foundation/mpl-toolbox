@@ -40,7 +40,7 @@ export function getAmountToUiAmountInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     AmountToUiAmountInstructionDataArgs,
-    AmountToUiAmountInstructionData,
+    any,
     AmountToUiAmountInstructionData
   >(
     s.struct<AmountToUiAmountInstructionData>(
@@ -50,8 +50,7 @@ export function getAmountToUiAmountInstructionDataSerializer(
       ],
       { description: 'AmountToUiAmountInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 23 } as AmountToUiAmountInstructionData)
+    (value) => ({ ...value, discriminator: 23 })
   ) as Serializer<
     AmountToUiAmountInstructionDataArgs,
     AmountToUiAmountInstructionData

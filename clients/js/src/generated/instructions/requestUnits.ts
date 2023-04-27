@@ -38,7 +38,7 @@ export function getRequestUnitsInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     RequestUnitsInstructionDataArgs,
-    RequestUnitsInstructionData,
+    any,
     RequestUnitsInstructionData
   >(
     s.struct<RequestUnitsInstructionData>(
@@ -49,7 +49,7 @@ export function getRequestUnitsInstructionDataSerializer(
       ],
       { description: 'RequestUnitsInstructionData' }
     ),
-    (value) => ({ ...value, discriminator: 0 } as RequestUnitsInstructionData)
+    (value) => ({ ...value, discriminator: 0 })
   ) as Serializer<RequestUnitsInstructionDataArgs, RequestUnitsInstructionData>;
 }
 

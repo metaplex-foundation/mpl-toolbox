@@ -39,7 +39,7 @@ export function getSetComputeUnitPriceInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     SetComputeUnitPriceInstructionDataArgs,
-    SetComputeUnitPriceInstructionData,
+    any,
     SetComputeUnitPriceInstructionData
   >(
     s.struct<SetComputeUnitPriceInstructionData>(
@@ -49,8 +49,7 @@ export function getSetComputeUnitPriceInstructionDataSerializer(
       ],
       { description: 'SetComputeUnitPriceInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 3 } as SetComputeUnitPriceInstructionData)
+    (value) => ({ ...value, discriminator: 3 })
   ) as Serializer<
     SetComputeUnitPriceInstructionDataArgs,
     SetComputeUnitPriceInstructionData

@@ -37,18 +37,14 @@ export function getInitializeImmutableOwnerInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     InitializeImmutableOwnerInstructionDataArgs,
-    InitializeImmutableOwnerInstructionData,
+    any,
     InitializeImmutableOwnerInstructionData
   >(
     s.struct<InitializeImmutableOwnerInstructionData>(
       [['discriminator', s.u8()]],
       { description: 'InitializeImmutableOwnerInstructionData' }
     ),
-    (value) =>
-      ({
-        ...value,
-        discriminator: 22,
-      } as InitializeImmutableOwnerInstructionData)
+    (value) => ({ ...value, discriminator: 22 })
   ) as Serializer<
     InitializeImmutableOwnerInstructionDataArgs,
     InitializeImmutableOwnerInstructionData

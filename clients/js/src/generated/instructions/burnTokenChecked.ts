@@ -46,7 +46,7 @@ export function getBurnTokenCheckedInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     BurnTokenCheckedInstructionDataArgs,
-    BurnTokenCheckedInstructionData,
+    any,
     BurnTokenCheckedInstructionData
   >(
     s.struct<BurnTokenCheckedInstructionData>(
@@ -57,8 +57,7 @@ export function getBurnTokenCheckedInstructionDataSerializer(
       ],
       { description: 'BurnTokenCheckedInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 15 } as BurnTokenCheckedInstructionData)
+    (value) => ({ ...value, discriminator: 15 })
   ) as Serializer<
     BurnTokenCheckedInstructionDataArgs,
     BurnTokenCheckedInstructionData

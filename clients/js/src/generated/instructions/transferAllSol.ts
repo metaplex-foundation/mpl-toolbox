@@ -42,13 +42,13 @@ export function getTransferAllSolInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     TransferAllSolInstructionDataArgs,
-    TransferAllSolInstructionData,
+    any,
     TransferAllSolInstructionData
   >(
     s.struct<TransferAllSolInstructionData>([['discriminator', s.u8()]], {
       description: 'TransferAllSolInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 1 } as TransferAllSolInstructionData)
+    (value) => ({ ...value, discriminator: 1 })
   ) as Serializer<
     TransferAllSolInstructionDataArgs,
     TransferAllSolInstructionData

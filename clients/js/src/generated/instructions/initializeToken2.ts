@@ -43,7 +43,7 @@ export function getInitializeToken2InstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     InitializeToken2InstructionDataArgs,
-    InitializeToken2InstructionData,
+    any,
     InitializeToken2InstructionData
   >(
     s.struct<InitializeToken2InstructionData>(
@@ -53,8 +53,7 @@ export function getInitializeToken2InstructionDataSerializer(
       ],
       { description: 'InitializeToken2InstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 16 } as InitializeToken2InstructionData)
+    (value) => ({ ...value, discriminator: 16 })
   ) as Serializer<
     InitializeToken2InstructionDataArgs,
     InitializeToken2InstructionData

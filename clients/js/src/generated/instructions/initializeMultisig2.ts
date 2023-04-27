@@ -41,7 +41,7 @@ export function getInitializeMultisig2InstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     InitializeMultisig2InstructionDataArgs,
-    InitializeMultisig2InstructionData,
+    any,
     InitializeMultisig2InstructionData
   >(
     s.struct<InitializeMultisig2InstructionData>(
@@ -51,8 +51,7 @@ export function getInitializeMultisig2InstructionDataSerializer(
       ],
       { description: 'InitializeMultisig2InstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 19 } as InitializeMultisig2InstructionData)
+    (value) => ({ ...value, discriminator: 19 })
   ) as Serializer<
     InitializeMultisig2InstructionDataArgs,
     InitializeMultisig2InstructionData

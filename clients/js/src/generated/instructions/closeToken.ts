@@ -36,13 +36,13 @@ export function getCloseTokenInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     CloseTokenInstructionDataArgs,
-    CloseTokenInstructionData,
+    any,
     CloseTokenInstructionData
   >(
     s.struct<CloseTokenInstructionData>([['discriminator', s.u8()]], {
       description: 'CloseTokenInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 9 } as CloseTokenInstructionData)
+    (value) => ({ ...value, discriminator: 9 })
   ) as Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData>;
 }
 

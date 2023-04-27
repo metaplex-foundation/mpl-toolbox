@@ -15,7 +15,7 @@ type ProgramErrorConstructor = new (
 const codeToErrorMap: Map<number, ProgramErrorConstructor> = new Map();
 const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
-/** InvalidSystemProgram: 'Invalid System Program' */
+/** InvalidSystemProgram: Invalid System Program */
 export class SysExInvalidSystemProgramError extends ProgramError {
   readonly name: string = 'InvalidSystemProgram';
 
@@ -28,7 +28,7 @@ export class SysExInvalidSystemProgramError extends ProgramError {
 codeToErrorMap.set(0x0, SysExInvalidSystemProgramError);
 nameToErrorMap.set('InvalidSystemProgram', SysExInvalidSystemProgramError);
 
-/** InvalidOwnerForSource: 'Invalid Program Owner For The Source Account' */
+/** InvalidOwnerForSource: Invalid Program Owner For The Source Account */
 export class SysExInvalidOwnerForSourceError extends ProgramError {
   readonly name: string = 'InvalidOwnerForSource';
 

@@ -36,13 +36,13 @@ export function getFreezeTokenInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     FreezeTokenInstructionDataArgs,
-    FreezeTokenInstructionData,
+    any,
     FreezeTokenInstructionData
   >(
     s.struct<FreezeTokenInstructionData>([['discriminator', s.u8()]], {
       description: 'FreezeTokenInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 10 } as FreezeTokenInstructionData)
+    (value) => ({ ...value, discriminator: 10 })
   ) as Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData>;
 }
 

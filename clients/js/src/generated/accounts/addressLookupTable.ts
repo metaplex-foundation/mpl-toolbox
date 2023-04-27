@@ -51,7 +51,7 @@ export function getAddressLookupTableAccountDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     AddressLookupTableAccountDataArgs,
-    AddressLookupTableAccountData,
+    any,
     AddressLookupTableAccountData
   >(
     s.struct<AddressLookupTableAccountData>(
@@ -66,12 +66,7 @@ export function getAddressLookupTableAccountDataSerializer(
       ],
       { description: 'AddressLookupTableAccountData' }
     ),
-    (value) =>
-      ({
-        ...value,
-        discriminator: 1,
-        padding: 0,
-      } as AddressLookupTableAccountData)
+    (value) => ({ ...value, discriminator: 1, padding: 0 })
   ) as Serializer<
     AddressLookupTableAccountDataArgs,
     AddressLookupTableAccountData
@@ -184,4 +179,28 @@ export function findAddressLookupTablePda(
     s.publicKey().serialize(seeds.authority),
     s.u64().serialize(seeds.recentSlot),
   ]);
+}
+
+export async function fetchAddressLookupTableFromSeeds(
+  context: Pick<Context, 'eddsa' | 'programs' | 'rpc' | 'serializer'>,
+  seeds: Parameters<typeof findAddressLookupTablePda>[1],
+  options?: RpcGetAccountOptions
+): Promise<AddressLookupTable> {
+  return fetchAddressLookupTable(
+    context,
+    findAddressLookupTablePda(context, seeds),
+    options
+  );
+}
+
+export async function safeFetchAddressLookupTableFromSeeds(
+  context: Pick<Context, 'eddsa' | 'programs' | 'rpc' | 'serializer'>,
+  seeds: Parameters<typeof findAddressLookupTablePda>[1],
+  options?: RpcGetAccountOptions
+): Promise<AddressLookupTable | null> {
+  return safeFetchAddressLookupTable(
+    context,
+    findAddressLookupTablePda(context, seeds),
+    options
+  );
 }

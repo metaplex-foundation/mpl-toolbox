@@ -37,14 +37,13 @@ export function getGetTokenDataSizeInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     GetTokenDataSizeInstructionDataArgs,
-    GetTokenDataSizeInstructionData,
+    any,
     GetTokenDataSizeInstructionData
   >(
     s.struct<GetTokenDataSizeInstructionData>([['discriminator', s.u8()]], {
       description: 'GetTokenDataSizeInstructionData',
     }),
-    (value) =>
-      ({ ...value, discriminator: 21 } as GetTokenDataSizeInstructionData)
+    (value) => ({ ...value, discriminator: 21 })
   ) as Serializer<
     GetTokenDataSizeInstructionDataArgs,
     GetTokenDataSizeInstructionData

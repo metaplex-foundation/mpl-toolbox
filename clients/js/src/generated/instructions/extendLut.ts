@@ -41,7 +41,7 @@ export function getExtendLutInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     ExtendLutInstructionDataArgs,
-    ExtendLutInstructionData,
+    any,
     ExtendLutInstructionData
   >(
     s.struct<ExtendLutInstructionData>(
@@ -51,7 +51,7 @@ export function getExtendLutInstructionDataSerializer(
       ],
       { description: 'ExtendLutInstructionData' }
     ),
-    (value) => ({ ...value, discriminator: 2 } as ExtendLutInstructionData)
+    (value) => ({ ...value, discriminator: 2 })
   ) as Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData>;
 }
 
@@ -60,7 +60,10 @@ export type ExtendLutInstructionArgs = ExtendLutInstructionDataArgs;
 
 // Instruction.
 export function extendLut(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
+  context: Pick<
+    Context,
+    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
+  >,
   input: ExtendLutInstructionAccounts & ExtendLutInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];

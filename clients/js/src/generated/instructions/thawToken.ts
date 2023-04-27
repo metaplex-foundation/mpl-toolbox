@@ -36,13 +36,13 @@ export function getThawTokenInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     ThawTokenInstructionDataArgs,
-    ThawTokenInstructionData,
+    any,
     ThawTokenInstructionData
   >(
     s.struct<ThawTokenInstructionData>([['discriminator', s.u8()]], {
       description: 'ThawTokenInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 11 } as ThawTokenInstructionData)
+    (value) => ({ ...value, discriminator: 11 })
   ) as Serializer<ThawTokenInstructionDataArgs, ThawTokenInstructionData>;
 }
 

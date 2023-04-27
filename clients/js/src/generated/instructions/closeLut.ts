@@ -36,13 +36,13 @@ export function getCloseLutInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     CloseLutInstructionDataArgs,
-    CloseLutInstructionData,
+    any,
     CloseLutInstructionData
   >(
     s.struct<CloseLutInstructionData>([['discriminator', s.u32()]], {
       description: 'CloseLutInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 4 } as CloseLutInstructionData)
+    (value) => ({ ...value, discriminator: 4 })
   ) as Serializer<CloseLutInstructionDataArgs, CloseLutInstructionData>;
 }
 

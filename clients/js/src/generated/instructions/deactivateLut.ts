@@ -35,13 +35,13 @@ export function getDeactivateLutInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     DeactivateLutInstructionDataArgs,
-    DeactivateLutInstructionData,
+    any,
     DeactivateLutInstructionData
   >(
     s.struct<DeactivateLutInstructionData>([['discriminator', s.u32()]], {
       description: 'DeactivateLutInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 3 } as DeactivateLutInstructionData)
+    (value) => ({ ...value, discriminator: 3 })
   ) as Serializer<
     DeactivateLutInstructionDataArgs,
     DeactivateLutInstructionData

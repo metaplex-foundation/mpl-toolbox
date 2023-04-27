@@ -47,7 +47,7 @@ export function getCreateAccountInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     CreateAccountInstructionDataArgs,
-    CreateAccountInstructionData,
+    any,
     CreateAccountInstructionData
   >(
     s.struct<CreateAccountInstructionData>(
@@ -59,7 +59,7 @@ export function getCreateAccountInstructionDataSerializer(
       ],
       { description: 'CreateAccountInstructionData' }
     ),
-    (value) => ({ ...value, discriminator: 0 } as CreateAccountInstructionData)
+    (value) => ({ ...value, discriminator: 0 })
   ) as Serializer<
     CreateAccountInstructionDataArgs,
     CreateAccountInstructionData

@@ -41,7 +41,7 @@ export function getInitializeToken3InstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     InitializeToken3InstructionDataArgs,
-    InitializeToken3InstructionData,
+    any,
     InitializeToken3InstructionData
   >(
     s.struct<InitializeToken3InstructionData>(
@@ -51,8 +51,7 @@ export function getInitializeToken3InstructionDataSerializer(
       ],
       { description: 'InitializeToken3InstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 18 } as InitializeToken3InstructionData)
+    (value) => ({ ...value, discriminator: 18 })
   ) as Serializer<
     InitializeToken3InstructionDataArgs,
     InitializeToken3InstructionData

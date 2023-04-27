@@ -51,7 +51,7 @@ export function getCreateEmptyLutInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     CreateEmptyLutInstructionDataArgs,
-    CreateEmptyLutInstructionData,
+    any,
     CreateEmptyLutInstructionData
   >(
     s.struct<CreateEmptyLutInstructionData>(
@@ -62,7 +62,7 @@ export function getCreateEmptyLutInstructionDataSerializer(
       ],
       { description: 'CreateEmptyLutInstructionData' }
     ),
-    (value) => ({ ...value, discriminator: 0 } as CreateEmptyLutInstructionData)
+    (value) => ({ ...value, discriminator: 0 })
   ) as Serializer<
     CreateEmptyLutInstructionDataArgs,
     CreateEmptyLutInstructionData

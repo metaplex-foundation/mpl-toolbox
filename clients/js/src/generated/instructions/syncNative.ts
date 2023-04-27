@@ -34,13 +34,13 @@ export function getSyncNativeInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     SyncNativeInstructionDataArgs,
-    SyncNativeInstructionData,
+    any,
     SyncNativeInstructionData
   >(
     s.struct<SyncNativeInstructionData>([['discriminator', s.u8()]], {
       description: 'SyncNativeInstructionData',
     }),
-    (value) => ({ ...value, discriminator: 17 } as SyncNativeInstructionData)
+    (value) => ({ ...value, discriminator: 17 })
   ) as Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData>;
 }
 

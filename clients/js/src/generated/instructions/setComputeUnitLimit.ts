@@ -37,7 +37,7 @@ export function getSetComputeUnitLimitInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     SetComputeUnitLimitInstructionDataArgs,
-    SetComputeUnitLimitInstructionData,
+    any,
     SetComputeUnitLimitInstructionData
   >(
     s.struct<SetComputeUnitLimitInstructionData>(
@@ -47,8 +47,7 @@ export function getSetComputeUnitLimitInstructionDataSerializer(
       ],
       { description: 'SetComputeUnitLimitInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 2 } as SetComputeUnitLimitInstructionData)
+    (value) => ({ ...value, discriminator: 2 })
   ) as Serializer<
     SetComputeUnitLimitInstructionDataArgs,
     SetComputeUnitLimitInstructionData

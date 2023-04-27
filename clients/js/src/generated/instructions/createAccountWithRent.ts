@@ -50,7 +50,7 @@ export function getCreateAccountWithRentInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     CreateAccountWithRentInstructionDataArgs,
-    CreateAccountWithRentInstructionData,
+    any,
     CreateAccountWithRentInstructionData
   >(
     s.struct<CreateAccountWithRentInstructionData>(
@@ -61,8 +61,7 @@ export function getCreateAccountWithRentInstructionDataSerializer(
       ],
       { description: 'CreateAccountWithRentInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 0 } as CreateAccountWithRentInstructionData)
+    (value) => ({ ...value, discriminator: 0 })
   ) as Serializer<
     CreateAccountWithRentInstructionDataArgs,
     CreateAccountWithRentInstructionData

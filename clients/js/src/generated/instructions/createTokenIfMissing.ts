@@ -54,14 +54,13 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     CreateTokenIfMissingInstructionDataArgs,
-    CreateTokenIfMissingInstructionData,
+    any,
     CreateTokenIfMissingInstructionData
   >(
     s.struct<CreateTokenIfMissingInstructionData>([['discriminator', s.u8()]], {
       description: 'CreateTokenIfMissingInstructionData',
     }),
-    (value) =>
-      ({ ...value, discriminator: 0 } as CreateTokenIfMissingInstructionData)
+    (value) => ({ ...value, discriminator: 0 })
   ) as Serializer<
     CreateTokenIfMissingInstructionDataArgs,
     CreateTokenIfMissingInstructionData

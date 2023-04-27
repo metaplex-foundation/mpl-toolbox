@@ -44,7 +44,7 @@ export function getApproveTokenDelegateInstructionDataSerializer(
   const s = context.serializer;
   return mapSerializer<
     ApproveTokenDelegateInstructionDataArgs,
-    ApproveTokenDelegateInstructionData,
+    any,
     ApproveTokenDelegateInstructionData
   >(
     s.struct<ApproveTokenDelegateInstructionData>(
@@ -54,8 +54,7 @@ export function getApproveTokenDelegateInstructionDataSerializer(
       ],
       { description: 'ApproveTokenDelegateInstructionData' }
     ),
-    (value) =>
-      ({ ...value, discriminator: 4 } as ApproveTokenDelegateInstructionData)
+    (value) => ({ ...value, discriminator: 4 })
   ) as Serializer<
     ApproveTokenDelegateInstructionDataArgs,
     ApproveTokenDelegateInstructionData
