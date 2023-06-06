@@ -1,4 +1,4 @@
-import { UmiPlugin } from '@metaplex-foundation/umi';
+import { UmiPlugin, publicKey } from '@metaplex-foundation/umi';
 import {
   createMplSystemExtrasProgram,
   createMplTokenExtrasProgram,
@@ -18,6 +18,17 @@ export const mplToolbox = (): UmiPlugin => ({
     umi.programs.add(createSplAddressLookupTableProgram(), false);
     umi.programs.add(createMplSystemExtrasProgram(), false);
     umi.programs.add(createMplTokenExtrasProgram(), false);
+
+    // Token 2022.
+    // For now, we just register it as a splToken program for feature parity.
+    umi.programs.add(
+      {
+        ...createSplTokenProgram(),
+        name: 'splToken2022',
+        publicKey: publicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),
+      },
+      false
+    );
   },
 });
 
