@@ -15,8 +15,7 @@ import {
   mplToolbox,
 } from '../src';
 
-export const createUmi = async () =>
-  (await basecreateUmi()).use(mplToolbox());
+export const createUmi = async () => (await basecreateUmi()).use(mplToolbox());
 
 export const createMint = async (
   umi: Umi,
