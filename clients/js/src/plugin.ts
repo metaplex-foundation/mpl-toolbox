@@ -9,7 +9,7 @@ import {
   createSplTokenProgram,
 } from './generated';
 
-export const mplEssentials = (): UmiPlugin => ({
+export const mplToolbox = (): UmiPlugin => ({
   install(umi) {
     umi.programs.add(createSplSystemProgram(), false);
     umi.programs.add(createSplMemoProgram(), false);
@@ -20,3 +20,6 @@ export const mplEssentials = (): UmiPlugin => ({
     umi.programs.add(createMplTokenExtrasProgram(), false);
   },
 });
+
+/** @deprecated Use `mplToolbox` instead. */
+export const mplEssentials = mplToolbox;

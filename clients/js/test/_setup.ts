@@ -12,11 +12,11 @@ import {
   createMint as baseCreateMint,
   createToken as baseCreateToken,
   mintTokensTo,
-  mplEssentials,
+  mplToolbox,
 } from '../src';
 
 export const createUmi = async () =>
-  (await basecreateUmi()).use(mplEssentials());
+  (await basecreateUmi()).use(mplToolbox());
 
 export const createMint = async (
   umi: Umi,
