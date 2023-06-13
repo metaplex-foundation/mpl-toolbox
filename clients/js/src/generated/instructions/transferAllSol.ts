@@ -9,6 +9,7 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -16,16 +17,16 @@ import {
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { addObjectProperty, isWritable } from '../shared';
+import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
 export type TransferAllSolInstructionAccounts = {
   /** The source account sending all its lamports */
   source?: Signer;
   /** The destination account receiving the lamports */
-  destination: PublicKey;
+  destination: PublicKey | Pda;
   /** System program */
-  systemProgram?: PublicKey;
+  systemProgram?: PublicKey | Pda;
 };
 
 // Data.
@@ -64,55 +65,39 @@ export function transferAllSol(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'mplSystemExtras',
-      'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'mplSystemExtras',
+    'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    destination: [input.destination, true] as const,
+  };
   addObjectProperty(
-    resolvingAccounts,
+    resolvedAccounts,
     'source',
-    input.source ?? context.identity
+    input.source
+      ? ([input.source, true] as const)
+      : ([context.identity, true] as const)
   );
   addObjectProperty(
-    resolvingAccounts,
+    resolvedAccounts,
     'systemProgram',
-    input.systemProgram ?? {
-      ...context.programs.getPublicKey(
-        'splSystem',
-        '11111111111111111111111111111111'
-      ),
-      isWritable: false,
-    }
+    input.systemProgram
+      ? ([input.systemProgram, false] as const)
+      : ([
+          context.programs.getPublicKey(
+            'splSystem',
+            '11111111111111111111111111111111'
+          ),
+          false,
+        ] as const)
   );
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
-  // Source.
-  signers.push(resolvedAccounts.source);
-  keys.push({
-    pubkey: resolvedAccounts.source.publicKey,
-    isSigner: true,
-    isWritable: isWritable(resolvedAccounts.source, true),
-  });
-
-  // Destination.
-  keys.push({
-    pubkey: resolvedAccounts.destination,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.destination, true),
-  });
-
-  // System Program.
-  keys.push({
-    pubkey: resolvedAccounts.systemProgram,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.systemProgram, false),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.source, false);
+  addAccountMeta(keys, signers, resolvedAccounts.destination, false);
+  addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
 
   // Data.
   const data = getTransferAllSolInstructionDataSerializer(context).serialize(

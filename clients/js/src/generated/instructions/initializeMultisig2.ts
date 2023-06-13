@@ -9,6 +9,7 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -16,12 +17,12 @@ import {
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { isWritable } from '../shared';
+import { addAccountMeta } from '../shared';
 
 // Accounts.
 export type InitializeMultisig2InstructionAccounts = {
-  multisig: PublicKey;
-  signer: PublicKey;
+  multisig: PublicKey | Pda;
+  signer: PublicKey | Pda;
 };
 
 // Data.
@@ -72,33 +73,21 @@ export function initializeMultisig2(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    multisig: [input.multisig, true] as const,
+    signer: [input.signer, false] as const,
+  };
   const resolvingArgs = {};
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
   const resolvedArgs = { ...input, ...resolvingArgs };
 
-  // Multisig.
-  keys.push({
-    pubkey: resolvedAccounts.multisig,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.multisig, true),
-  });
-
-  // Signer.
-  keys.push({
-    pubkey: resolvedAccounts.signer,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.signer, false),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.multisig, false);
+  addAccountMeta(keys, signers, resolvedAccounts.signer, false);
 
   // Data.
   const data =

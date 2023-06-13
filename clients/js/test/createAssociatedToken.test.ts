@@ -29,7 +29,7 @@ test('it can create new associated token accounts with minimum configuration', a
 
   // Then the account was created with the correct data
   // And the token account is associated to the identity.
-  const ata = findAssociatedTokenPda(umi, {
+  const [ata] = findAssociatedTokenPda(umi, {
     mint: newMint.publicKey,
     owner: umi.identity.publicKey,
   });
@@ -59,7 +59,7 @@ test('it can create new associated token accounts with maximum configuration', a
   const payerBalance = await umi.rpc.getBalance(payer.publicKey);
   const newOwner = generateSigner(umi);
   const newMint = generateSigner(umi);
-  const ata = findAssociatedTokenPda(umi, {
+  const [ata] = findAssociatedTokenPda(umi, {
     mint: newMint.publicKey,
     owner: newOwner.publicKey,
   });

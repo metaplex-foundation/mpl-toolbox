@@ -9,6 +9,7 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -16,11 +17,11 @@ import {
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { addObjectProperty, isWritable } from '../shared';
+import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
 export type DeactivateLutInstructionAccounts = {
-  address: PublicKey;
+  address: PublicKey | Pda;
   authority?: Signer;
 };
 
@@ -57,37 +58,25 @@ export function deactivateLut(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splAddressLookupTable',
-      'AddressLookupTab1e1111111111111111111111111'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splAddressLookupTable',
+    'AddressLookupTab1e1111111111111111111111111'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    address: [input.address, true] as const,
+  };
   addObjectProperty(
-    resolvingAccounts,
+    resolvedAccounts,
     'authority',
-    input.authority ?? context.identity
+    input.authority
+      ? ([input.authority, false] as const)
+      : ([context.identity, false] as const)
   );
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
-  // Address.
-  keys.push({
-    pubkey: resolvedAccounts.address,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.address, true),
-  });
-
-  // Authority.
-  signers.push(resolvedAccounts.authority);
-  keys.push({
-    pubkey: resolvedAccounts.authority.publicKey,
-    isSigner: true,
-    isWritable: isWritable(resolvedAccounts.authority, false),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.address, false);
+  addAccountMeta(keys, signers, resolvedAccounts.authority, false);
 
   // Data.
   const data = getDeactivateLutInstructionDataSerializer(context).serialize({});

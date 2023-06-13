@@ -13,6 +13,7 @@ import {
   fetchToken,
   findAssociatedTokenPda,
   getTokenSize,
+  Token,
   TokenState,
   TokExCannotCreateNonAssociatedTokenError,
   TokExInvalidAssociatedTokenAccountError,
@@ -34,9 +35,9 @@ test('it creates a new associated token if missing', async (t) => {
   await createTokenIfMissing(umi, { mint, owner }).sendAndConfirm(umi);
 
   // Then a new associated token account was created.
-  const ata = findAssociatedTokenPda(umi, { mint, owner });
+  const [ata] = findAssociatedTokenPda(umi, { mint, owner });
   const ataAccount = await fetchToken(umi, ata);
-  t.like(ataAccount, {
+  t.like(ataAccount, <Token>{
     publicKey: ata,
     mint,
     owner,
@@ -55,9 +56,9 @@ test('it defaults to the identity if no owner is provided', async (t) => {
   await createTokenIfMissing(umi, { mint }).sendAndConfirm(umi);
 
   // Then a new associated token account was created for the identity.
-  const ata = findAssociatedTokenPda(umi, { mint, owner: identity });
+  const [ata] = findAssociatedTokenPda(umi, { mint, owner: identity });
   const ataAccount = await fetchToken(umi, ata);
-  t.like(ataAccount, {
+  t.like(ataAccount, <Token>{
     publicKey: ata,
     mint,
     owner: identity,
@@ -92,7 +93,7 @@ test('it does not create an account if an associated token account already exist
   const umi = await createUmi();
   const mint = (await createMint(umi)).publicKey;
   const owner = generateSigner(umi).publicKey;
-  const ata = findAssociatedTokenPda(umi, { mint, owner });
+  const [ata] = findAssociatedTokenPda(umi, { mint, owner });
   await createAssociatedToken(umi, { mint, owner }).sendAndConfirm(umi);
   t.true(await umi.rpc.accountExists(ata));
 

@@ -9,6 +9,7 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -16,11 +17,11 @@ import {
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { isWritable } from '../shared';
+import { addAccountMeta } from '../shared';
 
 // Accounts.
 export type SyncNativeInstructionAccounts = {
-  account: PublicKey;
+  account: PublicKey | Pda;
 };
 
 // Data.
@@ -53,24 +54,17 @@ export function syncNative(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
+  const resolvedAccounts = {
+    account: [input.account, true] as const,
+  };
 
-  // Account.
-  keys.push({
-    pubkey: resolvedAccounts.account,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.account, true),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.account, false);
 
   // Data.
   const data = getSyncNativeInstructionDataSerializer(context).serialize({});

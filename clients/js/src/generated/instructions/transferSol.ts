@@ -9,6 +9,7 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -18,12 +19,12 @@ import {
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { addObjectProperty, isWritable } from '../shared';
+import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
 export type TransferSolInstructionAccounts = {
   source?: Signer;
-  destination: PublicKey;
+  destination: PublicKey | Pda;
 };
 
 // Data.
@@ -66,39 +67,27 @@ export function transferSol(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splSystem',
-      '11111111111111111111111111111111'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splSystem',
+    '11111111111111111111111111111111'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    destination: [input.destination, true] as const,
+  };
   const resolvingArgs = {};
   addObjectProperty(
-    resolvingAccounts,
+    resolvedAccounts,
     'source',
-    input.source ?? context.identity
+    input.source
+      ? ([input.source, true] as const)
+      : ([context.identity, true] as const)
   );
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
   const resolvedArgs = { ...input, ...resolvingArgs };
 
-  // Source.
-  signers.push(resolvedAccounts.source);
-  keys.push({
-    pubkey: resolvedAccounts.source.publicKey,
-    isSigner: true,
-    isWritable: isWritable(resolvedAccounts.source, true),
-  });
-
-  // Destination.
-  keys.push({
-    pubkey: resolvedAccounts.destination,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.destination, true),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.source, false);
+  addAccountMeta(keys, signers, resolvedAccounts.destination, false);
 
   // Data.
   const data =

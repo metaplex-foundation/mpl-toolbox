@@ -11,16 +11,14 @@ import {
   Context,
   Program,
   PublicKey,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   getSplAssociatedTokenErrorFromCode,
   getSplAssociatedTokenErrorFromName,
 } from '../errors';
 
-export const SPL_ASSOCIATED_TOKEN_PROGRAM_ID = publicKey(
-  'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-);
+export const SPL_ASSOCIATED_TOKEN_PROGRAM_ID =
+  'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as PublicKey<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>;
 
 export function createSplAssociatedTokenProgram(): Program {
   return {

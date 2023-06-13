@@ -11,11 +11,11 @@ export function findAssociatedTokenPda(
 ): Pda {
   const s = context.serializer;
   const associatedTokenProgramId =
-    context.programs.get('splAssociatedToken').publicKey;
-  const tokenProgramId = context.programs.get('splToken').publicKey;
+    context.programs.getPublicKey('splAssociatedToken');
+  const tokenProgramId = context.programs.getPublicKey('splToken');
   return context.eddsa.findPda(associatedTokenProgramId, [
     s.publicKey().serialize(seeds.owner),
-    tokenProgramId.bytes,
+    s.publicKey().serialize(tokenProgramId),
     s.publicKey().serialize(seeds.mint),
   ]);
 }

@@ -11,16 +11,14 @@ import {
   Context,
   Program,
   PublicKey,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   getMplTokenExtrasErrorFromCode,
   getMplTokenExtrasErrorFromName,
 } from '../errors';
 
-export const MPL_TOKEN_EXTRAS_PROGRAM_ID = publicKey(
-  'TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p'
-);
+export const MPL_TOKEN_EXTRAS_PROGRAM_ID =
+  'TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p' as PublicKey<'TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p'>;
 
 export function createMplTokenExtrasProgram(): Program {
   return {

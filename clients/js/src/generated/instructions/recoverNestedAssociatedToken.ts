@@ -9,22 +9,23 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { addObjectProperty, isWritable } from '../shared';
+import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
 export type RecoverNestedAssociatedTokenInstructionAccounts = {
-  nestedAssociatedAccountAddress: PublicKey;
-  nestedTokenMintAddress: PublicKey;
-  destinationAssociatedAccountAddress: PublicKey;
-  ownerAssociatedAccountAddress: PublicKey;
-  ownerTokenMintAddress: PublicKey;
+  nestedAssociatedAccountAddress: PublicKey | Pda;
+  nestedTokenMintAddress: PublicKey | Pda;
+  destinationAssociatedAccountAddress: PublicKey | Pda;
+  ownerAssociatedAccountAddress: PublicKey | Pda;
+  ownerTokenMintAddress: PublicKey | Pda;
   walletAddress: Signer;
-  tokenProgram?: PublicKey;
+  tokenProgram?: PublicKey | Pda;
 };
 
 // Instruction.
@@ -36,87 +37,65 @@ export function recoverNestedAssociatedToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splAssociatedToken',
-      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splAssociatedToken',
+    'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    nestedAssociatedAccountAddress: [
+      input.nestedAssociatedAccountAddress,
+      true,
+    ] as const,
+    nestedTokenMintAddress: [input.nestedTokenMintAddress, false] as const,
+    destinationAssociatedAccountAddress: [
+      input.destinationAssociatedAccountAddress,
+      true,
+    ] as const,
+    ownerAssociatedAccountAddress: [
+      input.ownerAssociatedAccountAddress,
+      false,
+    ] as const,
+    ownerTokenMintAddress: [input.ownerTokenMintAddress, false] as const,
+    walletAddress: [input.walletAddress, true] as const,
+  };
   addObjectProperty(
-    resolvingAccounts,
+    resolvedAccounts,
     'tokenProgram',
-    input.tokenProgram ?? {
-      ...context.programs.getPublicKey(
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      ),
-      isWritable: false,
-    }
+    input.tokenProgram
+      ? ([input.tokenProgram, false] as const)
+      : ([
+          context.programs.getPublicKey(
+            'splToken',
+            'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+          ),
+          false,
+        ] as const)
   );
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
-  // Nested Associated Account Address.
-  keys.push({
-    pubkey: resolvedAccounts.nestedAssociatedAccountAddress,
-    isSigner: false,
-    isWritable: isWritable(
-      resolvedAccounts.nestedAssociatedAccountAddress,
-      true
-    ),
-  });
-
-  // Nested Token Mint Address.
-  keys.push({
-    pubkey: resolvedAccounts.nestedTokenMintAddress,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.nestedTokenMintAddress, false),
-  });
-
-  // Destination Associated Account Address.
-  keys.push({
-    pubkey: resolvedAccounts.destinationAssociatedAccountAddress,
-    isSigner: false,
-    isWritable: isWritable(
-      resolvedAccounts.destinationAssociatedAccountAddress,
-      true
-    ),
-  });
-
-  // Owner Associated Account Address.
-  keys.push({
-    pubkey: resolvedAccounts.ownerAssociatedAccountAddress,
-    isSigner: false,
-    isWritable: isWritable(
-      resolvedAccounts.ownerAssociatedAccountAddress,
-      false
-    ),
-  });
-
-  // Owner Token Mint Address.
-  keys.push({
-    pubkey: resolvedAccounts.ownerTokenMintAddress,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.ownerTokenMintAddress, false),
-  });
-
-  // Wallet Address.
-  signers.push(resolvedAccounts.walletAddress);
-  keys.push({
-    pubkey: resolvedAccounts.walletAddress.publicKey,
-    isSigner: true,
-    isWritable: isWritable(resolvedAccounts.walletAddress, true),
-  });
-
-  // Token Program.
-  keys.push({
-    pubkey: resolvedAccounts.tokenProgram,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.tokenProgram, false),
-  });
+  addAccountMeta(
+    keys,
+    signers,
+    resolvedAccounts.nestedAssociatedAccountAddress,
+    false
+  );
+  addAccountMeta(keys, signers, resolvedAccounts.nestedTokenMintAddress, false);
+  addAccountMeta(
+    keys,
+    signers,
+    resolvedAccounts.destinationAssociatedAccountAddress,
+    false
+  );
+  addAccountMeta(
+    keys,
+    signers,
+    resolvedAccounts.ownerAssociatedAccountAddress,
+    false
+  );
+  addAccountMeta(keys, signers, resolvedAccounts.ownerTokenMintAddress, false);
+  addAccountMeta(keys, signers, resolvedAccounts.walletAddress, false);
+  addAccountMeta(keys, signers, resolvedAccounts.tokenProgram, false);
 
   // Data.
   const data = new Uint8Array();

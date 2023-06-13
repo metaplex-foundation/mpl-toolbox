@@ -9,6 +9,7 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -16,13 +17,13 @@ import {
   mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { isWritable } from '../shared';
+import { addAccountMeta } from '../shared';
 
 // Accounts.
 export type ApproveTokenDelegateCheckedInstructionAccounts = {
-  source: PublicKey;
-  mint: PublicKey;
-  delegate: PublicKey;
+  source: PublicKey | Pda;
+  mint: PublicKey | Pda;
+  delegate: PublicKey | Pda;
   owner: Signer;
 };
 
@@ -79,48 +80,25 @@ export function approveTokenDelegateChecked(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    source: [input.source, true] as const,
+    mint: [input.mint, false] as const,
+    delegate: [input.delegate, false] as const,
+    owner: [input.owner, false] as const,
+  };
   const resolvingArgs = {};
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
   const resolvedArgs = { ...input, ...resolvingArgs };
 
-  // Source.
-  keys.push({
-    pubkey: resolvedAccounts.source,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.source, true),
-  });
-
-  // Mint.
-  keys.push({
-    pubkey: resolvedAccounts.mint,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.mint, false),
-  });
-
-  // Delegate.
-  keys.push({
-    pubkey: resolvedAccounts.delegate,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.delegate, false),
-  });
-
-  // Owner.
-  signers.push(resolvedAccounts.owner);
-  keys.push({
-    pubkey: resolvedAccounts.owner.publicKey,
-    isSigner: true,
-    isWritable: isWritable(resolvedAccounts.owner, false),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.source, false);
+  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
+  addAccountMeta(keys, signers, resolvedAccounts.delegate, false);
+  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
 
   // Data.
   const data =

@@ -11,16 +11,14 @@ import {
   Context,
   Program,
   PublicKey,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   getMplSystemExtrasErrorFromCode,
   getMplSystemExtrasErrorFromName,
 } from '../errors';
 
-export const MPL_SYSTEM_EXTRAS_PROGRAM_ID = publicKey(
-  'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
-);
+export const MPL_SYSTEM_EXTRAS_PROGRAM_ID =
+  'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG' as PublicKey<'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'>;
 
 export function createMplSystemExtrasProgram(): Program {
   return {

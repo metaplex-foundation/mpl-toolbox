@@ -11,16 +11,14 @@ import {
   Context,
   Program,
   PublicKey,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   getSplComputeBudgetErrorFromCode,
   getSplComputeBudgetErrorFromName,
 } from '../errors';
 
-export const SPL_COMPUTE_BUDGET_PROGRAM_ID = publicKey(
-  'ComputeBudget111111111111111111111111111111'
-);
+export const SPL_COMPUTE_BUDGET_PROGRAM_ID =
+  'ComputeBudget111111111111111111111111111111' as PublicKey<'ComputeBudget111111111111111111111111111111'>;
 
 export function createSplComputeBudgetProgram(): Program {
   return {

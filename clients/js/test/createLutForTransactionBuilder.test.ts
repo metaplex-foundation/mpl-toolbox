@@ -24,7 +24,7 @@ test('it generates LUT builders for a given transaction builder', async (t) => {
   // And a base builder that creates an associated token account.
   const mint = generateSigner(umi);
   const owner = generateSigner(umi).publicKey;
-  const ata = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
+  const [ata] = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
   const baseBuilder = transactionBuilder()
     .add(createMint(umi, { mint }))
     .add(createAssociatedToken(umi, { mint: mint.publicKey, owner }));
@@ -47,12 +47,12 @@ test('it generates LUT builders for a given transaction builder', async (t) => {
   const mplSystemExtras = umi.programs.get('mplSystemExtras').publicKey;
   const splToken = umi.programs.get('splToken').publicKey;
   const splAssociatedToken = umi.programs.get('splAssociatedToken').publicKey;
-  const lut = findAddressLookupTablePda(umi, {
+  const [lut] = findAddressLookupTablePda(umi, {
     authority: umi.identity.publicKey,
     recentSlot,
   });
   t.is(lutAccounts.length, 1);
-  t.deepEqual(lutAccounts[0].publicKey, lut);
+  t.is(lutAccounts[0].publicKey, lut);
   t.is(lutAccounts[0].addresses.length, 6);
   t.true(hasPublicKey(lutAccounts[0].addresses, owner));
   t.true(hasPublicKey(lutAccounts[0].addresses, ata));
@@ -90,12 +90,12 @@ test('it generates multiple lut builders such that they each fit under one trans
 
   // And their addresses are using recent slots substracted from the provided recent slot.
   lutAccounts.forEach((lut, i) => {
-    t.deepEqual(
+    t.is(
       lut.publicKey,
       findAddressLookupTablePda(umi, {
         authority: umi.identity.publicKey,
         recentSlot: recentSlot - i,
-      })
+      })[0]
     );
   });
 

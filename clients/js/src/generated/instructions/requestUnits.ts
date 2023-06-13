@@ -65,13 +65,10 @@ export function requestUnits(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splComputeBudget',
-      'ComputeBudget111111111111111111111111111111'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splComputeBudget',
+    'ComputeBudget111111111111111111111111111111'
+  );
 
   // Resolved inputs.
   const resolvingArgs = {};

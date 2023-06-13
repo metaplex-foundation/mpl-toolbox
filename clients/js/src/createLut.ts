@@ -43,5 +43,5 @@ export function createLut(
       })
     );
 
-  return [builder, { publicKey: address, addresses }];
+  return [builder, { publicKey: address[0], addresses }];
 }

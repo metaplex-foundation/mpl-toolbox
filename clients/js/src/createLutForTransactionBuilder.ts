@@ -45,7 +45,7 @@ export const createLutForTransactionBuilder = (
 
   chunk(extractableAddresses, 256).forEach((addresses, index) => {
     const localRecentSlot = recentSlot - index;
-    const lut = findAddressLookupTablePda(context, {
+    const [lut] = findAddressLookupTablePda(context, {
       authority: lutAuthority.publicKey,
       recentSlot: localRecentSlot,
     });

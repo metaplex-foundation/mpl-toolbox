@@ -10,16 +10,15 @@ import {
   AccountMeta,
   Context,
   Option,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
   TransactionBuilder,
-  isSigner,
   mapSerializer,
-  publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { isWritable } from '../shared';
+import { addAccountMeta } from '../shared';
 import {
   AuthorityType,
   AuthorityTypeArgs,
@@ -28,8 +27,8 @@ import {
 
 // Accounts.
 export type SetAuthorityInstructionAccounts = {
-  owned: PublicKey;
-  owner: PublicKey | Signer;
+  owned: PublicKey | Pda;
+  owner: PublicKey | Pda | Signer;
 };
 
 // Data.
@@ -77,36 +76,21 @@ export function setAuthority(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    owned: [input.owned, true] as const,
+    owner: [input.owner, false] as const,
+  };
   const resolvingArgs = {};
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
   const resolvedArgs = { ...input, ...resolvingArgs };
 
-  // Owned.
-  keys.push({
-    pubkey: resolvedAccounts.owned,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.owned, true),
-  });
-
-  // Owner.
-  if (isSigner(resolvedAccounts.owner)) {
-    signers.push(resolvedAccounts.owner);
-  }
-  keys.push({
-    pubkey: publicKey(resolvedAccounts.owner),
-    isSigner: isSigner(resolvedAccounts.owner),
-    isWritable: isWritable(resolvedAccounts.owner, false),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.owned, false);
+  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
 
   // Data.
   const data =

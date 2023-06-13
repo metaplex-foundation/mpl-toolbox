@@ -9,6 +9,7 @@
 import {
   AccountMeta,
   Context,
+  Pda,
   PublicKey,
   Serializer,
   Signer,
@@ -17,14 +18,14 @@ import {
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { addObjectProperty, isWritable } from '../shared';
+import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
 export type InitializeTokenInstructionAccounts = {
-  account: PublicKey;
-  mint: PublicKey;
-  owner: PublicKey;
-  rent?: PublicKey;
+  account: PublicKey | Pda;
+  mint: PublicKey | Pda;
+  owner: PublicKey | Pda;
+  rent?: PublicKey | Pda;
 };
 
 // Data.
@@ -63,50 +64,32 @@ export function initializeToken(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Resolved inputs.
-  const resolvingAccounts = {};
+  const resolvedAccounts = {
+    account: [input.account, true] as const,
+    mint: [input.mint, false] as const,
+    owner: [input.owner, false] as const,
+  };
   addObjectProperty(
-    resolvingAccounts,
+    resolvedAccounts,
     'rent',
-    input.rent ?? publicKey('SysvarRent111111111111111111111111111111111')
+    input.rent
+      ? ([input.rent, false] as const)
+      : ([
+          publicKey('SysvarRent111111111111111111111111111111111'),
+          false,
+        ] as const)
   );
-  const resolvedAccounts = { ...input, ...resolvingAccounts };
 
-  // Account.
-  keys.push({
-    pubkey: resolvedAccounts.account,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.account, true),
-  });
-
-  // Mint.
-  keys.push({
-    pubkey: resolvedAccounts.mint,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.mint, false),
-  });
-
-  // Owner.
-  keys.push({
-    pubkey: resolvedAccounts.owner,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.owner, false),
-  });
-
-  // Rent.
-  keys.push({
-    pubkey: resolvedAccounts.rent,
-    isSigner: false,
-    isWritable: isWritable(resolvedAccounts.rent, false),
-  });
+  addAccountMeta(keys, signers, resolvedAccounts.account, false);
+  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
+  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
+  addAccountMeta(keys, signers, resolvedAccounts.rent, false);
 
   // Data.
   const data = getInitializeTokenInstructionDataSerializer(context).serialize(

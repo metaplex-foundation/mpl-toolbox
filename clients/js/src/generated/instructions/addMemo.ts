@@ -41,13 +41,10 @@ export function addMemo(
   const keys: AccountMeta[] = [];
 
   // Program ID.
-  const programId = {
-    ...context.programs.getPublicKey(
-      'splMemo',
-      'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
-    ),
-    isWritable: false,
-  };
+  const programId = context.programs.getPublicKey(
+    'splMemo',
+    'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
+  );
 
   // Resolved inputs.
   const resolvingArgs = {};

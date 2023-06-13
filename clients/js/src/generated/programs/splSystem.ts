@@ -11,16 +11,14 @@ import {
   Context,
   Program,
   PublicKey,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   getSplSystemErrorFromCode,
   getSplSystemErrorFromName,
 } from '../errors';
 
-export const SPL_SYSTEM_PROGRAM_ID = publicKey(
-  '11111111111111111111111111111111'
-);
+export const SPL_SYSTEM_PROGRAM_ID =
+  '11111111111111111111111111111111' as PublicKey<'11111111111111111111111111111111'>;
 
 export function createSplSystemProgram(): Program {
   return {

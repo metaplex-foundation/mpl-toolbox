@@ -28,11 +28,11 @@ test('it can create new mint accounts with minimum configuration', async (t) => 
       owner: umi.programs.get('splToken').publicKey,
       lamports: rentExemptBalance,
     },
-    mintAuthority: some({ ...umi.identity.publicKey }),
+    mintAuthority: some(umi.identity.publicKey),
     supply: 0n,
     decimals: 0,
     isInitialized: true,
-    freezeAuthority: some({ ...umi.identity.publicKey }),
+    freezeAuthority: some(umi.identity.publicKey),
   });
 
   // And the payer was charged for the creation of the account.

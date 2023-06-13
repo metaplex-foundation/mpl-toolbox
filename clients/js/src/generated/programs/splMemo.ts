@@ -11,13 +11,11 @@ import {
   Context,
   Program,
   PublicKey,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import { getSplMemoErrorFromCode, getSplMemoErrorFromName } from '../errors';
 
-export const SPL_MEMO_PROGRAM_ID = publicKey(
-  'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
-);
+export const SPL_MEMO_PROGRAM_ID =
+  'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo' as PublicKey<'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'>;
 
 export function createSplMemoProgram(): Program {
   return {

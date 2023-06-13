@@ -11,16 +11,14 @@ import {
   Context,
   Program,
   PublicKey,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   getSplAddressLookupTableErrorFromCode,
   getSplAddressLookupTableErrorFromName,
 } from '../errors';
 
-export const SPL_ADDRESS_LOOKUP_TABLE_PROGRAM_ID = publicKey(
-  'AddressLookupTab1e1111111111111111111111111'
-);
+export const SPL_ADDRESS_LOOKUP_TABLE_PROGRAM_ID =
+  'AddressLookupTab1e1111111111111111111111111' as PublicKey<'AddressLookupTab1e1111111111111111111111111'>;
 
 export function createSplAddressLookupTableProgram(): Program {
   return {

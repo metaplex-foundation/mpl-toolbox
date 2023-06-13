@@ -37,10 +37,10 @@ test('it can create a new mint and token account with no tokens', async (t) => {
   });
 
   // And a new associated token account with no tokens.
-  const ata = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
+  const [ata] = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
   const tokenAccount = await fetchToken(umi, ata);
   t.like(tokenAccount, <Token>{
-    publicKey: publicKey(ata),
+    publicKey: ata,
     mint: publicKey(mint),
     owner: publicKey(owner),
     amount: 0n,
@@ -77,10 +77,10 @@ test('it can create a new mint and token account with a single token', async (t)
   });
 
   // And a new associated token account with one token.
-  const ata = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
+  const [ata] = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
   const tokenAccount = await fetchToken(umi, ata);
   t.like(tokenAccount, <Token>{
-    publicKey: publicKey(ata),
+    publicKey: ata,
     mint: publicKey(mint),
     owner: publicKey(owner),
     amount: 1n,
@@ -117,10 +117,10 @@ test('it can create a new mint and token account with many tokens', async (t) =>
   });
 
   // And a new associated token account with 42 tokens.
-  const ata = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
+  const [ata] = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
   const tokenAccount = await fetchToken(umi, ata);
   t.like(tokenAccount, <Token>{
-    publicKey: publicKey(ata),
+    publicKey: ata,
     mint: publicKey(mint),
     owner: publicKey(owner),
     amount: 42n,
@@ -158,10 +158,10 @@ test('it can create a new mint and token account with decimals', async (t) => {
   });
 
   // And a new associated token account with 42 tokens.
-  const ata = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
+  const [ata] = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner });
   const tokenAccount = await fetchToken(umi, ata);
   t.like(tokenAccount, <Token>{
-    publicKey: publicKey(ata),
+    publicKey: ata,
     mint: publicKey(mint),
     owner: publicKey(owner),
     amount: 42n,
@@ -193,13 +193,13 @@ test('it defaults to using the identity as the owner', async (t) => {
   });
 
   // And a new associated token account for the identity.
-  const ata = findAssociatedTokenPda(umi, {
+  const [ata] = findAssociatedTokenPda(umi, {
     mint: mint.publicKey,
     owner: umi.identity.publicKey,
   });
   const tokenAccount = await fetchToken(umi, ata);
   t.like(tokenAccount, <Token>{
-    publicKey: publicKey(ata),
+    publicKey: ata,
     mint: publicKey(mint),
     owner: publicKey(umi.identity),
     amount: 0n,
