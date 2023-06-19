@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -30,19 +34,29 @@ export type RevokeTokenDelegateInstructionData = { discriminator: number };
 
 export type RevokeTokenDelegateInstructionDataArgs = {};
 
+/** @deprecated Use `getRevokeTokenDelegateInstructionDataSerializer()` without any argument instead. */
 export function getRevokeTokenDelegateInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  RevokeTokenDelegateInstructionDataArgs,
+  RevokeTokenDelegateInstructionData
+>;
+export function getRevokeTokenDelegateInstructionDataSerializer(): Serializer<
+  RevokeTokenDelegateInstructionDataArgs,
+  RevokeTokenDelegateInstructionData
+>;
+export function getRevokeTokenDelegateInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   RevokeTokenDelegateInstructionDataArgs,
   RevokeTokenDelegateInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     RevokeTokenDelegateInstructionDataArgs,
     any,
     RevokeTokenDelegateInstructionData
   >(
-    s.struct<RevokeTokenDelegateInstructionData>([['discriminator', s.u8()]], {
+    struct<RevokeTokenDelegateInstructionData>([['discriminator', u8()]], {
       description: 'RevokeTokenDelegateInstructionData',
     }),
     (value) => ({ ...value, discriminator: 5 })
@@ -54,7 +68,7 @@ export function getRevokeTokenDelegateInstructionDataSerializer(
 
 // Instruction.
 export function revokeTokenDelegate(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: RevokeTokenDelegateInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -76,9 +90,7 @@ export function revokeTokenDelegate(
   addAccountMeta(keys, signers, resolvedAccounts.owner, false);
 
   // Data.
-  const data = getRevokeTokenDelegateInstructionDataSerializer(
-    context
-  ).serialize({});
+  const data = getRevokeTokenDelegateInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

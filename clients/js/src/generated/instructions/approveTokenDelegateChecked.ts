@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -39,23 +44,33 @@ export type ApproveTokenDelegateCheckedInstructionDataArgs = {
   decimals: number;
 };
 
+/** @deprecated Use `getApproveTokenDelegateCheckedInstructionDataSerializer()` without any argument instead. */
 export function getApproveTokenDelegateCheckedInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  ApproveTokenDelegateCheckedInstructionDataArgs,
+  ApproveTokenDelegateCheckedInstructionData
+>;
+export function getApproveTokenDelegateCheckedInstructionDataSerializer(): Serializer<
+  ApproveTokenDelegateCheckedInstructionDataArgs,
+  ApproveTokenDelegateCheckedInstructionData
+>;
+export function getApproveTokenDelegateCheckedInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   ApproveTokenDelegateCheckedInstructionDataArgs,
   ApproveTokenDelegateCheckedInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     ApproveTokenDelegateCheckedInstructionDataArgs,
     any,
     ApproveTokenDelegateCheckedInstructionData
   >(
-    s.struct<ApproveTokenDelegateCheckedInstructionData>(
+    struct<ApproveTokenDelegateCheckedInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
-        ['decimals', s.u8()],
+        ['discriminator', u8()],
+        ['amount', u64()],
+        ['decimals', u8()],
       ],
       { description: 'ApproveTokenDelegateCheckedInstructionData' }
     ),
@@ -72,7 +87,7 @@ export type ApproveTokenDelegateCheckedInstructionArgs =
 
 // Instruction.
 export function approveTokenDelegateChecked(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: ApproveTokenDelegateCheckedInstructionAccounts &
     ApproveTokenDelegateCheckedInstructionArgs
 ): TransactionBuilder {
@@ -102,7 +117,7 @@ export function approveTokenDelegateChecked(
 
   // Data.
   const data =
-    getApproveTokenDelegateCheckedInstructionDataSerializer(context).serialize(
+    getApproveTokenDelegateCheckedInstructionDataSerializer().serialize(
       resolvedArgs
     );
 

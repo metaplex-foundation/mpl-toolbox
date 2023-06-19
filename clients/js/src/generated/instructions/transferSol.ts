@@ -11,14 +11,19 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   SolAmount,
   TransactionBuilder,
   mapAmountSerializer,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+  u64,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -35,19 +40,26 @@ export type TransferSolInstructionData = {
 
 export type TransferSolInstructionDataArgs = { amount: SolAmount };
 
+/** @deprecated Use `getTransferSolInstructionDataSerializer()` without any argument instead. */
 export function getTransferSolInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<TransferSolInstructionDataArgs, TransferSolInstructionData>;
+export function getTransferSolInstructionDataSerializer(): Serializer<
+  TransferSolInstructionDataArgs,
+  TransferSolInstructionData
+>;
+export function getTransferSolInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<TransferSolInstructionDataArgs, TransferSolInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     TransferSolInstructionDataArgs,
     any,
     TransferSolInstructionData
   >(
-    s.struct<TransferSolInstructionData>(
+    struct<TransferSolInstructionData>(
       [
-        ['discriminator', s.u32()],
-        ['amount', mapAmountSerializer(s.u64(), 'SOL', 9)],
+        ['discriminator', u32()],
+        ['amount', mapAmountSerializer(u64(), 'SOL', 9)],
       ],
       { description: 'TransferSolInstructionData' }
     ),
@@ -60,7 +72,7 @@ export type TransferSolInstructionArgs = TransferSolInstructionDataArgs;
 
 // Instruction.
 export function transferSol(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: TransferSolInstructionAccounts & TransferSolInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -91,7 +103,7 @@ export function transferSol(
 
   // Data.
   const data =
-    getTransferSolInstructionDataSerializer(context).serialize(resolvedArgs);
+    getTransferSolInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

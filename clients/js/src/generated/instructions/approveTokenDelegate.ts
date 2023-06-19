@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -36,22 +41,32 @@ export type ApproveTokenDelegateInstructionDataArgs = {
   amount: number | bigint;
 };
 
+/** @deprecated Use `getApproveTokenDelegateInstructionDataSerializer()` without any argument instead. */
 export function getApproveTokenDelegateInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  ApproveTokenDelegateInstructionDataArgs,
+  ApproveTokenDelegateInstructionData
+>;
+export function getApproveTokenDelegateInstructionDataSerializer(): Serializer<
+  ApproveTokenDelegateInstructionDataArgs,
+  ApproveTokenDelegateInstructionData
+>;
+export function getApproveTokenDelegateInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   ApproveTokenDelegateInstructionDataArgs,
   ApproveTokenDelegateInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     ApproveTokenDelegateInstructionDataArgs,
     any,
     ApproveTokenDelegateInstructionData
   >(
-    s.struct<ApproveTokenDelegateInstructionData>(
+    struct<ApproveTokenDelegateInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
+        ['discriminator', u8()],
+        ['amount', u64()],
       ],
       { description: 'ApproveTokenDelegateInstructionData' }
     ),
@@ -68,7 +83,7 @@ export type ApproveTokenDelegateInstructionArgs =
 
 // Instruction.
 export function approveTokenDelegate(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: ApproveTokenDelegateInstructionAccounts &
     ApproveTokenDelegateInstructionArgs
 ): TransactionBuilder {
@@ -96,9 +111,7 @@ export function approveTokenDelegate(
 
   // Data.
   const data =
-    getApproveTokenDelegateInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getApproveTokenDelegateInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

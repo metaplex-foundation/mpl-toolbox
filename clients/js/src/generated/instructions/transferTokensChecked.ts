@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -39,23 +44,33 @@ export type TransferTokensCheckedInstructionDataArgs = {
   decimals: number;
 };
 
+/** @deprecated Use `getTransferTokensCheckedInstructionDataSerializer()` without any argument instead. */
 export function getTransferTokensCheckedInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  TransferTokensCheckedInstructionDataArgs,
+  TransferTokensCheckedInstructionData
+>;
+export function getTransferTokensCheckedInstructionDataSerializer(): Serializer<
+  TransferTokensCheckedInstructionDataArgs,
+  TransferTokensCheckedInstructionData
+>;
+export function getTransferTokensCheckedInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   TransferTokensCheckedInstructionDataArgs,
   TransferTokensCheckedInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     TransferTokensCheckedInstructionDataArgs,
     any,
     TransferTokensCheckedInstructionData
   >(
-    s.struct<TransferTokensCheckedInstructionData>(
+    struct<TransferTokensCheckedInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
-        ['decimals', s.u8()],
+        ['discriminator', u8()],
+        ['amount', u64()],
+        ['decimals', u8()],
       ],
       { description: 'TransferTokensCheckedInstructionData' }
     ),
@@ -72,7 +87,7 @@ export type TransferTokensCheckedInstructionArgs =
 
 // Instruction.
 export function transferTokensChecked(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: TransferTokensCheckedInstructionAccounts &
     TransferTokensCheckedInstructionArgs
 ): TransactionBuilder {
@@ -108,9 +123,7 @@ export function transferTokensChecked(
 
   // Data.
   const data =
-    getTransferTokensCheckedInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getTransferTokensCheckedInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

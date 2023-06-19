@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -29,22 +33,31 @@ export type InitializeImmutableOwnerInstructionData = { discriminator: number };
 
 export type InitializeImmutableOwnerInstructionDataArgs = {};
 
+/** @deprecated Use `getInitializeImmutableOwnerInstructionDataSerializer()` without any argument instead. */
 export function getInitializeImmutableOwnerInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  InitializeImmutableOwnerInstructionDataArgs,
+  InitializeImmutableOwnerInstructionData
+>;
+export function getInitializeImmutableOwnerInstructionDataSerializer(): Serializer<
+  InitializeImmutableOwnerInstructionDataArgs,
+  InitializeImmutableOwnerInstructionData
+>;
+export function getInitializeImmutableOwnerInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   InitializeImmutableOwnerInstructionDataArgs,
   InitializeImmutableOwnerInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     InitializeImmutableOwnerInstructionDataArgs,
     any,
     InitializeImmutableOwnerInstructionData
   >(
-    s.struct<InitializeImmutableOwnerInstructionData>(
-      [['discriminator', s.u8()]],
-      { description: 'InitializeImmutableOwnerInstructionData' }
-    ),
+    struct<InitializeImmutableOwnerInstructionData>([['discriminator', u8()]], {
+      description: 'InitializeImmutableOwnerInstructionData',
+    }),
     (value) => ({ ...value, discriminator: 22 })
   ) as Serializer<
     InitializeImmutableOwnerInstructionDataArgs,
@@ -54,7 +67,7 @@ export function getInitializeImmutableOwnerInstructionDataSerializer(
 
 // Instruction.
 export function initializeImmutableOwner(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: InitializeImmutableOwnerInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -74,9 +87,9 @@ export function initializeImmutableOwner(
   addAccountMeta(keys, signers, resolvedAccounts.account, false);
 
   // Data.
-  const data = getInitializeImmutableOwnerInstructionDataSerializer(
-    context
-  ).serialize({});
+  const data = getInitializeImmutableOwnerInstructionDataSerializer().serialize(
+    {}
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -16,7 +16,7 @@ import {
 export const createLutForTransactionBuilder = (
   context: Pick<
     Context,
-    'eddsa' | 'programs' | 'serializer' | 'transactions' | 'identity' | 'payer'
+    'eddsa' | 'programs' | 'transactions' | 'identity' | 'payer'
   >,
   builder: TransactionBuilder,
   recentSlot: number,
@@ -67,7 +67,7 @@ export const createLutForTransactionBuilder = (
 function generatecreateLutBuilders(
   context: Pick<
     Context,
-    'programs' | 'serializer' | 'eddsa' | 'identity' | 'payer' | 'transactions'
+    'programs' | 'eddsa' | 'identity' | 'payer' | 'transactions'
   >,
   builder: TransactionBuilder,
   lutAddress: PublicKey,

@@ -10,17 +10,25 @@ import {
   Account,
   Context,
   Option,
+  OptionOrNullable,
   Pda,
   PublicKey,
   RpcAccount,
   RpcGetAccountOptions,
   RpcGetAccountsOptions,
-  Serializer,
   assertAccountExists,
   deserializeAccount,
   gpaBuilder,
   publicKey as toPublicKey,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  option,
+  publicKey as publicKeySerializer,
+  struct,
+  u32,
+  u64,
+} from '@metaplex-foundation/umi/serializers';
 import { TokenState, TokenStateArgs, getTokenStateSerializer } from '../types';
 
 export type Token = Account<TokenAccountData>;
@@ -40,44 +48,63 @@ export type TokenAccountDataArgs = {
   mint: PublicKey;
   owner: PublicKey;
   amount: number | bigint;
-  delegate: Option<PublicKey>;
+  delegate: OptionOrNullable<PublicKey>;
   state: TokenStateArgs;
-  isNative: Option<number | bigint>;
+  isNative: OptionOrNullable<number | bigint>;
   delegatedAmount: number | bigint;
-  closeAuthority: Option<PublicKey>;
+  closeAuthority: OptionOrNullable<PublicKey>;
 };
 
+/** @deprecated Use `getTokenAccountDataSerializer()` without any argument instead. */
 export function getTokenAccountDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<TokenAccountDataArgs, TokenAccountData>;
+export function getTokenAccountDataSerializer(): Serializer<
+  TokenAccountDataArgs,
+  TokenAccountData
+>;
+export function getTokenAccountDataSerializer(
+  _context: object = {}
 ): Serializer<TokenAccountDataArgs, TokenAccountData> {
-  const s = context.serializer;
-  return s.struct<TokenAccountData>(
+  return struct<TokenAccountData>(
     [
-      ['mint', s.publicKey()],
-      ['owner', s.publicKey()],
-      ['amount', s.u64()],
-      ['delegate', s.option(s.publicKey(), { prefix: s.u32(), fixed: true })],
-      ['state', getTokenStateSerializer(context)],
-      ['isNative', s.option(s.u64(), { prefix: s.u32(), fixed: true })],
-      ['delegatedAmount', s.u64()],
+      ['mint', publicKeySerializer()],
+      ['owner', publicKeySerializer()],
+      ['amount', u64()],
+      [
+        'delegate',
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
+      ],
+      ['state', getTokenStateSerializer()],
+      ['isNative', option(u64(), { prefix: u32(), fixed: true })],
+      ['delegatedAmount', u64()],
       [
         'closeAuthority',
-        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
       ],
     ],
     { description: 'TokenAccountData' }
   ) as Serializer<TokenAccountDataArgs, TokenAccountData>;
 }
 
+/** @deprecated Use `deserializeToken(rawAccount)` without any context instead. */
 export function deserializeToken(
-  context: Pick<Context, 'serializer'>,
+  context: object,
   rawAccount: RpcAccount
+): Token;
+export function deserializeToken(rawAccount: RpcAccount): Token;
+export function deserializeToken(
+  context: RpcAccount | object,
+  rawAccount?: RpcAccount
 ): Token {
-  return deserializeAccount(rawAccount, getTokenAccountDataSerializer(context));
+  return deserializeAccount(
+    rawAccount ?? (context as RpcAccount),
+    getTokenAccountDataSerializer()
+  );
 }
 
 export async function fetchToken(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKey: PublicKey | Pda,
   options?: RpcGetAccountOptions
 ): Promise<Token> {
@@ -86,11 +113,11 @@ export async function fetchToken(
     options
   );
   assertAccountExists(maybeAccount, 'Token');
-  return deserializeToken(context, maybeAccount);
+  return deserializeToken(maybeAccount);
 }
 
 export async function safeFetchToken(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKey: PublicKey | Pda,
   options?: RpcGetAccountOptions
 ): Promise<Token | null> {
@@ -98,11 +125,11 @@ export async function safeFetchToken(
     toPublicKey(publicKey, false),
     options
   );
-  return maybeAccount.exists ? deserializeToken(context, maybeAccount) : null;
+  return maybeAccount.exists ? deserializeToken(maybeAccount) : null;
 }
 
 export async function fetchAllToken(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKeys: Array<PublicKey | Pda>,
   options?: RpcGetAccountsOptions
 ): Promise<Token[]> {
@@ -112,12 +139,12 @@ export async function fetchAllToken(
   );
   return maybeAccounts.map((maybeAccount) => {
     assertAccountExists(maybeAccount, 'Token');
-    return deserializeToken(context, maybeAccount);
+    return deserializeToken(maybeAccount);
   });
 }
 
 export async function safeFetchAllToken(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKeys: Array<PublicKey | Pda>,
   options?: RpcGetAccountsOptions
 ): Promise<Token[]> {
@@ -127,15 +154,10 @@ export async function safeFetchAllToken(
   );
   return maybeAccounts
     .filter((maybeAccount) => maybeAccount.exists)
-    .map((maybeAccount) =>
-      deserializeToken(context, maybeAccount as RpcAccount)
-    );
+    .map((maybeAccount) => deserializeToken(maybeAccount as RpcAccount));
 }
 
-export function getTokenGpaBuilder(
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
-) {
-  const s = context.serializer;
+export function getTokenGpaBuilder(context: Pick<Context, 'rpc' | 'programs'>) {
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
@@ -145,25 +167,28 @@ export function getTokenGpaBuilder(
       mint: PublicKey;
       owner: PublicKey;
       amount: number | bigint;
-      delegate: Option<PublicKey>;
+      delegate: OptionOrNullable<PublicKey>;
       state: TokenStateArgs;
-      isNative: Option<number | bigint>;
+      isNative: OptionOrNullable<number | bigint>;
       delegatedAmount: number | bigint;
-      closeAuthority: Option<PublicKey>;
+      closeAuthority: OptionOrNullable<PublicKey>;
     }>({
-      mint: [0, s.publicKey()],
-      owner: [32, s.publicKey()],
-      amount: [64, s.u64()],
-      delegate: [72, s.option(s.publicKey(), { prefix: s.u32(), fixed: true })],
-      state: [108, getTokenStateSerializer(context)],
-      isNative: [109, s.option(s.u64(), { prefix: s.u32(), fixed: true })],
-      delegatedAmount: [121, s.u64()],
+      mint: [0, publicKeySerializer()],
+      owner: [32, publicKeySerializer()],
+      amount: [64, u64()],
+      delegate: [
+        72,
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
+      ],
+      state: [108, getTokenStateSerializer()],
+      isNative: [109, option(u64(), { prefix: u32(), fixed: true })],
+      delegatedAmount: [121, u64()],
       closeAuthority: [
         129,
-        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
       ],
     })
-    .deserializeUsing<Token>((account) => deserializeToken(context, account))
+    .deserializeUsing<Token>((account) => deserializeToken(account))
     .whereSize(165);
 }
 

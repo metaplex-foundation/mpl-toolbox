@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -38,23 +43,33 @@ export type MintTokensToCheckedInstructionDataArgs = {
   decimals: number;
 };
 
+/** @deprecated Use `getMintTokensToCheckedInstructionDataSerializer()` without any argument instead. */
 export function getMintTokensToCheckedInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  MintTokensToCheckedInstructionDataArgs,
+  MintTokensToCheckedInstructionData
+>;
+export function getMintTokensToCheckedInstructionDataSerializer(): Serializer<
+  MintTokensToCheckedInstructionDataArgs,
+  MintTokensToCheckedInstructionData
+>;
+export function getMintTokensToCheckedInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   MintTokensToCheckedInstructionDataArgs,
   MintTokensToCheckedInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     MintTokensToCheckedInstructionDataArgs,
     any,
     MintTokensToCheckedInstructionData
   >(
-    s.struct<MintTokensToCheckedInstructionData>(
+    struct<MintTokensToCheckedInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
-        ['decimals', s.u8()],
+        ['discriminator', u8()],
+        ['amount', u64()],
+        ['decimals', u8()],
       ],
       { description: 'MintTokensToCheckedInstructionData' }
     ),
@@ -71,7 +86,7 @@ export type MintTokensToCheckedInstructionArgs =
 
 // Instruction.
 export function mintTokensToChecked(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: MintTokensToCheckedInstructionAccounts &
     MintTokensToCheckedInstructionArgs
 ): TransactionBuilder {
@@ -99,9 +114,7 @@ export function mintTokensToChecked(
 
   // Data.
   const data =
-    getMintTokensToCheckedInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getMintTokensToCheckedInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

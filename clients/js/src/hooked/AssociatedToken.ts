@@ -1,7 +1,8 @@
 import { Context, Pda, PublicKey } from '@metaplex-foundation/umi';
+import { publicKey } from '@metaplex-foundation/umi/serializers';
 
 export function findAssociatedTokenPda(
-  context: Pick<Context, 'serializer' | 'eddsa' | 'programs'>,
+  context: Pick<Context, 'eddsa' | 'programs'>,
   seeds: {
     /** The address of the mint account */
     mint: PublicKey;
@@ -9,13 +10,12 @@ export function findAssociatedTokenPda(
     owner: PublicKey;
   }
 ): Pda {
-  const s = context.serializer;
   const associatedTokenProgramId =
     context.programs.getPublicKey('splAssociatedToken');
   const tokenProgramId = context.programs.getPublicKey('splToken');
   return context.eddsa.findPda(associatedTokenProgramId, [
-    s.publicKey().serialize(seeds.owner),
-    s.publicKey().serialize(tokenProgramId),
-    s.publicKey().serialize(seeds.mint),
+    publicKey().serialize(seeds.owner),
+    publicKey().serialize(tokenProgramId),
+    publicKey().serialize(seeds.mint),
   ]);
 }

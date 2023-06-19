@@ -9,22 +9,33 @@
 import {
   AccountMeta,
   Context,
-  Serializer,
   Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  string,
+  struct,
+} from '@metaplex-foundation/umi/serializers';
 
 // Data.
 export type AddMemoInstructionData = { memo: string };
 
 export type AddMemoInstructionDataArgs = AddMemoInstructionData;
 
+/** @deprecated Use `getAddMemoInstructionDataSerializer()` without any argument instead. */
 export function getAddMemoInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData>;
+export function getAddMemoInstructionDataSerializer(): Serializer<
+  AddMemoInstructionDataArgs,
+  AddMemoInstructionData
+>;
+export function getAddMemoInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData> {
-  const s = context.serializer;
-  return s.struct<AddMemoInstructionData>([['memo', s.string()]], {
+  return struct<AddMemoInstructionData>([['memo', string()]], {
     description: 'AddMemoInstructionData',
   }) as Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData>;
 }
@@ -34,7 +45,7 @@ export type AddMemoInstructionArgs = AddMemoInstructionDataArgs;
 
 // Instruction.
 export function addMemo(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: AddMemoInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -51,8 +62,7 @@ export function addMemo(
   const resolvedArgs = { ...input, ...resolvingArgs };
 
   // Data.
-  const data =
-    getAddMemoInstructionDataSerializer(context).serialize(resolvedArgs);
+  const data = getAddMemoInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

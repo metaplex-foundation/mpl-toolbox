@@ -11,14 +11,20 @@ import {
   AccountMeta,
   Context,
   PublicKey,
-  Serializer,
   Signer,
   SolAmount,
   TransactionBuilder,
   mapAmountSerializer,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  publicKey as publicKeySerializer,
+  struct,
+  u32,
+  u64,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -41,21 +47,28 @@ export type CreateAccountInstructionDataArgs = {
   programId: PublicKey;
 };
 
+/** @deprecated Use `getCreateAccountInstructionDataSerializer()` without any argument instead. */
 export function getCreateAccountInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<CreateAccountInstructionDataArgs, CreateAccountInstructionData>;
+export function getCreateAccountInstructionDataSerializer(): Serializer<
+  CreateAccountInstructionDataArgs,
+  CreateAccountInstructionData
+>;
+export function getCreateAccountInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<CreateAccountInstructionDataArgs, CreateAccountInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     CreateAccountInstructionDataArgs,
     any,
     CreateAccountInstructionData
   >(
-    s.struct<CreateAccountInstructionData>(
+    struct<CreateAccountInstructionData>(
       [
-        ['discriminator', s.u32()],
-        ['lamports', mapAmountSerializer(s.u64(), 'SOL', 9)],
-        ['space', s.u64()],
-        ['programId', s.publicKey()],
+        ['discriminator', u32()],
+        ['lamports', mapAmountSerializer(u64(), 'SOL', 9)],
+        ['space', u64()],
+        ['programId', publicKeySerializer()],
       ],
       { description: 'CreateAccountInstructionData' }
     ),
@@ -71,7 +84,7 @@ export type CreateAccountInstructionArgs = CreateAccountInstructionDataArgs;
 
 // Instruction.
 export function createAccount(
-  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
+  context: Pick<Context, 'programs' | 'payer'>,
   input: CreateAccountInstructionAccounts & CreateAccountInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -102,7 +115,7 @@ export function createAccount(
 
   // Data.
   const data =
-    getCreateAccountInstructionDataSerializer(context).serialize(resolvedArgs);
+    getCreateAccountInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;

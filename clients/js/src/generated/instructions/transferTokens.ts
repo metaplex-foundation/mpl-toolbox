@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -34,22 +39,29 @@ export type TransferTokensInstructionData = {
 
 export type TransferTokensInstructionDataArgs = { amount: number | bigint };
 
+/** @deprecated Use `getTransferTokensInstructionDataSerializer()` without any argument instead. */
 export function getTransferTokensInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<TransferTokensInstructionDataArgs, TransferTokensInstructionData>;
+export function getTransferTokensInstructionDataSerializer(): Serializer<
+  TransferTokensInstructionDataArgs,
+  TransferTokensInstructionData
+>;
+export function getTransferTokensInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   TransferTokensInstructionDataArgs,
   TransferTokensInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     TransferTokensInstructionDataArgs,
     any,
     TransferTokensInstructionData
   >(
-    s.struct<TransferTokensInstructionData>(
+    struct<TransferTokensInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
+        ['discriminator', u8()],
+        ['amount', u64()],
       ],
       { description: 'TransferTokensInstructionData' }
     ),
@@ -65,7 +77,7 @@ export type TransferTokensInstructionArgs = TransferTokensInstructionDataArgs;
 
 // Instruction.
 export function transferTokens(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: TransferTokensInstructionAccounts & TransferTokensInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -98,7 +110,7 @@ export function transferTokens(
 
   // Data.
   const data =
-    getTransferTokensInstructionDataSerializer(context).serialize(resolvedArgs);
+    getTransferTokensInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

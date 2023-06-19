@@ -20,7 +20,7 @@ export type CreateTokenArgs = {
 
 // Instruction.
 export function createToken(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
+  context: Pick<Context, 'programs' | 'identity' | 'payer'>,
   input: CreateTokenArgs
 ): TransactionBuilder {
   return transactionBuilder()

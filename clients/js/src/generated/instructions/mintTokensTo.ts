@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -34,19 +39,26 @@ export type MintTokensToInstructionData = {
 
 export type MintTokensToInstructionDataArgs = { amount: number | bigint };
 
+/** @deprecated Use `getMintTokensToInstructionDataSerializer()` without any argument instead. */
 export function getMintTokensToInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData>;
+export function getMintTokensToInstructionDataSerializer(): Serializer<
+  MintTokensToInstructionDataArgs,
+  MintTokensToInstructionData
+>;
+export function getMintTokensToInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     MintTokensToInstructionDataArgs,
     any,
     MintTokensToInstructionData
   >(
-    s.struct<MintTokensToInstructionData>(
+    struct<MintTokensToInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
+        ['discriminator', u8()],
+        ['amount', u64()],
       ],
       { description: 'MintTokensToInstructionData' }
     ),
@@ -59,7 +71,7 @@ export type MintTokensToInstructionArgs = MintTokensToInstructionDataArgs;
 
 // Instruction.
 export function mintTokensTo(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: MintTokensToInstructionAccounts & MintTokensToInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -92,7 +104,7 @@ export function mintTokensTo(
 
   // Data.
   const data =
-    getMintTokensToInstructionDataSerializer(context).serialize(resolvedArgs);
+    getMintTokensToInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

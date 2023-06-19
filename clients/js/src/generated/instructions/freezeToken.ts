@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -31,16 +35,23 @@ export type FreezeTokenInstructionData = { discriminator: number };
 
 export type FreezeTokenInstructionDataArgs = {};
 
+/** @deprecated Use `getFreezeTokenInstructionDataSerializer()` without any argument instead. */
 export function getFreezeTokenInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData>;
+export function getFreezeTokenInstructionDataSerializer(): Serializer<
+  FreezeTokenInstructionDataArgs,
+  FreezeTokenInstructionData
+>;
+export function getFreezeTokenInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     FreezeTokenInstructionDataArgs,
     any,
     FreezeTokenInstructionData
   >(
-    s.struct<FreezeTokenInstructionData>([['discriminator', s.u8()]], {
+    struct<FreezeTokenInstructionData>([['discriminator', u8()]], {
       description: 'FreezeTokenInstructionData',
     }),
     (value) => ({ ...value, discriminator: 10 })
@@ -49,7 +60,7 @@ export function getFreezeTokenInstructionDataSerializer(
 
 // Instruction.
 export function freezeToken(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: FreezeTokenInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -73,7 +84,7 @@ export function freezeToken(
   addAccountMeta(keys, signers, resolvedAccounts.owner, false);
 
   // Data.
-  const data = getFreezeTokenInstructionDataSerializer(context).serialize({});
+  const data = getFreezeTokenInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

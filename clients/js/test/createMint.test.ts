@@ -57,7 +57,7 @@ test('it can create new mint accounts with maximum configuration', async (t) => 
     mint: newAccount,
     decimals: 9,
     mintAuthority,
-    freezeAuthority: none(),
+    freezeAuthority: null,
   }).sendAndConfirm(umi);
 
   // Then the account was created with the correct data.

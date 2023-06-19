@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -34,19 +39,26 @@ export type BurnTokenInstructionData = {
 
 export type BurnTokenInstructionDataArgs = { amount: number | bigint };
 
+/** @deprecated Use `getBurnTokenInstructionDataSerializer()` without any argument instead. */
 export function getBurnTokenInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<BurnTokenInstructionDataArgs, BurnTokenInstructionData>;
+export function getBurnTokenInstructionDataSerializer(): Serializer<
+  BurnTokenInstructionDataArgs,
+  BurnTokenInstructionData
+>;
+export function getBurnTokenInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<BurnTokenInstructionDataArgs, BurnTokenInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     BurnTokenInstructionDataArgs,
     any,
     BurnTokenInstructionData
   >(
-    s.struct<BurnTokenInstructionData>(
+    struct<BurnTokenInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
+        ['discriminator', u8()],
+        ['amount', u64()],
       ],
       { description: 'BurnTokenInstructionData' }
     ),
@@ -59,7 +71,7 @@ export type BurnTokenInstructionArgs = BurnTokenInstructionDataArgs;
 
 // Instruction.
 export function burnToken(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: BurnTokenInstructionAccounts & BurnTokenInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -91,8 +103,7 @@ export function burnToken(
   addAccountMeta(keys, signers, resolvedAccounts.authority, false);
 
   // Data.
-  const data =
-    getBurnTokenInstructionDataSerializer(context).serialize(resolvedArgs);
+  const data = getBurnTokenInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

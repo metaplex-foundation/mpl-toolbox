@@ -29,7 +29,7 @@ export type CreateIdempotentAssociatedTokenInstructionAccounts = {
 
 // Instruction.
 export function createIdempotentAssociatedToken(
-  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
+  context: Pick<Context, 'programs' | 'payer'>,
   input: CreateIdempotentAssociatedTokenInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];

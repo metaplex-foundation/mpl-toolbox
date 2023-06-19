@@ -9,14 +9,19 @@
 import {
   AccountMeta,
   Context,
-  Serializer,
   Signer,
   SolAmount,
   TransactionBuilder,
   mapAmountSerializer,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 
 // Data.
 export type SetComputeUnitPriceInstructionData = {
@@ -30,22 +35,32 @@ export type SetComputeUnitPriceInstructionDataArgs = {
   lamports: SolAmount;
 };
 
+/** @deprecated Use `getSetComputeUnitPriceInstructionDataSerializer()` without any argument instead. */
 export function getSetComputeUnitPriceInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  SetComputeUnitPriceInstructionDataArgs,
+  SetComputeUnitPriceInstructionData
+>;
+export function getSetComputeUnitPriceInstructionDataSerializer(): Serializer<
+  SetComputeUnitPriceInstructionDataArgs,
+  SetComputeUnitPriceInstructionData
+>;
+export function getSetComputeUnitPriceInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   SetComputeUnitPriceInstructionDataArgs,
   SetComputeUnitPriceInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     SetComputeUnitPriceInstructionDataArgs,
     any,
     SetComputeUnitPriceInstructionData
   >(
-    s.struct<SetComputeUnitPriceInstructionData>(
+    struct<SetComputeUnitPriceInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['lamports', mapAmountSerializer(s.u64(), 'SOL', 9)],
+        ['discriminator', u8()],
+        ['lamports', mapAmountSerializer(u64(), 'SOL', 9)],
       ],
       { description: 'SetComputeUnitPriceInstructionData' }
     ),
@@ -62,7 +77,7 @@ export type SetComputeUnitPriceInstructionArgs =
 
 // Instruction.
 export function setComputeUnitPrice(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: SetComputeUnitPriceInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -80,9 +95,7 @@ export function setComputeUnitPrice(
 
   // Data.
   const data =
-    getSetComputeUnitPriceInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getSetComputeUnitPriceInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

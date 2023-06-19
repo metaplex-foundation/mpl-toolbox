@@ -10,17 +10,27 @@ import {
   Account,
   Context,
   Option,
+  OptionOrNullable,
   Pda,
   PublicKey,
   RpcAccount,
   RpcGetAccountOptions,
   RpcGetAccountsOptions,
-  Serializer,
   assertAccountExists,
   deserializeAccount,
   gpaBuilder,
   publicKey as toPublicKey,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  bool,
+  option,
+  publicKey as publicKeySerializer,
+  struct,
+  u32,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 
 export type Mint = Account<MintAccountData>;
 
@@ -33,44 +43,57 @@ export type MintAccountData = {
 };
 
 export type MintAccountDataArgs = {
-  mintAuthority: Option<PublicKey>;
+  mintAuthority: OptionOrNullable<PublicKey>;
   supply: number | bigint;
   decimals: number;
   isInitialized: boolean;
-  freezeAuthority: Option<PublicKey>;
+  freezeAuthority: OptionOrNullable<PublicKey>;
 };
 
+/** @deprecated Use `getMintAccountDataSerializer()` without any argument instead. */
 export function getMintAccountDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<MintAccountDataArgs, MintAccountData>;
+export function getMintAccountDataSerializer(): Serializer<
+  MintAccountDataArgs,
+  MintAccountData
+>;
+export function getMintAccountDataSerializer(
+  _context: object = {}
 ): Serializer<MintAccountDataArgs, MintAccountData> {
-  const s = context.serializer;
-  return s.struct<MintAccountData>(
+  return struct<MintAccountData>(
     [
       [
         'mintAuthority',
-        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
       ],
-      ['supply', s.u64()],
-      ['decimals', s.u8()],
-      ['isInitialized', s.bool()],
+      ['supply', u64()],
+      ['decimals', u8()],
+      ['isInitialized', bool()],
       [
         'freezeAuthority',
-        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
       ],
     ],
     { description: 'MintAccountData' }
   ) as Serializer<MintAccountDataArgs, MintAccountData>;
 }
 
+/** @deprecated Use `deserializeMint(rawAccount)` without any context instead. */
+export function deserializeMint(context: object, rawAccount: RpcAccount): Mint;
+export function deserializeMint(rawAccount: RpcAccount): Mint;
 export function deserializeMint(
-  context: Pick<Context, 'serializer'>,
-  rawAccount: RpcAccount
+  context: RpcAccount | object,
+  rawAccount?: RpcAccount
 ): Mint {
-  return deserializeAccount(rawAccount, getMintAccountDataSerializer(context));
+  return deserializeAccount(
+    rawAccount ?? (context as RpcAccount),
+    getMintAccountDataSerializer()
+  );
 }
 
 export async function fetchMint(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKey: PublicKey | Pda,
   options?: RpcGetAccountOptions
 ): Promise<Mint> {
@@ -79,11 +102,11 @@ export async function fetchMint(
     options
   );
   assertAccountExists(maybeAccount, 'Mint');
-  return deserializeMint(context, maybeAccount);
+  return deserializeMint(maybeAccount);
 }
 
 export async function safeFetchMint(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKey: PublicKey | Pda,
   options?: RpcGetAccountOptions
 ): Promise<Mint | null> {
@@ -91,11 +114,11 @@ export async function safeFetchMint(
     toPublicKey(publicKey, false),
     options
   );
-  return maybeAccount.exists ? deserializeMint(context, maybeAccount) : null;
+  return maybeAccount.exists ? deserializeMint(maybeAccount) : null;
 }
 
 export async function fetchAllMint(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKeys: Array<PublicKey | Pda>,
   options?: RpcGetAccountsOptions
 ): Promise<Mint[]> {
@@ -105,12 +128,12 @@ export async function fetchAllMint(
   );
   return maybeAccounts.map((maybeAccount) => {
     assertAccountExists(maybeAccount, 'Mint');
-    return deserializeMint(context, maybeAccount);
+    return deserializeMint(maybeAccount);
   });
 }
 
 export async function safeFetchAllMint(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKeys: Array<PublicKey | Pda>,
   options?: RpcGetAccountsOptions
 ): Promise<Mint[]> {
@@ -120,40 +143,35 @@ export async function safeFetchAllMint(
   );
   return maybeAccounts
     .filter((maybeAccount) => maybeAccount.exists)
-    .map((maybeAccount) =>
-      deserializeMint(context, maybeAccount as RpcAccount)
-    );
+    .map((maybeAccount) => deserializeMint(maybeAccount as RpcAccount));
 }
 
-export function getMintGpaBuilder(
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
-) {
-  const s = context.serializer;
+export function getMintGpaBuilder(context: Pick<Context, 'rpc' | 'programs'>) {
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
   return gpaBuilder(context, programId)
     .registerFields<{
-      mintAuthority: Option<PublicKey>;
+      mintAuthority: OptionOrNullable<PublicKey>;
       supply: number | bigint;
       decimals: number;
       isInitialized: boolean;
-      freezeAuthority: Option<PublicKey>;
+      freezeAuthority: OptionOrNullable<PublicKey>;
     }>({
       mintAuthority: [
         0,
-        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
       ],
-      supply: [36, s.u64()],
-      decimals: [44, s.u8()],
-      isInitialized: [45, s.bool()],
+      supply: [36, u64()],
+      decimals: [44, u8()],
+      isInitialized: [45, bool()],
       freezeAuthority: [
         46,
-        s.option(s.publicKey(), { prefix: s.u32(), fixed: true }),
+        option(publicKeySerializer(), { prefix: u32(), fixed: true }),
       ],
     })
-    .deserializeUsing<Mint>((account) => deserializeMint(context, account))
+    .deserializeUsing<Mint>((account) => deserializeMint(account))
     .whereSize(82);
 }
 

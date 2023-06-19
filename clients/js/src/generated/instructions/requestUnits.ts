@@ -9,12 +9,17 @@
 import {
   AccountMeta,
   Context,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 
 // Data.
 export type RequestUnitsInstructionData = {
@@ -32,20 +37,27 @@ export type RequestUnitsInstructionDataArgs = {
   additionalFee: number;
 };
 
+/** @deprecated Use `getRequestUnitsInstructionDataSerializer()` without any argument instead. */
 export function getRequestUnitsInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<RequestUnitsInstructionDataArgs, RequestUnitsInstructionData>;
+export function getRequestUnitsInstructionDataSerializer(): Serializer<
+  RequestUnitsInstructionDataArgs,
+  RequestUnitsInstructionData
+>;
+export function getRequestUnitsInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<RequestUnitsInstructionDataArgs, RequestUnitsInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     RequestUnitsInstructionDataArgs,
     any,
     RequestUnitsInstructionData
   >(
-    s.struct<RequestUnitsInstructionData>(
+    struct<RequestUnitsInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['units', s.u32()],
-        ['additionalFee', s.u32()],
+        ['discriminator', u8()],
+        ['units', u32()],
+        ['additionalFee', u32()],
       ],
       { description: 'RequestUnitsInstructionData' }
     ),
@@ -58,7 +70,7 @@ export type RequestUnitsInstructionArgs = RequestUnitsInstructionDataArgs;
 
 // Instruction.
 export function requestUnits(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: RequestUnitsInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -76,7 +88,7 @@ export function requestUnits(
 
   // Data.
   const data =
-    getRequestUnitsInstructionDataSerializer(context).serialize(resolvedArgs);
+    getRequestUnitsInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

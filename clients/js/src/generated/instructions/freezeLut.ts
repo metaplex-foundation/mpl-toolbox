@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -30,16 +34,23 @@ export type FreezeLutInstructionData = { discriminator: number };
 
 export type FreezeLutInstructionDataArgs = {};
 
+/** @deprecated Use `getFreezeLutInstructionDataSerializer()` without any argument instead. */
 export function getFreezeLutInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<FreezeLutInstructionDataArgs, FreezeLutInstructionData>;
+export function getFreezeLutInstructionDataSerializer(): Serializer<
+  FreezeLutInstructionDataArgs,
+  FreezeLutInstructionData
+>;
+export function getFreezeLutInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<FreezeLutInstructionDataArgs, FreezeLutInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     FreezeLutInstructionDataArgs,
     any,
     FreezeLutInstructionData
   >(
-    s.struct<FreezeLutInstructionData>([['discriminator', s.u32()]], {
+    struct<FreezeLutInstructionData>([['discriminator', u32()]], {
       description: 'FreezeLutInstructionData',
     }),
     (value) => ({ ...value, discriminator: 1 })
@@ -48,7 +59,7 @@ export function getFreezeLutInstructionDataSerializer(
 
 // Instruction.
 export function freezeLut(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: FreezeLutInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -76,7 +87,7 @@ export function freezeLut(
   addAccountMeta(keys, signers, resolvedAccounts.authority, false);
 
   // Data.
-  const data = getFreezeLutInstructionDataSerializer(context).serialize({});
+  const data = getFreezeLutInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

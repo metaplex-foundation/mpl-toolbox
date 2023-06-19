@@ -11,13 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { findAssociatedTokenPda } from '../../hooked';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
@@ -46,19 +50,29 @@ export type CreateTokenIfMissingInstructionData = { discriminator: number };
 
 export type CreateTokenIfMissingInstructionDataArgs = {};
 
+/** @deprecated Use `getCreateTokenIfMissingInstructionDataSerializer()` without any argument instead. */
 export function getCreateTokenIfMissingInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  CreateTokenIfMissingInstructionDataArgs,
+  CreateTokenIfMissingInstructionData
+>;
+export function getCreateTokenIfMissingInstructionDataSerializer(): Serializer<
+  CreateTokenIfMissingInstructionDataArgs,
+  CreateTokenIfMissingInstructionData
+>;
+export function getCreateTokenIfMissingInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   CreateTokenIfMissingInstructionDataArgs,
   CreateTokenIfMissingInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     CreateTokenIfMissingInstructionDataArgs,
     any,
     CreateTokenIfMissingInstructionData
   >(
-    s.struct<CreateTokenIfMissingInstructionData>([['discriminator', s.u8()]], {
+    struct<CreateTokenIfMissingInstructionData>([['discriminator', u8()]], {
       description: 'CreateTokenIfMissingInstructionData',
     }),
     (value) => ({ ...value, discriminator: 0 })
@@ -70,10 +84,7 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
 
 // Instruction.
 export function createTokenIfMissing(
-  context: Pick<
-    Context,
-    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
-  >,
+  context: Pick<Context, 'programs' | 'eddsa' | 'identity' | 'payer'>,
   input: CreateTokenIfMissingInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -173,9 +184,7 @@ export function createTokenIfMissing(
   addAccountMeta(keys, signers, resolvedAccounts.ataProgram, false);
 
   // Data.
-  const data = getCreateTokenIfMissingInstructionDataSerializer(
-    context
-  ).serialize({});
+  const data = getCreateTokenIfMissingInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -10,15 +10,22 @@ import {
   AccountMeta,
   Context,
   Option,
+  OptionOrNullable,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  option,
+  publicKey as publicKeySerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -38,27 +45,34 @@ export type InitializeMintInstructionData = {
 export type InitializeMintInstructionDataArgs = {
   decimals: number;
   mintAuthority: PublicKey;
-  freezeAuthority: Option<PublicKey>;
+  freezeAuthority: OptionOrNullable<PublicKey>;
 };
 
+/** @deprecated Use `getInitializeMintInstructionDataSerializer()` without any argument instead. */
 export function getInitializeMintInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<InitializeMintInstructionDataArgs, InitializeMintInstructionData>;
+export function getInitializeMintInstructionDataSerializer(): Serializer<
+  InitializeMintInstructionDataArgs,
+  InitializeMintInstructionData
+>;
+export function getInitializeMintInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   InitializeMintInstructionDataArgs,
   InitializeMintInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     InitializeMintInstructionDataArgs,
     any,
     InitializeMintInstructionData
   >(
-    s.struct<InitializeMintInstructionData>(
+    struct<InitializeMintInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['decimals', s.u8()],
-        ['mintAuthority', s.publicKey()],
-        ['freezeAuthority', s.option(s.publicKey())],
+        ['discriminator', u8()],
+        ['decimals', u8()],
+        ['mintAuthority', publicKeySerializer()],
+        ['freezeAuthority', option(publicKeySerializer())],
       ],
       { description: 'InitializeMintInstructionData' }
     ),
@@ -74,7 +88,7 @@ export type InitializeMintInstructionArgs = InitializeMintInstructionDataArgs;
 
 // Instruction.
 export function initializeMint(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: InitializeMintInstructionAccounts & InitializeMintInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -108,7 +122,7 @@ export function initializeMint(
 
   // Data.
   const data =
-    getInitializeMintInstructionDataSerializer(context).serialize(resolvedArgs);
+    getInitializeMintInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

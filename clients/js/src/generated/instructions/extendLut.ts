@@ -11,12 +11,19 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  array,
+  mapSerializer,
+  publicKey as publicKeySerializer,
+  struct,
+  u32,
+  u64,
+} from '@metaplex-foundation/umi/serializers';
 import { resolveExtendLutBytes } from '../../hooked';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
@@ -36,19 +43,26 @@ export type ExtendLutInstructionData = {
 
 export type ExtendLutInstructionDataArgs = { addresses: Array<PublicKey> };
 
+/** @deprecated Use `getExtendLutInstructionDataSerializer()` without any argument instead. */
 export function getExtendLutInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData>;
+export function getExtendLutInstructionDataSerializer(): Serializer<
+  ExtendLutInstructionDataArgs,
+  ExtendLutInstructionData
+>;
+export function getExtendLutInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     ExtendLutInstructionDataArgs,
     any,
     ExtendLutInstructionData
   >(
-    s.struct<ExtendLutInstructionData>(
+    struct<ExtendLutInstructionData>(
       [
-        ['discriminator', s.u32()],
-        ['addresses', s.array(s.publicKey(), { size: s.u64() })],
+        ['discriminator', u32()],
+        ['addresses', array(publicKeySerializer(), { size: u64() })],
       ],
       { description: 'ExtendLutInstructionData' }
     ),
@@ -61,10 +75,7 @@ export type ExtendLutInstructionArgs = ExtendLutInstructionDataArgs;
 
 // Instruction.
 export function extendLut(
-  context: Pick<
-    Context,
-    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
-  >,
+  context: Pick<Context, 'programs' | 'eddsa' | 'identity' | 'payer'>,
   input: ExtendLutInstructionAccounts & ExtendLutInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -116,8 +127,7 @@ export function extendLut(
   addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
 
   // Data.
-  const data =
-    getExtendLutInstructionDataSerializer(context).serialize(resolvedArgs);
+  const data = getExtendLutInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = resolveExtendLutBytes(

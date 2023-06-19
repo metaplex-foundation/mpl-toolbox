@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -31,16 +35,23 @@ export type ThawTokenInstructionData = { discriminator: number };
 
 export type ThawTokenInstructionDataArgs = {};
 
+/** @deprecated Use `getThawTokenInstructionDataSerializer()` without any argument instead. */
 export function getThawTokenInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<ThawTokenInstructionDataArgs, ThawTokenInstructionData>;
+export function getThawTokenInstructionDataSerializer(): Serializer<
+  ThawTokenInstructionDataArgs,
+  ThawTokenInstructionData
+>;
+export function getThawTokenInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<ThawTokenInstructionDataArgs, ThawTokenInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     ThawTokenInstructionDataArgs,
     any,
     ThawTokenInstructionData
   >(
-    s.struct<ThawTokenInstructionData>([['discriminator', s.u8()]], {
+    struct<ThawTokenInstructionData>([['discriminator', u8()]], {
       description: 'ThawTokenInstructionData',
     }),
     (value) => ({ ...value, discriminator: 11 })
@@ -49,7 +60,7 @@ export function getThawTokenInstructionDataSerializer(
 
 // Instruction.
 export function thawToken(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: ThawTokenInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -73,7 +84,7 @@ export function thawToken(
   addAccountMeta(keys, signers, resolvedAccounts.owner, false);
 
   // Data.
-  const data = getThawTokenInstructionDataSerializer(context).serialize({});
+  const data = getThawTokenInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

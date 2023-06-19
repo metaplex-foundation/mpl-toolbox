@@ -11,13 +11,18 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  publicKey as publicKeySerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -35,22 +40,32 @@ export type InitializeToken2InstructionData = {
 
 export type InitializeToken2InstructionDataArgs = { owner: PublicKey };
 
+/** @deprecated Use `getInitializeToken2InstructionDataSerializer()` without any argument instead. */
 export function getInitializeToken2InstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  InitializeToken2InstructionDataArgs,
+  InitializeToken2InstructionData
+>;
+export function getInitializeToken2InstructionDataSerializer(): Serializer<
+  InitializeToken2InstructionDataArgs,
+  InitializeToken2InstructionData
+>;
+export function getInitializeToken2InstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   InitializeToken2InstructionDataArgs,
   InitializeToken2InstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     InitializeToken2InstructionDataArgs,
     any,
     InitializeToken2InstructionData
   >(
-    s.struct<InitializeToken2InstructionData>(
+    struct<InitializeToken2InstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['owner', s.publicKey()],
+        ['discriminator', u8()],
+        ['owner', publicKeySerializer()],
       ],
       { description: 'InitializeToken2InstructionData' }
     ),
@@ -67,7 +82,7 @@ export type InitializeToken2InstructionArgs =
 
 // Instruction.
 export function initializeToken2(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: InitializeToken2InstructionAccounts & InitializeToken2InstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -103,9 +118,7 @@ export function initializeToken2(
 
   // Data.
   const data =
-    getInitializeToken2InstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getInitializeToken2InstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

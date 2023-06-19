@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -30,16 +34,23 @@ export type DeactivateLutInstructionData = { discriminator: number };
 
 export type DeactivateLutInstructionDataArgs = {};
 
+/** @deprecated Use `getDeactivateLutInstructionDataSerializer()` without any argument instead. */
 export function getDeactivateLutInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<DeactivateLutInstructionDataArgs, DeactivateLutInstructionData>;
+export function getDeactivateLutInstructionDataSerializer(): Serializer<
+  DeactivateLutInstructionDataArgs,
+  DeactivateLutInstructionData
+>;
+export function getDeactivateLutInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<DeactivateLutInstructionDataArgs, DeactivateLutInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     DeactivateLutInstructionDataArgs,
     any,
     DeactivateLutInstructionData
   >(
-    s.struct<DeactivateLutInstructionData>([['discriminator', s.u32()]], {
+    struct<DeactivateLutInstructionData>([['discriminator', u32()]], {
       description: 'DeactivateLutInstructionData',
     }),
     (value) => ({ ...value, discriminator: 3 })
@@ -51,7 +62,7 @@ export function getDeactivateLutInstructionDataSerializer(
 
 // Instruction.
 export function deactivateLut(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: DeactivateLutInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -79,7 +90,7 @@ export function deactivateLut(
   addAccountMeta(keys, signers, resolvedAccounts.authority, false);
 
   // Data.
-  const data = getDeactivateLutInstructionDataSerializer(context).serialize({});
+  const data = getDeactivateLutInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

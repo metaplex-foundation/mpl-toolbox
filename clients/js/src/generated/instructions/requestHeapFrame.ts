@@ -9,12 +9,17 @@
 import {
   AccountMeta,
   Context,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 
 // Data.
 export type RequestHeapFrameInstructionData = {
@@ -34,22 +39,32 @@ export type RequestHeapFrameInstructionDataArgs = {
   bytes: number;
 };
 
+/** @deprecated Use `getRequestHeapFrameInstructionDataSerializer()` without any argument instead. */
 export function getRequestHeapFrameInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  RequestHeapFrameInstructionDataArgs,
+  RequestHeapFrameInstructionData
+>;
+export function getRequestHeapFrameInstructionDataSerializer(): Serializer<
+  RequestHeapFrameInstructionDataArgs,
+  RequestHeapFrameInstructionData
+>;
+export function getRequestHeapFrameInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   RequestHeapFrameInstructionDataArgs,
   RequestHeapFrameInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     RequestHeapFrameInstructionDataArgs,
     any,
     RequestHeapFrameInstructionData
   >(
-    s.struct<RequestHeapFrameInstructionData>(
+    struct<RequestHeapFrameInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['bytes', s.u32()],
+        ['discriminator', u8()],
+        ['bytes', u32()],
       ],
       { description: 'RequestHeapFrameInstructionData' }
     ),
@@ -66,7 +81,7 @@ export type RequestHeapFrameInstructionArgs =
 
 // Instruction.
 export function requestHeapFrame(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: RequestHeapFrameInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -84,9 +99,7 @@ export function requestHeapFrame(
 
   // Data.
   const data =
-    getRequestHeapFrameInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getRequestHeapFrameInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

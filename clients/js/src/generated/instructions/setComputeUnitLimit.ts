@@ -9,12 +9,17 @@
 import {
   AccountMeta,
   Context,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 
 // Data.
 export type SetComputeUnitLimitInstructionData = {
@@ -28,22 +33,32 @@ export type SetComputeUnitLimitInstructionDataArgs = {
   units: number;
 };
 
+/** @deprecated Use `getSetComputeUnitLimitInstructionDataSerializer()` without any argument instead. */
 export function getSetComputeUnitLimitInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  SetComputeUnitLimitInstructionDataArgs,
+  SetComputeUnitLimitInstructionData
+>;
+export function getSetComputeUnitLimitInstructionDataSerializer(): Serializer<
+  SetComputeUnitLimitInstructionDataArgs,
+  SetComputeUnitLimitInstructionData
+>;
+export function getSetComputeUnitLimitInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   SetComputeUnitLimitInstructionDataArgs,
   SetComputeUnitLimitInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     SetComputeUnitLimitInstructionDataArgs,
     any,
     SetComputeUnitLimitInstructionData
   >(
-    s.struct<SetComputeUnitLimitInstructionData>(
+    struct<SetComputeUnitLimitInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['units', s.u32()],
+        ['discriminator', u8()],
+        ['units', u32()],
       ],
       { description: 'SetComputeUnitLimitInstructionData' }
     ),
@@ -60,7 +75,7 @@ export type SetComputeUnitLimitInstructionArgs =
 
 // Instruction.
 export function setComputeUnitLimit(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: SetComputeUnitLimitInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -78,9 +93,7 @@ export function setComputeUnitLimit(
 
   // Data.
   const data =
-    getSetComputeUnitLimitInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getSetComputeUnitLimitInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

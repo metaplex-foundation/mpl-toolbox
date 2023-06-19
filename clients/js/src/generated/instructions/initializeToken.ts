@@ -11,13 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -33,19 +37,29 @@ export type InitializeTokenInstructionData = { discriminator: number };
 
 export type InitializeTokenInstructionDataArgs = {};
 
+/** @deprecated Use `getInitializeTokenInstructionDataSerializer()` without any argument instead. */
 export function getInitializeTokenInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  InitializeTokenInstructionDataArgs,
+  InitializeTokenInstructionData
+>;
+export function getInitializeTokenInstructionDataSerializer(): Serializer<
+  InitializeTokenInstructionDataArgs,
+  InitializeTokenInstructionData
+>;
+export function getInitializeTokenInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   InitializeTokenInstructionDataArgs,
   InitializeTokenInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     InitializeTokenInstructionDataArgs,
     any,
     InitializeTokenInstructionData
   >(
-    s.struct<InitializeTokenInstructionData>([['discriminator', s.u8()]], {
+    struct<InitializeTokenInstructionData>([['discriminator', u8()]], {
       description: 'InitializeTokenInstructionData',
     }),
     (value) => ({ ...value, discriminator: 1 })
@@ -57,7 +71,7 @@ export function getInitializeTokenInstructionDataSerializer(
 
 // Instruction.
 export function initializeToken(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: InitializeTokenInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -92,9 +106,7 @@ export function initializeToken(
   addAccountMeta(keys, signers, resolvedAccounts.rent, false);
 
   // Data.
-  const data = getInitializeTokenInstructionDataSerializer(context).serialize(
-    {}
-  );
+  const data = getInitializeTokenInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

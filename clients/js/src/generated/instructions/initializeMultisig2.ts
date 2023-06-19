@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -33,22 +37,32 @@ export type InitializeMultisig2InstructionData = {
 
 export type InitializeMultisig2InstructionDataArgs = { m: number };
 
+/** @deprecated Use `getInitializeMultisig2InstructionDataSerializer()` without any argument instead. */
 export function getInitializeMultisig2InstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  InitializeMultisig2InstructionDataArgs,
+  InitializeMultisig2InstructionData
+>;
+export function getInitializeMultisig2InstructionDataSerializer(): Serializer<
+  InitializeMultisig2InstructionDataArgs,
+  InitializeMultisig2InstructionData
+>;
+export function getInitializeMultisig2InstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   InitializeMultisig2InstructionDataArgs,
   InitializeMultisig2InstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     InitializeMultisig2InstructionDataArgs,
     any,
     InitializeMultisig2InstructionData
   >(
-    s.struct<InitializeMultisig2InstructionData>(
+    struct<InitializeMultisig2InstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['m', s.u8()],
+        ['discriminator', u8()],
+        ['m', u8()],
       ],
       { description: 'InitializeMultisig2InstructionData' }
     ),
@@ -65,7 +79,7 @@ export type InitializeMultisig2InstructionArgs =
 
 // Instruction.
 export function initializeMultisig2(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: InitializeMultisig2InstructionAccounts &
     InitializeMultisig2InstructionArgs
 ): TransactionBuilder {
@@ -91,9 +105,7 @@ export function initializeMultisig2(
 
   // Data.
   const data =
-    getInitializeMultisig2InstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getInitializeMultisig2InstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

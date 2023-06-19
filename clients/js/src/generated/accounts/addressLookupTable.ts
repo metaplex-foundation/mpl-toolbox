@@ -10,18 +10,29 @@ import {
   Account,
   Context,
   Option,
+  OptionOrNullable,
   Pda,
   PublicKey,
   RpcAccount,
   RpcGetAccountOptions,
   RpcGetAccountsOptions,
-  Serializer,
   assertAccountExists,
   deserializeAccount,
   gpaBuilder,
-  mapSerializer,
   publicKey as toPublicKey,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  array,
+  mapSerializer,
+  option,
+  publicKey as publicKeySerializer,
+  struct,
+  u16,
+  u32,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 
 export type AddressLookupTable = Account<AddressLookupTableAccountData>;
 
@@ -39,31 +50,38 @@ export type AddressLookupTableAccountDataArgs = {
   deactivationSlot: number | bigint;
   lastExtendedSlot: number | bigint;
   lastExtendedStartIndex: number;
-  authority: Option<PublicKey>;
+  authority: OptionOrNullable<PublicKey>;
   addresses: Array<PublicKey>;
 };
 
+/** @deprecated Use `getAddressLookupTableAccountDataSerializer()` without any argument instead. */
 export function getAddressLookupTableAccountDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<AddressLookupTableAccountDataArgs, AddressLookupTableAccountData>;
+export function getAddressLookupTableAccountDataSerializer(): Serializer<
+  AddressLookupTableAccountDataArgs,
+  AddressLookupTableAccountData
+>;
+export function getAddressLookupTableAccountDataSerializer(
+  _context: object = {}
 ): Serializer<
   AddressLookupTableAccountDataArgs,
   AddressLookupTableAccountData
 > {
-  const s = context.serializer;
   return mapSerializer<
     AddressLookupTableAccountDataArgs,
     any,
     AddressLookupTableAccountData
   >(
-    s.struct<AddressLookupTableAccountData>(
+    struct<AddressLookupTableAccountData>(
       [
-        ['discriminator', s.u32()],
-        ['deactivationSlot', s.u64()],
-        ['lastExtendedSlot', s.u64()],
-        ['lastExtendedStartIndex', s.u8()],
-        ['authority', s.option(s.publicKey(), { fixed: true })],
-        ['padding', s.u16()],
-        ['addresses', s.array(s.publicKey(), { size: 'remainder' })],
+        ['discriminator', u32()],
+        ['deactivationSlot', u64()],
+        ['lastExtendedSlot', u64()],
+        ['lastExtendedStartIndex', u8()],
+        ['authority', option(publicKeySerializer(), { fixed: true })],
+        ['padding', u16()],
+        ['addresses', array(publicKeySerializer(), { size: 'remainder' })],
       ],
       { description: 'AddressLookupTableAccountData' }
     ),
@@ -74,18 +92,26 @@ export function getAddressLookupTableAccountDataSerializer(
   >;
 }
 
+/** @deprecated Use `deserializeAddressLookupTable(rawAccount)` without any context instead. */
 export function deserializeAddressLookupTable(
-  context: Pick<Context, 'serializer'>,
+  context: object,
   rawAccount: RpcAccount
+): AddressLookupTable;
+export function deserializeAddressLookupTable(
+  rawAccount: RpcAccount
+): AddressLookupTable;
+export function deserializeAddressLookupTable(
+  context: RpcAccount | object,
+  rawAccount?: RpcAccount
 ): AddressLookupTable {
   return deserializeAccount(
-    rawAccount,
-    getAddressLookupTableAccountDataSerializer(context)
+    rawAccount ?? (context as RpcAccount),
+    getAddressLookupTableAccountDataSerializer()
   );
 }
 
 export async function fetchAddressLookupTable(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKey: PublicKey | Pda,
   options?: RpcGetAccountOptions
 ): Promise<AddressLookupTable> {
@@ -94,11 +120,11 @@ export async function fetchAddressLookupTable(
     options
   );
   assertAccountExists(maybeAccount, 'AddressLookupTable');
-  return deserializeAddressLookupTable(context, maybeAccount);
+  return deserializeAddressLookupTable(maybeAccount);
 }
 
 export async function safeFetchAddressLookupTable(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKey: PublicKey | Pda,
   options?: RpcGetAccountOptions
 ): Promise<AddressLookupTable | null> {
@@ -107,12 +133,12 @@ export async function safeFetchAddressLookupTable(
     options
   );
   return maybeAccount.exists
-    ? deserializeAddressLookupTable(context, maybeAccount)
+    ? deserializeAddressLookupTable(maybeAccount)
     : null;
 }
 
 export async function fetchAllAddressLookupTable(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKeys: Array<PublicKey | Pda>,
   options?: RpcGetAccountsOptions
 ): Promise<AddressLookupTable[]> {
@@ -122,12 +148,12 @@ export async function fetchAllAddressLookupTable(
   );
   return maybeAccounts.map((maybeAccount) => {
     assertAccountExists(maybeAccount, 'AddressLookupTable');
-    return deserializeAddressLookupTable(context, maybeAccount);
+    return deserializeAddressLookupTable(maybeAccount);
   });
 }
 
 export async function safeFetchAllAddressLookupTable(
-  context: Pick<Context, 'rpc' | 'serializer'>,
+  context: Pick<Context, 'rpc'>,
   publicKeys: Array<PublicKey | Pda>,
   options?: RpcGetAccountsOptions
 ): Promise<AddressLookupTable[]> {
@@ -138,14 +164,13 @@ export async function safeFetchAllAddressLookupTable(
   return maybeAccounts
     .filter((maybeAccount) => maybeAccount.exists)
     .map((maybeAccount) =>
-      deserializeAddressLookupTable(context, maybeAccount as RpcAccount)
+      deserializeAddressLookupTable(maybeAccount as RpcAccount)
     );
 }
 
 export function getAddressLookupTableGpaBuilder(
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>
+  context: Pick<Context, 'rpc' | 'programs'>
 ) {
-  const s = context.serializer;
   const programId = context.programs.getPublicKey(
     'splAddressLookupTable',
     'AddressLookupTab1e1111111111111111111111111'
@@ -156,26 +181,26 @@ export function getAddressLookupTableGpaBuilder(
       deactivationSlot: number | bigint;
       lastExtendedSlot: number | bigint;
       lastExtendedStartIndex: number;
-      authority: Option<PublicKey>;
+      authority: OptionOrNullable<PublicKey>;
       padding: number;
       addresses: Array<PublicKey>;
     }>({
-      discriminator: [0, s.u32()],
-      deactivationSlot: [4, s.u64()],
-      lastExtendedSlot: [12, s.u64()],
-      lastExtendedStartIndex: [20, s.u8()],
-      authority: [21, s.option(s.publicKey(), { fixed: true })],
-      padding: [54, s.u16()],
-      addresses: [56, s.array(s.publicKey(), { size: 'remainder' })],
+      discriminator: [0, u32()],
+      deactivationSlot: [4, u64()],
+      lastExtendedSlot: [12, u64()],
+      lastExtendedStartIndex: [20, u8()],
+      authority: [21, option(publicKeySerializer(), { fixed: true })],
+      padding: [54, u16()],
+      addresses: [56, array(publicKeySerializer(), { size: 'remainder' })],
     })
     .deserializeUsing<AddressLookupTable>((account) =>
-      deserializeAddressLookupTable(context, account)
+      deserializeAddressLookupTable(account)
     )
     .whereField('discriminator', 1);
 }
 
 export function findAddressLookupTablePda(
-  context: Pick<Context, 'eddsa' | 'programs' | 'serializer'>,
+  context: Pick<Context, 'eddsa' | 'programs'>,
   seeds: {
     /** The address of the LUT's authority */
     authority: PublicKey;
@@ -183,19 +208,18 @@ export function findAddressLookupTablePda(
     recentSlot: number | bigint;
   }
 ): Pda {
-  const s = context.serializer;
   const programId = context.programs.getPublicKey(
     'splAddressLookupTable',
     'AddressLookupTab1e1111111111111111111111111'
   );
   return context.eddsa.findPda(programId, [
-    s.publicKey().serialize(seeds.authority),
-    s.u64().serialize(seeds.recentSlot),
+    publicKeySerializer().serialize(seeds.authority),
+    u64().serialize(seeds.recentSlot),
   ]);
 }
 
 export async function fetchAddressLookupTableFromSeeds(
-  context: Pick<Context, 'eddsa' | 'programs' | 'rpc' | 'serializer'>,
+  context: Pick<Context, 'eddsa' | 'programs' | 'rpc'>,
   seeds: Parameters<typeof findAddressLookupTablePda>[1],
   options?: RpcGetAccountOptions
 ): Promise<AddressLookupTable> {
@@ -207,7 +231,7 @@ export async function fetchAddressLookupTableFromSeeds(
 }
 
 export async function safeFetchAddressLookupTableFromSeeds(
-  context: Pick<Context, 'eddsa' | 'programs' | 'rpc' | 'serializer'>,
+  context: Pick<Context, 'eddsa' | 'programs' | 'rpc'>,
   seeds: Parameters<typeof findAddressLookupTablePda>[1],
   options?: RpcGetAccountOptions
 ): Promise<AddressLookupTable | null> {

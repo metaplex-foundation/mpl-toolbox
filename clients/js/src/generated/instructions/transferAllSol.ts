@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -34,19 +38,26 @@ export type TransferAllSolInstructionData = { discriminator: number };
 
 export type TransferAllSolInstructionDataArgs = {};
 
+/** @deprecated Use `getTransferAllSolInstructionDataSerializer()` without any argument instead. */
 export function getTransferAllSolInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<TransferAllSolInstructionDataArgs, TransferAllSolInstructionData>;
+export function getTransferAllSolInstructionDataSerializer(): Serializer<
+  TransferAllSolInstructionDataArgs,
+  TransferAllSolInstructionData
+>;
+export function getTransferAllSolInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   TransferAllSolInstructionDataArgs,
   TransferAllSolInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     TransferAllSolInstructionDataArgs,
     any,
     TransferAllSolInstructionData
   >(
-    s.struct<TransferAllSolInstructionData>([['discriminator', s.u8()]], {
+    struct<TransferAllSolInstructionData>([['discriminator', u8()]], {
       description: 'TransferAllSolInstructionData',
     }),
     (value) => ({ ...value, discriminator: 1 })
@@ -58,7 +69,7 @@ export function getTransferAllSolInstructionDataSerializer(
 
 // Instruction.
 export function transferAllSol(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: TransferAllSolInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -100,9 +111,7 @@ export function transferAllSol(
   addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
 
   // Data.
-  const data = getTransferAllSolInstructionDataSerializer(context).serialize(
-    {}
-  );
+  const data = getTransferAllSolInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

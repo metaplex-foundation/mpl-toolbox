@@ -30,7 +30,7 @@ export type RecoverNestedAssociatedTokenInstructionAccounts = {
 
 // Instruction.
 export function recoverNestedAssociatedToken(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: RecoverNestedAssociatedTokenInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];

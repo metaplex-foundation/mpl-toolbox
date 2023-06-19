@@ -18,10 +18,7 @@ export type CreateLutArgs = Parameters<typeof createEmptyLut>[1] & {
 
 // Instruction.
 export function createLut(
-  context: Pick<
-    Context,
-    'serializer' | 'eddsa' | 'programs' | 'identity' | 'payer'
-  >,
+  context: Pick<Context, 'eddsa' | 'programs' | 'identity' | 'payer'>,
   input: CreateLutArgs
 ): [TransactionBuilder, AddressLookupTableInput] {
   const { addresses, ...rest } = input;

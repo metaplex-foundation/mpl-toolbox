@@ -1,6 +1,6 @@
 import {
   Context,
-  Option,
+  OptionOrNullable,
   PublicKey,
   Signer,
   some,
@@ -18,12 +18,12 @@ export type CreateMintArgs = {
   mint: Signer;
   decimals?: number;
   mintAuthority?: PublicKey;
-  freezeAuthority?: Option<PublicKey>;
+  freezeAuthority?: OptionOrNullable<PublicKey>;
 };
 
 // Instruction.
 export function createMint(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity' | 'payer'>,
+  context: Pick<Context, 'programs' | 'identity' | 'payer'>,
   input: CreateMintArgs
 ): TransactionBuilder {
   return transactionBuilder()

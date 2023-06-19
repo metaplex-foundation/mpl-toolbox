@@ -33,10 +33,7 @@ export type CreateAssociatedTokenInstructionAccounts = {
 
 // Instruction.
 export function createAssociatedToken(
-  context: Pick<
-    Context,
-    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
-  >,
+  context: Pick<Context, 'programs' | 'eddsa' | 'identity' | 'payer'>,
   input: CreateAssociatedTokenInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];

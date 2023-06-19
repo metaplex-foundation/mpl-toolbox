@@ -12,12 +12,18 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  publicKey as publicKeySerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -42,23 +48,33 @@ export type CreateAccountWithRentInstructionDataArgs = {
   programId: PublicKey;
 };
 
+/** @deprecated Use `getCreateAccountWithRentInstructionDataSerializer()` without any argument instead. */
 export function getCreateAccountWithRentInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  CreateAccountWithRentInstructionDataArgs,
+  CreateAccountWithRentInstructionData
+>;
+export function getCreateAccountWithRentInstructionDataSerializer(): Serializer<
+  CreateAccountWithRentInstructionDataArgs,
+  CreateAccountWithRentInstructionData
+>;
+export function getCreateAccountWithRentInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   CreateAccountWithRentInstructionDataArgs,
   CreateAccountWithRentInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     CreateAccountWithRentInstructionDataArgs,
     any,
     CreateAccountWithRentInstructionData
   >(
-    s.struct<CreateAccountWithRentInstructionData>(
+    struct<CreateAccountWithRentInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['space', s.u64()],
-        ['programId', s.publicKey()],
+        ['discriminator', u8()],
+        ['space', u64()],
+        ['programId', publicKeySerializer()],
       ],
       { description: 'CreateAccountWithRentInstructionData' }
     ),
@@ -75,7 +91,7 @@ export type CreateAccountWithRentInstructionArgs =
 
 // Instruction.
 export function createAccountWithRent(
-  context: Pick<Context, 'serializer' | 'programs' | 'payer'>,
+  context: Pick<Context, 'programs' | 'payer'>,
   input: CreateAccountWithRentInstructionAccounts &
     CreateAccountWithRentInstructionArgs
 ): TransactionBuilder {
@@ -121,9 +137,7 @@ export function createAccountWithRent(
 
   // Data.
   const data =
-    getCreateAccountWithRentInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getCreateAccountWithRentInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;

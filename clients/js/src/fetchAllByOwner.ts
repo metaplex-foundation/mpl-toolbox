@@ -1,6 +1,4 @@
 import {
-  base58PublicKey,
-  base64,
   Context,
   lamports,
   PublicKey,
@@ -8,6 +6,7 @@ import {
   RpcBaseOptions,
   RpcResultWithContext,
 } from '@metaplex-foundation/umi';
+import { base64, u64 } from '@metaplex-foundation/umi/serializers';
 import {
   deserializeToken,
   fetchAllMint,
@@ -47,31 +46,30 @@ type RawTokenAccountByOwner = {
 };
 
 const getTokenAccountsByOwnerCall = async (
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  context: Pick<Context, 'rpc' | 'programs'>,
   owner: PublicKey,
   tokenAmountFilter: FetchTokenAmountFilter,
   options: RpcBaseOptions & { mint?: PublicKey } = {}
 ): Promise<RawTokenAccountByOwner[]> => {
   const splToken = context.programs.get('splToken').publicKey;
   const filter = options.mint
-    ? { mint: base58PublicKey(options.mint) }
-    : { programId: base58PublicKey(splToken) };
+    ? { mint: options.mint }
+    : { programId: splToken };
   const result = await context.rpc.call<
     RpcResultWithContext<RawTokenAccountByOwner[]>
-  >('getTokenAccountsByOwner', [base58PublicKey(owner), filter], {
+  >('getTokenAccountsByOwner', [owner, filter], {
     ...options,
     extra: { encoding: 'base64' },
   });
   return result.value.filter(({ account }) => {
     const data = base64.serialize(account.data[0]);
-    const u64 = context.serializer.u64();
-    const amount = u64.deserialize(data.slice(64, 72))[0];
+    const amount = u64().deserialize(data.slice(64, 72))[0];
     return tokenAmountFilter(amount);
   });
 };
 
 export const fetchAllTokenByOwner = async (
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  context: Pick<Context, 'rpc' | 'programs'>,
   owner: PublicKey,
   options: RpcBaseOptions & {
     mint?: PublicKey;
@@ -111,15 +109,14 @@ export const fetchAllTokenByOwner = async (
 
   return (await builder.get())
     .filter((account) => {
-      const u64 = context.serializer.u64();
-      const amount = u64.deserialize(account.data.slice(64, 72))[0];
+      const amount = u64().deserialize(account.data.slice(64, 72))[0];
       return tokenAmountFilter(amount);
     })
     .map((account) => deserializeToken(context, account));
 };
 
 export const fetchAllTokenByOwnerAndMint = (
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  context: Pick<Context, 'rpc' | 'programs'>,
   owner: PublicKey,
   mint: PublicKey,
   options: RpcBaseOptions & {
@@ -130,7 +127,7 @@ export const fetchAllTokenByOwnerAndMint = (
   fetchAllTokenByOwner(context, owner, { ...options, mint });
 
 export const fetchAllMintPublicKeyByOwner = async (
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  context: Pick<Context, 'rpc' | 'programs'>,
   owner: PublicKey,
   options: RpcBaseOptions & {
     tokenStrategy?: FetchTokenStrategy;
@@ -162,15 +159,14 @@ export const fetchAllMintPublicKeyByOwner = async (
       .get()
   )
     .filter((account) => {
-      const u64 = context.serializer.u64();
-      const amount = u64.deserialize(account.data.slice(64, 72))[0];
+      const amount = u64().deserialize(account.data.slice(64, 72))[0];
       return tokenAmountFilter(amount);
     })
     .map((account) => publicKey(account.data.slice(0, 32)));
 };
 
 export const fetchAllMintByOwner = async (
-  context: Pick<Context, 'rpc' | 'serializer' | 'programs'>,
+  context: Pick<Context, 'rpc' | 'programs'>,
   owner: PublicKey,
   options: RpcBaseOptions & {
     tokenStrategy?: FetchTokenStrategy;

@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -29,16 +33,23 @@ export type SyncNativeInstructionData = { discriminator: number };
 
 export type SyncNativeInstructionDataArgs = {};
 
+/** @deprecated Use `getSyncNativeInstructionDataSerializer()` without any argument instead. */
 export function getSyncNativeInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData>;
+export function getSyncNativeInstructionDataSerializer(): Serializer<
+  SyncNativeInstructionDataArgs,
+  SyncNativeInstructionData
+>;
+export function getSyncNativeInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     SyncNativeInstructionDataArgs,
     any,
     SyncNativeInstructionData
   >(
-    s.struct<SyncNativeInstructionData>([['discriminator', s.u8()]], {
+    struct<SyncNativeInstructionData>([['discriminator', u8()]], {
       description: 'SyncNativeInstructionData',
     }),
     (value) => ({ ...value, discriminator: 17 })
@@ -47,7 +58,7 @@ export function getSyncNativeInstructionDataSerializer(
 
 // Instruction.
 export function syncNative(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: SyncNativeInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -67,7 +78,7 @@ export function syncNative(
   addAccountMeta(keys, signers, resolvedAccounts.account, false);
 
   // Data.
-  const data = getSyncNativeInstructionDataSerializer(context).serialize({});
+  const data = getSyncNativeInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

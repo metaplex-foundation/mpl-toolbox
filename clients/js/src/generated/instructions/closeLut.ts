@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -31,16 +35,23 @@ export type CloseLutInstructionData = { discriminator: number };
 
 export type CloseLutInstructionDataArgs = {};
 
+/** @deprecated Use `getCloseLutInstructionDataSerializer()` without any argument instead. */
 export function getCloseLutInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<CloseLutInstructionDataArgs, CloseLutInstructionData>;
+export function getCloseLutInstructionDataSerializer(): Serializer<
+  CloseLutInstructionDataArgs,
+  CloseLutInstructionData
+>;
+export function getCloseLutInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<CloseLutInstructionDataArgs, CloseLutInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     CloseLutInstructionDataArgs,
     any,
     CloseLutInstructionData
   >(
-    s.struct<CloseLutInstructionData>([['discriminator', s.u32()]], {
+    struct<CloseLutInstructionData>([['discriminator', u32()]], {
       description: 'CloseLutInstructionData',
     }),
     (value) => ({ ...value, discriminator: 4 })
@@ -49,7 +60,7 @@ export function getCloseLutInstructionDataSerializer(
 
 // Instruction.
 export function closeLut(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: CloseLutInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -79,7 +90,7 @@ export function closeLut(
   addAccountMeta(keys, signers, resolvedAccounts.recipient, false);
 
   // Data.
-  const data = getCloseLutInstructionDataSerializer(context).serialize({});
+  const data = getCloseLutInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

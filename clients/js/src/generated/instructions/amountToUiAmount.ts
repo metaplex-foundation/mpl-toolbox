@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -32,22 +37,32 @@ export type AmountToUiAmountInstructionData = {
 
 export type AmountToUiAmountInstructionDataArgs = { amount: number | bigint };
 
+/** @deprecated Use `getAmountToUiAmountInstructionDataSerializer()` without any argument instead. */
 export function getAmountToUiAmountInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  AmountToUiAmountInstructionDataArgs,
+  AmountToUiAmountInstructionData
+>;
+export function getAmountToUiAmountInstructionDataSerializer(): Serializer<
+  AmountToUiAmountInstructionDataArgs,
+  AmountToUiAmountInstructionData
+>;
+export function getAmountToUiAmountInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   AmountToUiAmountInstructionDataArgs,
   AmountToUiAmountInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     AmountToUiAmountInstructionDataArgs,
     any,
     AmountToUiAmountInstructionData
   >(
-    s.struct<AmountToUiAmountInstructionData>(
+    struct<AmountToUiAmountInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
+        ['discriminator', u8()],
+        ['amount', u64()],
       ],
       { description: 'AmountToUiAmountInstructionData' }
     ),
@@ -64,7 +79,7 @@ export type AmountToUiAmountInstructionArgs =
 
 // Instruction.
 export function amountToUiAmount(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: AmountToUiAmountInstructionAccounts & AmountToUiAmountInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -87,9 +102,7 @@ export function amountToUiAmount(
 
   // Data.
   const data =
-    getAmountToUiAmountInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getAmountToUiAmountInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -16,10 +16,7 @@ export type CreateMintWithAssociatedTokenArgs = CreateMintArgs & {
 
 // Instruction.
 export function createMintWithAssociatedToken(
-  context: Pick<
-    Context,
-    'serializer' | 'programs' | 'identity' | 'payer' | 'eddsa'
-  >,
+  context: Pick<Context, 'programs' | 'identity' | 'payer' | 'eddsa'>,
   input: CreateMintWithAssociatedTokenArgs
 ): TransactionBuilder {
   const mintAndOwner = {

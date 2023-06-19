@@ -11,12 +11,17 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta, addObjectProperty } from '../shared';
 
 // Accounts.
@@ -38,23 +43,33 @@ export type BurnTokenCheckedInstructionDataArgs = {
   decimals: number;
 };
 
+/** @deprecated Use `getBurnTokenCheckedInstructionDataSerializer()` without any argument instead. */
 export function getBurnTokenCheckedInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<
+  BurnTokenCheckedInstructionDataArgs,
+  BurnTokenCheckedInstructionData
+>;
+export function getBurnTokenCheckedInstructionDataSerializer(): Serializer<
+  BurnTokenCheckedInstructionDataArgs,
+  BurnTokenCheckedInstructionData
+>;
+export function getBurnTokenCheckedInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   BurnTokenCheckedInstructionDataArgs,
   BurnTokenCheckedInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     BurnTokenCheckedInstructionDataArgs,
     any,
     BurnTokenCheckedInstructionData
   >(
-    s.struct<BurnTokenCheckedInstructionData>(
+    struct<BurnTokenCheckedInstructionData>(
       [
-        ['discriminator', s.u8()],
-        ['amount', s.u64()],
-        ['decimals', s.u8()],
+        ['discriminator', u8()],
+        ['amount', u64()],
+        ['decimals', u8()],
       ],
       { description: 'BurnTokenCheckedInstructionData' }
     ),
@@ -71,7 +86,7 @@ export type BurnTokenCheckedInstructionArgs =
 
 // Instruction.
 export function burnTokenChecked(
-  context: Pick<Context, 'serializer' | 'programs' | 'identity'>,
+  context: Pick<Context, 'programs' | 'identity'>,
   input: BurnTokenCheckedInstructionAccounts & BurnTokenCheckedInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -104,9 +119,7 @@ export function burnTokenChecked(
 
   // Data.
   const data =
-    getBurnTokenCheckedInstructionDataSerializer(context).serialize(
-      resolvedArgs
-    );
+    getBurnTokenCheckedInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

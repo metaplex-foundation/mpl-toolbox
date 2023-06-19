@@ -12,13 +12,19 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u32,
+  u64,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { findAddressLookupTablePda } from '../accounts';
 import { PickPartial, addAccountMeta, addObjectProperty } from '../shared';
 
@@ -42,23 +48,30 @@ export type CreateEmptyLutInstructionDataArgs = {
   bump: number;
 };
 
+/** @deprecated Use `getCreateEmptyLutInstructionDataSerializer()` without any argument instead. */
 export function getCreateEmptyLutInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<CreateEmptyLutInstructionDataArgs, CreateEmptyLutInstructionData>;
+export function getCreateEmptyLutInstructionDataSerializer(): Serializer<
+  CreateEmptyLutInstructionDataArgs,
+  CreateEmptyLutInstructionData
+>;
+export function getCreateEmptyLutInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<
   CreateEmptyLutInstructionDataArgs,
   CreateEmptyLutInstructionData
 > {
-  const s = context.serializer;
   return mapSerializer<
     CreateEmptyLutInstructionDataArgs,
     any,
     CreateEmptyLutInstructionData
   >(
-    s.struct<CreateEmptyLutInstructionData>(
+    struct<CreateEmptyLutInstructionData>(
       [
-        ['discriminator', s.u32()],
-        ['recentSlot', s.u64()],
-        ['bump', s.u8()],
+        ['discriminator', u32()],
+        ['recentSlot', u64()],
+        ['bump', u8()],
       ],
       { description: 'CreateEmptyLutInstructionData' }
     ),
@@ -77,10 +90,7 @@ export type CreateEmptyLutInstructionArgs = PickPartial<
 
 // Instruction.
 export function createEmptyLut(
-  context: Pick<
-    Context,
-    'serializer' | 'programs' | 'eddsa' | 'identity' | 'payer'
-  >,
+  context: Pick<Context, 'programs' | 'eddsa' | 'identity' | 'payer'>,
   input: CreateEmptyLutInstructionAccounts & CreateEmptyLutInstructionArgs
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -149,7 +159,7 @@ export function createEmptyLut(
 
   // Data.
   const data =
-    getCreateEmptyLutInstructionDataSerializer(context).serialize(resolvedArgs);
+    getCreateEmptyLutInstructionDataSerializer().serialize(resolvedArgs);
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 56 + ACCOUNT_HEADER_SIZE;

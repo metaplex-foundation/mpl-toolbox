@@ -11,12 +11,16 @@ import {
   Context,
   Pda,
   PublicKey,
-  Serializer,
   Signer,
   TransactionBuilder,
-  mapSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
+import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import { addAccountMeta } from '../shared';
 
 // Accounts.
@@ -31,16 +35,23 @@ export type CloseTokenInstructionData = { discriminator: number };
 
 export type CloseTokenInstructionDataArgs = {};
 
+/** @deprecated Use `getCloseTokenInstructionDataSerializer()` without any argument instead. */
 export function getCloseTokenInstructionDataSerializer(
-  context: Pick<Context, 'serializer'>
+  _context: object
+): Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData>;
+export function getCloseTokenInstructionDataSerializer(): Serializer<
+  CloseTokenInstructionDataArgs,
+  CloseTokenInstructionData
+>;
+export function getCloseTokenInstructionDataSerializer(
+  _context: object = {}
 ): Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData> {
-  const s = context.serializer;
   return mapSerializer<
     CloseTokenInstructionDataArgs,
     any,
     CloseTokenInstructionData
   >(
-    s.struct<CloseTokenInstructionData>([['discriminator', s.u8()]], {
+    struct<CloseTokenInstructionData>([['discriminator', u8()]], {
       description: 'CloseTokenInstructionData',
     }),
     (value) => ({ ...value, discriminator: 9 })
@@ -49,7 +60,7 @@ export function getCloseTokenInstructionDataSerializer(
 
 // Instruction.
 export function closeToken(
-  context: Pick<Context, 'serializer' | 'programs'>,
+  context: Pick<Context, 'programs'>,
   input: CloseTokenInstructionAccounts
 ): TransactionBuilder {
   const signers: Signer[] = [];
@@ -73,7 +84,7 @@ export function closeToken(
   addAccountMeta(keys, signers, resolvedAccounts.owner, false);
 
   // Data.
-  const data = getCloseTokenInstructionDataSerializer(context).serialize({});
+  const data = getCloseTokenInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
