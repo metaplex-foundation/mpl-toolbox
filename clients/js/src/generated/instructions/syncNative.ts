@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -21,7 +19,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type SyncNativeInstructionAccounts = {
@@ -33,17 +35,10 @@ export type SyncNativeInstructionData = { discriminator: number };
 
 export type SyncNativeInstructionDataArgs = {};
 
-/** @deprecated Use `getSyncNativeInstructionDataSerializer()` without any argument instead. */
-export function getSyncNativeInstructionDataSerializer(
-  _context: object
-): Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData>;
 export function getSyncNativeInstructionDataSerializer(): Serializer<
   SyncNativeInstructionDataArgs,
   SyncNativeInstructionData
->;
-export function getSyncNativeInstructionDataSerializer(
-  _context: object = {}
-): Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData> {
+> {
   return mapSerializer<
     SyncNativeInstructionDataArgs,
     any,
@@ -61,21 +56,28 @@ export function syncNative(
   context: Pick<Context, 'programs'>,
   input: SyncNativeInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    account: [input.account, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    account: { index: 0, isWritable: true, value: input.account ?? null },
   };
 
-  addAccountMeta(keys, signers, resolvedAccounts.account, false);
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getSyncNativeInstructionDataSerializer().serialize({});

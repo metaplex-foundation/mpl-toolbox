@@ -8,7 +8,6 @@
 
 import {
   ACCOUNT_HEADER_SIZE,
-  AccountMeta,
   Context,
   PublicKey,
   Signer,
@@ -25,7 +24,11 @@ import {
   u32,
   u64,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type CreateAccountInstructionAccounts = {
@@ -47,17 +50,10 @@ export type CreateAccountInstructionDataArgs = {
   programId: PublicKey;
 };
 
-/** @deprecated Use `getCreateAccountInstructionDataSerializer()` without any argument instead. */
-export function getCreateAccountInstructionDataSerializer(
-  _context: object
-): Serializer<CreateAccountInstructionDataArgs, CreateAccountInstructionData>;
 export function getCreateAccountInstructionDataSerializer(): Serializer<
   CreateAccountInstructionDataArgs,
   CreateAccountInstructionData
->;
-export function getCreateAccountInstructionDataSerializer(
-  _context: object = {}
-): Serializer<CreateAccountInstructionDataArgs, CreateAccountInstructionData> {
+> {
   return mapSerializer<
     CreateAccountInstructionDataArgs,
     any,
@@ -84,38 +80,45 @@ export type CreateAccountInstructionArgs = CreateAccountInstructionDataArgs;
 
 // Instruction.
 export function createAccount(
-  context: Pick<Context, 'programs' | 'payer'>,
+  context: Pick<Context, 'payer' | 'programs'>,
   input: CreateAccountInstructionAccounts & CreateAccountInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splSystem',
     '11111111111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    newAccount: [input.newAccount, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    payer: { index: 0, isWritable: true, value: input.payer ?? null },
+    newAccount: { index: 1, isWritable: true, value: input.newAccount ?? null },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'payer',
-    input.payer
-      ? ([input.payer, true] as const)
-      : ([context.payer, true] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.payer, false);
-  addAccountMeta(keys, signers, resolvedAccounts.newAccount, false);
+  // Arguments.
+  const resolvedArgs: CreateAccountInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.payer.value) {
+    resolvedAccounts.payer.value = context.payer;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getCreateAccountInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getCreateAccountInstructionDataSerializer().serialize(
+    resolvedArgs as CreateAccountInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;

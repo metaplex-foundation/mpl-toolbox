@@ -7,13 +7,11 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Option,
   OptionOrNullable,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -25,7 +23,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type InitializeMint2InstructionAccounts = {
@@ -46,20 +48,7 @@ export type InitializeMint2InstructionDataArgs = {
   freezeAuthority: OptionOrNullable<PublicKey>;
 };
 
-/** @deprecated Use `getInitializeMint2InstructionDataSerializer()` without any argument instead. */
-export function getInitializeMint2InstructionDataSerializer(
-  _context: object
-): Serializer<
-  InitializeMint2InstructionDataArgs,
-  InitializeMint2InstructionData
->;
 export function getInitializeMint2InstructionDataSerializer(): Serializer<
-  InitializeMint2InstructionDataArgs,
-  InitializeMint2InstructionData
->;
-export function getInitializeMint2InstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   InitializeMint2InstructionDataArgs,
   InitializeMint2InstructionData
 > {
@@ -92,27 +81,36 @@ export function initializeMint2(
   context: Pick<Context, 'programs'>,
   input: InitializeMint2InstructionAccounts & InitializeMint2InstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    mint: [input.mint, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    mint: { index: 0, isWritable: true, value: input.mint ?? null },
   };
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
+  // Arguments.
+  const resolvedArgs: InitializeMint2InstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getInitializeMint2InstructionDataSerializer().serialize(resolvedArgs);
+  const data = getInitializeMint2InstructionDataSerializer().serialize(
+    resolvedArgs as InitializeMint2InstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

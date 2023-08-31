@@ -8,13 +8,11 @@
 
 import {
   ACCOUNT_HEADER_SIZE,
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
   Signer,
   TransactionBuilder,
-  publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
@@ -26,7 +24,15 @@ import {
   u8,
 } from '@metaplex-foundation/umi/serializers';
 import { findAddressLookupTablePda } from '../accounts';
-import { PickPartial, addAccountMeta, addObjectProperty } from '../shared';
+import {
+  PickPartial,
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  expectPda,
+  expectPublicKey,
+  expectSome,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type CreateEmptyLutInstructionAccounts = {
@@ -48,17 +54,7 @@ export type CreateEmptyLutInstructionDataArgs = {
   bump: number;
 };
 
-/** @deprecated Use `getCreateEmptyLutInstructionDataSerializer()` without any argument instead. */
-export function getCreateEmptyLutInstructionDataSerializer(
-  _context: object
-): Serializer<CreateEmptyLutInstructionDataArgs, CreateEmptyLutInstructionData>;
 export function getCreateEmptyLutInstructionDataSerializer(): Serializer<
-  CreateEmptyLutInstructionDataArgs,
-  CreateEmptyLutInstructionData
->;
-export function getCreateEmptyLutInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   CreateEmptyLutInstructionDataArgs,
   CreateEmptyLutInstructionData
 > {
@@ -90,76 +86,70 @@ export type CreateEmptyLutInstructionArgs = PickPartial<
 
 // Instruction.
 export function createEmptyLut(
-  context: Pick<Context, 'programs' | 'eddsa' | 'identity' | 'payer'>,
+  context: Pick<Context, 'eddsa' | 'identity' | 'payer' | 'programs'>,
   input: CreateEmptyLutInstructionAccounts & CreateEmptyLutInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splAddressLookupTable',
     'AddressLookupTab1e1111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {};
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'authority',
-    input.authority
-      ? ([input.authority, false] as const)
-      : ([context.identity, false] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'address',
-    input.address
-      ? ([input.address, true] as const)
-      : ([
-          findAddressLookupTablePda(context, {
-            authority: publicKey(resolvedAccounts.authority[0], false),
-            recentSlot: input.recentSlot,
-          }),
-          true,
-        ] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'payer',
-    input.payer
-      ? ([input.payer, true] as const)
-      : ([context.payer, true] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'systemProgram',
-    input.systemProgram
-      ? ([input.systemProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splSystem',
-            '11111111111111111111111111111111'
-          ),
-          false,
-        ] as const)
-  );
-  addObjectProperty(
-    resolvingArgs,
-    'bump',
-    input.bump ?? resolvedAccounts.address[0][1]
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    address: { index: 0, isWritable: true, value: input.address ?? null },
+    authority: { index: 1, isWritable: false, value: input.authority ?? null },
+    payer: { index: 2, isWritable: true, value: input.payer ?? null },
+    systemProgram: {
+      index: 3,
+      isWritable: false,
+      value: input.systemProgram ?? null,
+    },
+  };
 
-  addAccountMeta(keys, signers, resolvedAccounts.address, false);
-  addAccountMeta(keys, signers, resolvedAccounts.authority, false);
-  addAccountMeta(keys, signers, resolvedAccounts.payer, false);
-  addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
+  // Arguments.
+  const resolvedArgs: CreateEmptyLutInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.authority.value) {
+    resolvedAccounts.authority.value = context.identity;
+  }
+  if (!resolvedAccounts.address.value) {
+    resolvedAccounts.address.value = findAddressLookupTablePda(context, {
+      authority: expectPublicKey(resolvedAccounts.authority.value),
+      recentSlot: expectSome(resolvedArgs.recentSlot),
+    });
+  }
+  if (!resolvedAccounts.payer.value) {
+    resolvedAccounts.payer.value = context.payer;
+  }
+  if (!resolvedAccounts.systemProgram.value) {
+    resolvedAccounts.systemProgram.value = context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    );
+    resolvedAccounts.systemProgram.isWritable = false;
+  }
+  if (!resolvedArgs.bump) {
+    resolvedArgs.bump = expectPda(resolvedAccounts.address.value)[1];
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getCreateEmptyLutInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getCreateEmptyLutInstructionDataSerializer().serialize(
+    resolvedArgs as CreateEmptyLutInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 56 + ACCOUNT_HEADER_SIZE;

@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   publicKey,
   transactionBuilder,
@@ -22,7 +20,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type InitializeMultisigInstructionAccounts = {
@@ -38,20 +40,7 @@ export type InitializeMultisigInstructionData = {
 
 export type InitializeMultisigInstructionDataArgs = { m: number };
 
-/** @deprecated Use `getInitializeMultisigInstructionDataSerializer()` without any argument instead. */
-export function getInitializeMultisigInstructionDataSerializer(
-  _context: object
-): Serializer<
-  InitializeMultisigInstructionDataArgs,
-  InitializeMultisigInstructionData
->;
 export function getInitializeMultisigInstructionDataSerializer(): Serializer<
-  InitializeMultisigInstructionDataArgs,
-  InitializeMultisigInstructionData
->;
-export function getInitializeMultisigInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   InitializeMultisigInstructionDataArgs,
   InitializeMultisigInstructionData
 > {
@@ -84,38 +73,44 @@ export function initializeMultisig(
   input: InitializeMultisigInstructionAccounts &
     InitializeMultisigInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    multisig: [input.multisig, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    multisig: { index: 0, isWritable: true, value: input.multisig ?? null },
+    rent: { index: 1, isWritable: false, value: input.rent ?? null },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'rent',
-    input.rent
-      ? ([input.rent, false] as const)
-      : ([
-          publicKey('SysvarRent111111111111111111111111111111111'),
-          false,
-        ] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.multisig, false);
-  addAccountMeta(keys, signers, resolvedAccounts.rent, false);
+  // Arguments.
+  const resolvedArgs: InitializeMultisigInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.rent.value) {
+    resolvedAccounts.rent.value = publicKey(
+      'SysvarRent111111111111111111111111111111111'
+    );
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getInitializeMultisigInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getInitializeMultisigInstructionDataSerializer().serialize(
+    resolvedArgs as InitializeMultisigInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

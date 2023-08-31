@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -21,7 +20,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type FreezeTokenInstructionAccounts = {
@@ -35,17 +38,10 @@ export type FreezeTokenInstructionData = { discriminator: number };
 
 export type FreezeTokenInstructionDataArgs = {};
 
-/** @deprecated Use `getFreezeTokenInstructionDataSerializer()` without any argument instead. */
-export function getFreezeTokenInstructionDataSerializer(
-  _context: object
-): Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData>;
 export function getFreezeTokenInstructionDataSerializer(): Serializer<
   FreezeTokenInstructionDataArgs,
   FreezeTokenInstructionData
->;
-export function getFreezeTokenInstructionDataSerializer(
-  _context: object = {}
-): Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData> {
+> {
   return mapSerializer<
     FreezeTokenInstructionDataArgs,
     any,
@@ -63,25 +59,30 @@ export function freezeToken(
   context: Pick<Context, 'programs'>,
   input: FreezeTokenInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    account: [input.account, true] as const,
-    mint: [input.mint, false] as const,
-    owner: [input.owner, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    account: { index: 0, isWritable: true, value: input.account ?? null },
+    mint: { index: 1, isWritable: false, value: input.mint ?? null },
+    owner: { index: 2, isWritable: false, value: input.owner ?? null },
   };
 
-  addAccountMeta(keys, signers, resolvedAccounts.account, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getFreezeTokenInstructionDataSerializer().serialize({});

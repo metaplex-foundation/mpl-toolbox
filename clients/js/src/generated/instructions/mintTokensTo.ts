@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -22,7 +21,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type MintTokensToInstructionAccounts = {
@@ -39,17 +42,10 @@ export type MintTokensToInstructionData = {
 
 export type MintTokensToInstructionDataArgs = { amount: number | bigint };
 
-/** @deprecated Use `getMintTokensToInstructionDataSerializer()` without any argument instead. */
-export function getMintTokensToInstructionDataSerializer(
-  _context: object
-): Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData>;
 export function getMintTokensToInstructionDataSerializer(): Serializer<
   MintTokensToInstructionDataArgs,
   MintTokensToInstructionData
->;
-export function getMintTokensToInstructionDataSerializer(
-  _context: object = {}
-): Serializer<MintTokensToInstructionDataArgs, MintTokensToInstructionData> {
+> {
   return mapSerializer<
     MintTokensToInstructionDataArgs,
     any,
@@ -71,40 +67,50 @@ export type MintTokensToInstructionArgs = MintTokensToInstructionDataArgs;
 
 // Instruction.
 export function mintTokensTo(
-  context: Pick<Context, 'programs' | 'identity'>,
+  context: Pick<Context, 'identity' | 'programs'>,
   input: MintTokensToInstructionAccounts & MintTokensToInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    mint: [input.mint, true] as const,
-    token: [input.token, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    mint: { index: 0, isWritable: true, value: input.mint ?? null },
+    token: { index: 1, isWritable: true, value: input.token ?? null },
+    mintAuthority: {
+      index: 2,
+      isWritable: false,
+      value: input.mintAuthority ?? null,
+    },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'mintAuthority',
-    input.mintAuthority
-      ? ([input.mintAuthority, false] as const)
-      : ([context.identity, false] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.token, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mintAuthority, false);
+  // Arguments.
+  const resolvedArgs: MintTokensToInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.mintAuthority.value) {
+    resolvedAccounts.mintAuthority.value = context.identity;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getMintTokensToInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getMintTokensToInstructionDataSerializer().serialize(
+    resolvedArgs as MintTokensToInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

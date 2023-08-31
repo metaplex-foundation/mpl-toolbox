@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -15,7 +14,11 @@ import {
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type RecoverNestedAssociatedTokenInstructionAccounts = {
@@ -33,69 +36,71 @@ export function recoverNestedAssociatedToken(
   context: Pick<Context, 'programs'>,
   input: RecoverNestedAssociatedTokenInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splAssociatedToken',
     'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    nestedAssociatedAccountAddress: [
-      input.nestedAssociatedAccountAddress,
-      true,
-    ] as const,
-    nestedTokenMintAddress: [input.nestedTokenMintAddress, false] as const,
-    destinationAssociatedAccountAddress: [
-      input.destinationAssociatedAccountAddress,
-      true,
-    ] as const,
-    ownerAssociatedAccountAddress: [
-      input.ownerAssociatedAccountAddress,
-      false,
-    ] as const,
-    ownerTokenMintAddress: [input.ownerTokenMintAddress, false] as const,
-    walletAddress: [input.walletAddress, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    nestedAssociatedAccountAddress: {
+      index: 0,
+      isWritable: true,
+      value: input.nestedAssociatedAccountAddress ?? null,
+    },
+    nestedTokenMintAddress: {
+      index: 1,
+      isWritable: false,
+      value: input.nestedTokenMintAddress ?? null,
+    },
+    destinationAssociatedAccountAddress: {
+      index: 2,
+      isWritable: true,
+      value: input.destinationAssociatedAccountAddress ?? null,
+    },
+    ownerAssociatedAccountAddress: {
+      index: 3,
+      isWritable: false,
+      value: input.ownerAssociatedAccountAddress ?? null,
+    },
+    ownerTokenMintAddress: {
+      index: 4,
+      isWritable: false,
+      value: input.ownerTokenMintAddress ?? null,
+    },
+    walletAddress: {
+      index: 5,
+      isWritable: true,
+      value: input.walletAddress ?? null,
+    },
+    tokenProgram: {
+      index: 6,
+      isWritable: false,
+      value: input.tokenProgram ?? null,
+    },
   };
-  addObjectProperty(
-    resolvedAccounts,
-    'tokenProgram',
-    input.tokenProgram
-      ? ([input.tokenProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splToken',
-            'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-          ),
-          false,
-        ] as const)
-  );
 
-  addAccountMeta(
-    keys,
-    signers,
-    resolvedAccounts.nestedAssociatedAccountAddress,
-    false
+  // Default values.
+  if (!resolvedAccounts.tokenProgram.value) {
+    resolvedAccounts.tokenProgram.value = context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    );
+    resolvedAccounts.tokenProgram.isWritable = false;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
   );
-  addAccountMeta(keys, signers, resolvedAccounts.nestedTokenMintAddress, false);
-  addAccountMeta(
-    keys,
-    signers,
-    resolvedAccounts.destinationAssociatedAccountAddress,
-    false
-  );
-  addAccountMeta(
-    keys,
-    signers,
-    resolvedAccounts.ownerAssociatedAccountAddress,
-    false
-  );
-  addAccountMeta(keys, signers, resolvedAccounts.ownerTokenMintAddress, false);
-  addAccountMeta(keys, signers, resolvedAccounts.walletAddress, false);
-  addAccountMeta(keys, signers, resolvedAccounts.tokenProgram, false);
 
   // Data.
   const data = new Uint8Array();

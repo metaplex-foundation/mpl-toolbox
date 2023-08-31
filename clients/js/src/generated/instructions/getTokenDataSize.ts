@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -21,7 +19,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type GetTokenDataSizeInstructionAccounts = {
@@ -33,20 +35,7 @@ export type GetTokenDataSizeInstructionData = { discriminator: number };
 
 export type GetTokenDataSizeInstructionDataArgs = {};
 
-/** @deprecated Use `getGetTokenDataSizeInstructionDataSerializer()` without any argument instead. */
-export function getGetTokenDataSizeInstructionDataSerializer(
-  _context: object
-): Serializer<
-  GetTokenDataSizeInstructionDataArgs,
-  GetTokenDataSizeInstructionData
->;
 export function getGetTokenDataSizeInstructionDataSerializer(): Serializer<
-  GetTokenDataSizeInstructionDataArgs,
-  GetTokenDataSizeInstructionData
->;
-export function getGetTokenDataSizeInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   GetTokenDataSizeInstructionDataArgs,
   GetTokenDataSizeInstructionData
 > {
@@ -70,21 +59,28 @@ export function getTokenDataSize(
   context: Pick<Context, 'programs'>,
   input: GetTokenDataSizeInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    mint: [input.mint, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    mint: { index: 0, isWritable: false, value: input.mint ?? null },
   };
 
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getGetTokenDataSizeInstructionDataSerializer().serialize({});

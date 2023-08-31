@@ -7,9 +7,7 @@
  */
 
 import {
-  AccountMeta,
   Context,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -20,6 +18,11 @@ import {
   u32,
   u8,
 } from '@metaplex-foundation/umi/serializers';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Data.
 export type RequestUnitsInstructionData = {
@@ -37,17 +40,10 @@ export type RequestUnitsInstructionDataArgs = {
   additionalFee: number;
 };
 
-/** @deprecated Use `getRequestUnitsInstructionDataSerializer()` without any argument instead. */
-export function getRequestUnitsInstructionDataSerializer(
-  _context: object
-): Serializer<RequestUnitsInstructionDataArgs, RequestUnitsInstructionData>;
 export function getRequestUnitsInstructionDataSerializer(): Serializer<
   RequestUnitsInstructionDataArgs,
   RequestUnitsInstructionData
->;
-export function getRequestUnitsInstructionDataSerializer(
-  _context: object = {}
-): Serializer<RequestUnitsInstructionDataArgs, RequestUnitsInstructionData> {
+> {
   return mapSerializer<
     RequestUnitsInstructionDataArgs,
     any,
@@ -73,22 +69,34 @@ export function requestUnits(
   context: Pick<Context, 'programs'>,
   input: RequestUnitsInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splComputeBudget',
     'ComputeBudget111111111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {};
+
+  // Arguments.
+  const resolvedArgs: RequestUnitsInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getRequestUnitsInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getRequestUnitsInstructionDataSerializer().serialize(
+    resolvedArgs as RequestUnitsInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

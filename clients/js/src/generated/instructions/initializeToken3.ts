@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -22,7 +20,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type InitializeToken3InstructionAccounts = {
@@ -38,20 +40,7 @@ export type InitializeToken3InstructionData = {
 
 export type InitializeToken3InstructionDataArgs = { owner: PublicKey };
 
-/** @deprecated Use `getInitializeToken3InstructionDataSerializer()` without any argument instead. */
-export function getInitializeToken3InstructionDataSerializer(
-  _context: object
-): Serializer<
-  InitializeToken3InstructionDataArgs,
-  InitializeToken3InstructionData
->;
 export function getInitializeToken3InstructionDataSerializer(): Serializer<
-  InitializeToken3InstructionDataArgs,
-  InitializeToken3InstructionData
->;
-export function getInitializeToken3InstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   InitializeToken3InstructionDataArgs,
   InitializeToken3InstructionData
 > {
@@ -83,29 +72,37 @@ export function initializeToken3(
   context: Pick<Context, 'programs'>,
   input: InitializeToken3InstructionAccounts & InitializeToken3InstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    account: [input.account, true] as const,
-    mint: [input.mint, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    account: { index: 0, isWritable: true, value: input.account ?? null },
+    mint: { index: 1, isWritable: false, value: input.mint ?? null },
   };
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.account, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
+  // Arguments.
+  const resolvedArgs: InitializeToken3InstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getInitializeToken3InstructionDataSerializer().serialize(resolvedArgs);
+  const data = getInitializeToken3InstructionDataSerializer().serialize(
+    resolvedArgs as InitializeToken3InstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

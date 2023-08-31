@@ -7,9 +7,7 @@
  */
 
 import {
-  AccountMeta,
   Context,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -18,23 +16,21 @@ import {
   string,
   struct,
 } from '@metaplex-foundation/umi/serializers';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Data.
 export type AddMemoInstructionData = { memo: string };
 
 export type AddMemoInstructionDataArgs = AddMemoInstructionData;
 
-/** @deprecated Use `getAddMemoInstructionDataSerializer()` without any argument instead. */
-export function getAddMemoInstructionDataSerializer(
-  _context: object
-): Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData>;
 export function getAddMemoInstructionDataSerializer(): Serializer<
   AddMemoInstructionDataArgs,
   AddMemoInstructionData
->;
-export function getAddMemoInstructionDataSerializer(
-  _context: object = {}
-): Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData> {
+> {
   return struct<AddMemoInstructionData>([['memo', string()]], {
     description: 'AddMemoInstructionData',
   }) as Serializer<AddMemoInstructionDataArgs, AddMemoInstructionData>;
@@ -48,21 +44,34 @@ export function addMemo(
   context: Pick<Context, 'programs'>,
   input: AddMemoInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splMemo',
     'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
   );
 
-  // Resolved inputs.
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {};
+
+  // Arguments.
+  const resolvedArgs: AddMemoInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data = getAddMemoInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getAddMemoInstructionDataSerializer().serialize(
+    resolvedArgs as AddMemoInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

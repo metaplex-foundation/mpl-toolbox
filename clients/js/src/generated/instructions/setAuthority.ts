@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Option,
   OptionOrNullable,
@@ -25,7 +24,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 import {
   AuthorityType,
   AuthorityTypeArgs,
@@ -50,17 +53,10 @@ export type SetAuthorityInstructionDataArgs = {
   newAuthority: OptionOrNullable<PublicKey>;
 };
 
-/** @deprecated Use `getSetAuthorityInstructionDataSerializer()` without any argument instead. */
-export function getSetAuthorityInstructionDataSerializer(
-  _context: object
-): Serializer<SetAuthorityInstructionDataArgs, SetAuthorityInstructionData>;
 export function getSetAuthorityInstructionDataSerializer(): Serializer<
   SetAuthorityInstructionDataArgs,
   SetAuthorityInstructionData
->;
-export function getSetAuthorityInstructionDataSerializer(
-  _context: object = {}
-): Serializer<SetAuthorityInstructionDataArgs, SetAuthorityInstructionData> {
+> {
   return mapSerializer<
     SetAuthorityInstructionDataArgs,
     any,
@@ -86,29 +82,37 @@ export function setAuthority(
   context: Pick<Context, 'programs'>,
   input: SetAuthorityInstructionAccounts & SetAuthorityInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    owned: [input.owned, true] as const,
-    owner: [input.owner, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    owned: { index: 0, isWritable: true, value: input.owned ?? null },
+    owner: { index: 1, isWritable: false, value: input.owner ?? null },
   };
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.owned, false);
-  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
+  // Arguments.
+  const resolvedArgs: SetAuthorityInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getSetAuthorityInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getSetAuthorityInstructionDataSerializer().serialize(
+    resolvedArgs as SetAuthorityInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -22,7 +21,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type ApproveTokenDelegateInstructionAccounts = {
@@ -41,20 +44,7 @@ export type ApproveTokenDelegateInstructionDataArgs = {
   amount: number | bigint;
 };
 
-/** @deprecated Use `getApproveTokenDelegateInstructionDataSerializer()` without any argument instead. */
-export function getApproveTokenDelegateInstructionDataSerializer(
-  _context: object
-): Serializer<
-  ApproveTokenDelegateInstructionDataArgs,
-  ApproveTokenDelegateInstructionData
->;
 export function getApproveTokenDelegateInstructionDataSerializer(): Serializer<
-  ApproveTokenDelegateInstructionDataArgs,
-  ApproveTokenDelegateInstructionData
->;
-export function getApproveTokenDelegateInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   ApproveTokenDelegateInstructionDataArgs,
   ApproveTokenDelegateInstructionData
 > {
@@ -87,31 +77,38 @@ export function approveTokenDelegate(
   input: ApproveTokenDelegateInstructionAccounts &
     ApproveTokenDelegateInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    source: [input.source, true] as const,
-    delegate: [input.delegate, false] as const,
-    owner: [input.owner, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    source: { index: 0, isWritable: true, value: input.source ?? null },
+    delegate: { index: 1, isWritable: false, value: input.delegate ?? null },
+    owner: { index: 2, isWritable: false, value: input.owner ?? null },
   };
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.source, false);
-  addAccountMeta(keys, signers, resolvedAccounts.delegate, false);
-  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
+  // Arguments.
+  const resolvedArgs: ApproveTokenDelegateInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getApproveTokenDelegateInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getApproveTokenDelegateInstructionDataSerializer().serialize(
+    resolvedArgs as ApproveTokenDelegateInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

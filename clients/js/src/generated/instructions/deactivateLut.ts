@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -21,7 +20,11 @@ import {
   struct,
   u32,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type DeactivateLutInstructionAccounts = {
@@ -34,17 +37,10 @@ export type DeactivateLutInstructionData = { discriminator: number };
 
 export type DeactivateLutInstructionDataArgs = {};
 
-/** @deprecated Use `getDeactivateLutInstructionDataSerializer()` without any argument instead. */
-export function getDeactivateLutInstructionDataSerializer(
-  _context: object
-): Serializer<DeactivateLutInstructionDataArgs, DeactivateLutInstructionData>;
 export function getDeactivateLutInstructionDataSerializer(): Serializer<
   DeactivateLutInstructionDataArgs,
   DeactivateLutInstructionData
->;
-export function getDeactivateLutInstructionDataSerializer(
-  _context: object = {}
-): Serializer<DeactivateLutInstructionDataArgs, DeactivateLutInstructionData> {
+> {
   return mapSerializer<
     DeactivateLutInstructionDataArgs,
     any,
@@ -62,32 +58,37 @@ export function getDeactivateLutInstructionDataSerializer(
 
 // Instruction.
 export function deactivateLut(
-  context: Pick<Context, 'programs' | 'identity'>,
+  context: Pick<Context, 'identity' | 'programs'>,
   input: DeactivateLutInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splAddressLookupTable',
     'AddressLookupTab1e1111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    address: [input.address, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    address: { index: 0, isWritable: true, value: input.address ?? null },
+    authority: { index: 1, isWritable: false, value: input.authority ?? null },
   };
-  addObjectProperty(
-    resolvedAccounts,
-    'authority',
-    input.authority
-      ? ([input.authority, false] as const)
-      : ([context.identity, false] as const)
-  );
 
-  addAccountMeta(keys, signers, resolvedAccounts.address, false);
-  addAccountMeta(keys, signers, resolvedAccounts.authority, false);
+  // Default values.
+  if (!resolvedAccounts.authority.value) {
+    resolvedAccounts.authority.value = context.identity;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getDeactivateLutInstructionDataSerializer().serialize({});

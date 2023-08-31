@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -21,7 +20,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type TransferAllSolInstructionAccounts = {
@@ -38,17 +41,7 @@ export type TransferAllSolInstructionData = { discriminator: number };
 
 export type TransferAllSolInstructionDataArgs = {};
 
-/** @deprecated Use `getTransferAllSolInstructionDataSerializer()` without any argument instead. */
-export function getTransferAllSolInstructionDataSerializer(
-  _context: object
-): Serializer<TransferAllSolInstructionDataArgs, TransferAllSolInstructionData>;
 export function getTransferAllSolInstructionDataSerializer(): Serializer<
-  TransferAllSolInstructionDataArgs,
-  TransferAllSolInstructionData
->;
-export function getTransferAllSolInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   TransferAllSolInstructionDataArgs,
   TransferAllSolInstructionData
 > {
@@ -69,46 +62,53 @@ export function getTransferAllSolInstructionDataSerializer(
 
 // Instruction.
 export function transferAllSol(
-  context: Pick<Context, 'programs' | 'identity'>,
+  context: Pick<Context, 'identity' | 'programs'>,
   input: TransferAllSolInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'mplSystemExtras',
     'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    destination: [input.destination, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    source: { index: 0, isWritable: true, value: input.source ?? null },
+    destination: {
+      index: 1,
+      isWritable: true,
+      value: input.destination ?? null,
+    },
+    systemProgram: {
+      index: 2,
+      isWritable: false,
+      value: input.systemProgram ?? null,
+    },
   };
-  addObjectProperty(
-    resolvedAccounts,
-    'source',
-    input.source
-      ? ([input.source, true] as const)
-      : ([context.identity, true] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'systemProgram',
-    input.systemProgram
-      ? ([input.systemProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splSystem',
-            '11111111111111111111111111111111'
-          ),
-          false,
-        ] as const)
-  );
 
-  addAccountMeta(keys, signers, resolvedAccounts.source, false);
-  addAccountMeta(keys, signers, resolvedAccounts.destination, false);
-  addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
+  // Default values.
+  if (!resolvedAccounts.source.value) {
+    resolvedAccounts.source.value = context.identity;
+  }
+  if (!resolvedAccounts.systemProgram.value) {
+    resolvedAccounts.systemProgram.value = context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    );
+    resolvedAccounts.systemProgram.isWritable = false;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getTransferAllSolInstructionDataSerializer().serialize({});

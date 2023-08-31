@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -22,7 +21,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type MintTokensToCheckedInstructionAccounts = {
@@ -43,20 +46,7 @@ export type MintTokensToCheckedInstructionDataArgs = {
   decimals: number;
 };
 
-/** @deprecated Use `getMintTokensToCheckedInstructionDataSerializer()` without any argument instead. */
-export function getMintTokensToCheckedInstructionDataSerializer(
-  _context: object
-): Serializer<
-  MintTokensToCheckedInstructionDataArgs,
-  MintTokensToCheckedInstructionData
->;
 export function getMintTokensToCheckedInstructionDataSerializer(): Serializer<
-  MintTokensToCheckedInstructionDataArgs,
-  MintTokensToCheckedInstructionData
->;
-export function getMintTokensToCheckedInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   MintTokensToCheckedInstructionDataArgs,
   MintTokensToCheckedInstructionData
 > {
@@ -90,31 +80,42 @@ export function mintTokensToChecked(
   input: MintTokensToCheckedInstructionAccounts &
     MintTokensToCheckedInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    mint: [input.mint, true] as const,
-    token: [input.token, true] as const,
-    mintAuthority: [input.mintAuthority, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    mint: { index: 0, isWritable: true, value: input.mint ?? null },
+    token: { index: 1, isWritable: true, value: input.token ?? null },
+    mintAuthority: {
+      index: 2,
+      isWritable: false,
+      value: input.mintAuthority ?? null,
+    },
   };
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.token, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mintAuthority, false);
+  // Arguments.
+  const resolvedArgs: MintTokensToCheckedInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getMintTokensToCheckedInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getMintTokensToCheckedInstructionDataSerializer().serialize(
+    resolvedArgs as MintTokensToCheckedInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

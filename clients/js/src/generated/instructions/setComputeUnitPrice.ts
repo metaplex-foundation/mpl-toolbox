@@ -7,9 +7,7 @@
  */
 
 import {
-  AccountMeta,
   Context,
-  Signer,
   SolAmount,
   TransactionBuilder,
   mapAmountSerializer,
@@ -22,6 +20,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Data.
 export type SetComputeUnitPriceInstructionData = {
@@ -35,20 +38,7 @@ export type SetComputeUnitPriceInstructionDataArgs = {
   lamports: SolAmount;
 };
 
-/** @deprecated Use `getSetComputeUnitPriceInstructionDataSerializer()` without any argument instead. */
-export function getSetComputeUnitPriceInstructionDataSerializer(
-  _context: object
-): Serializer<
-  SetComputeUnitPriceInstructionDataArgs,
-  SetComputeUnitPriceInstructionData
->;
 export function getSetComputeUnitPriceInstructionDataSerializer(): Serializer<
-  SetComputeUnitPriceInstructionDataArgs,
-  SetComputeUnitPriceInstructionData
->;
-export function getSetComputeUnitPriceInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   SetComputeUnitPriceInstructionDataArgs,
   SetComputeUnitPriceInstructionData
 > {
@@ -80,22 +70,34 @@ export function setComputeUnitPrice(
   context: Pick<Context, 'programs'>,
   input: SetComputeUnitPriceInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splComputeBudget',
     'ComputeBudget111111111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {};
+
+  // Arguments.
+  const resolvedArgs: SetComputeUnitPriceInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getSetComputeUnitPriceInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getSetComputeUnitPriceInstructionDataSerializer().serialize(
+    resolvedArgs as SetComputeUnitPriceInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -21,7 +20,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type CloseTokenInstructionAccounts = {
@@ -35,17 +38,10 @@ export type CloseTokenInstructionData = { discriminator: number };
 
 export type CloseTokenInstructionDataArgs = {};
 
-/** @deprecated Use `getCloseTokenInstructionDataSerializer()` without any argument instead. */
-export function getCloseTokenInstructionDataSerializer(
-  _context: object
-): Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData>;
 export function getCloseTokenInstructionDataSerializer(): Serializer<
   CloseTokenInstructionDataArgs,
   CloseTokenInstructionData
->;
-export function getCloseTokenInstructionDataSerializer(
-  _context: object = {}
-): Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData> {
+> {
   return mapSerializer<
     CloseTokenInstructionDataArgs,
     any,
@@ -63,25 +59,34 @@ export function closeToken(
   context: Pick<Context, 'programs'>,
   input: CloseTokenInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    account: [input.account, true] as const,
-    destination: [input.destination, true] as const,
-    owner: [input.owner, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    account: { index: 0, isWritable: true, value: input.account ?? null },
+    destination: {
+      index: 1,
+      isWritable: true,
+      value: input.destination ?? null,
+    },
+    owner: { index: 2, isWritable: false, value: input.owner ?? null },
   };
 
-  addAccountMeta(keys, signers, resolvedAccounts.account, false);
-  addAccountMeta(keys, signers, resolvedAccounts.destination, false);
-  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getCloseTokenInstructionDataSerializer().serialize({});

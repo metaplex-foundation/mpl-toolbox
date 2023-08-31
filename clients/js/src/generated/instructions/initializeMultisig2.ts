@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -21,7 +19,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type InitializeMultisig2InstructionAccounts = {
@@ -37,20 +39,7 @@ export type InitializeMultisig2InstructionData = {
 
 export type InitializeMultisig2InstructionDataArgs = { m: number };
 
-/** @deprecated Use `getInitializeMultisig2InstructionDataSerializer()` without any argument instead. */
-export function getInitializeMultisig2InstructionDataSerializer(
-  _context: object
-): Serializer<
-  InitializeMultisig2InstructionDataArgs,
-  InitializeMultisig2InstructionData
->;
 export function getInitializeMultisig2InstructionDataSerializer(): Serializer<
-  InitializeMultisig2InstructionDataArgs,
-  InitializeMultisig2InstructionData
->;
-export function getInitializeMultisig2InstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   InitializeMultisig2InstructionDataArgs,
   InitializeMultisig2InstructionData
 > {
@@ -83,29 +72,37 @@ export function initializeMultisig2(
   input: InitializeMultisig2InstructionAccounts &
     InitializeMultisig2InstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    multisig: [input.multisig, true] as const,
-    signer: [input.signer, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    multisig: { index: 0, isWritable: true, value: input.multisig ?? null },
+    signer: { index: 1, isWritable: false, value: input.signer ?? null },
   };
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.multisig, false);
-  addAccountMeta(keys, signers, resolvedAccounts.signer, false);
+  // Arguments.
+  const resolvedArgs: InitializeMultisig2InstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getInitializeMultisig2InstructionDataSerializer().serialize(resolvedArgs);
+  const data = getInitializeMultisig2InstructionDataSerializer().serialize(
+    resolvedArgs as InitializeMultisig2InstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
