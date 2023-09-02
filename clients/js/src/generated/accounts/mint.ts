@@ -50,17 +50,10 @@ export type MintAccountDataArgs = {
   freezeAuthority: OptionOrNullable<PublicKey>;
 };
 
-/** @deprecated Use `getMintAccountDataSerializer()` without any argument instead. */
-export function getMintAccountDataSerializer(
-  _context: object
-): Serializer<MintAccountDataArgs, MintAccountData>;
 export function getMintAccountDataSerializer(): Serializer<
   MintAccountDataArgs,
   MintAccountData
->;
-export function getMintAccountDataSerializer(
-  _context: object = {}
-): Serializer<MintAccountDataArgs, MintAccountData> {
+> {
   return struct<MintAccountData>(
     [
       [
@@ -79,17 +72,8 @@ export function getMintAccountDataSerializer(
   ) as Serializer<MintAccountDataArgs, MintAccountData>;
 }
 
-/** @deprecated Use `deserializeMint(rawAccount)` without any context instead. */
-export function deserializeMint(context: object, rawAccount: RpcAccount): Mint;
-export function deserializeMint(rawAccount: RpcAccount): Mint;
-export function deserializeMint(
-  context: RpcAccount | object,
-  rawAccount?: RpcAccount
-): Mint {
-  return deserializeAccount(
-    rawAccount ?? (context as RpcAccount),
-    getMintAccountDataSerializer()
-  );
+export function deserializeMint(rawAccount: RpcAccount): Mint {
+  return deserializeAccount(rawAccount, getMintAccountDataSerializer());
 }
 
 export async function fetchMint(

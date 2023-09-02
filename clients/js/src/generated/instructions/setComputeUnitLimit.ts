@@ -7,9 +7,7 @@
  */
 
 import {
-  AccountMeta,
   Context,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -20,6 +18,11 @@ import {
   u32,
   u8,
 } from '@metaplex-foundation/umi/serializers';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Data.
 export type SetComputeUnitLimitInstructionData = {
@@ -33,20 +36,7 @@ export type SetComputeUnitLimitInstructionDataArgs = {
   units: number;
 };
 
-/** @deprecated Use `getSetComputeUnitLimitInstructionDataSerializer()` without any argument instead. */
-export function getSetComputeUnitLimitInstructionDataSerializer(
-  _context: object
-): Serializer<
-  SetComputeUnitLimitInstructionDataArgs,
-  SetComputeUnitLimitInstructionData
->;
 export function getSetComputeUnitLimitInstructionDataSerializer(): Serializer<
-  SetComputeUnitLimitInstructionDataArgs,
-  SetComputeUnitLimitInstructionData
->;
-export function getSetComputeUnitLimitInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   SetComputeUnitLimitInstructionDataArgs,
   SetComputeUnitLimitInstructionData
 > {
@@ -78,22 +68,34 @@ export function setComputeUnitLimit(
   context: Pick<Context, 'programs'>,
   input: SetComputeUnitLimitInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splComputeBudget',
     'ComputeBudget111111111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {};
+
+  // Arguments.
+  const resolvedArgs: SetComputeUnitLimitInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getSetComputeUnitLimitInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getSetComputeUnitLimitInstructionDataSerializer().serialize(
+    resolvedArgs as SetComputeUnitLimitInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

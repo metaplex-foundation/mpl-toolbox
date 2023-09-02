@@ -7,13 +7,11 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
   Signer,
   TransactionBuilder,
-  publicKey,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
@@ -23,7 +21,13 @@ import {
   u8,
 } from '@metaplex-foundation/umi/serializers';
 import { findAssociatedTokenPda } from '../../hooked';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  expectPublicKey,
+  expectSome,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type CreateTokenIfMissingInstructionAccounts = {
@@ -50,20 +54,7 @@ export type CreateTokenIfMissingInstructionData = { discriminator: number };
 
 export type CreateTokenIfMissingInstructionDataArgs = {};
 
-/** @deprecated Use `getCreateTokenIfMissingInstructionDataSerializer()` without any argument instead. */
-export function getCreateTokenIfMissingInstructionDataSerializer(
-  _context: object
-): Serializer<
-  CreateTokenIfMissingInstructionDataArgs,
-  CreateTokenIfMissingInstructionData
->;
 export function getCreateTokenIfMissingInstructionDataSerializer(): Serializer<
-  CreateTokenIfMissingInstructionDataArgs,
-  CreateTokenIfMissingInstructionData
->;
-export function getCreateTokenIfMissingInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   CreateTokenIfMissingInstructionDataArgs,
   CreateTokenIfMissingInstructionData
 > {
@@ -84,104 +75,88 @@ export function getCreateTokenIfMissingInstructionDataSerializer(
 
 // Instruction.
 export function createTokenIfMissing(
-  context: Pick<Context, 'programs' | 'eddsa' | 'identity' | 'payer'>,
+  context: Pick<Context, 'eddsa' | 'identity' | 'payer' | 'programs'>,
   input: CreateTokenIfMissingInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'mplTokenExtras',
     'TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    mint: [input.mint, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    payer: { index: 0, isWritable: true, value: input.payer ?? null },
+    token: { index: 1, isWritable: false, value: input.token ?? null },
+    mint: { index: 2, isWritable: false, value: input.mint ?? null },
+    owner: { index: 3, isWritable: false, value: input.owner ?? null },
+    ata: { index: 4, isWritable: true, value: input.ata ?? null },
+    systemProgram: {
+      index: 5,
+      isWritable: false,
+      value: input.systemProgram ?? null,
+    },
+    tokenProgram: {
+      index: 6,
+      isWritable: false,
+      value: input.tokenProgram ?? null,
+    },
+    ataProgram: {
+      index: 7,
+      isWritable: false,
+      value: input.ataProgram ?? null,
+    },
   };
-  addObjectProperty(
-    resolvedAccounts,
-    'payer',
-    input.payer
-      ? ([input.payer, true] as const)
-      : ([context.payer, true] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'owner',
-    input.owner
-      ? ([input.owner, false] as const)
-      : ([context.identity.publicKey, false] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'ata',
-    input.ata
-      ? ([input.ata, true] as const)
-      : ([
-          findAssociatedTokenPda(context, {
-            owner: publicKey(resolvedAccounts.owner[0], false),
-            mint: publicKey(input.mint, false),
-          }),
-          true,
-        ] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'token',
-    input.token
-      ? ([input.token, false] as const)
-      : ([resolvedAccounts.ata[0], false] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'systemProgram',
-    input.systemProgram
-      ? ([input.systemProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splSystem',
-            '11111111111111111111111111111111'
-          ),
-          false,
-        ] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'tokenProgram',
-    input.tokenProgram
-      ? ([input.tokenProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splToken',
-            'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-          ),
-          false,
-        ] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'ataProgram',
-    input.ataProgram
-      ? ([input.ataProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splAssociatedToken',
-            'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
-          ),
-          false,
-        ] as const)
-  );
 
-  addAccountMeta(keys, signers, resolvedAccounts.payer, false);
-  addAccountMeta(keys, signers, resolvedAccounts.token, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
-  addAccountMeta(keys, signers, resolvedAccounts.ata, false);
-  addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
-  addAccountMeta(keys, signers, resolvedAccounts.tokenProgram, false);
-  addAccountMeta(keys, signers, resolvedAccounts.ataProgram, false);
+  // Default values.
+  if (!resolvedAccounts.payer.value) {
+    resolvedAccounts.payer.value = context.payer;
+  }
+  if (!resolvedAccounts.owner.value) {
+    resolvedAccounts.owner.value = context.identity.publicKey;
+  }
+  if (!resolvedAccounts.ata.value) {
+    resolvedAccounts.ata.value = findAssociatedTokenPda(context, {
+      owner: expectPublicKey(resolvedAccounts.owner.value),
+      mint: expectPublicKey(resolvedAccounts.mint.value),
+    });
+  }
+  if (!resolvedAccounts.token.value) {
+    resolvedAccounts.token.value = expectSome(resolvedAccounts.ata.value);
+  }
+  if (!resolvedAccounts.systemProgram.value) {
+    resolvedAccounts.systemProgram.value = context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    );
+    resolvedAccounts.systemProgram.isWritable = false;
+  }
+  if (!resolvedAccounts.tokenProgram.value) {
+    resolvedAccounts.tokenProgram.value = context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    );
+    resolvedAccounts.tokenProgram.isWritable = false;
+  }
+  if (!resolvedAccounts.ataProgram.value) {
+    resolvedAccounts.ataProgram.value = context.programs.getPublicKey(
+      'splAssociatedToken',
+      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+    );
+    resolvedAccounts.ataProgram.isWritable = false;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getCreateTokenIfMissingInstructionDataSerializer().serialize({});

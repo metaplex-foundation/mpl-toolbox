@@ -7,13 +7,11 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Option,
   OptionOrNullable,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   publicKey,
   transactionBuilder,
@@ -26,7 +24,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type InitializeMintInstructionAccounts = {
@@ -48,17 +50,7 @@ export type InitializeMintInstructionDataArgs = {
   freezeAuthority: OptionOrNullable<PublicKey>;
 };
 
-/** @deprecated Use `getInitializeMintInstructionDataSerializer()` without any argument instead. */
-export function getInitializeMintInstructionDataSerializer(
-  _context: object
-): Serializer<InitializeMintInstructionDataArgs, InitializeMintInstructionData>;
 export function getInitializeMintInstructionDataSerializer(): Serializer<
-  InitializeMintInstructionDataArgs,
-  InitializeMintInstructionData
->;
-export function getInitializeMintInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   InitializeMintInstructionDataArgs,
   InitializeMintInstructionData
 > {
@@ -91,38 +83,44 @@ export function initializeMint(
   context: Pick<Context, 'programs'>,
   input: InitializeMintInstructionAccounts & InitializeMintInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    mint: [input.mint, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    mint: { index: 0, isWritable: true, value: input.mint ?? null },
+    rent: { index: 1, isWritable: false, value: input.rent ?? null },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'rent',
-    input.rent
-      ? ([input.rent, false] as const)
-      : ([
-          publicKey('SysvarRent111111111111111111111111111111111'),
-          false,
-        ] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.rent, false);
+  // Arguments.
+  const resolvedArgs: InitializeMintInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.rent.value) {
+    resolvedAccounts.rent.value = publicKey(
+      'SysvarRent111111111111111111111111111111111'
+    );
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getInitializeMintInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getInitializeMintInstructionDataSerializer().serialize(
+    resolvedArgs as InitializeMintInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

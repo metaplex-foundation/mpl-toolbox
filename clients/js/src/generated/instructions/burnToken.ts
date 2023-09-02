@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -22,7 +21,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type BurnTokenInstructionAccounts = {
@@ -39,17 +42,10 @@ export type BurnTokenInstructionData = {
 
 export type BurnTokenInstructionDataArgs = { amount: number | bigint };
 
-/** @deprecated Use `getBurnTokenInstructionDataSerializer()` without any argument instead. */
-export function getBurnTokenInstructionDataSerializer(
-  _context: object
-): Serializer<BurnTokenInstructionDataArgs, BurnTokenInstructionData>;
 export function getBurnTokenInstructionDataSerializer(): Serializer<
   BurnTokenInstructionDataArgs,
   BurnTokenInstructionData
->;
-export function getBurnTokenInstructionDataSerializer(
-  _context: object = {}
-): Serializer<BurnTokenInstructionDataArgs, BurnTokenInstructionData> {
+> {
   return mapSerializer<
     BurnTokenInstructionDataArgs,
     any,
@@ -71,39 +67,46 @@ export type BurnTokenInstructionArgs = BurnTokenInstructionDataArgs;
 
 // Instruction.
 export function burnToken(
-  context: Pick<Context, 'programs' | 'identity'>,
+  context: Pick<Context, 'identity' | 'programs'>,
   input: BurnTokenInstructionAccounts & BurnTokenInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    account: [input.account, true] as const,
-    mint: [input.mint, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    account: { index: 0, isWritable: true, value: input.account ?? null },
+    mint: { index: 1, isWritable: true, value: input.mint ?? null },
+    authority: { index: 2, isWritable: false, value: input.authority ?? null },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'authority',
-    input.authority
-      ? ([input.authority, false] as const)
-      : ([context.identity, false] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.account, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.authority, false);
+  // Arguments.
+  const resolvedArgs: BurnTokenInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.authority.value) {
+    resolvedAccounts.authority.value = context.identity;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data = getBurnTokenInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getBurnTokenInstructionDataSerializer().serialize(
+    resolvedArgs as BurnTokenInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

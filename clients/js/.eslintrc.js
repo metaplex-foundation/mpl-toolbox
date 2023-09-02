@@ -9,6 +9,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
   rules: {
+    'prefer-destructuring': ['error', { object: true, array: false }],
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     'class-methods-use-this': 'off',

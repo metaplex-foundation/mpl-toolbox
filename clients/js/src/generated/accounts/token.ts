@@ -55,17 +55,10 @@ export type TokenAccountDataArgs = {
   closeAuthority: OptionOrNullable<PublicKey>;
 };
 
-/** @deprecated Use `getTokenAccountDataSerializer()` without any argument instead. */
-export function getTokenAccountDataSerializer(
-  _context: object
-): Serializer<TokenAccountDataArgs, TokenAccountData>;
 export function getTokenAccountDataSerializer(): Serializer<
   TokenAccountDataArgs,
   TokenAccountData
->;
-export function getTokenAccountDataSerializer(
-  _context: object = {}
-): Serializer<TokenAccountDataArgs, TokenAccountData> {
+> {
   return struct<TokenAccountData>(
     [
       ['mint', publicKeySerializer()],
@@ -87,20 +80,8 @@ export function getTokenAccountDataSerializer(
   ) as Serializer<TokenAccountDataArgs, TokenAccountData>;
 }
 
-/** @deprecated Use `deserializeToken(rawAccount)` without any context instead. */
-export function deserializeToken(
-  context: object,
-  rawAccount: RpcAccount
-): Token;
-export function deserializeToken(rawAccount: RpcAccount): Token;
-export function deserializeToken(
-  context: RpcAccount | object,
-  rawAccount?: RpcAccount
-): Token {
-  return deserializeAccount(
-    rawAccount ?? (context as RpcAccount),
-    getTokenAccountDataSerializer()
-  );
+export function deserializeToken(rawAccount: RpcAccount): Token {
+  return deserializeAccount(rawAccount, getTokenAccountDataSerializer());
 }
 
 export async function fetchToken(

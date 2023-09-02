@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -21,7 +20,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type RevokeTokenDelegateInstructionAccounts = {
@@ -34,20 +37,7 @@ export type RevokeTokenDelegateInstructionData = { discriminator: number };
 
 export type RevokeTokenDelegateInstructionDataArgs = {};
 
-/** @deprecated Use `getRevokeTokenDelegateInstructionDataSerializer()` without any argument instead. */
-export function getRevokeTokenDelegateInstructionDataSerializer(
-  _context: object
-): Serializer<
-  RevokeTokenDelegateInstructionDataArgs,
-  RevokeTokenDelegateInstructionData
->;
 export function getRevokeTokenDelegateInstructionDataSerializer(): Serializer<
-  RevokeTokenDelegateInstructionDataArgs,
-  RevokeTokenDelegateInstructionData
->;
-export function getRevokeTokenDelegateInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   RevokeTokenDelegateInstructionDataArgs,
   RevokeTokenDelegateInstructionData
 > {
@@ -71,23 +61,29 @@ export function revokeTokenDelegate(
   context: Pick<Context, 'programs'>,
   input: RevokeTokenDelegateInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    source: [input.source, true] as const,
-    owner: [input.owner, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    source: { index: 0, isWritable: true, value: input.source ?? null },
+    owner: { index: 1, isWritable: false, value: input.owner ?? null },
   };
 
-  addAccountMeta(keys, signers, resolvedAccounts.source, false);
-  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getRevokeTokenDelegateInstructionDataSerializer().serialize({});

@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -22,7 +21,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type TransferTokensCheckedInstructionAccounts = {
@@ -44,20 +47,7 @@ export type TransferTokensCheckedInstructionDataArgs = {
   decimals: number;
 };
 
-/** @deprecated Use `getTransferTokensCheckedInstructionDataSerializer()` without any argument instead. */
-export function getTransferTokensCheckedInstructionDataSerializer(
-  _context: object
-): Serializer<
-  TransferTokensCheckedInstructionDataArgs,
-  TransferTokensCheckedInstructionData
->;
 export function getTransferTokensCheckedInstructionDataSerializer(): Serializer<
-  TransferTokensCheckedInstructionDataArgs,
-  TransferTokensCheckedInstructionData
->;
-export function getTransferTokensCheckedInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   TransferTokensCheckedInstructionDataArgs,
   TransferTokensCheckedInstructionData
 > {
@@ -87,43 +77,52 @@ export type TransferTokensCheckedInstructionArgs =
 
 // Instruction.
 export function transferTokensChecked(
-  context: Pick<Context, 'programs' | 'identity'>,
+  context: Pick<Context, 'identity' | 'programs'>,
   input: TransferTokensCheckedInstructionAccounts &
     TransferTokensCheckedInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    source: [input.source, true] as const,
-    mint: [input.mint, false] as const,
-    destination: [input.destination, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    source: { index: 0, isWritable: true, value: input.source ?? null },
+    mint: { index: 1, isWritable: false, value: input.mint ?? null },
+    destination: {
+      index: 2,
+      isWritable: true,
+      value: input.destination ?? null,
+    },
+    authority: { index: 3, isWritable: false, value: input.authority ?? null },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'authority',
-    input.authority
-      ? ([input.authority, false] as const)
-      : ([context.identity, false] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.source, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.destination, false);
-  addAccountMeta(keys, signers, resolvedAccounts.authority, false);
+  // Arguments.
+  const resolvedArgs: TransferTokensCheckedInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.authority.value) {
+    resolvedAccounts.authority.value = context.identity;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getTransferTokensCheckedInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getTransferTokensCheckedInstructionDataSerializer().serialize(
+    resolvedArgs as TransferTokensCheckedInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

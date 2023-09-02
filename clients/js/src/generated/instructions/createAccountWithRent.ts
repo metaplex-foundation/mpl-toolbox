@@ -8,7 +8,6 @@
 
 import {
   ACCOUNT_HEADER_SIZE,
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -24,7 +23,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type CreateAccountWithRentInstructionAccounts = {
@@ -48,20 +51,7 @@ export type CreateAccountWithRentInstructionDataArgs = {
   programId: PublicKey;
 };
 
-/** @deprecated Use `getCreateAccountWithRentInstructionDataSerializer()` without any argument instead. */
-export function getCreateAccountWithRentInstructionDataSerializer(
-  _context: object
-): Serializer<
-  CreateAccountWithRentInstructionDataArgs,
-  CreateAccountWithRentInstructionData
->;
 export function getCreateAccountWithRentInstructionDataSerializer(): Serializer<
-  CreateAccountWithRentInstructionDataArgs,
-  CreateAccountWithRentInstructionData
->;
-export function getCreateAccountWithRentInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   CreateAccountWithRentInstructionDataArgs,
   CreateAccountWithRentInstructionData
 > {
@@ -91,53 +81,58 @@ export type CreateAccountWithRentInstructionArgs =
 
 // Instruction.
 export function createAccountWithRent(
-  context: Pick<Context, 'programs' | 'payer'>,
+  context: Pick<Context, 'payer' | 'programs'>,
   input: CreateAccountWithRentInstructionAccounts &
     CreateAccountWithRentInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'mplSystemExtras',
     'SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    newAccount: [input.newAccount, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    payer: { index: 0, isWritable: true, value: input.payer ?? null },
+    newAccount: { index: 1, isWritable: true, value: input.newAccount ?? null },
+    systemProgram: {
+      index: 2,
+      isWritable: false,
+      value: input.systemProgram ?? null,
+    },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'payer',
-    input.payer
-      ? ([input.payer, true] as const)
-      : ([context.payer, true] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'systemProgram',
-    input.systemProgram
-      ? ([input.systemProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splSystem',
-            '11111111111111111111111111111111'
-          ),
-          false,
-        ] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.payer, false);
-  addAccountMeta(keys, signers, resolvedAccounts.newAccount, false);
-  addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
+  // Arguments.
+  const resolvedArgs: CreateAccountWithRentInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.payer.value) {
+    resolvedAccounts.payer.value = context.payer;
+  }
+  if (!resolvedAccounts.systemProgram.value) {
+    resolvedAccounts.systemProgram.value = context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    );
+    resolvedAccounts.systemProgram.isWritable = false;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getCreateAccountWithRentInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getCreateAccountWithRentInstructionDataSerializer().serialize(
+    resolvedArgs as CreateAccountWithRentInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = Number(input.space) + ACCOUNT_HEADER_SIZE;

@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -22,7 +20,11 @@ import {
   u64,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type UiAmountToAmountInstructionAccounts = {
@@ -37,20 +39,7 @@ export type UiAmountToAmountInstructionData = {
 
 export type UiAmountToAmountInstructionDataArgs = { uiAmount: number | bigint };
 
-/** @deprecated Use `getUiAmountToAmountInstructionDataSerializer()` without any argument instead. */
-export function getUiAmountToAmountInstructionDataSerializer(
-  _context: object
-): Serializer<
-  UiAmountToAmountInstructionDataArgs,
-  UiAmountToAmountInstructionData
->;
 export function getUiAmountToAmountInstructionDataSerializer(): Serializer<
-  UiAmountToAmountInstructionDataArgs,
-  UiAmountToAmountInstructionData
->;
-export function getUiAmountToAmountInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   UiAmountToAmountInstructionDataArgs,
   UiAmountToAmountInstructionData
 > {
@@ -82,27 +71,36 @@ export function uiAmountToAmount(
   context: Pick<Context, 'programs'>,
   input: UiAmountToAmountInstructionAccounts & UiAmountToAmountInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    mint: [input.mint, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    mint: { index: 0, isWritable: false, value: input.mint ?? null },
   };
-  const resolvingArgs = {};
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
+  // Arguments.
+  const resolvedArgs: UiAmountToAmountInstructionArgs = { ...input };
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getUiAmountToAmountInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getUiAmountToAmountInstructionDataSerializer().serialize(
+    resolvedArgs as UiAmountToAmountInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

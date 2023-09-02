@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   publicKey,
   transactionBuilder,
@@ -22,7 +20,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type InitializeTokenInstructionAccounts = {
@@ -37,20 +39,7 @@ export type InitializeTokenInstructionData = { discriminator: number };
 
 export type InitializeTokenInstructionDataArgs = {};
 
-/** @deprecated Use `getInitializeTokenInstructionDataSerializer()` without any argument instead. */
-export function getInitializeTokenInstructionDataSerializer(
-  _context: object
-): Serializer<
-  InitializeTokenInstructionDataArgs,
-  InitializeTokenInstructionData
->;
 export function getInitializeTokenInstructionDataSerializer(): Serializer<
-  InitializeTokenInstructionDataArgs,
-  InitializeTokenInstructionData
->;
-export function getInitializeTokenInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   InitializeTokenInstructionDataArgs,
   InitializeTokenInstructionData
 > {
@@ -74,36 +63,38 @@ export function initializeToken(
   context: Pick<Context, 'programs'>,
   input: InitializeTokenInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    account: [input.account, true] as const,
-    mint: [input.mint, false] as const,
-    owner: [input.owner, false] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    account: { index: 0, isWritable: true, value: input.account ?? null },
+    mint: { index: 1, isWritable: false, value: input.mint ?? null },
+    owner: { index: 2, isWritable: false, value: input.owner ?? null },
+    rent: { index: 3, isWritable: false, value: input.rent ?? null },
   };
-  addObjectProperty(
-    resolvedAccounts,
-    'rent',
-    input.rent
-      ? ([input.rent, false] as const)
-      : ([
-          publicKey('SysvarRent111111111111111111111111111111111'),
-          false,
-        ] as const)
-  );
 
-  addAccountMeta(keys, signers, resolvedAccounts.account, false);
-  addAccountMeta(keys, signers, resolvedAccounts.mint, false);
-  addAccountMeta(keys, signers, resolvedAccounts.owner, false);
-  addAccountMeta(keys, signers, resolvedAccounts.rent, false);
+  // Default values.
+  if (!resolvedAccounts.rent.value) {
+    resolvedAccounts.rent.value = publicKey(
+      'SysvarRent111111111111111111111111111111111'
+    );
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getInitializeTokenInstructionDataSerializer().serialize({});

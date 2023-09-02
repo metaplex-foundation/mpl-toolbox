@@ -39,17 +39,10 @@ export type MultisigAccountData = {
 
 export type MultisigAccountDataArgs = MultisigAccountData;
 
-/** @deprecated Use `getMultisigAccountDataSerializer()` without any argument instead. */
-export function getMultisigAccountDataSerializer(
-  _context: object
-): Serializer<MultisigAccountDataArgs, MultisigAccountData>;
 export function getMultisigAccountDataSerializer(): Serializer<
   MultisigAccountDataArgs,
   MultisigAccountData
->;
-export function getMultisigAccountDataSerializer(
-  _context: object = {}
-): Serializer<MultisigAccountDataArgs, MultisigAccountData> {
+> {
   return struct<MultisigAccountData>(
     [
       ['m', u8()],
@@ -61,20 +54,8 @@ export function getMultisigAccountDataSerializer(
   ) as Serializer<MultisigAccountDataArgs, MultisigAccountData>;
 }
 
-/** @deprecated Use `deserializeMultisig(rawAccount)` without any context instead. */
-export function deserializeMultisig(
-  context: object,
-  rawAccount: RpcAccount
-): Multisig;
-export function deserializeMultisig(rawAccount: RpcAccount): Multisig;
-export function deserializeMultisig(
-  context: RpcAccount | object,
-  rawAccount?: RpcAccount
-): Multisig {
-  return deserializeAccount(
-    rawAccount ?? (context as RpcAccount),
-    getMultisigAccountDataSerializer()
-  );
+export function deserializeMultisig(rawAccount: RpcAccount): Multisig {
+  return deserializeAccount(rawAccount, getMultisigAccountDataSerializer());
 }
 
 export async function fetchMultisig(

@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -24,7 +23,11 @@ import {
   u32,
   u64,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type TransferSolInstructionAccounts = {
@@ -40,17 +43,10 @@ export type TransferSolInstructionData = {
 
 export type TransferSolInstructionDataArgs = { amount: SolAmount };
 
-/** @deprecated Use `getTransferSolInstructionDataSerializer()` without any argument instead. */
-export function getTransferSolInstructionDataSerializer(
-  _context: object
-): Serializer<TransferSolInstructionDataArgs, TransferSolInstructionData>;
 export function getTransferSolInstructionDataSerializer(): Serializer<
   TransferSolInstructionDataArgs,
   TransferSolInstructionData
->;
-export function getTransferSolInstructionDataSerializer(
-  _context: object = {}
-): Serializer<TransferSolInstructionDataArgs, TransferSolInstructionData> {
+> {
   return mapSerializer<
     TransferSolInstructionDataArgs,
     any,
@@ -72,38 +68,49 @@ export type TransferSolInstructionArgs = TransferSolInstructionDataArgs;
 
 // Instruction.
 export function transferSol(
-  context: Pick<Context, 'programs' | 'identity'>,
+  context: Pick<Context, 'identity' | 'programs'>,
   input: TransferSolInstructionAccounts & TransferSolInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splSystem',
     '11111111111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    destination: [input.destination, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    source: { index: 0, isWritable: true, value: input.source ?? null },
+    destination: {
+      index: 1,
+      isWritable: true,
+      value: input.destination ?? null,
+    },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'source',
-    input.source
-      ? ([input.source, true] as const)
-      : ([context.identity, true] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.source, false);
-  addAccountMeta(keys, signers, resolvedAccounts.destination, false);
+  // Arguments.
+  const resolvedArgs: TransferSolInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.source.value) {
+    resolvedAccounts.source.value = context.identity;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data =
-    getTransferSolInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getTransferSolInstructionDataSerializer().serialize(
+    resolvedArgs as TransferSolInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;

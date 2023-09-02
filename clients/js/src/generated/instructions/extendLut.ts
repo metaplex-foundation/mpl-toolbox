@@ -7,7 +7,6 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
@@ -25,7 +24,11 @@ import {
   u64,
 } from '@metaplex-foundation/umi/serializers';
 import { resolveExtendLutBytes } from '../../hooked';
-import { addAccountMeta, addObjectProperty } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type ExtendLutInstructionAccounts = {
@@ -43,17 +46,10 @@ export type ExtendLutInstructionData = {
 
 export type ExtendLutInstructionDataArgs = { addresses: Array<PublicKey> };
 
-/** @deprecated Use `getExtendLutInstructionDataSerializer()` without any argument instead. */
-export function getExtendLutInstructionDataSerializer(
-  _context: object
-): Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData>;
 export function getExtendLutInstructionDataSerializer(): Serializer<
   ExtendLutInstructionDataArgs,
   ExtendLutInstructionData
->;
-export function getExtendLutInstructionDataSerializer(
-  _context: object = {}
-): Serializer<ExtendLutInstructionDataArgs, ExtendLutInstructionData> {
+> {
   return mapSerializer<
     ExtendLutInstructionDataArgs,
     any,
@@ -75,59 +71,61 @@ export type ExtendLutInstructionArgs = ExtendLutInstructionDataArgs;
 
 // Instruction.
 export function extendLut(
-  context: Pick<Context, 'programs' | 'eddsa' | 'identity' | 'payer'>,
+  context: Pick<Context, 'eddsa' | 'identity' | 'payer' | 'programs'>,
   input: ExtendLutInstructionAccounts & ExtendLutInstructionArgs
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splAddressLookupTable',
     'AddressLookupTab1e1111111111111111111111111'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    address: [input.address, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    address: { index: 0, isWritable: true, value: input.address ?? null },
+    authority: { index: 1, isWritable: false, value: input.authority ?? null },
+    payer: { index: 2, isWritable: true, value: input.payer ?? null },
+    systemProgram: {
+      index: 3,
+      isWritable: false,
+      value: input.systemProgram ?? null,
+    },
   };
-  const resolvingArgs = {};
-  addObjectProperty(
-    resolvedAccounts,
-    'authority',
-    input.authority
-      ? ([input.authority, false] as const)
-      : ([context.identity, false] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'payer',
-    input.payer
-      ? ([input.payer, true] as const)
-      : ([context.payer, true] as const)
-  );
-  addObjectProperty(
-    resolvedAccounts,
-    'systemProgram',
-    input.systemProgram
-      ? ([input.systemProgram, false] as const)
-      : ([
-          context.programs.getPublicKey(
-            'splSystem',
-            '11111111111111111111111111111111'
-          ),
-          false,
-        ] as const)
-  );
-  const resolvedArgs = { ...input, ...resolvingArgs };
 
-  addAccountMeta(keys, signers, resolvedAccounts.address, false);
-  addAccountMeta(keys, signers, resolvedAccounts.authority, false);
-  addAccountMeta(keys, signers, resolvedAccounts.payer, false);
-  addAccountMeta(keys, signers, resolvedAccounts.systemProgram, false);
+  // Arguments.
+  const resolvedArgs: ExtendLutInstructionArgs = { ...input };
+
+  // Default values.
+  if (!resolvedAccounts.authority.value) {
+    resolvedAccounts.authority.value = context.identity;
+  }
+  if (!resolvedAccounts.payer.value) {
+    resolvedAccounts.payer.value = context.payer;
+  }
+  if (!resolvedAccounts.systemProgram.value) {
+    resolvedAccounts.systemProgram.value = context.programs.getPublicKey(
+      'splSystem',
+      '11111111111111111111111111111111'
+    );
+    resolvedAccounts.systemProgram.isWritable = false;
+  }
+
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
-  const data = getExtendLutInstructionDataSerializer().serialize(resolvedArgs);
+  const data = getExtendLutInstructionDataSerializer().serialize(
+    resolvedArgs as ExtendLutInstructionDataArgs
+  );
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = resolveExtendLutBytes(

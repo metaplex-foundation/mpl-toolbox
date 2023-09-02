@@ -54,17 +54,7 @@ export type AddressLookupTableAccountDataArgs = {
   addresses: Array<PublicKey>;
 };
 
-/** @deprecated Use `getAddressLookupTableAccountDataSerializer()` without any argument instead. */
-export function getAddressLookupTableAccountDataSerializer(
-  _context: object
-): Serializer<AddressLookupTableAccountDataArgs, AddressLookupTableAccountData>;
 export function getAddressLookupTableAccountDataSerializer(): Serializer<
-  AddressLookupTableAccountDataArgs,
-  AddressLookupTableAccountData
->;
-export function getAddressLookupTableAccountDataSerializer(
-  _context: object = {}
-): Serializer<
   AddressLookupTableAccountDataArgs,
   AddressLookupTableAccountData
 > {
@@ -92,20 +82,11 @@ export function getAddressLookupTableAccountDataSerializer(
   >;
 }
 
-/** @deprecated Use `deserializeAddressLookupTable(rawAccount)` without any context instead. */
-export function deserializeAddressLookupTable(
-  context: object,
-  rawAccount: RpcAccount
-): AddressLookupTable;
 export function deserializeAddressLookupTable(
   rawAccount: RpcAccount
-): AddressLookupTable;
-export function deserializeAddressLookupTable(
-  context: RpcAccount | object,
-  rawAccount?: RpcAccount
 ): AddressLookupTable {
   return deserializeAccount(
-    rawAccount ?? (context as RpcAccount),
+    rawAccount,
     getAddressLookupTableAccountDataSerializer()
   );
 }

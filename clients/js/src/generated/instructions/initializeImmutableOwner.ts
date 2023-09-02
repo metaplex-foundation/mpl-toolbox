@@ -7,11 +7,9 @@
  */
 
 import {
-  AccountMeta,
   Context,
   Pda,
   PublicKey,
-  Signer,
   TransactionBuilder,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
@@ -21,7 +19,11 @@ import {
   struct,
   u8,
 } from '@metaplex-foundation/umi/serializers';
-import { addAccountMeta } from '../shared';
+import {
+  ResolvedAccount,
+  ResolvedAccountsWithIndices,
+  getAccountMetasAndSigners,
+} from '../shared';
 
 // Accounts.
 export type InitializeImmutableOwnerInstructionAccounts = {
@@ -33,20 +35,7 @@ export type InitializeImmutableOwnerInstructionData = { discriminator: number };
 
 export type InitializeImmutableOwnerInstructionDataArgs = {};
 
-/** @deprecated Use `getInitializeImmutableOwnerInstructionDataSerializer()` without any argument instead. */
-export function getInitializeImmutableOwnerInstructionDataSerializer(
-  _context: object
-): Serializer<
-  InitializeImmutableOwnerInstructionDataArgs,
-  InitializeImmutableOwnerInstructionData
->;
 export function getInitializeImmutableOwnerInstructionDataSerializer(): Serializer<
-  InitializeImmutableOwnerInstructionDataArgs,
-  InitializeImmutableOwnerInstructionData
->;
-export function getInitializeImmutableOwnerInstructionDataSerializer(
-  _context: object = {}
-): Serializer<
   InitializeImmutableOwnerInstructionDataArgs,
   InitializeImmutableOwnerInstructionData
 > {
@@ -70,21 +59,28 @@ export function initializeImmutableOwner(
   context: Pick<Context, 'programs'>,
   input: InitializeImmutableOwnerInstructionAccounts
 ): TransactionBuilder {
-  const signers: Signer[] = [];
-  const keys: AccountMeta[] = [];
-
   // Program ID.
   const programId = context.programs.getPublicKey(
     'splToken',
     'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
   );
 
-  // Resolved inputs.
-  const resolvedAccounts = {
-    account: [input.account, true] as const,
+  // Accounts.
+  const resolvedAccounts: ResolvedAccountsWithIndices = {
+    account: { index: 0, isWritable: true, value: input.account ?? null },
   };
 
-  addAccountMeta(keys, signers, resolvedAccounts.account, false);
+  // Accounts in order.
+  const orderedAccounts: ResolvedAccount[] = Object.values(
+    resolvedAccounts
+  ).sort((a, b) => a.index - b.index);
+
+  // Keys and Signers.
+  const [keys, signers] = getAccountMetasAndSigners(
+    orderedAccounts,
+    'programId',
+    programId
+  );
 
   // Data.
   const data = getInitializeImmutableOwnerInstructionDataSerializer().serialize(

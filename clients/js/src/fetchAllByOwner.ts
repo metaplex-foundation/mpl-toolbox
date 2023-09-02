@@ -92,7 +92,7 @@ export const fetchAllTokenByOwner = async (
       { mint, ...rpcOptions }
     );
     return result.map(({ pubkey, account }) =>
-      deserializeToken(context, {
+      deserializeToken({
         ...account,
         data: base64.serialize(account.data[0]),
         publicKey: publicKey(pubkey),
@@ -112,7 +112,7 @@ export const fetchAllTokenByOwner = async (
       const amount = u64().deserialize(account.data.slice(64, 72))[0];
       return tokenAmountFilter(amount);
     })
-    .map((account) => deserializeToken(context, account));
+    .map((account) => deserializeToken(account));
 };
 
 export const fetchAllTokenByOwnerAndMint = (
