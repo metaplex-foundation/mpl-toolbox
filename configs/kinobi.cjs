@@ -136,7 +136,6 @@ kinobi.update(
   new k.SetNumberWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
     "splSystem.TransferSol.amount": { kind: "SolAmount" },
-    "splComputeBudget.SetComputeUnitPrice.lamports": { kind: "SolAmount" },
   })
 );
 

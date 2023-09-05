@@ -8,9 +8,7 @@
 
 import {
   Context,
-  SolAmount,
   TransactionBuilder,
-  mapAmountSerializer,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
@@ -30,12 +28,12 @@ import {
 export type SetComputeUnitPriceInstructionData = {
   discriminator: number;
   /** Transaction compute unit price used for prioritization fees. */
-  lamports: SolAmount;
+  microLamports: bigint;
 };
 
 export type SetComputeUnitPriceInstructionDataArgs = {
   /** Transaction compute unit price used for prioritization fees. */
-  lamports: SolAmount;
+  microLamports: number | bigint;
 };
 
 export function getSetComputeUnitPriceInstructionDataSerializer(): Serializer<
@@ -50,7 +48,7 @@ export function getSetComputeUnitPriceInstructionDataSerializer(): Serializer<
     struct<SetComputeUnitPriceInstructionData>(
       [
         ['discriminator', u8()],
-        ['lamports', mapAmountSerializer(u64(), 'SOL', 9)],
+        ['microLamports', u64()],
       ],
       { description: 'SetComputeUnitPriceInstructionData' }
     ),
