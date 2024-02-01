@@ -9,19 +9,25 @@
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "desc": "The account paying for the storage"
+          "docs": [
+            "The account paying for the storage"
+          ]
         },
         {
           "name": "newAccount",
           "isMut": true,
           "isSigner": true,
-          "desc": "The account being created"
+          "docs": [
+            "The account being created"
+          ]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "desc": "System program"
+          "docs": [
+            "System program"
+          ]
         }
       ],
       "args": [
@@ -46,19 +52,25 @@
           "name": "source",
           "isMut": true,
           "isSigner": true,
-          "desc": "The source account sending all its lamports"
+          "docs": [
+            "The source account sending all its lamports"
+          ]
         },
         {
           "name": "destination",
           "isMut": true,
           "isSigner": false,
-          "desc": "The destination account receiving the lamports"
+          "docs": [
+            "The destination account receiving the lamports"
+          ]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "desc": "System program"
+          "docs": [
+            "System program"
+          ]
         }
       ],
       "args": [],
@@ -83,7 +95,7 @@
   "metadata": {
     "origin": "shank",
     "address": "SysExL2WDyJi9aRZrXorrjHJut3JwHQ7R9bTyctbNNG",
-    "binaryVersion": "0.0.12",
-    "libVersion": "0.0.12"
+    "binaryVersion": "0.3.0",
+    "libVersion": "0.3.0"
   }
 }

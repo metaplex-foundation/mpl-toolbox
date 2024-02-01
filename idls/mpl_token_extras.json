@@ -9,49 +9,65 @@
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "desc": "The account paying for the token account creation if needed"
+          "docs": [
+            "The account paying for the token account creation if needed"
+          ]
         },
         {
           "name": "token",
           "isMut": false,
           "isSigner": false,
-          "desc": "The token account that may or may not exist"
+          "docs": [
+            "The token account that may or may not exist"
+          ]
         },
         {
           "name": "mint",
           "isMut": false,
           "isSigner": false,
-          "desc": "The mint account of the provided token account"
+          "docs": [
+            "The mint account of the provided token account"
+          ]
         },
         {
           "name": "owner",
           "isMut": false,
           "isSigner": false,
-          "desc": "The owner of the provided token account"
+          "docs": [
+            "The owner of the provided token account"
+          ]
         },
         {
           "name": "ata",
           "isMut": true,
           "isSigner": false,
-          "desc": "The associated token account which may be the same as the token account"
+          "docs": [
+            "The associated token account which may be the same as the token account"
+          ]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "desc": "System program"
+          "docs": [
+            "System program"
+          ]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "desc": "Token program"
+          "docs": [
+            "Token program"
+          ]
         },
         {
           "name": "ataProgram",
           "isMut": false,
           "isSigner": false,
-          "desc": "Associated Token program"
+          "docs": [
+            "Associated Token program"
+          ]
         }
       ],
       "args": [],
@@ -106,7 +122,7 @@
   "metadata": {
     "origin": "shank",
     "address": "TokExjvjJmhKaRBShsBAsbSvEWMA1AgUNK7ps4SAc2p",
-    "binaryVersion": "0.0.12",
-    "libVersion": "0.0.12"
+    "binaryVersion": "0.3.0",
+    "libVersion": "0.3.0"
   }
 }
