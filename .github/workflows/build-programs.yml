@@ -11,7 +11,7 @@ on:
     inputs:
       rust:
         description: Rust version
-        default: 1.72.0
+        default: 1.70.0
         required: true
         type: string
       solana:
