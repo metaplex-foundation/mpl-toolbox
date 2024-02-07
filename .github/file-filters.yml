@@ -25,7 +25,7 @@ programs: &programs
 
 client_common: &client_common
   - *programs
-  - ".github/workflows/test-js.yml"
+  - ".github/workflows/test-js-client.yml"
   - ".github/workflows/main.yml"
   - ".github/file-filters.yml"
   - ".github/.env"
