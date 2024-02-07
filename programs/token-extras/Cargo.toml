@@ -3,6 +3,7 @@ name = "mpl-token-extras"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
+description = "Extra instructions built on top of the native Token program."
 
 [dependencies]
 solana-program = ">= 1.14.13, < 1.18"
