@@ -6,7 +6,7 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-solana-program = "=1.14.13"
+solana-program = ">= 1.14.13, < 1.18"
 shank = "0.3.0"
 borsh = "0.9.3"
 thiserror = "~1.0"
@@ -18,8 +18,8 @@ test-bpf = []
 
 [dev-dependencies]
 assert_matches = "1.5.0"
-solana-program-test = "=1.14.13"
-solana-sdk = "=1.14.13"
+solana-program-test = ">= 1.14.13, < 1.18"
+solana-sdk = ">= 1.14.13, < 1.18"
 spl-token = "=3.5.0"
 
 [lib]

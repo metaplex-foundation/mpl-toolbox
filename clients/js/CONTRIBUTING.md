@@ -56,4 +56,4 @@ Then, we'll need to create a new GitHub environment called `js-client-documentat
   - Install Command: `pnpm install`
   - Development Command: _None_
 
-With all that set up, you can now run the "Deploy JS Client" workflow by dispatching it from the GitHub UI.
+With all that set up, you can now run the "Publish JS Client" workflow by dispatching it from the GitHub UI.

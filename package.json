@@ -1,20 +1,24 @@
 {
   "private": true,
   "scripts": {
+    "programs:build": "./configs/scripts/program/build.sh",
+    "programs:test": "RUST_LOG=error ./configs/scripts/program/test.sh",
+    "programs:debug": "./configs/scripts/program/test.sh",
+    "programs:clean": "./configs/scripts/program/clean.sh",
+    "clients:js:test": "./configs/scripts/client/test-js.sh",
     "generate": "pnpm generate:idls && pnpm generate:clients",
     "generate:idls": "node ./configs/shank.cjs",
     "generate:clients": "node ./configs/kinobi.cjs",
-    "validator": "pnpm validator:localnet",
-    "validator:localnet": "CI=1 amman start --config ./configs/validator.cjs",
-    "validator:devnet": "CI=1 amman start --config ./configs/validator.devnet.cjs",
-    "validator:mainnet": "CI=1 amman start --config ./configs/validator.mainnet.cjs",
+    "validator": "CI=1 amman start --config ./configs/validator.cjs",
+    "validator:debug": "amman start --config ./configs/validator.cjs",
+    "validator:logs": "CI=1 amman logs",
     "validator:stop": "amman stop"
   },
   "devDependencies": {
-    "@metaplex-foundation/kinobi": "^0.14.0",
+    "@metaplex-foundation/kinobi": "^0.16.0",
     "@metaplex-foundation/shank-js": "^0.1.0",
     "@metaplex-foundation/amman": "^0.12.1",
     "typescript": "^4.9.4"
   },
-  "packageManager": "pnpm@8.2.0"
+  "packageManager": "pnpm@8.9.0"
 }
