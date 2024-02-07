@@ -8,14 +8,17 @@ export function findAssociatedTokenPda(
     mint: PublicKey;
     /** The owner of the token account */
     owner: PublicKey;
+    /** The Token or Token2022 Program id */
+    tokenProgramId?: PublicKey;
   }
 ): Pda {
   const associatedTokenProgramId =
     context.programs.getPublicKey('splAssociatedToken');
-  const tokenProgramId = context.programs.getPublicKey('splToken');
+  const tokenProgramIdResolved =
+    seeds.tokenProgramId ?? context.programs.getPublicKey('splToken');
   return context.eddsa.findPda(associatedTokenProgramId, [
     publicKey().serialize(seeds.owner),
-    publicKey().serialize(tokenProgramId),
+    publicKey().serialize(tokenProgramIdResolved),
     publicKey().serialize(seeds.mint),
   ]);
 }

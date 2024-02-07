@@ -63,7 +63,11 @@ kinobi.update(
 // Update instructions.
 const ataPdaDefaults = k.pdaDefault("AssociatedToken", {
   importFrom: "hooked",
-  seeds: { owner: k.accountDefault("owner"), mint: k.accountDefault("mint") },
+  seeds: {
+    owner: k.accountDefault("owner"),
+    mint: k.accountDefault("mint"),
+    tokenProgramId: k.accountDefault("tokenProgram")
+  },
 });
 kinobi.update(
   new k.UpdateInstructionsVisitor({
