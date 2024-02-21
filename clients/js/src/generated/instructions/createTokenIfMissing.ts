@@ -115,10 +115,18 @@ export function createTokenIfMissing(
   if (!resolvedAccounts.owner.value) {
     resolvedAccounts.owner.value = context.identity.publicKey;
   }
+  if (!resolvedAccounts.tokenProgram.value) {
+    resolvedAccounts.tokenProgram.value = context.programs.getPublicKey(
+      'splToken',
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+    );
+    resolvedAccounts.tokenProgram.isWritable = false;
+  }
   if (!resolvedAccounts.ata.value) {
     resolvedAccounts.ata.value = findAssociatedTokenPda(context, {
       owner: expectPublicKey(resolvedAccounts.owner.value),
       mint: expectPublicKey(resolvedAccounts.mint.value),
+      tokenProgramId: expectPublicKey(resolvedAccounts.tokenProgram.value),
     });
   }
   if (!resolvedAccounts.token.value) {
@@ -130,13 +138,6 @@ export function createTokenIfMissing(
       '11111111111111111111111111111111'
     );
     resolvedAccounts.systemProgram.isWritable = false;
-  }
-  if (!resolvedAccounts.tokenProgram.value) {
-    resolvedAccounts.tokenProgram.value = context.programs.getPublicKey(
-      'splToken',
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-    );
-    resolvedAccounts.tokenProgram.isWritable = false;
   }
   if (!resolvedAccounts.ataProgram.value) {
     resolvedAccounts.ataProgram.value = context.programs.getPublicKey(
