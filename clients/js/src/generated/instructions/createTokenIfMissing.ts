@@ -41,10 +41,10 @@ export type CreateTokenIfMissingInstructionAccounts = {
   owner?: PublicKey | Pda;
   /** The associated token account which may be the same as the token account */
   ata?: PublicKey | Pda;
-  /** System program */
-  systemProgram?: PublicKey | Pda;
   /** Token program */
   tokenProgram?: PublicKey | Pda;
+  /** System program */
+  systemProgram?: PublicKey | Pda;
   /** Associated Token program */
   ataProgram?: PublicKey | Pda;
 };
@@ -91,15 +91,15 @@ export function createTokenIfMissing(
     mint: { index: 2, isWritable: false, value: input.mint ?? null },
     owner: { index: 3, isWritable: false, value: input.owner ?? null },
     ata: { index: 4, isWritable: true, value: input.ata ?? null },
-    systemProgram: {
+    tokenProgram: {
       index: 5,
       isWritable: false,
-      value: input.systemProgram ?? null,
+      value: input.tokenProgram ?? null,
     },
-    tokenProgram: {
+    systemProgram: {
       index: 6,
       isWritable: false,
-      value: input.tokenProgram ?? null,
+      value: input.systemProgram ?? null,
     },
     ataProgram: {
       index: 7,
