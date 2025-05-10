@@ -1,2 +1,3 @@
 [workspace]
 members = ["programs/system-extras", "programs/token-extras"]
+resolver = "2"
