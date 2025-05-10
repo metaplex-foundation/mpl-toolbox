@@ -15,6 +15,7 @@ mod create_token_if_missing {
     use solana_program::{
         instruction::{AccountMeta, Instruction, InstructionError::Custom},
         program_pack::Pack,
+        pubkey::Pubkey,
         system_program,
     };
     use solana_program_test::*;
@@ -24,20 +25,36 @@ mod create_token_if_missing {
         transaction::{Transaction, TransactionError},
     };
     use spl_associated_token_account::{
-        get_associated_token_address, instruction::create_associated_token_account,
+        get_associated_token_address_with_program_id, instruction::create_associated_token_account,
     };
+    use spl_token_2022::extension::ExtensionType;
+
+    const TOKEN_PROGRAM: Pubkey = spl_token::id();
 
     #[tokio::test]
     async fn test_it_creates_a_new_associated_token_if_missing() {
         // Given a mint/owner pair without an existing associated token account.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let mint_authority = Keypair::new();
         let owner = Keypair::new();
-        let new_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
-        create_mint(&mut context, &mint, &mint_authority.pubkey(), None)
-            .await
-            .unwrap();
+
+        let new_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
+
+        create_mint(
+            &mut context,
+            &mint,
+            &mint_authority.pubkey(),
+            None,
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
 
         // When we call the "CreateTokenIfMissing" instruction.
         let transaction = Transaction::new_signed_with_payer(
@@ -47,6 +64,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &new_token,
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
@@ -56,8 +74,9 @@ mod create_token_if_missing {
 
         // Then an associated token account was created with the expected data.
         let raw_account = get_account(&mut context, &new_token).await;
-        let parsed_account = get_token(&mut context, &new_token).await;
-        assert_eq!(raw_account.owner, spl_token::id());
+        let parsed_account = get_token(&mut context, &new_token, &TOKEN_PROGRAM).await;
+
+        assert!(raw_account.owner == spl_token::id() || raw_account.owner == spl_token_2022::id());
         assert_eq!(parsed_account.mint, mint.pubkey());
         assert_eq!(parsed_account.owner, owner.pubkey());
     }
@@ -66,13 +85,26 @@ mod create_token_if_missing {
     async fn test_the_payer_pays_for_the_storage_fees_if_a_token_account_gets_created() {
         // Given a mint/owner pair without an existing associated token account.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let mint_authority = Keypair::new();
         let owner = Keypair::new();
-        let new_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
-        create_mint(&mut context, &mint, &mint_authority.pubkey(), None)
-            .await
-            .unwrap();
+
+        let new_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
+
+        create_mint(
+            &mut context,
+            &mint,
+            &mint_authority.pubkey(),
+            None,
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
 
         // And a payer with 10 SOL.
         let payer = Keypair::new();
@@ -86,6 +118,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &new_token,
+                &TOKEN_PROGRAM,
             )],
             // Note that we let the context payer pay for the transaction
             // to ensure the payer only pays for the storage fees.
@@ -95,10 +128,21 @@ mod create_token_if_missing {
         );
         send_transaction(&mut context, transaction).await.unwrap();
 
+        let data_length = if TOKEN_PROGRAM == spl_token::id() {
+            spl_token::state::Account::LEN
+        } else {
+            // ImmutableOwner Extension is used by default
+            ExtensionType::try_calculate_account_len::<spl_token_2022::state::Account>(&[
+                ExtensionType::ImmutableOwner,
+            ])
+            .unwrap()
+        };
+
         // Then the payer was charged for the storage fees.
         let rent = get_rent(&mut context).await;
-        let rent_exemption = rent.minimum_balance(spl_token::state::Account::LEN);
+        let rent_exemption = rent.minimum_balance(data_length);
         let payer_balance = get_balance(&mut context, &payer.pubkey()).await;
+
         assert_eq!(payer_balance, 10_000_000_000 - rent_exemption);
     }
 
@@ -106,6 +150,7 @@ mod create_token_if_missing {
     async fn test_it_does_not_create_an_account_if_an_associated_token_account_already_exists() {
         // Given a payer with 10 SOL.
         let mut context = program_test().start_with_context().await;
+
         let payer = Keypair::new();
         airdrop(&mut context, &payer.pubkey(), 10_000_000_000).await;
 
@@ -113,15 +158,28 @@ mod create_token_if_missing {
         let mint = Keypair::new();
         let mint_authority = Keypair::new();
         let owner = Keypair::new();
-        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
-        create_mint(&mut context, &mint, &mint_authority.pubkey(), None)
-            .await
-            .unwrap();
+
+        let ata_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
+
+        create_mint(
+            &mut context,
+            &mint,
+            &mint_authority.pubkey(),
+            None,
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
+
         create_associated_token_account(
             &payer.pubkey(),
             &owner.pubkey(),
             &mint.pubkey(),
-            &spl_token::id(),
+            &TOKEN_PROGRAM,
         );
 
         // When we call the "CreateTokenIfMissing" instruction.
@@ -132,6 +190,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &ata_token,
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
@@ -141,6 +200,7 @@ mod create_token_if_missing {
 
         // Then the instruction succeeded but no new account was created.
         let payer_balance = get_balance(&mut context, &payer.pubkey()).await;
+
         assert_eq!(payer_balance, 10_000_000_000);
     }
 
@@ -148,6 +208,7 @@ mod create_token_if_missing {
     async fn test_it_does_not_create_an_account_if_a_regular_token_account_already_exists() {
         // Given a payer with 10 SOL.
         let mut context = program_test().start_with_context().await;
+
         let payer = Keypair::new();
         airdrop(&mut context, &payer.pubkey(), 10_000_000_000).await;
 
@@ -156,15 +217,29 @@ mod create_token_if_missing {
         let mint_authority = Keypair::new();
         let owner = Keypair::new();
         let regular_token = Keypair::new();
-        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
-        create_mint(&mut context, &mint, &mint_authority.pubkey(), None)
-            .await
-            .unwrap();
+
+        let ata_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
+
+        create_mint(
+            &mut context,
+            &mint,
+            &mint_authority.pubkey(),
+            None,
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
+
         create_token(
             &mut context,
             &regular_token,
             &mint.pubkey(),
             &owner.pubkey(),
+            &TOKEN_PROGRAM,
         )
         .await
         .unwrap();
@@ -177,6 +252,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &ata_token,
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
@@ -186,6 +262,7 @@ mod create_token_if_missing {
 
         // Then the instruction succeeded but no new account was created.
         let payer_balance = get_balance(&mut context, &payer.pubkey()).await;
+
         assert_eq!(payer_balance, 10_000_000_000);
     }
 
@@ -193,9 +270,15 @@ mod create_token_if_missing {
     async fn test_it_fail_if_we_provide_the_wrong_system_program() {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
-        let new_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        let new_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
 
         // And a fake system program.
         let fake_system_program = Keypair::new().pubkey();
@@ -211,7 +294,7 @@ mod create_token_if_missing {
                     AccountMeta::new_readonly(owner.pubkey(), false),
                     AccountMeta::new(new_token, false),
                     AccountMeta::new_readonly(fake_system_program, false),
-                    AccountMeta::new_readonly(spl_token::id(), false),
+                    AccountMeta::new_readonly(TOKEN_PROGRAM, false),
                     AccountMeta::new_readonly(spl_associated_token_account::id(), false),
                 ],
                 data: TokenExtrasInstruction::CreateTokenIfMissing
@@ -235,9 +318,15 @@ mod create_token_if_missing {
     async fn test_it_fail_if_we_provide_the_wrong_token_program() {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
-        let new_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        let new_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
 
         // And a fake token program.
         let fake_token_program = Keypair::new().pubkey();
@@ -277,9 +366,15 @@ mod create_token_if_missing {
     async fn test_it_fail_if_we_provide_the_wrong_ata_program() {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
-        let new_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        let new_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
 
         // And a fake ata program.
         let fake_ata_program = Keypair::new().pubkey();
@@ -295,7 +390,7 @@ mod create_token_if_missing {
                     AccountMeta::new_readonly(owner.pubkey(), false),
                     AccountMeta::new(new_token, false),
                     AccountMeta::new_readonly(system_program::id(), false),
-                    AccountMeta::new_readonly(spl_token::id(), false),
+                    AccountMeta::new_readonly(TOKEN_PROGRAM, false),
                     AccountMeta::new_readonly(fake_ata_program, false),
                 ],
                 data: TokenExtrasInstruction::CreateTokenIfMissing
@@ -319,6 +414,7 @@ mod create_token_if_missing {
     async fn test_it_fail_if_the_ata_account_does_not_match_the_mint_and_owner() {
         // Given a mint/owner pair with a wrong ata account.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
         let wrong_ata_token = Keypair::new();
@@ -331,6 +427,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &wrong_ata_token.pubkey(),
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
@@ -349,18 +446,38 @@ mod create_token_if_missing {
     async fn test_it_fail_if_the_existing_token_account_is_not_owned_by_the_token_program() {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
-        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        let ata_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
 
         // And a token account owned by the wrong program.
         let wrong_token = Keypair::new();
-        create_mint(&mut context, &mint, &Keypair::new().pubkey(), None)
-            .await
-            .unwrap();
-        create_token(&mut context, &wrong_token, &mint.pubkey(), &owner.pubkey())
-            .await
-            .unwrap();
+        create_mint(
+            &mut context,
+            &mint,
+            &Keypair::new().pubkey(),
+            None,
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
+
+        create_token(
+            &mut context,
+            &wrong_token,
+            &mint.pubkey(),
+            &owner.pubkey(),
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
+
         let wrong_token_account = get_account(&mut context, &wrong_token.pubkey()).await;
         context.set_account(
             &wrong_token.pubkey(),
@@ -378,6 +495,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &ata_token,
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
@@ -396,21 +514,36 @@ mod create_token_if_missing {
     async fn test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_mint() {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
-        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        let ata_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
 
         // And a token account associated with the wrong mint.
         let wrong_mint = Keypair::new();
         let wrong_token = Keypair::new();
-        create_mint(&mut context, &wrong_mint, &Keypair::new().pubkey(), None)
-            .await
-            .unwrap();
+
+        create_mint(
+            &mut context,
+            &wrong_mint,
+            &Keypair::new().pubkey(),
+            None,
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
+
         create_token(
             &mut context,
             &wrong_token,
             &wrong_mint.pubkey(),
             &owner.pubkey(),
+            &TOKEN_PROGRAM,
         )
         .await
         .unwrap();
@@ -423,6 +556,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &ata_token,
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
@@ -441,21 +575,36 @@ mod create_token_if_missing {
     async fn test_it_fail_if_the_existing_token_account_is_not_associated_with_the_given_owner() {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
-        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        let ata_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
 
         // And a token account associated with the wrong owner.
         let wrong_owner = Keypair::new();
         let wrong_token = Keypair::new();
-        create_mint(&mut context, &mint, &Keypair::new().pubkey(), None)
-            .await
-            .unwrap();
+
+        create_mint(
+            &mut context,
+            &mint,
+            &Keypair::new().pubkey(),
+            None,
+            &TOKEN_PROGRAM,
+        )
+        .await
+        .unwrap();
+
         create_token(
             &mut context,
             &wrong_token,
             &mint.pubkey(),
             &wrong_owner.pubkey(),
+            &TOKEN_PROGRAM,
         )
         .await
         .unwrap();
@@ -468,6 +617,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &ata_token,
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
@@ -486,9 +636,15 @@ mod create_token_if_missing {
     async fn test_it_fail_if_the_non_existing_token_account_is_not_an_ata_account() {
         // Given a mint/owner pair.
         let mut context = program_test().start_with_context().await;
+
         let mint = Keypair::new();
         let owner = Keypair::new();
-        let ata_token = get_associated_token_address(&owner.pubkey(), &mint.pubkey());
+
+        let ata_token = get_associated_token_address_with_program_id(
+            &owner.pubkey(),
+            &mint.pubkey(),
+            &TOKEN_PROGRAM,
+        );
 
         // And a missing token that is not the associated token account.
         let missing_token = Keypair::new();
@@ -501,6 +657,7 @@ mod create_token_if_missing {
                 &mint.pubkey(),
                 &owner.pubkey(),
                 &ata_token,
+                &TOKEN_PROGRAM,
             )],
             Some(&context.payer.pubkey()),
             &[&context.payer],
