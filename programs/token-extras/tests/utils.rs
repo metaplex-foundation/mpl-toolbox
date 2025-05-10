@@ -188,7 +188,7 @@ pub async fn get_token(
     context: &mut ProgramTestContext,
     pubkey: &Pubkey,
     token_program: &Pubkey,
-) -> ParsedTokenFields {
+) -> Result<ParsedTokenFields, ()> {
     let account = get_account(context, pubkey).await;
     let parsed_token: ParsedTokenFields;
     match *token_program {
@@ -209,7 +209,7 @@ pub async fn get_token(
                 owner: token.base.owner,
             }
         }
-        _ => panic!("Need a valid Token Program ID"),
+        _ => return Err(()),
     }
-    return parsed_token;
+    return Ok(parsed_token);
 }

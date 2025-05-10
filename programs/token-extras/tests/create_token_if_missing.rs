@@ -74,7 +74,7 @@ mod create_token_if_missing {
 
         // Then an associated token account was created with the expected data.
         let raw_account = get_account(&mut context, &new_token).await;
-        let parsed_account = get_token(&mut context, &new_token, &TOKEN_PROGRAM).await;
+        let parsed_account = get_token(&mut context, &new_token, &TOKEN_PROGRAM).await.unwrap();
 
         assert!(raw_account.owner == spl_token::id() || raw_account.owner == spl_token_2022::id());
         assert_eq!(parsed_account.mint, mint.pubkey());
