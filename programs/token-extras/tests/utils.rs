@@ -81,7 +81,7 @@ pub async fn create_mint(
             mint_authority,
             freeze_authority,
             0,
-        );
+        ).unwrap();
     } else if *token_program == spl_token_2022::id() {
         data_length =
             ExtensionType::try_calculate_account_len::<spl_token_2022::state::Mint>(&[]).unwrap();
@@ -91,7 +91,7 @@ pub async fn create_mint(
             mint_authority,
             freeze_authority,
             0,
-        );
+        ).unwrap();
     } else {
         panic!("Need a valid Token Program ID");
     }
@@ -105,7 +105,7 @@ pub async fn create_mint(
                 data_length as u64,
                 token_program,
             ),
-            init_ix.unwrap(),
+            init_ix,
         ],
         Some(&context.payer.pubkey()),
         &[&context.payer, mint],
