@@ -15,6 +15,150 @@ type ProgramErrorConstructor = new (
 const codeToErrorMap: Map<number, ProgramErrorConstructor> = new Map();
 const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
+/** AccountAlreadyInUse: an account with the same address already exists */
+export class SysAccountAlreadyInUseError extends ProgramError {
+  readonly name: string = 'AccountAlreadyInUse';
+
+  readonly code: number = 0x0; // 0
+
+  constructor(program: Program, cause?: Error) {
+    super('an account with the same address already exists', program, cause);
+  }
+}
+codeToErrorMap.set(0x0, SysAccountAlreadyInUseError);
+nameToErrorMap.set('AccountAlreadyInUse', SysAccountAlreadyInUseError);
+
+/** ResultWithNegativeLamports: account does not have enough SOL to perform the operation */
+export class SysResultWithNegativeLamportsError extends ProgramError {
+  readonly name: string = 'ResultWithNegativeLamports';
+
+  readonly code: number = 0x1; // 1
+
+  constructor(program: Program, cause?: Error) {
+    super(
+      'account does not have enough SOL to perform the operation',
+      program,
+      cause
+    );
+  }
+}
+codeToErrorMap.set(0x1, SysResultWithNegativeLamportsError);
+nameToErrorMap.set(
+  'ResultWithNegativeLamports',
+  SysResultWithNegativeLamportsError
+);
+
+/** InvalidProgramId: cannot assign account to this program id */
+export class SysInvalidProgramIdError extends ProgramError {
+  readonly name: string = 'InvalidProgramId';
+
+  readonly code: number = 0x2; // 2
+
+  constructor(program: Program, cause?: Error) {
+    super('cannot assign account to this program id', program, cause);
+  }
+}
+codeToErrorMap.set(0x2, SysInvalidProgramIdError);
+nameToErrorMap.set('InvalidProgramId', SysInvalidProgramIdError);
+
+/** InvalidAccountDataLength: cannot allocate account data of this length */
+export class SysInvalidAccountDataLengthError extends ProgramError {
+  readonly name: string = 'InvalidAccountDataLength';
+
+  readonly code: number = 0x3; // 3
+
+  constructor(program: Program, cause?: Error) {
+    super('cannot allocate account data of this length', program, cause);
+  }
+}
+codeToErrorMap.set(0x3, SysInvalidAccountDataLengthError);
+nameToErrorMap.set(
+  'InvalidAccountDataLength',
+  SysInvalidAccountDataLengthError
+);
+
+/** MaxSeedLengthExceeded: length of requested seed is too long */
+export class SysMaxSeedLengthExceededError extends ProgramError {
+  readonly name: string = 'MaxSeedLengthExceeded';
+
+  readonly code: number = 0x4; // 4
+
+  constructor(program: Program, cause?: Error) {
+    super('length of requested seed is too long', program, cause);
+  }
+}
+codeToErrorMap.set(0x4, SysMaxSeedLengthExceededError);
+nameToErrorMap.set('MaxSeedLengthExceeded', SysMaxSeedLengthExceededError);
+
+/** AddressWithSeedMismatch: provided address does not match addressed derived from seed */
+export class SysAddressWithSeedMismatchError extends ProgramError {
+  readonly name: string = 'AddressWithSeedMismatch';
+
+  readonly code: number = 0x5; // 5
+
+  constructor(program: Program, cause?: Error) {
+    super(
+      'provided address does not match addressed derived from seed',
+      program,
+      cause
+    );
+  }
+}
+codeToErrorMap.set(0x5, SysAddressWithSeedMismatchError);
+nameToErrorMap.set('AddressWithSeedMismatch', SysAddressWithSeedMismatchError);
+
+/** NonceNoRecentBlockhashes: advancing stored nonce requires a populated RecentBlockhashes sysvar */
+export class SysNonceNoRecentBlockhashesError extends ProgramError {
+  readonly name: string = 'NonceNoRecentBlockhashes';
+
+  readonly code: number = 0x6; // 6
+
+  constructor(program: Program, cause?: Error) {
+    super(
+      'advancing stored nonce requires a populated RecentBlockhashes sysvar',
+      program,
+      cause
+    );
+  }
+}
+codeToErrorMap.set(0x6, SysNonceNoRecentBlockhashesError);
+nameToErrorMap.set(
+  'NonceNoRecentBlockhashes',
+  SysNonceNoRecentBlockhashesError
+);
+
+/** NonceBlockhashNotExpired: stored nonce is still in recent_blockhashes */
+export class SysNonceBlockhashNotExpiredError extends ProgramError {
+  readonly name: string = 'NonceBlockhashNotExpired';
+
+  readonly code: number = 0x7; // 7
+
+  constructor(program: Program, cause?: Error) {
+    super('stored nonce is still in recent_blockhashes', program, cause);
+  }
+}
+codeToErrorMap.set(0x7, SysNonceBlockhashNotExpiredError);
+nameToErrorMap.set(
+  'NonceBlockhashNotExpired',
+  SysNonceBlockhashNotExpiredError
+);
+
+/** NonceUnexpectedBlockhashValue: specified nonce does not match stored nonce */
+export class SysNonceUnexpectedBlockhashValueError extends ProgramError {
+  readonly name: string = 'NonceUnexpectedBlockhashValue';
+
+  readonly code: number = 0x8; // 8
+
+  constructor(program: Program, cause?: Error) {
+    super('specified nonce does not match stored nonce', program, cause);
+  }
+}
+codeToErrorMap.set(0x8, SysNonceUnexpectedBlockhashValueError);
+nameToErrorMap.set(
+  'NonceUnexpectedBlockhashValue',
+  SysNonceUnexpectedBlockhashValueError
+);
+
 /**
  * Attempts to resolve a custom program error from the provided error code.
  * @category Errors
