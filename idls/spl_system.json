@@ -61,6 +61,53 @@
       ]
     }
   ],
+  "errors": [
+    {
+      "code": 0,
+      "name": "AccountAlreadyInUse",
+      "msg": "an account with the same address already exists"
+    },
+    {
+      "code": 1,
+      "name": "ResultWithNegativeLamports",
+      "msg": "account does not have enough SOL to perform the operation"
+    },
+    {
+      "code": 2,
+      "name": "InvalidProgramId",
+      "msg": "cannot assign account to this program id"
+    },
+    {
+      "code": 3,
+      "name": "InvalidAccountDataLength",
+      "msg": "cannot allocate account data of this length"
+    },
+    {
+      "code": 4,
+      "name": "MaxSeedLengthExceeded",
+      "msg": "length of requested seed is too long"
+    },
+    {
+      "code": 5,
+      "name": "AddressWithSeedMismatch",
+      "msg": "provided address does not match addressed derived from seed"
+    },
+    {
+      "code": 6,
+      "name": "NonceNoRecentBlockhashes",
+      "msg": "advancing stored nonce requires a populated RecentBlockhashes sysvar"
+    },
+    {
+      "code": 7,
+      "name": "NonceBlockhashNotExpired",
+      "msg": "stored nonce is still in recent_blockhashes"
+    },
+    {
+      "code": 8,
+      "name": "NonceUnexpectedBlockhashValue",
+      "msg": "specified nonce does not match stored nonce"
+    }
+  ],
   "metadata": {
     "address": "11111111111111111111111111111111",
     "origin": "shank"
