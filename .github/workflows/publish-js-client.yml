@@ -68,8 +68,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
-      - name: Install npm >= 11.5.1
-        run: npm install -g "npm@>=11.5.1"
+      - name: Install npm 11.x (min 11.5.1)
+        run: npm install -g "npm@^11.5.1"
 
       - name: Install dependencies
         uses: metaplex-foundation/actions/install-node-dependencies@v1
