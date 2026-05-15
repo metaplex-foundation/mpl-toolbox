@@ -95,7 +95,7 @@ jobs:
 
       - name: Publish
         working-directory: ./clients/js
-        run: npm publish --access public --tag ${{ inputs.tag }}
+        run: npm publish --access public --tag ${{ inputs.tag }} --provenance
 
       - name: Commit and tag new version
         uses: stefanzweifel/git-auto-commit-action@v4
