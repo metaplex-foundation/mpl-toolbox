@@ -48,6 +48,8 @@ jobs:
     needs: test_js
     permissions:
       contents: write
+      packages: write
+      pull-requests: write
       id-token: write
     steps:
       - name: Git checkout
