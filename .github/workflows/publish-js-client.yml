@@ -97,11 +97,17 @@ jobs:
         working-directory: ./clients/js
         run: npm publish --access public --tag ${{ inputs.tag }} --provenance
 
-      - name: Commit and tag new version
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Create release pull request
+        if: ${{ github.event.inputs.create_release == 'true' }}
+        uses: peter-evans/create-pull-request@v6
         with:
-          commit_message: Deploy JS client v${{ steps.bump.outputs.new_version }}
-          tagging_message: js@v${{ steps.bump.outputs.new_version }}
+          commit-message: 'chore: release JS client v${{ steps.bump.outputs.new_version }}'
+          branch: release/js-client-v${{ steps.bump.outputs.new_version }}
+          title: 'chore: release JS client v${{ steps.bump.outputs.new_version }}'
+          body: |
+            ## Summary
+            - publish-js-client workflow bumped the package to `${{ steps.bump.outputs.new_version }}`
+          labels: release
 
       - name: Create GitHub release
         if: github.event.inputs.create_release == 'true'
