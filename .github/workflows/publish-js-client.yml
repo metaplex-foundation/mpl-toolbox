@@ -48,18 +48,28 @@ jobs:
     needs: test_js
     permissions:
       contents: write
+      id-token: write
     steps:
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Load environment variables
         run: cat .github/.env >> $GITHUB_ENV
 
-      - name: Install Node.js
-        uses: metaplex-foundation/actions/install-node-with-pnpm@v1
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          version: ${{ env.NODE_VERSION }}
-          cache: ${{ env.CACHE }}
+          version: 8.9.0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install npm 11.x (min 11.5.1)
+        run: npm install -g "npm@^11.5.1"
 
       - name: Install dependencies
         uses: metaplex-foundation/actions/install-node-dependencies@v1
@@ -83,14 +93,9 @@ jobs:
           fi
           echo "new_version=$(pnpm pkg get version | sed 's/"//g')" >> $GITHUB_OUTPUT
 
-      - name: Set publishing config
-        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Publish
         working-directory: ./clients/js
-        run: pnpm publish --no-git-checks --tag ${{ inputs.tag }}
+        run: npm publish --access public --tag ${{ inputs.tag }} --provenance
 
       - name: Commit and tag new version
         uses: stefanzweifel/git-auto-commit-action@v4
