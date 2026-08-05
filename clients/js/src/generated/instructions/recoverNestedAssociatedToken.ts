@@ -15,6 +15,12 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
+import {
   ResolvedAccount,
   ResolvedAccountsWithIndices,
   getAccountMetasAndSigners,
@@ -30,6 +36,33 @@ export type RecoverNestedAssociatedTokenInstructionAccounts = {
   walletAddress: Signer;
   tokenProgram?: PublicKey | Pda;
 };
+
+// Data.
+export type RecoverNestedAssociatedTokenInstructionData = {
+  discriminator: number;
+};
+
+export type RecoverNestedAssociatedTokenInstructionDataArgs = {};
+
+export function getRecoverNestedAssociatedTokenInstructionDataSerializer(): Serializer<
+  RecoverNestedAssociatedTokenInstructionDataArgs,
+  RecoverNestedAssociatedTokenInstructionData
+> {
+  return mapSerializer<
+    RecoverNestedAssociatedTokenInstructionDataArgs,
+    any,
+    RecoverNestedAssociatedTokenInstructionData
+  >(
+    struct<RecoverNestedAssociatedTokenInstructionData>(
+      [['discriminator', u8()]],
+      { description: 'RecoverNestedAssociatedTokenInstructionData' }
+    ),
+    (value) => ({ ...value, discriminator: 2 })
+  ) as Serializer<
+    RecoverNestedAssociatedTokenInstructionDataArgs,
+    RecoverNestedAssociatedTokenInstructionData
+  >;
+}
 
 // Instruction.
 export function recoverNestedAssociatedToken(
@@ -103,7 +136,8 @@ export function recoverNestedAssociatedToken(
   );
 
   // Data.
-  const data = new Uint8Array();
+  const data =
+    getRecoverNestedAssociatedTokenInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
