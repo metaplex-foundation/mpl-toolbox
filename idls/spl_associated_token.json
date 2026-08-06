@@ -72,7 +72,11 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 1
+      }
     },
     {
       "name": "recoverNestedAssociatedToken",
@@ -113,7 +117,11 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 2
+      }
     }
   ],
   "errors": [

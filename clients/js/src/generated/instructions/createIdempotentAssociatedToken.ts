@@ -15,6 +15,12 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
+import {
   ResolvedAccount,
   ResolvedAccountsWithIndices,
   getAccountMetasAndSigners,
@@ -29,6 +35,33 @@ export type CreateIdempotentAssociatedTokenInstructionAccounts = {
   systemProgram?: PublicKey | Pda;
   tokenProgram?: PublicKey | Pda;
 };
+
+// Data.
+export type CreateIdempotentAssociatedTokenInstructionData = {
+  discriminator: number;
+};
+
+export type CreateIdempotentAssociatedTokenInstructionDataArgs = {};
+
+export function getCreateIdempotentAssociatedTokenInstructionDataSerializer(): Serializer<
+  CreateIdempotentAssociatedTokenInstructionDataArgs,
+  CreateIdempotentAssociatedTokenInstructionData
+> {
+  return mapSerializer<
+    CreateIdempotentAssociatedTokenInstructionDataArgs,
+    any,
+    CreateIdempotentAssociatedTokenInstructionData
+  >(
+    struct<CreateIdempotentAssociatedTokenInstructionData>(
+      [['discriminator', u8()]],
+      { description: 'CreateIdempotentAssociatedTokenInstructionData' }
+    ),
+    (value) => ({ ...value, discriminator: 1 })
+  ) as Serializer<
+    CreateIdempotentAssociatedTokenInstructionDataArgs,
+    CreateIdempotentAssociatedTokenInstructionData
+  >;
+}
 
 // Instruction.
 export function createIdempotentAssociatedToken(
@@ -91,7 +124,8 @@ export function createIdempotentAssociatedToken(
   );
 
   // Data.
-  const data = new Uint8Array();
+  const data =
+    getCreateIdempotentAssociatedTokenInstructionDataSerializer().serialize({});
 
   // Bytes Created On Chain.
   const bytesCreatedOnChain = 0;
