@@ -32,6 +32,8 @@ import {
 
 // Accounts.
 export type InitializeMintInstructionAccounts = {
+  /** The token program to use. Defaults to the SPL Token program. */
+  tokenProgram?: PublicKey | Pda;
   mint: PublicKey | Pda;
   rent?: PublicKey | Pda;
 };
@@ -84,10 +86,12 @@ export function initializeMint(
   input: InitializeMintInstructionAccounts & InitializeMintInstructionArgs
 ): TransactionBuilder {
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = input.tokenProgram
+    ? publicKey(input.tokenProgram, false)
+    : context.programs.getPublicKey(
+        'splToken',
+        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+      );
 
   // Accounts.
   const resolvedAccounts: ResolvedAccountsWithIndices = {

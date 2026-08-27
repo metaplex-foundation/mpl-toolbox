@@ -13,6 +13,7 @@ import {
   Signer,
   TransactionBuilder,
   transactionBuilder,
+  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   Serializer,
@@ -29,6 +30,8 @@ import {
 
 // Accounts.
 export type TransferTokensCheckedInstructionAccounts = {
+  /** The token program to use. Defaults to the SPL Token program. */
+  tokenProgram?: PublicKey | Pda;
   source: PublicKey | Pda;
   mint: PublicKey | Pda;
   destination: PublicKey | Pda;
@@ -82,10 +85,12 @@ export function transferTokensChecked(
     TransferTokensCheckedInstructionArgs
 ): TransactionBuilder {
   // Program ID.
-  const programId = context.programs.getPublicKey(
-    'splToken',
-    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-  );
+  const programId = input.tokenProgram
+    ? publicKey(input.tokenProgram, false)
+    : context.programs.getPublicKey(
+        'splToken',
+        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+      );
 
   // Accounts.
   const resolvedAccounts: ResolvedAccountsWithIndices = {
