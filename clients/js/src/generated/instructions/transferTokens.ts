@@ -80,15 +80,23 @@ export function transferTokens(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    source: { index: 0, isWritable: true, value: input.source ?? null },
+  const resolvedAccounts = {
+    source: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.source ?? null,
+    },
     destination: {
       index: 1,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.destination ?? null,
     },
-    authority: { index: 2, isWritable: false, value: input.authority ?? null },
-  };
+    authority: {
+      index: 2,
+      isWritable: false as boolean,
+      value: input.authority ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: TransferTokensInstructionArgs = { ...input };

@@ -17,7 +17,7 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
 /** NotRentExempt: Lamport balance below rent-exempt threshold */
 export class TokNotRentExemptError extends ProgramError {
-  readonly name: string = 'NotRentExempt';
+  override readonly name: string = 'NotRentExempt';
 
   readonly code: number = 0x0; // 0
 
@@ -30,7 +30,7 @@ nameToErrorMap.set('NotRentExempt', TokNotRentExemptError);
 
 /** InsufficientFunds: Insufficient funds */
 export class TokInsufficientFundsError extends ProgramError {
-  readonly name: string = 'InsufficientFunds';
+  override readonly name: string = 'InsufficientFunds';
 
   readonly code: number = 0x1; // 1
 
@@ -43,7 +43,7 @@ nameToErrorMap.set('InsufficientFunds', TokInsufficientFundsError);
 
 /** InvalidMint: Invalid Mint */
 export class TokInvalidMintError extends ProgramError {
-  readonly name: string = 'InvalidMint';
+  override readonly name: string = 'InvalidMint';
 
   readonly code: number = 0x2; // 2
 
@@ -56,7 +56,7 @@ nameToErrorMap.set('InvalidMint', TokInvalidMintError);
 
 /** MintMismatch: Account not associated with this Mint */
 export class TokMintMismatchError extends ProgramError {
-  readonly name: string = 'MintMismatch';
+  override readonly name: string = 'MintMismatch';
 
   readonly code: number = 0x3; // 3
 
@@ -69,7 +69,7 @@ nameToErrorMap.set('MintMismatch', TokMintMismatchError);
 
 /** OwnerMismatch: Owner does not match */
 export class TokOwnerMismatchError extends ProgramError {
-  readonly name: string = 'OwnerMismatch';
+  override readonly name: string = 'OwnerMismatch';
 
   readonly code: number = 0x4; // 4
 
@@ -82,7 +82,7 @@ nameToErrorMap.set('OwnerMismatch', TokOwnerMismatchError);
 
 /** FixedSupply: Fixed supply */
 export class TokFixedSupplyError extends ProgramError {
-  readonly name: string = 'FixedSupply';
+  override readonly name: string = 'FixedSupply';
 
   readonly code: number = 0x5; // 5
 
@@ -95,7 +95,7 @@ nameToErrorMap.set('FixedSupply', TokFixedSupplyError);
 
 /** AlreadyInUse: Already in use */
 export class TokAlreadyInUseError extends ProgramError {
-  readonly name: string = 'AlreadyInUse';
+  override readonly name: string = 'AlreadyInUse';
 
   readonly code: number = 0x6; // 6
 
@@ -108,7 +108,7 @@ nameToErrorMap.set('AlreadyInUse', TokAlreadyInUseError);
 
 /** InvalidNumberOfProvidedSigners: Invalid number of provided signers */
 export class TokInvalidNumberOfProvidedSignersError extends ProgramError {
-  readonly name: string = 'InvalidNumberOfProvidedSigners';
+  override readonly name: string = 'InvalidNumberOfProvidedSigners';
 
   readonly code: number = 0x7; // 7
 
@@ -124,7 +124,7 @@ nameToErrorMap.set(
 
 /** InvalidNumberOfRequiredSigners: Invalid number of required signers */
 export class TokInvalidNumberOfRequiredSignersError extends ProgramError {
-  readonly name: string = 'InvalidNumberOfRequiredSigners';
+  override readonly name: string = 'InvalidNumberOfRequiredSigners';
 
   readonly code: number = 0x8; // 8
 
@@ -140,7 +140,7 @@ nameToErrorMap.set(
 
 /** UninitializedState: State is unititialized */
 export class TokUninitializedStateError extends ProgramError {
-  readonly name: string = 'UninitializedState';
+  override readonly name: string = 'UninitializedState';
 
   readonly code: number = 0x9; // 9
 
@@ -153,7 +153,7 @@ nameToErrorMap.set('UninitializedState', TokUninitializedStateError);
 
 /** NativeNotSupported: Instruction does not support native tokens */
 export class TokNativeNotSupportedError extends ProgramError {
-  readonly name: string = 'NativeNotSupported';
+  override readonly name: string = 'NativeNotSupported';
 
   readonly code: number = 0xa; // 10
 
@@ -166,7 +166,7 @@ nameToErrorMap.set('NativeNotSupported', TokNativeNotSupportedError);
 
 /** NonNativeHasBalance: Non-native account can only be closed if its balance is zero */
 export class TokNonNativeHasBalanceError extends ProgramError {
-  readonly name: string = 'NonNativeHasBalance';
+  override readonly name: string = 'NonNativeHasBalance';
 
   readonly code: number = 0xb; // 11
 
@@ -183,7 +183,7 @@ nameToErrorMap.set('NonNativeHasBalance', TokNonNativeHasBalanceError);
 
 /** InvalidInstruction: Invalid instruction */
 export class TokInvalidInstructionError extends ProgramError {
-  readonly name: string = 'InvalidInstruction';
+  override readonly name: string = 'InvalidInstruction';
 
   readonly code: number = 0xc; // 12
 
@@ -196,7 +196,7 @@ nameToErrorMap.set('InvalidInstruction', TokInvalidInstructionError);
 
 /** InvalidState: State is invalid for requested operation */
 export class TokInvalidStateError extends ProgramError {
-  readonly name: string = 'InvalidState';
+  override readonly name: string = 'InvalidState';
 
   readonly code: number = 0xd; // 13
 
@@ -209,7 +209,7 @@ nameToErrorMap.set('InvalidState', TokInvalidStateError);
 
 /** Overflow: Operation overflowed */
 export class TokOverflowError extends ProgramError {
-  readonly name: string = 'Overflow';
+  override readonly name: string = 'Overflow';
 
   readonly code: number = 0xe; // 14
 
@@ -222,7 +222,7 @@ nameToErrorMap.set('Overflow', TokOverflowError);
 
 /** AuthorityTypeNotSupported: Account does not support specified authority type */
 export class TokAuthorityTypeNotSupportedError extends ProgramError {
-  readonly name: string = 'AuthorityTypeNotSupported';
+  override readonly name: string = 'AuthorityTypeNotSupported';
 
   readonly code: number = 0xf; // 15
 
@@ -238,7 +238,7 @@ nameToErrorMap.set(
 
 /** MintCannotFreeze: This token mint cannot freeze accounts */
 export class TokMintCannotFreezeError extends ProgramError {
-  readonly name: string = 'MintCannotFreeze';
+  override readonly name: string = 'MintCannotFreeze';
 
   readonly code: number = 0x10; // 16
 
@@ -251,7 +251,7 @@ nameToErrorMap.set('MintCannotFreeze', TokMintCannotFreezeError);
 
 /** AccountFrozen: Account is frozen */
 export class TokAccountFrozenError extends ProgramError {
-  readonly name: string = 'AccountFrozen';
+  override readonly name: string = 'AccountFrozen';
 
   readonly code: number = 0x11; // 17
 
@@ -264,7 +264,7 @@ nameToErrorMap.set('AccountFrozen', TokAccountFrozenError);
 
 /** MintDecimalsMismatch: The provided decimals value different from the Mint decimals */
 export class TokMintDecimalsMismatchError extends ProgramError {
-  readonly name: string = 'MintDecimalsMismatch';
+  override readonly name: string = 'MintDecimalsMismatch';
 
   readonly code: number = 0x12; // 18
 
@@ -281,7 +281,7 @@ nameToErrorMap.set('MintDecimalsMismatch', TokMintDecimalsMismatchError);
 
 /** NonNativeNotSupported: Instruction does not support non-native tokens */
 export class TokNonNativeNotSupportedError extends ProgramError {
-  readonly name: string = 'NonNativeNotSupported';
+  override readonly name: string = 'NonNativeNotSupported';
 
   readonly code: number = 0x13; // 19
 

@@ -66,15 +66,23 @@ export function closeToken(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
     destination: {
       index: 1,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.destination ?? null,
     },
-    owner: { index: 2, isWritable: false, value: input.owner ?? null },
-  };
+    owner: {
+      index: 2,
+      isWritable: false as boolean,
+      value: input.owner ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(

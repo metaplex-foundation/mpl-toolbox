@@ -79,10 +79,14 @@ export function initializeToken3(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
-    mint: { index: 1, isWritable: false, value: input.mint ?? null },
-  };
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
+    mint: { index: 1, isWritable: false as boolean, value: input.mint ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: InitializeToken3InstructionArgs = { ...input };

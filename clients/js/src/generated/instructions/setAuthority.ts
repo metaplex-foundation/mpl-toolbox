@@ -89,10 +89,18 @@ export function setAuthority(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    owned: { index: 0, isWritable: true, value: input.owned ?? null },
-    owner: { index: 1, isWritable: false, value: input.owner ?? null },
-  };
+  const resolvedAccounts = {
+    owned: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.owned ?? null,
+    },
+    owner: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.owner ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: SetAuthorityInstructionArgs = { ...input };

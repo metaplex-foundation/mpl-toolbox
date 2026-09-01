@@ -90,10 +90,18 @@ export function createAccount(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    payer: { index: 0, isWritable: true, value: input.payer ?? null },
-    newAccount: { index: 1, isWritable: true, value: input.newAccount ?? null },
-  };
+  const resolvedAccounts = {
+    payer: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.payer ?? null,
+    },
+    newAccount: {
+      index: 1,
+      isWritable: true as boolean,
+      value: input.newAccount ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: CreateAccountInstructionArgs = { ...input };

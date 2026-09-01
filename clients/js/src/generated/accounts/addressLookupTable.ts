@@ -51,6 +51,7 @@ export type AddressLookupTableAccountDataArgs = {
   lastExtendedSlot: number | bigint;
   lastExtendedStartIndex: number;
   authority: OptionOrNullable<PublicKey>;
+  padding?: number;
   addresses: Array<PublicKey>;
 };
 
@@ -75,7 +76,7 @@ export function getAddressLookupTableAccountDataSerializer(): Serializer<
       ],
       { description: 'AddressLookupTableAccountData' }
     ),
-    (value) => ({ ...value, discriminator: 1, padding: 0 })
+    (value) => ({ ...value, discriminator: 1, padding: value.padding ?? 0 })
   ) as Serializer<
     AddressLookupTableAccountDataArgs,
     AddressLookupTableAccountData

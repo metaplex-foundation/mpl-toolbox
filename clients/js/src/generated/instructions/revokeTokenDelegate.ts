@@ -68,10 +68,18 @@ export function revokeTokenDelegate(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    source: { index: 0, isWritable: true, value: input.source ?? null },
-    owner: { index: 1, isWritable: false, value: input.owner ?? null },
-  };
+  const resolvedAccounts = {
+    source: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.source ?? null,
+    },
+    owner: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.owner ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(

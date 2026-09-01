@@ -88,16 +88,24 @@ export function transferTokensChecked(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    source: { index: 0, isWritable: true, value: input.source ?? null },
-    mint: { index: 1, isWritable: false, value: input.mint ?? null },
+  const resolvedAccounts = {
+    source: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.source ?? null,
+    },
+    mint: { index: 1, isWritable: false as boolean, value: input.mint ?? null },
     destination: {
       index: 2,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.destination ?? null,
     },
-    authority: { index: 3, isWritable: false, value: input.authority ?? null },
-  };
+    authority: {
+      index: 3,
+      isWritable: false as boolean,
+      value: input.authority ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: TransferTokensCheckedInstructionArgs = { ...input };

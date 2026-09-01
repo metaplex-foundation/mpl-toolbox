@@ -1,25 +1,25 @@
+// Generates the Umi client for the 8 core programs with Kinobi 0.20 (the
+// Codama-era release). The Token-2022 client is generated separately by
+// configs/kinobi-token2022.cjs. Output is left unformatted here and normalized
+// by the repo's Prettier in the generate:clients script.
 const path = require("path");
 const k = require("@metaplex-foundation/kinobi");
 
-// Paths.
-const clientDir = path.join(__dirname, "..", "clients");
 const idlDir = path.join(__dirname, "..", "idls");
+const idl = (name) => require(path.join(idlDir, name));
 
-// Instanciate Kinobi.
-const kinobi = k.createFromIdls([
-  path.join(idlDir, "spl_system.json"),
-  path.join(idlDir, "spl_memo.json"),
-  path.join(idlDir, "spl_token.json"),
-  path.join(idlDir, "spl_associated_token.json"),
-  path.join(idlDir, "spl_address_lookup_table.json"),
-  path.join(idlDir, "spl_compute_budget.json"),
-  path.join(idlDir, "mpl_system_extras.json"),
-  path.join(idlDir, "mpl_token_extras.json"),
+const kinobi = k.createFromIdl(idl("spl_system.json"), [
+  idl("spl_memo.json"),
+  idl("spl_token.json"),
+  idl("spl_associated_token.json"),
+  idl("spl_address_lookup_table.json"),
+  idl("spl_compute_budget.json"),
+  idl("mpl_system_extras.json"),
+  idl("mpl_token_extras.json"),
 ]);
 
-// Update programs.
 kinobi.update(
-  new k.UpdateProgramsVisitor({
+  k.updateProgramsVisitor({
     splSystem: { prefix: "Sys" },
     splMemo: { prefix: "Memo" },
     splToken: { prefix: "Tok" },
@@ -31,16 +31,19 @@ kinobi.update(
   })
 );
 
-// Update accounts.
 kinobi.update(
-  new k.UpdateAccountsVisitor({
-    "splToken.mint": { discriminator: k.sizeAccountDiscriminator() },
-    "splToken.token": { discriminator: k.sizeAccountDiscriminator() },
-    "splToken.multisig": { discriminator: k.sizeAccountDiscriminator() },
+  k.updateAccountsVisitor({
+    "splToken.mint": { discriminators: [k.sizeDiscriminatorNode(82)] },
+    "splToken.token": { discriminators: [k.sizeDiscriminatorNode(165)] },
+    "splToken.multisig": { discriminators: [k.sizeDiscriminatorNode(355)] },
     "splAddressLookupTable.addressLookupTable": {
       seeds: [
-        k.publicKeySeed("authority", "The address of the LUT's authority"),
-        k.variableSeed(
+        k.variablePdaSeedNode(
+          "authority",
+          k.publicKeyTypeNode(),
+          "The address of the LUT's authority"
+        ),
+        k.variablePdaSeedNode(
           "recentSlot",
           k.numberTypeNode("u64"),
           "The recent slot associated with the LUT"
@@ -50,100 +53,85 @@ kinobi.update(
   })
 );
 
-// Update accounts.
 kinobi.update(
-  new k.SetAccountDiscriminatorFromFieldVisitor({
+  k.setAccountDiscriminatorFromFieldVisitor({
     "splAddressLookupTable.addressLookupTable": {
       field: "discriminator",
-      value: k.vScalar(1),
+      value: k.numberValueNode(1),
     },
   })
 );
 
-// Update instructions.
-const ataPdaDefaults = k.pdaDefault("AssociatedToken", {
-  importFrom: "hooked",
-  seeds: {
-    owner: k.accountDefault("owner"),
-    mint: k.accountDefault("mint"),
-    tokenProgramId: k.accountDefault("tokenProgram")
-  },
-});
+const ataPda = k.pdaValueNode(k.pdaLinkNode("associatedToken", "hooked"), [
+  k.pdaSeedValueNode("owner", k.accountValueNode("owner")),
+  k.pdaSeedValueNode("mint", k.accountValueNode("mint")),
+  k.pdaSeedValueNode("tokenProgramId", k.accountValueNode("tokenProgram")),
+]);
+
 kinobi.update(
-  new k.UpdateInstructionsVisitor({
-    transferSol: {
-      accounts: {
-        source: { defaultsTo: k.identityDefault() },
-      },
-    },
+  k.updateInstructionsVisitor({
+    transferSol: { accounts: { source: { defaultValue: k.identityValueNode() } } },
     transferAllSol: {
-      accounts: {
-        source: { defaultsTo: k.identityDefault() },
-      },
+      accounts: { source: { defaultValue: k.identityValueNode() } },
     },
     mintTokensTo: {
-      accounts: {
-        mintAuthority: { defaultsTo: k.identityDefault() },
-      },
+      accounts: { mintAuthority: { defaultValue: k.identityValueNode() } },
     },
     createAccount: {
-      bytesCreatedOnChain: k.bytesFromArg("space"),
+      byteDeltas: [k.instructionByteDeltaNode(k.argumentValueNode("space"))],
     },
     createAccountWithRent: {
-      bytesCreatedOnChain: k.bytesFromArg("space"),
+      byteDeltas: [k.instructionByteDeltaNode(k.argumentValueNode("space"))],
     },
     createAssociatedToken: {
-      bytesCreatedOnChain: k.bytesFromAccount("token"),
+      byteDeltas: [
+        k.instructionByteDeltaNode(k.accountLinkNode("token"), {
+          withHeader: true,
+        }),
+      ],
       accounts: {
-        owner: { defaultsTo: k.identityDefault() },
-        ata: { defaultsTo: ataPdaDefaults },
+        owner: { defaultValue: k.identityValueNode() },
+        ata: { defaultValue: ataPda },
       },
     },
     createTokenIfMissing: {
       accounts: {
-        ata: { defaultsTo: ataPdaDefaults },
-        token: { defaultsTo: k.accountDefault("ata") },
-        owner: { defaultsTo: k.identityDefault() },
+        ata: { defaultValue: ataPda },
+        token: { defaultValue: k.accountValueNode("ata") },
+        owner: { defaultValue: k.identityValueNode() },
       },
     },
     createEmptyLut: {
-      bytesCreatedOnChain: k.bytesFromNumber(56),
+      byteDeltas: [k.instructionByteDeltaNode(k.numberValueNode(56))],
       accounts: {
-        address: {
-          defaultsTo: k.pdaDefault("addressLookupTable"),
-        },
+        address: { defaultValue: k.pdaValueNode("addressLookupTable") },
       },
-      args: {
-        bump: {
-          defaultsTo: k.accountBumpDefault("address"),
-        },
-      },
+      arguments: { bump: { defaultValue: k.accountBumpValueNode("address") } },
     },
     extendLut: {
-      bytesCreatedOnChain: k.resolverDefault("resolveExtendLutBytes", [
-        k.dependsOnArg("addresses"),
-      ]),
+      byteDeltas: [
+        k.instructionByteDeltaNode(
+          k.resolverValueNode("resolveExtendLutBytes", {
+            dependsOn: [k.argumentValueNode("addresses")],
+          })
+        ),
+      ],
     },
   })
 );
 
 kinobi.update(
-  new k.SetStructDefaultValuesVisitor({
-    addressLookupTable: {
-      padding: { ...k.vScalar(0), strategy: "omitted" },
-    },
+  k.setStructDefaultValuesVisitor({
+    addressLookupTable: { padding: k.numberValueNode(0) },
   })
 );
 
-// Wrap numbers.
 kinobi.update(
-  new k.SetNumberWrappersVisitor({
+  k.setNumberWrappersVisitor({
     "splSystem.CreateAccount.lamports": { kind: "SolAmount" },
     "splSystem.TransferSol.amount": { kind: "SolAmount" },
   })
 );
 
-// Render JavaScript.
-const jsDir = path.join(clientDir, "js", "src", "generated");
-const prettier = require(path.join(clientDir, "js", ".prettierrc.json"));
-kinobi.accept(new k.RenderJavaScriptVisitor(jsDir, { prettier }));
+const jsDir = path.join(__dirname, "..", "clients", "js", "src", "generated");
+kinobi.accept(k.renderJavaScriptVisitor(jsDir, { formatCode: false }));

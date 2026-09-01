@@ -76,43 +76,43 @@ export function recoverNestedAssociatedToken(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
+  const resolvedAccounts = {
     nestedAssociatedAccountAddress: {
       index: 0,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.nestedAssociatedAccountAddress ?? null,
     },
     nestedTokenMintAddress: {
       index: 1,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.nestedTokenMintAddress ?? null,
     },
     destinationAssociatedAccountAddress: {
       index: 2,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.destinationAssociatedAccountAddress ?? null,
     },
     ownerAssociatedAccountAddress: {
       index: 3,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.ownerAssociatedAccountAddress ?? null,
     },
     ownerTokenMintAddress: {
       index: 4,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.ownerTokenMintAddress ?? null,
     },
     walletAddress: {
       index: 5,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.walletAddress ?? null,
     },
     tokenProgram: {
       index: 6,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.tokenProgram ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Default values.
   if (!resolvedAccounts.tokenProgram.value) {

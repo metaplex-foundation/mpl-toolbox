@@ -68,10 +68,18 @@ export function deactivateLut(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    address: { index: 0, isWritable: true, value: input.address ?? null },
-    authority: { index: 1, isWritable: false, value: input.authority ?? null },
-  };
+  const resolvedAccounts = {
+    address: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.address ?? null,
+    },
+    authority: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.authority ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Default values.
   if (!resolvedAccounts.authority.value) {

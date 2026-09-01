@@ -88,9 +88,9 @@ export function initializeMint2(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    mint: { index: 0, isWritable: true, value: input.mint ?? null },
-  };
+  const resolvedAccounts = {
+    mint: { index: 0, isWritable: true as boolean, value: input.mint ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: InitializeMint2InstructionArgs = { ...input };

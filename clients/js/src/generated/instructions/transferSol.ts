@@ -78,14 +78,18 @@ export function transferSol(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    source: { index: 0, isWritable: true, value: input.source ?? null },
+  const resolvedAccounts = {
+    source: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.source ?? null,
+    },
     destination: {
       index: 1,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.destination ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: TransferSolInstructionArgs = { ...input };
