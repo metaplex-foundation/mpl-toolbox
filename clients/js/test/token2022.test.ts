@@ -73,3 +73,38 @@ test('createMintWithExtensions creates and initializes a mint with extensions', 
       : [];
   t.deepEqual(kinds, ['MetadataPointer']);
 });
+
+test('findExtraAccountMetaListPda derives the transfer hook validation account', async (t) => {
+  const umi = await createUmi();
+  const [pda] = token2022.findExtraAccountMetaListPda(
+    umi,
+    publicKey('So11111111111111111111111111111111111111112'),
+    publicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb')
+  );
+  t.is(pda, publicKey('3HQafWL8bWgkMaYGRhYUrSRs8JuLe6Rx1yej2rDqdzVF'));
+});
+
+test('transferCheckedWithTransferHook builds a plain transfer for a non-hook mint', async (t) => {
+  const umi = await createUmi();
+  const mint = generateSigner(umi);
+  await (
+    await token2022.createMintWithExtensions(umi, {
+      mint,
+      mintAuthority: umi.identity,
+      decimals: 0,
+    })
+  ).sendAndConfirm(umi);
+
+  const builder = await token2022.transferCheckedWithTransferHook(umi, {
+    source: generateSigner(umi).publicKey,
+    mint: mint.publicKey,
+    destination: generateSigner(umi).publicKey,
+    authority: umi.identity,
+    owner: umi.identity.publicKey,
+    amount: 1,
+    decimals: 0,
+  });
+
+  // No transfer hook: just source, mint, destination and authority.
+  t.is(builder.items[0].instruction.keys.length, 4);
+});
