@@ -81,11 +81,15 @@ export function initializeToken2(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
-    mint: { index: 1, isWritable: false, value: input.mint ?? null },
-    rent: { index: 2, isWritable: false, value: input.rent ?? null },
-  };
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
+    mint: { index: 1, isWritable: false as boolean, value: input.mint ?? null },
+    rent: { index: 2, isWritable: false as boolean, value: input.rent ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: InitializeToken2InstructionArgs = { ...input };

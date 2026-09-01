@@ -92,15 +92,23 @@ export function createAccountWithRent(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    payer: { index: 0, isWritable: true, value: input.payer ?? null },
-    newAccount: { index: 1, isWritable: true, value: input.newAccount ?? null },
+  const resolvedAccounts = {
+    payer: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.payer ?? null,
+    },
+    newAccount: {
+      index: 1,
+      isWritable: true as boolean,
+      value: input.newAccount ?? null,
+    },
     systemProgram: {
       index: 2,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.systemProgram ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: CreateAccountWithRentInstructionArgs = { ...input };

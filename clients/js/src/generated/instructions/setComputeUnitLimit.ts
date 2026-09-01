@@ -75,15 +75,15 @@ export function setComputeUnitLimit(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {};
+  const resolvedAccounts = {} satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: SetComputeUnitLimitInstructionArgs = { ...input };
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(
-    resolvedAccounts
-  ).sort((a, b) => a.index - b.index);
+    resolvedAccounts as ResolvedAccountsWithIndices
+  );
 
   // Keys and Signers.
   const [keys, signers] = getAccountMetasAndSigners(

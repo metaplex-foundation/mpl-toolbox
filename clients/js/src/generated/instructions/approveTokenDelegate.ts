@@ -84,11 +84,23 @@ export function approveTokenDelegate(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    source: { index: 0, isWritable: true, value: input.source ?? null },
-    delegate: { index: 1, isWritable: false, value: input.delegate ?? null },
-    owner: { index: 2, isWritable: false, value: input.owner ?? null },
-  };
+  const resolvedAccounts = {
+    source: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.source ?? null,
+    },
+    delegate: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.delegate ?? null,
+    },
+    owner: {
+      index: 2,
+      isWritable: false as boolean,
+      value: input.owner ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: ApproveTokenDelegateInstructionArgs = { ...input };

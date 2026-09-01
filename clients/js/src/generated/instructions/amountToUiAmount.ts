@@ -78,9 +78,9 @@ export function amountToUiAmount(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    mint: { index: 0, isWritable: false, value: input.mint ?? null },
-  };
+  const resolvedAccounts = {
+    mint: { index: 0, isWritable: false as boolean, value: input.mint ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: AmountToUiAmountInstructionArgs = { ...input };

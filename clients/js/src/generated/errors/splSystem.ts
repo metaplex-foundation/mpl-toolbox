@@ -17,7 +17,7 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
 /** AccountAlreadyInUse: an account with the same address already exists */
 export class SysAccountAlreadyInUseError extends ProgramError {
-  readonly name: string = 'AccountAlreadyInUse';
+  override readonly name: string = 'AccountAlreadyInUse';
 
   readonly code: number = 0x0; // 0
 
@@ -30,7 +30,7 @@ nameToErrorMap.set('AccountAlreadyInUse', SysAccountAlreadyInUseError);
 
 /** ResultWithNegativeLamports: account does not have enough SOL to perform the operation */
 export class SysResultWithNegativeLamportsError extends ProgramError {
-  readonly name: string = 'ResultWithNegativeLamports';
+  override readonly name: string = 'ResultWithNegativeLamports';
 
   readonly code: number = 0x1; // 1
 
@@ -50,7 +50,7 @@ nameToErrorMap.set(
 
 /** InvalidProgramId: cannot assign account to this program id */
 export class SysInvalidProgramIdError extends ProgramError {
-  readonly name: string = 'InvalidProgramId';
+  override readonly name: string = 'InvalidProgramId';
 
   readonly code: number = 0x2; // 2
 
@@ -63,7 +63,7 @@ nameToErrorMap.set('InvalidProgramId', SysInvalidProgramIdError);
 
 /** InvalidAccountDataLength: cannot allocate account data of this length */
 export class SysInvalidAccountDataLengthError extends ProgramError {
-  readonly name: string = 'InvalidAccountDataLength';
+  override readonly name: string = 'InvalidAccountDataLength';
 
   readonly code: number = 0x3; // 3
 
@@ -79,7 +79,7 @@ nameToErrorMap.set(
 
 /** MaxSeedLengthExceeded: length of requested seed is too long */
 export class SysMaxSeedLengthExceededError extends ProgramError {
-  readonly name: string = 'MaxSeedLengthExceeded';
+  override readonly name: string = 'MaxSeedLengthExceeded';
 
   readonly code: number = 0x4; // 4
 
@@ -92,7 +92,7 @@ nameToErrorMap.set('MaxSeedLengthExceeded', SysMaxSeedLengthExceededError);
 
 /** AddressWithSeedMismatch: provided address does not match addressed derived from seed */
 export class SysAddressWithSeedMismatchError extends ProgramError {
-  readonly name: string = 'AddressWithSeedMismatch';
+  override readonly name: string = 'AddressWithSeedMismatch';
 
   readonly code: number = 0x5; // 5
 
@@ -109,7 +109,7 @@ nameToErrorMap.set('AddressWithSeedMismatch', SysAddressWithSeedMismatchError);
 
 /** NonceNoRecentBlockhashes: advancing stored nonce requires a populated RecentBlockhashes sysvar */
 export class SysNonceNoRecentBlockhashesError extends ProgramError {
-  readonly name: string = 'NonceNoRecentBlockhashes';
+  override readonly name: string = 'NonceNoRecentBlockhashes';
 
   readonly code: number = 0x6; // 6
 
@@ -129,7 +129,7 @@ nameToErrorMap.set(
 
 /** NonceBlockhashNotExpired: stored nonce is still in recent_blockhashes */
 export class SysNonceBlockhashNotExpiredError extends ProgramError {
-  readonly name: string = 'NonceBlockhashNotExpired';
+  override readonly name: string = 'NonceBlockhashNotExpired';
 
   readonly code: number = 0x7; // 7
 
@@ -145,7 +145,7 @@ nameToErrorMap.set(
 
 /** NonceUnexpectedBlockhashValue: specified nonce does not match stored nonce */
 export class SysNonceUnexpectedBlockhashValueError extends ProgramError {
-  readonly name: string = 'NonceUnexpectedBlockhashValue';
+  override readonly name: string = 'NonceUnexpectedBlockhashValue';
 
   readonly code: number = 0x8; // 8
 

@@ -87,15 +87,19 @@ export function mintTokensToChecked(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    mint: { index: 0, isWritable: true, value: input.mint ?? null },
-    token: { index: 1, isWritable: true, value: input.token ?? null },
+  const resolvedAccounts = {
+    mint: { index: 0, isWritable: true as boolean, value: input.mint ?? null },
+    token: {
+      index: 1,
+      isWritable: true as boolean,
+      value: input.token ?? null,
+    },
     mintAuthority: {
       index: 2,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.mintAuthority ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: MintTokensToCheckedInstructionArgs = { ...input };

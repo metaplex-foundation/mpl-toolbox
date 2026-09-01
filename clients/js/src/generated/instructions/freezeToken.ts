@@ -66,11 +66,19 @@ export function freezeToken(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
-    mint: { index: 1, isWritable: false, value: input.mint ?? null },
-    owner: { index: 2, isWritable: false, value: input.owner ?? null },
-  };
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
+    mint: { index: 1, isWritable: false as boolean, value: input.mint ?? null },
+    owner: {
+      index: 2,
+      isWritable: false as boolean,
+      value: input.owner ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(

@@ -8,6 +8,7 @@ import {
   createSplSystemProgram,
   createSplTokenProgram,
 } from './generated';
+import { createToken2022Program } from './generated-token2022';
 
 export const mplToolbox = (): UmiPlugin => ({
   install(umi) {
@@ -19,8 +20,14 @@ export const mplToolbox = (): UmiPlugin => ({
     umi.programs.add(createMplSystemExtrasProgram(), false);
     umi.programs.add(createMplTokenExtrasProgram(), false);
 
-    // Token 2022.
-    // For now, we just register it as a splToken program for feature parity.
+    // Token-2022 (Token Extensions), generated from its own IDL and exposed
+    // under the `token2022` namespace. Registered under the program name
+    // `token2022` used by the generated Token-2022 instructions.
+    umi.programs.add(createToken2022Program(), false);
+
+    // Deprecated: a stub `splToken2022` (the SPL Token program relabelled),
+    // kept for backwards compatibility with earlier releases. Prefer the real
+    // `token2022` program registered above.
     umi.programs.add(
       {
         ...createSplTokenProgram(),

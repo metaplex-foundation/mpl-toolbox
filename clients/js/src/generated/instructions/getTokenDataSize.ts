@@ -66,9 +66,9 @@ export function getTokenDataSize(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    mint: { index: 0, isWritable: false, value: input.mint ?? null },
-  };
+  const resolvedAccounts = {
+    mint: { index: 0, isWritable: false as boolean, value: input.mint ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(

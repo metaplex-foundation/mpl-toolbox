@@ -80,10 +80,14 @@ export function initializeMultisig(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    multisig: { index: 0, isWritable: true, value: input.multisig ?? null },
-    rent: { index: 1, isWritable: false, value: input.rent ?? null },
-  };
+  const resolvedAccounts = {
+    multisig: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.multisig ?? null,
+    },
+    rent: { index: 1, isWritable: false as boolean, value: input.rent ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: InitializeMultisigInstructionArgs = { ...input };

@@ -17,7 +17,7 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
 /** InvalidSystemProgram: Invalid System Program */
 export class TokExInvalidSystemProgramError extends ProgramError {
-  readonly name: string = 'InvalidSystemProgram';
+  override readonly name: string = 'InvalidSystemProgram';
 
   readonly code: number = 0x0; // 0
 
@@ -30,7 +30,7 @@ nameToErrorMap.set('InvalidSystemProgram', TokExInvalidSystemProgramError);
 
 /** InvalidTokenProgram: Invalid Token Program */
 export class TokExInvalidTokenProgramError extends ProgramError {
-  readonly name: string = 'InvalidTokenProgram';
+  override readonly name: string = 'InvalidTokenProgram';
 
   readonly code: number = 0x1; // 1
 
@@ -43,7 +43,7 @@ nameToErrorMap.set('InvalidTokenProgram', TokExInvalidTokenProgramError);
 
 /** InvalidAssociatedTokenProgram: Invalid Associated Token Program */
 export class TokExInvalidAssociatedTokenProgramError extends ProgramError {
-  readonly name: string = 'InvalidAssociatedTokenProgram';
+  override readonly name: string = 'InvalidAssociatedTokenProgram';
 
   readonly code: number = 0x2; // 2
 
@@ -59,7 +59,7 @@ nameToErrorMap.set(
 
 /** InvalidAssociatedTokenAccount: Invalid Associated Token Account: it should derive from the provided mint and owner */
 export class TokExInvalidAssociatedTokenAccountError extends ProgramError {
-  readonly name: string = 'InvalidAssociatedTokenAccount';
+  override readonly name: string = 'InvalidAssociatedTokenAccount';
 
   readonly code: number = 0x3; // 3
 
@@ -79,7 +79,7 @@ nameToErrorMap.set(
 
 /** InvalidProgramOwner: Invalid Program Owner */
 export class TokExInvalidProgramOwnerError extends ProgramError {
-  readonly name: string = 'InvalidProgramOwner';
+  override readonly name: string = 'InvalidProgramOwner';
 
   readonly code: number = 0x4; // 4
 
@@ -92,7 +92,7 @@ nameToErrorMap.set('InvalidProgramOwner', TokExInvalidProgramOwnerError);
 
 /** InvalidTokenMint: Invalid Token Mint: it should be the same as the provided mint account */
 export class TokExInvalidTokenMintError extends ProgramError {
-  readonly name: string = 'InvalidTokenMint';
+  override readonly name: string = 'InvalidTokenMint';
 
   readonly code: number = 0x5; // 5
 
@@ -109,7 +109,7 @@ nameToErrorMap.set('InvalidTokenMint', TokExInvalidTokenMintError);
 
 /** InvalidTokenOwner: Invalid Program Owner: it should be the same as the provided owner account */
 export class TokExInvalidTokenOwnerError extends ProgramError {
-  readonly name: string = 'InvalidTokenOwner';
+  override readonly name: string = 'InvalidTokenOwner';
 
   readonly code: number = 0x6; // 6
 
@@ -126,7 +126,7 @@ nameToErrorMap.set('InvalidTokenOwner', TokExInvalidTokenOwnerError);
 
 /** CannotCreateNonAssociatedToken: Cannot create non-associated token accounts as they would need to sign the transaction. Please provide an associated token account instead */
 export class TokExCannotCreateNonAssociatedTokenError extends ProgramError {
-  readonly name: string = 'CannotCreateNonAssociatedToken';
+  override readonly name: string = 'CannotCreateNonAssociatedToken';
 
   readonly code: number = 0x7; // 7
 

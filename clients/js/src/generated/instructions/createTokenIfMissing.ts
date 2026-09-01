@@ -85,28 +85,40 @@ export function createTokenIfMissing(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    payer: { index: 0, isWritable: true, value: input.payer ?? null },
-    token: { index: 1, isWritable: false, value: input.token ?? null },
-    mint: { index: 2, isWritable: false, value: input.mint ?? null },
-    owner: { index: 3, isWritable: false, value: input.owner ?? null },
-    ata: { index: 4, isWritable: true, value: input.ata ?? null },
+  const resolvedAccounts = {
+    payer: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.payer ?? null,
+    },
+    token: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.token ?? null,
+    },
+    mint: { index: 2, isWritable: false as boolean, value: input.mint ?? null },
+    owner: {
+      index: 3,
+      isWritable: false as boolean,
+      value: input.owner ?? null,
+    },
+    ata: { index: 4, isWritable: true as boolean, value: input.ata ?? null },
     systemProgram: {
       index: 5,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.systemProgram ?? null,
     },
     tokenProgram: {
       index: 6,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.tokenProgram ?? null,
     },
     ataProgram: {
       index: 7,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.ataProgram ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Default values.
   if (!resolvedAccounts.payer.value) {

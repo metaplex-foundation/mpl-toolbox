@@ -63,9 +63,13 @@ export function syncNative(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
-  };
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(
