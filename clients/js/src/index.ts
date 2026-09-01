@@ -1,5 +1,5 @@
 export * from './generated';
-export * as token2022 from './generated-token2022';
+export * as token2022 from './token2022';
 export * from './hooked';
 
 export * from './createLut';

@@ -1,7 +1,14 @@
-import { RpcAccount, lamports, publicKey } from '@metaplex-foundation/umi';
+import {
+  RpcAccount,
+  generateSigner,
+  lamports,
+  publicKey,
+  some,
+} from '@metaplex-foundation/umi';
 import { base64 } from '@metaplex-foundation/umi/serializers';
 import test from 'ava';
 import { token2022 } from '../src';
+import { createUmi } from './_setup';
 
 // A real Token-2022 mint created on a local validator with the metadata-pointer,
 // transfer-fee and token-metadata extensions, captured as raw account bytes.
@@ -27,4 +34,42 @@ test('the Token-2022 client decodes a mint with its extensions', (t) => {
     mint.extensions.__option === 'Some' ? mint.extensions.value : [];
   const kinds = extensions.map((extension) => extension.__kind).sort();
   t.deepEqual(kinds, ['MetadataPointer', 'TokenMetadata', 'TransferFeeConfig']);
+});
+
+test('getMintSize accounts for extensions', (t) => {
+  t.is(token2022.getMintSize(), 82);
+  t.true(token2022.getMintSize([]) > 82);
+});
+
+test('createMintWithExtensions creates and initializes a mint with extensions', async (t) => {
+  const umi = await createUmi();
+  const mint = generateSigner(umi);
+
+  await (
+    await token2022.createMintWithExtensions(umi, {
+      mint,
+      mintAuthority: umi.identity,
+      decimals: 6,
+      extensions: [
+        {
+          __kind: 'MetadataPointer',
+          authority: some(umi.identity.publicKey),
+          metadataAddress: some(mint.publicKey),
+        },
+      ],
+    })
+  ).sendAndConfirm(umi);
+
+  const account = await umi.rpc.getAccount(mint.publicKey);
+  t.true(
+    account.exists &&
+      publicKey(account.owner) === token2022.TOKEN2022_PROGRAM_ID
+  );
+  const decoded = token2022.deserializeMint(account as RpcAccount);
+  t.is(decoded.decimals, 6);
+  const kinds =
+    decoded.extensions.__option === 'Some'
+      ? decoded.extensions.value.map((extension) => extension.__kind)
+      : [];
+  t.deepEqual(kinds, ['MetadataPointer']);
 });
