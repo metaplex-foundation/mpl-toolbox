@@ -12,7 +12,6 @@ import {
   PublicKey,
   TransactionBuilder,
   transactionBuilder,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   Serializer,
@@ -28,8 +27,6 @@ import {
 
 // Accounts.
 export type GetTokenDataSizeInstructionAccounts = {
-  /** The token program to use. Defaults to the SPL Token program. */
-  tokenProgram?: PublicKey | Pda;
   mint: PublicKey | Pda;
 };
 
@@ -63,12 +60,10 @@ export function getTokenDataSize(
   input: GetTokenDataSizeInstructionAccounts
 ): TransactionBuilder {
   // Program ID.
-  const programId = input.tokenProgram
-    ? publicKey(input.tokenProgram, false)
-    : context.programs.getPublicKey(
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      );
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Accounts.
   const resolvedAccounts: ResolvedAccountsWithIndices = {

@@ -13,7 +13,6 @@ import {
   Signer,
   TransactionBuilder,
   transactionBuilder,
-  publicKey,
 } from '@metaplex-foundation/umi';
 import {
   Serializer,
@@ -29,8 +28,6 @@ import {
 
 // Accounts.
 export type CloseTokenInstructionAccounts = {
-  /** The token program to use. Defaults to the SPL Token program. */
-  tokenProgram?: PublicKey | Pda;
   account: PublicKey | Pda;
   destination: PublicKey | Pda;
   owner: Signer;
@@ -63,12 +60,10 @@ export function closeToken(
   input: CloseTokenInstructionAccounts
 ): TransactionBuilder {
   // Program ID.
-  const programId = input.tokenProgram
-    ? publicKey(input.tokenProgram, false)
-    : context.programs.getPublicKey(
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      );
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Accounts.
   const resolvedAccounts: ResolvedAccountsWithIndices = {

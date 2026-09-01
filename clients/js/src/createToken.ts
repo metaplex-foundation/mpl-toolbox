@@ -16,8 +16,6 @@ export type CreateTokenArgs = {
   token: Signer;
   mint: PublicKey;
   owner?: PublicKey;
-  /** The token program to use. Defaults to the SPL Token program. */
-  tokenProgram?: PublicKey;
 };
 
 // Instruction.
@@ -25,14 +23,12 @@ export function createToken(
   context: Pick<Context, 'programs' | 'identity' | 'payer'>,
   input: CreateTokenArgs
 ): TransactionBuilder {
-  const tokenProgram =
-    input.tokenProgram ?? context.programs.get('splToken').publicKey;
   return transactionBuilder()
     .add(
       createAccountWithRent(context, {
         newAccount: input.token,
         space: getTokenSize(),
-        programId: tokenProgram,
+        programId: context.programs.get('splToken').publicKey,
       })
     )
     .add(
@@ -40,7 +36,6 @@ export function createToken(
         account: input.token.publicKey,
         mint: input.mint,
         owner: input.owner ?? context.identity.publicKey,
-        tokenProgram,
       })
     );
 }

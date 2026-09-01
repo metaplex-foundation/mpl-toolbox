@@ -28,8 +28,6 @@ import {
 
 // Accounts.
 export type InitializeTokenInstructionAccounts = {
-  /** The token program to use. Defaults to the SPL Token program. */
-  tokenProgram?: PublicKey | Pda;
   account: PublicKey | Pda;
   mint: PublicKey | Pda;
   owner: PublicKey | Pda;
@@ -66,12 +64,10 @@ export function initializeToken(
   input: InitializeTokenInstructionAccounts
 ): TransactionBuilder {
   // Program ID.
-  const programId = input.tokenProgram
-    ? publicKey(input.tokenProgram, false)
-    : context.programs.getPublicKey(
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      );
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Accounts.
   const resolvedAccounts: ResolvedAccountsWithIndices = {

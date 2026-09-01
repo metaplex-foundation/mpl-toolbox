@@ -28,8 +28,6 @@ import {
 
 // Accounts.
 export type InitializeMultisigInstructionAccounts = {
-  /** The token program to use. Defaults to the SPL Token program. */
-  tokenProgram?: PublicKey | Pda;
   multisig: PublicKey | Pda;
   rent?: PublicKey | Pda;
 };
@@ -76,12 +74,10 @@ export function initializeMultisig(
     InitializeMultisigInstructionArgs
 ): TransactionBuilder {
   // Program ID.
-  const programId = input.tokenProgram
-    ? publicKey(input.tokenProgram, false)
-    : context.programs.getPublicKey(
-        'splToken',
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-      );
+  const programId = context.programs.getPublicKey(
+    'splToken',
+    'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+  );
 
   // Accounts.
   const resolvedAccounts: ResolvedAccountsWithIndices = {
