@@ -105,3 +105,29 @@ test('it can deserialize batch instruction data', (t) => {
     ],
   });
 });
+
+test('it serializes an empty batch', (t) => {
+  const serializer = getBatchTokenInstructionsInstructionDataSerializer();
+  t.deepEqual(
+    serializer.serialize({ instructions: [] }),
+    new Uint8Array([255])
+  );
+});
+
+test('it deserializes a batch from an offset', (t) => {
+  // Given a buffer with leading bytes before the batch instruction data.
+  const serializer = getBatchTokenInstructionsInstructionDataSerializer();
+  const bytes = new Uint8Array([7, 7, 255, 3, 1, 9]);
+
+  // When we deserialize from the batch offset.
+  const [data, offset] = serializer.deserialize(bytes, 2);
+
+  // Then the leading bytes are ignored and the whole buffer is consumed.
+  t.deepEqual(data, {
+    discriminator: 255,
+    instructions: [
+      { numberOfAccounts: 3, instructionData: new Uint8Array([9]) },
+    ],
+  });
+  t.is(offset, bytes.length);
+});
