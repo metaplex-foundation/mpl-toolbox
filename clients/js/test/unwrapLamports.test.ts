@@ -37,16 +37,17 @@ test('it builds an unwrap lamports instruction with an amount', (t) => {
   );
 });
 
-test('it unwraps all lamports when no amount is provided', (t) => {
+test('it unwraps all lamports when the amount is null', (t) => {
   // Given a source and a destination account.
   const umi = createOfflineUmi();
   const source = generateSigner(umi).publicKey;
   const destination = generateSigner(umi).publicKey;
 
-  // When we build an unwrap lamports instruction without an amount.
+  // When we build an unwrap lamports instruction with a null amount.
   const [instruction] = unwrapLamports(umi, {
     source,
     destination,
+    amount: null,
   }).getInstructions();
 
   // Then the identity is used as the authority.
@@ -58,6 +59,31 @@ test('it unwraps all lamports when no amount is provided', (t) => {
 
   // And the amount is encoded as none.
   t.deepEqual(instruction.data, new Uint8Array([45, 0]));
+});
+
+test('it preserves a zero amount instead of unwrapping all lamports', (t) => {
+  // Given a source and a destination account.
+  const umi = createOfflineUmi();
+  const source = generateSigner(umi).publicKey;
+  const destination = generateSigner(umi).publicKey;
+
+  // When we build unwrap lamports instructions with a zero amount,
+  // as either a number or a bigint.
+  const [fromNumber] = unwrapLamports(umi, {
+    source,
+    destination,
+    amount: 0,
+  }).getInstructions();
+  const [fromBigint] = unwrapLamports(umi, {
+    source,
+    destination,
+    amount: 0n,
+  }).getInstructions();
+
+  // Then the amount is encoded as some(0) rather than none.
+  const expected = new Uint8Array([45, 1, 0, 0, 0, 0, 0, 0, 0, 0]);
+  t.deepEqual(fromNumber.data, expected);
+  t.deepEqual(fromBigint.data, expected);
 });
 
 test('it can deserialize unwrap lamports instruction data', (t) => {

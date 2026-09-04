@@ -14,7 +14,6 @@ import {
   PublicKey,
   Signer,
   TransactionBuilder,
-  none,
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
@@ -26,7 +25,6 @@ import {
   u8,
 } from '@metaplex-foundation/umi/serializers';
 import {
-  PickPartial,
   ResolvedAccount,
   ResolvedAccountsWithIndices,
   getAccountMetasAndSigners,
@@ -73,10 +71,7 @@ export function getUnwrapLamportsInstructionDataSerializer(): Serializer<
 }
 
 // Args.
-export type UnwrapLamportsInstructionArgs = PickPartial<
-  UnwrapLamportsInstructionDataArgs,
-  'amount'
->;
+export type UnwrapLamportsInstructionArgs = UnwrapLamportsInstructionDataArgs;
 
 // Instruction.
 export function unwrapLamports(
@@ -106,9 +101,6 @@ export function unwrapLamports(
   // Default values.
   if (!resolvedAccounts.authority.value) {
     resolvedAccounts.authority.value = context.identity;
-  }
-  if (!resolvedArgs.amount) {
-    resolvedArgs.amount = none();
   }
 
   // Accounts in order.

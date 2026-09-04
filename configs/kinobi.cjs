@@ -86,11 +86,6 @@ kinobi.update(
         mintAuthority: { defaultsTo: k.identityDefault() },
       },
     },
-    unwrapLamports: {
-      args: {
-        amount: { defaultsTo: k.valueDefault(k.vNone()) },
-      },
-    },
     createAccount: {
       bytesCreatedOnChain: k.bytesFromArg("space"),
     },

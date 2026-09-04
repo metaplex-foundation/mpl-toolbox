@@ -1,4 +1,4 @@
-import { generateSigner } from '@metaplex-foundation/umi';
+import { generateSigner, transactionBuilder } from '@metaplex-foundation/umi';
 import test from 'ava';
 import {
   batchTokenInstructions,
@@ -20,23 +20,31 @@ test('it builds a batch of token instructions', (t) => {
     destination,
     authority: owner,
     amount: 42,
-  }).getInstructions();
+  }).items;
   const [close] = closeToken(umi, {
     account: source,
     destination: owner.publicKey,
     owner,
-  }).getInstructions();
+  }).items;
 
   // When we batch them into a single instruction, passing the accounts
-  // of each batched instruction in sequence as remaining accounts.
-  const [instruction] = batchTokenInstructions(umi, {
-    instructions: [transfer, close].map((ix) => ({
-      numberOfAccounts: ix.keys.length,
-      instructionData: ix.data,
-    })),
-  })
-    .addRemainingAccounts([...transfer.keys, ...close.keys])
-    .getInstructions();
+  // of each batched instruction in sequence as remaining accounts and
+  // carrying over their signers.
+  const batched = [transfer, close];
+  const builder = transactionBuilder(
+    batchTokenInstructions(umi, {
+      instructions: batched.map(({ instruction: ix }) => ({
+        numberOfAccounts: ix.keys.length,
+        instructionData: ix.data,
+      })),
+    })
+      .addRemainingAccounts(batched.flatMap((item) => item.instruction.keys))
+      .items.map((item) => ({
+        ...item,
+        signers: batched.flatMap((batchedItem) => batchedItem.signers),
+      }))
+  );
+  const [instruction] = builder.getInstructions();
 
   // Then the instruction targets the SPL Token program
   // with the accounts of all batched instructions.
@@ -49,6 +57,13 @@ test('it builds a batch of token instructions', (t) => {
     { pubkey: owner.publicKey, isSigner: false, isWritable: true },
     { pubkey: owner.publicKey, isSigner: true, isWritable: false },
   ]);
+
+  // And the owner is a signer of the batch instruction.
+  t.true(
+    builder
+      .getSigners(umi)
+      .some((signer) => signer.publicKey === owner.publicKey)
+  );
 
   // And its data contains, for each batched instruction, the number of
   // accounts followed by the length-prefixed instruction data.
