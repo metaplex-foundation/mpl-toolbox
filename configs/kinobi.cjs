@@ -127,11 +127,39 @@ kinobi.update(
   })
 );
 
+// The SPL Token batch instruction stores the data of each batched
+// instruction as a u8-prefixed byte array rather than the default u32 prefix.
+kinobi.update(
+  new k.TransformNodesVisitor([
+    {
+      selector: {
+        kind: "structFieldTypeNode",
+        name: "instructionData",
+        stack: ["splToken", "batchedTokenInstruction"],
+      },
+      transformer: (node) =>
+        k.structFieldTypeNode({
+          ...node,
+          child: k.bytesTypeNode(k.prefixedSize(k.numberTypeNode("u8"))),
+        }),
+    },
+  ])
+);
+
 kinobi.update(
   new k.SetStructDefaultValuesVisitor({
     addressLookupTable: {
       padding: { ...k.vScalar(0), strategy: "omitted" },
     },
+  })
+);
+
+// Custom serializers.
+// The batch instruction data is a remainder-sized array of variable-size
+// items, which Umi's `array` serializer cannot handle on its own.
+kinobi.update(
+  new k.UseCustomInstructionSerializerVisitor({
+    batchTokenInstructions: true,
   })
 );
 
