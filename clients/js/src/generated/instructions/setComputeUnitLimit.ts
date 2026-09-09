@@ -63,6 +63,9 @@ export function getSetComputeUnitLimitInstructionDataSerializer(): Serializer<
 export type SetComputeUnitLimitInstructionArgs =
   SetComputeUnitLimitInstructionDataArgs;
 
+// Instruction discriminator.
+export const setComputeUnitLimitInstructionDiscriminator = 2;
+
 // Instruction.
 export function setComputeUnitLimit(
   context: Pick<Context, 'programs'>,

@@ -89,6 +89,9 @@ export function getPermissionedBurnCheckedInstructionDataSerializer(): Serialize
 export type PermissionedBurnCheckedInstructionArgs =
   PermissionedBurnCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const permissionedBurnCheckedInstructionDiscriminator = 46;
+
 // Instruction.
 export function permissionedBurnChecked(
   context: Pick<Context, 'identity' | 'programs'>,

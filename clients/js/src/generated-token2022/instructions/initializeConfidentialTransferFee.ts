@@ -85,6 +85,9 @@ export function getInitializeConfidentialTransferFeeInstructionDataSerializer():
 export type InitializeConfidentialTransferFeeInstructionArgs =
   InitializeConfidentialTransferFeeInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeConfidentialTransferFeeInstructionDiscriminator = 37;
+
 // Instruction.
 export function initializeConfidentialTransferFee(
   context: Pick<Context, 'programs'>,

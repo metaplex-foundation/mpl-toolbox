@@ -69,6 +69,9 @@ export function getRequestHeapFrameInstructionDataSerializer(): Serializer<
 export type RequestHeapFrameInstructionArgs =
   RequestHeapFrameInstructionDataArgs;
 
+// Instruction discriminator.
+export const requestHeapFrameInstructionDiscriminator = 1;
+
 // Instruction.
 export function requestHeapFrame(
   context: Pick<Context, 'programs'>,

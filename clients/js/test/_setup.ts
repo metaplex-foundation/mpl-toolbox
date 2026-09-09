@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
+  createUmi as createBaseUmi,
   generateSigner,
   Option,
   PublicKey,
@@ -7,7 +8,10 @@ import {
   transactionBuilder,
   Umi,
 } from '@metaplex-foundation/umi';
-import { createUmi as basecreateUmi } from '@metaplex-foundation/umi-bundle-tests';
+import {
+  createUmi as basecreateUmi,
+  testPlugins,
+} from '@metaplex-foundation/umi-bundle-tests';
 import {
   createMint as baseCreateMint,
   createToken as baseCreateToken,
@@ -16,6 +20,10 @@ import {
 } from '../src';
 
 export const createUmi = async () => (await basecreateUmi()).use(mplToolbox());
+
+/** Creates a Umi instance that does not require a running validator. */
+export const createOfflineUmi = (): Umi =>
+  createBaseUmi().use(testPlugins()).use(mplToolbox());
 
 export const createMint = async (
   umi: Umi,

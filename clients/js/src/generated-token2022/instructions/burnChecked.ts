@@ -77,6 +77,9 @@ export function getBurnCheckedInstructionDataSerializer(): Serializer<
 // Args.
 export type BurnCheckedInstructionArgs = BurnCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const burnCheckedInstructionDiscriminator = 15;
+
 // Instruction.
 export function burnChecked(
   context: Pick<Context, 'identity' | 'programs'>,

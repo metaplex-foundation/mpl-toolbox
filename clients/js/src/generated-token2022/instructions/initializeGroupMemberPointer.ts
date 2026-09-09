@@ -85,6 +85,9 @@ export function getInitializeGroupMemberPointerInstructionDataSerializer(): Seri
 export type InitializeGroupMemberPointerInstructionArgs =
   InitializeGroupMemberPointerInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeGroupMemberPointerInstructionDiscriminator = 41;
+
 // Instruction.
 export function initializeGroupMemberPointer(
   context: Pick<Context, 'programs'>,

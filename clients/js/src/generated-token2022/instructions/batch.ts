@@ -64,6 +64,9 @@ export function getBatchInstructionDataSerializer(): Serializer<
 // Args.
 export type BatchInstructionArgs = BatchInstructionDataArgs;
 
+// Instruction discriminator.
+export const batchInstructionDiscriminator = 255;
+
 // Instruction.
 export function batch(
   context: Pick<Context, 'programs'>,

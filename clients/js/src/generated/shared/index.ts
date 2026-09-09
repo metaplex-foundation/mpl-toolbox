@@ -15,6 +15,7 @@ import {
   Signer,
   isPda,
 } from '@metaplex-foundation/umi';
+import { mergeBytes, Serializer } from '@metaplex-foundation/umi/serializers';
 
 /**
  * Transforms the given object such that the given keys are optional.
@@ -114,4 +115,34 @@ export function getAccountMetasAndSigners(
   });
 
   return [keys, signers];
+}
+
+/**
+ * Serializer for an array of variable-size items with no count prefix:
+ * items are deserialized one after another until the buffer is exhausted.
+ * @internal
+ */
+export function remainderArray<T, U extends T = T>(
+  item: Serializer<T, U>
+): Serializer<T[], U[]> {
+  return {
+    description: `remainderArray(${item.description})`,
+    fixedSize: null,
+    maxSize: null,
+    serialize: (value: T[]) => mergeBytes(value.map((v) => item.serialize(v))),
+    deserialize: (bytes: Uint8Array, offset = 0) => {
+      const values: U[] = [];
+      while (offset < bytes.length) {
+        const [value, newOffset] = item.deserialize(bytes, offset);
+        if (newOffset <= offset) {
+          throw new Error(
+            'remainderArray: item serializer did not advance the offset; cannot decode a zero-width item'
+          );
+        }
+        values.push(value);
+        offset = newOffset;
+      }
+      return [values, offset];
+    },
+  };
 }

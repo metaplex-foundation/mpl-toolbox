@@ -84,6 +84,9 @@ export type CreateEmptyLutInstructionArgs = PickPartial<
   'bump'
 >;
 
+// Instruction discriminator.
+export const createEmptyLutInstructionDiscriminator = 0;
+
 // Instruction.
 export function createEmptyLut(
   context: Pick<Context, 'eddsa' | 'identity' | 'payer' | 'programs'>,

@@ -64,6 +64,9 @@ export function getRequestUnitsInstructionDataSerializer(): Serializer<
 // Args.
 export type RequestUnitsInstructionArgs = RequestUnitsInstructionDataArgs;
 
+// Instruction discriminator.
+export const requestUnitsInstructionDiscriminator = 0;
+
 // Instruction.
 export function requestUnits(
   context: Pick<Context, 'programs'>,

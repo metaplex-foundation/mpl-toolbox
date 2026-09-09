@@ -72,6 +72,9 @@ export function getTransferInstructionDataSerializer(): Serializer<
 // Args.
 export type TransferInstructionArgs = TransferInstructionDataArgs;
 
+// Instruction discriminator.
+export const transferInstructionDiscriminator = 3;
+
 // Instruction.
 export function transfer(
   context: Pick<Context, 'identity' | 'programs'>,

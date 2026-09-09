@@ -137,6 +137,9 @@ export function getConfidentialWithdrawInstructionDataSerializer(): Serializer<
 export type ConfidentialWithdrawInstructionArgs =
   ConfidentialWithdrawInstructionDataArgs;
 
+// Instruction discriminator.
+export const confidentialWithdrawInstructionDiscriminator = 27;
+
 // Instruction.
 export function confidentialWithdraw(
   context: Pick<Context, 'programs'>,

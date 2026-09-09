@@ -69,6 +69,9 @@ export function getDisableHarvestToMintInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const disableHarvestToMintInstructionDiscriminator = 37;
+
 // Instruction.
 export function disableHarvestToMint(
   context: Pick<Context, 'programs'>,

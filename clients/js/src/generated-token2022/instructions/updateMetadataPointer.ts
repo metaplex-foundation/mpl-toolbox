@@ -83,6 +83,9 @@ export function getUpdateMetadataPointerInstructionDataSerializer(): Serializer<
 export type UpdateMetadataPointerInstructionArgs =
   UpdateMetadataPointerInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateMetadataPointerInstructionDiscriminator = 39;
+
 // Instruction.
 export function updateMetadataPointer(
   context: Pick<Context, 'programs'>,

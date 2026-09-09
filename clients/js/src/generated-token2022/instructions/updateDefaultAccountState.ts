@@ -84,6 +84,9 @@ export function getUpdateDefaultAccountStateInstructionDataSerializer(): Seriali
 export type UpdateDefaultAccountStateInstructionArgs =
   UpdateDefaultAccountStateInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateDefaultAccountStateInstructionDiscriminator = 28;
+
 // Instruction.
 export function updateDefaultAccountState(
   context: Pick<Context, 'programs'>,

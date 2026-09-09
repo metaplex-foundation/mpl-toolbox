@@ -69,6 +69,9 @@ export function getExtendLutInstructionDataSerializer(): Serializer<
 // Args.
 export type ExtendLutInstructionArgs = ExtendLutInstructionDataArgs;
 
+// Instruction discriminator.
+export const extendLutInstructionDiscriminator = 2;
+
 // Instruction.
 export function extendLut(
   context: Pick<Context, 'eddsa' | 'identity' | 'payer' | 'programs'>,

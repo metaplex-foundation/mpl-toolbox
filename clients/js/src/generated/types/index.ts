@@ -7,4 +7,5 @@
  */
 
 export * from './authorityType';
+export * from './batchedTokenInstruction';
 export * from './tokenState';

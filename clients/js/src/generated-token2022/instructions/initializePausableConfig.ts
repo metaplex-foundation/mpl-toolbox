@@ -76,6 +76,9 @@ export function getInitializePausableConfigInstructionDataSerializer(): Serializ
 export type InitializePausableConfigInstructionArgs =
   InitializePausableConfigInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializePausableConfigInstructionDiscriminator = 44;
+
 // Instruction.
 export function initializePausableConfig(
   context: Pick<Context, 'programs'>,

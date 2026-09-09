@@ -87,6 +87,9 @@ export function getConfidentialDepositInstructionDataSerializer(): Serializer<
 export type ConfidentialDepositInstructionArgs =
   ConfidentialDepositInstructionDataArgs;
 
+// Instruction discriminator.
+export const confidentialDepositInstructionDiscriminator = 27;
+
 // Instruction.
 export function confidentialDeposit(
   context: Pick<Context, 'programs'>,

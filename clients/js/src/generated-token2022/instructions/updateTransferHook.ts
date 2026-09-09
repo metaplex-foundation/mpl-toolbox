@@ -79,6 +79,9 @@ export function getUpdateTransferHookInstructionDataSerializer(): Serializer<
 export type UpdateTransferHookInstructionArgs =
   UpdateTransferHookInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateTransferHookInstructionDiscriminator = 36;
+
 // Instruction.
 export function updateTransferHook(
   context: Pick<Context, 'programs'>,

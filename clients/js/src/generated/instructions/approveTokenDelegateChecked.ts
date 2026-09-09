@@ -75,6 +75,9 @@ export function getApproveTokenDelegateCheckedInstructionDataSerializer(): Seria
 export type ApproveTokenDelegateCheckedInstructionArgs =
   ApproveTokenDelegateCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const approveTokenDelegateCheckedInstructionDiscriminator = 13;
+
 // Instruction.
 export function approveTokenDelegateChecked(
   context: Pick<Context, 'programs'>,

@@ -85,6 +85,11 @@ export function getUpdateTokenMetadataFieldInstructionDataSerializer(): Serializ
 export type UpdateTokenMetadataFieldInstructionArgs =
   UpdateTokenMetadataFieldInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateTokenMetadataFieldInstructionDiscriminator = new Uint8Array([
+  221, 233, 49, 45, 181, 202, 220, 200,
+]);
+
 // Instruction.
 export function updateTokenMetadataField(
   context: Pick<Context, 'programs'>,

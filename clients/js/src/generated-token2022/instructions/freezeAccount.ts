@@ -60,6 +60,9 @@ export function getFreezeAccountInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const freezeAccountInstructionDiscriminator = 10;
+
 // Instruction.
 export function freezeAccount(
   context: Pick<Context, 'programs'>,

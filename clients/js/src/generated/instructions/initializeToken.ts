@@ -58,6 +58,9 @@ export function getInitializeTokenInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const initializeTokenInstructionDiscriminator = 1;
+
 // Instruction.
 export function initializeToken(
   context: Pick<Context, 'programs'>,

@@ -98,6 +98,9 @@ export function getTransferCheckedWithFeeInstructionDataSerializer(): Serializer
 export type TransferCheckedWithFeeInstructionArgs =
   TransferCheckedWithFeeInstructionDataArgs;
 
+// Instruction discriminator.
+export const transferCheckedWithFeeInstructionDiscriminator = 26;
+
 // Instruction.
 export function transferCheckedWithFee(
   context: Pick<Context, 'identity' | 'programs'>,

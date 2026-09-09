@@ -85,6 +85,9 @@ export function getInitializeMetadataPointerInstructionDataSerializer(): Seriali
 export type InitializeMetadataPointerInstructionArgs =
   InitializeMetadataPointerInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeMetadataPointerInstructionDiscriminator = 39;
+
 // Instruction.
 export function initializeMetadataPointer(
   context: Pick<Context, 'programs'>,

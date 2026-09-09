@@ -58,6 +58,9 @@ export function getInitializeNonTransferableMintInstructionDataSerializer(): Ser
   >;
 }
 
+// Instruction discriminator.
+export const initializeNonTransferableMintInstructionDiscriminator = 32;
+
 // Instruction.
 export function initializeNonTransferableMint(
   context: Pick<Context, 'programs'>,

@@ -170,6 +170,9 @@ export function getConfidentialBurnInstructionDataSerializer(): Serializer<
 export type ConfidentialBurnInstructionArgs =
   ConfidentialBurnInstructionDataArgs;
 
+// Instruction discriminator.
+export const confidentialBurnInstructionDiscriminator = 42;
+
 // Instruction.
 export function confidentialBurn(
   context: Pick<Context, 'programs'>,

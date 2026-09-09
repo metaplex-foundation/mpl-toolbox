@@ -81,6 +81,9 @@ export function getInitializeGroupPointerInstructionDataSerializer(): Serializer
 export type InitializeGroupPointerInstructionArgs =
   InitializeGroupPointerInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeGroupPointerInstructionDiscriminator = 40;
+
 // Instruction.
 export function initializeGroupPointer(
   context: Pick<Context, 'programs'>,

@@ -71,6 +71,9 @@ export function getApproveTokenDelegateInstructionDataSerializer(): Serializer<
 export type ApproveTokenDelegateInstructionArgs =
   ApproveTokenDelegateInstructionDataArgs;
 
+// Instruction discriminator.
+export const approveTokenDelegateInstructionDiscriminator = 4;
+
 // Instruction.
 export function approveTokenDelegate(
   context: Pick<Context, 'programs'>,

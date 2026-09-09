@@ -81,6 +81,9 @@ export function getInitializeTransferHookInstructionDataSerializer(): Serializer
 export type InitializeTransferHookInstructionArgs =
   InitializeTransferHookInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeTransferHookInstructionDiscriminator = 36;
+
 // Instruction.
 export function initializeTransferHook(
   context: Pick<Context, 'programs'>,

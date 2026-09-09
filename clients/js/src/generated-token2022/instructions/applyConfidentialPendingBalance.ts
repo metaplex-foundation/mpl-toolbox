@@ -102,6 +102,9 @@ export function getApplyConfidentialPendingBalanceInstructionDataSerializer(): S
 export type ApplyConfidentialPendingBalanceInstructionArgs =
   ApplyConfidentialPendingBalanceInstructionDataArgs;
 
+// Instruction discriminator.
+export const applyConfidentialPendingBalanceInstructionDiscriminator = 27;
+
 // Instruction.
 export function applyConfidentialPendingBalance(
   context: Pick<Context, 'programs'>,

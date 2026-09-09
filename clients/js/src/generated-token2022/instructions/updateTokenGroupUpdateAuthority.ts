@@ -79,6 +79,10 @@ export function getUpdateTokenGroupUpdateAuthorityInstructionDataSerializer(): S
 export type UpdateTokenGroupUpdateAuthorityInstructionArgs =
   UpdateTokenGroupUpdateAuthorityInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateTokenGroupUpdateAuthorityInstructionDiscriminator =
+  new Uint8Array([161, 105, 88, 1, 237, 221, 216, 203]);
+
 // Instruction.
 export function updateTokenGroupUpdateAuthority(
   context: Pick<Context, 'programs'>,

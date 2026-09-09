@@ -57,6 +57,9 @@ export function getCloseAccountInstructionDataSerializer(): Serializer<
   ) as Serializer<CloseAccountInstructionDataArgs, CloseAccountInstructionData>;
 }
 
+// Instruction discriminator.
+export const closeAccountInstructionDiscriminator = 9;
+
 // Instruction.
 export function closeAccount(
   context: Pick<Context, 'programs'>,

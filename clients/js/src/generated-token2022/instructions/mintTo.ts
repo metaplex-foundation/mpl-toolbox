@@ -68,6 +68,9 @@ export function getMintToInstructionDataSerializer(): Serializer<
 // Args.
 export type MintToInstructionArgs = MintToInstructionDataArgs;
 
+// Instruction discriminator.
+export const mintToInstructionDiscriminator = 7;
+
 // Instruction.
 export function mintTo(
   context: Pick<Context, 'programs'>,

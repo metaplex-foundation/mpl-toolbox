@@ -69,6 +69,9 @@ export function getInitializeToken2InstructionDataSerializer(): Serializer<
 export type InitializeToken2InstructionArgs =
   InitializeToken2InstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeToken2InstructionDiscriminator = 16;
+
 // Instruction.
 export function initializeToken2(
   context: Pick<Context, 'programs'>,

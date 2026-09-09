@@ -67,6 +67,9 @@ export function getInitializeToken3InstructionDataSerializer(): Serializer<
 export type InitializeToken3InstructionArgs =
   InitializeToken3InstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeToken3InstructionDiscriminator = 18;
+
 // Instruction.
 export function initializeToken3(
   context: Pick<Context, 'programs'>,

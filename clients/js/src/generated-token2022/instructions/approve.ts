@@ -68,6 +68,9 @@ export function getApproveInstructionDataSerializer(): Serializer<
 // Args.
 export type ApproveInstructionArgs = ApproveInstructionDataArgs;
 
+// Instruction discriminator.
+export const approveInstructionDiscriminator = 4;
+
 // Instruction.
 export function approve(
   context: Pick<Context, 'programs'>,

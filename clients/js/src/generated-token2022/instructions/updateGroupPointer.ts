@@ -79,6 +79,9 @@ export function getUpdateGroupPointerInstructionDataSerializer(): Serializer<
 export type UpdateGroupPointerInstructionArgs =
   UpdateGroupPointerInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateGroupPointerInstructionDiscriminator = 40;
+
 // Instruction.
 export function updateGroupPointer(
   context: Pick<Context, 'programs'>,

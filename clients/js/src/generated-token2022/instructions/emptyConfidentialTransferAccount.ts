@@ -97,6 +97,9 @@ export function getEmptyConfidentialTransferAccountInstructionDataSerializer(): 
 export type EmptyConfidentialTransferAccountInstructionArgs =
   EmptyConfidentialTransferAccountInstructionDataArgs;
 
+// Instruction discriminator.
+export const emptyConfidentialTransferAccountInstructionDiscriminator = 27;
+
 // Instruction.
 export function emptyConfidentialTransferAccount(
   context: Pick<Context, 'programs'>,

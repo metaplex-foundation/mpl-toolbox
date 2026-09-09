@@ -56,6 +56,9 @@ export function getRevokeTokenDelegateInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const revokeTokenDelegateInstructionDiscriminator = 5;
+
 // Instruction.
 export function revokeTokenDelegate(
   context: Pick<Context, 'programs'>,

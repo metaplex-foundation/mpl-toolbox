@@ -69,6 +69,9 @@ export function getCreateAssociatedTokenInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const createAssociatedTokenInstructionDiscriminator = 0;
+
 // Instruction.
 export function createAssociatedToken(
   context: Pick<Context, 'eddsa' | 'payer' | 'programs'>,

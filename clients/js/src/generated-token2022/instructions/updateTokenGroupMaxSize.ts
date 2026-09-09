@@ -75,6 +75,11 @@ export function getUpdateTokenGroupMaxSizeInstructionDataSerializer(): Serialize
 export type UpdateTokenGroupMaxSizeInstructionArgs =
   UpdateTokenGroupMaxSizeInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateTokenGroupMaxSizeInstructionDiscriminator = new Uint8Array([
+  108, 37, 171, 143, 248, 30, 18, 110,
+]);
+
 // Instruction.
 export function updateTokenGroupMaxSize(
   context: Pick<Context, 'programs'>,

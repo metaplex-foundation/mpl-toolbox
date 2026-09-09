@@ -1,14 +1,15 @@
-// Generates the Umi client for the 8 core programs with Kinobi 0.20 (the
-// Codama-era release). The Token-2022 client is generated separately by
+// Generates the Umi client for the 8 core programs with Kinobi 1.0.0-alpha.5
+// (the Codama-era release). The Token-2022 client is generated separately by
 // configs/kinobi-token2022.cjs. Output is left unformatted here and normalized
 // by the repo's Prettier in the generate:clients script.
 const path = require("path");
 const k = require("@metaplex-foundation/kinobi");
 
 const idlDir = path.join(__dirname, "..", "idls");
-const idl = (name) => require(path.join(idlDir, name));
+const idl = (name) => path.join(idlDir, name);
 
-const kinobi = k.createFromIdl(idl("spl_system.json"), [
+const kinobi = k.createFromIdls([
+  idl("spl_system.json"),
   idl("spl_memo.json"),
   idl("spl_token.json"),
   idl("spl_associated_token.json"),
@@ -120,9 +121,28 @@ kinobi.update(
   })
 );
 
+// The SPL Token batch instruction stores the data of each batched instruction
+// as a u8-prefixed byte array rather than the default u32 prefix. The batch
+// instruction itself is a remainder-sized array of these variable-size structs,
+// which the Codama codecs render natively.
+kinobi.update(
+  k.bottomUpTransformerVisitor([
+    {
+      select: "[structFieldTypeNode]instructionData",
+      transform: (node) =>
+        k.structFieldTypeNode({
+          ...node,
+          type: k.bytesTypeNode(k.prefixedSizeNode(k.numberTypeNode("u8"))),
+        }),
+    },
+  ])
+);
+
 kinobi.update(
   k.setStructDefaultValuesVisitor({
-    addressLookupTable: { padding: k.numberValueNode(0) },
+    addressLookupTable: {
+      padding: { value: k.numberValueNode(0), strategy: "omitted" },
+    },
   })
 );
 

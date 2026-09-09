@@ -123,6 +123,9 @@ export function getConfigureConfidentialTransferAccountInstructionDataSerializer
 export type ConfigureConfidentialTransferAccountInstructionArgs =
   ConfigureConfidentialTransferAccountInstructionDataArgs;
 
+// Instruction discriminator.
+export const configureConfidentialTransferAccountInstructionDiscriminator = 27;
+
 // Instruction.
 export function configureConfidentialTransferAccount(
   context: Pick<Context, 'programs'>,

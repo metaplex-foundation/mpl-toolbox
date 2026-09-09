@@ -72,6 +72,9 @@ export function getCreateAssociatedTokenIdempotentInstructionDataSerializer(): S
   >;
 }
 
+// Instruction discriminator.
+export const createAssociatedTokenIdempotentInstructionDiscriminator = 1;
+
 // Instruction.
 export function createAssociatedTokenIdempotent(
   context: Pick<Context, 'eddsa' | 'payer' | 'programs'>,

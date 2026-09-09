@@ -14,8 +14,6 @@ import {
   PublicKey,
   Signer,
   isPda,
-} from '@metaplex-foundation/umi';
-import {
   isOption,
   isSome,
   none,
@@ -242,37 +240,6 @@ export function remainderArray<T, U extends T = T>(
 }
 
 /**
- * Serializer that writes constant bytes before the item and
- * asserts and skips them when reading.
- * @internal
- */
-export function hiddenPrefix<T, U extends T = T>(
-  item: Serializer<T, U>,
-  prefixes: Uint8Array[]
-): Serializer<T, U> {
-  const prefix = mergeBytes(prefixes);
-  return {
-    description: `hiddenPrefix(${item.description})`,
-    fixedSize: item.fixedSize === null ? null : item.fixedSize + prefix.length,
-    maxSize: item.maxSize === null ? null : item.maxSize + prefix.length,
-    serialize: (value: T) => mergeBytes([prefix, item.serialize(value)]),
-    deserialize: (bytes: Uint8Array, offset = 0) => {
-      const matches =
-        bytes.length - offset >= prefix.length &&
-        prefix.every((byte, index) => bytes[offset + index] === byte);
-      if (!matches) {
-        throw new Error(
-          `hiddenPrefix expected the constant [${prefix.join(
-            ', '
-          )}] at offset ${offset}.`
-        );
-      }
-      return item.deserialize(bytes, offset + prefix.length);
-    },
-  };
-}
-
-/**
  * Serializer that frames the item with a byte-length prefix,
  * bounding reads to exactly that many bytes.
  * @internal
@@ -301,6 +268,37 @@ export function sizePrefix<T, U extends T = T>(
       }
       const [value] = item.deserialize(bytes.slice(contentOffset, contentEnd));
       return [value, contentEnd];
+    },
+  };
+}
+
+/**
+ * Serializer that writes constant bytes before the item and
+ * asserts and skips them when reading.
+ * @internal
+ */
+export function hiddenPrefix<T, U extends T = T>(
+  item: Serializer<T, U>,
+  prefixes: Uint8Array[]
+): Serializer<T, U> {
+  const prefix = mergeBytes(prefixes);
+  return {
+    description: `hiddenPrefix(${item.description})`,
+    fixedSize: item.fixedSize === null ? null : item.fixedSize + prefix.length,
+    maxSize: item.maxSize === null ? null : item.maxSize + prefix.length,
+    serialize: (value: T) => mergeBytes([prefix, item.serialize(value)]),
+    deserialize: (bytes: Uint8Array, offset = 0) => {
+      const matches =
+        bytes.length - offset >= prefix.length &&
+        prefix.every((byte, index) => bytes[offset + index] === byte);
+      if (!matches) {
+        throw new Error(
+          `hiddenPrefix expected the constant [${prefix.join(
+            ', '
+          )}] at offset ${offset}.`
+        );
+      }
+      return item.deserialize(bytes, offset + prefix.length);
     },
   };
 }

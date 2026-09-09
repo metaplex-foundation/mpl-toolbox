@@ -205,6 +205,9 @@ export function getConfidentialTransferWithFeeInstructionDataSerializer(): Seria
 export type ConfidentialTransferWithFeeInstructionArgs =
   ConfidentialTransferWithFeeInstructionDataArgs;
 
+// Instruction discriminator.
+export const confidentialTransferWithFeeInstructionDiscriminator = 27;
+
 // Instruction.
 export function confidentialTransferWithFee(
   context: Pick<Context, 'programs'>,

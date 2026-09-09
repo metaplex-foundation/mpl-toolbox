@@ -170,6 +170,9 @@ export function getConfidentialMintInstructionDataSerializer(): Serializer<
 export type ConfidentialMintInstructionArgs =
   ConfidentialMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const confidentialMintInstructionDiscriminator = 42;
+
 // Instruction.
 export function confidentialMint(
   context: Pick<Context, 'programs'>,

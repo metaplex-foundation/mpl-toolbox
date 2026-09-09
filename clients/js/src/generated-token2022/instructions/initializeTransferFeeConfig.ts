@@ -93,6 +93,9 @@ export function getInitializeTransferFeeConfigInstructionDataSerializer(): Seria
 export type InitializeTransferFeeConfigInstructionArgs =
   InitializeTransferFeeConfigInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeTransferFeeConfigInstructionDiscriminator = 26;
+
 // Instruction.
 export function initializeTransferFeeConfig(
   context: Pick<Context, 'programs'>,

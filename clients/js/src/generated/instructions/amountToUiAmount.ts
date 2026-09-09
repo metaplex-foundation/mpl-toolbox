@@ -66,6 +66,9 @@ export function getAmountToUiAmountInstructionDataSerializer(): Serializer<
 export type AmountToUiAmountInstructionArgs =
   AmountToUiAmountInstructionDataArgs;
 
+// Instruction discriminator.
+export const amountToUiAmountInstructionDiscriminator = 23;
+
 // Instruction.
 export function amountToUiAmount(
   context: Pick<Context, 'programs'>,

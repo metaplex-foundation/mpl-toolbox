@@ -87,6 +87,9 @@ export function getInitializeConfidentialMintBurnInstructionDataSerializer(): Se
 export type InitializeConfidentialMintBurnInstructionArgs =
   InitializeConfidentialMintBurnInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeConfidentialMintBurnInstructionDiscriminator = 42;
+
 // Instruction.
 export function initializeConfidentialMintBurn(
   context: Pick<Context, 'programs'>,

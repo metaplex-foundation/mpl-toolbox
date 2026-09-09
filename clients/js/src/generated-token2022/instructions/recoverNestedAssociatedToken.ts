@@ -74,6 +74,9 @@ export function getRecoverNestedAssociatedTokenInstructionDataSerializer(): Seri
   >;
 }
 
+// Instruction discriminator.
+export const recoverNestedAssociatedTokenInstructionDiscriminator = 2;
+
 // Instruction.
 export function recoverNestedAssociatedToken(
   context: Pick<Context, 'eddsa' | 'programs'>,

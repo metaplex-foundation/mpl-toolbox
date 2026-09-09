@@ -71,6 +71,9 @@ export function getInitializePermanentDelegateInstructionDataSerializer(): Seria
 export type InitializePermanentDelegateInstructionArgs =
   InitializePermanentDelegateInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializePermanentDelegateInstructionDiscriminator = 35;
+
 // Instruction.
 export function initializePermanentDelegate(
   context: Pick<Context, 'programs'>,

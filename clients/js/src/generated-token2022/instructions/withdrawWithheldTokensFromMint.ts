@@ -71,6 +71,9 @@ export function getWithdrawWithheldTokensFromMintInstructionDataSerializer(): Se
   >;
 }
 
+// Instruction discriminator.
+export const withdrawWithheldTokensFromMintInstructionDiscriminator = 26;
+
 // Instruction.
 export function withdrawWithheldTokensFromMint(
   context: Pick<Context, 'identity' | 'programs'>,

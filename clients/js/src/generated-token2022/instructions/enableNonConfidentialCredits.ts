@@ -69,6 +69,9 @@ export function getEnableNonConfidentialCreditsInstructionDataSerializer(): Seri
   >;
 }
 
+// Instruction discriminator.
+export const enableNonConfidentialCreditsInstructionDiscriminator = 27;
+
 // Instruction.
 export function enableNonConfidentialCredits(
   context: Pick<Context, 'programs'>,

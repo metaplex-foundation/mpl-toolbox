@@ -54,6 +54,9 @@ export function getCloseTokenInstructionDataSerializer(): Serializer<
   ) as Serializer<CloseTokenInstructionDataArgs, CloseTokenInstructionData>;
 }
 
+// Instruction discriminator.
+export const closeTokenInstructionDiscriminator = 9;
+
 // Instruction.
 export function closeToken(
   context: Pick<Context, 'programs'>,

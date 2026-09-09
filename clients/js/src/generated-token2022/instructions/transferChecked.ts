@@ -82,6 +82,9 @@ export function getTransferCheckedInstructionDataSerializer(): Serializer<
 // Args.
 export type TransferCheckedInstructionArgs = TransferCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const transferCheckedInstructionDiscriminator = 12;
+
 // Instruction.
 export function transferChecked(
   context: Pick<Context, 'identity' | 'programs'>,

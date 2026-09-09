@@ -111,6 +111,9 @@ export function getWithdrawWithheldTokensFromAccountsForConfidentialTransferFeeI
 export type WithdrawWithheldTokensFromAccountsForConfidentialTransferFeeInstructionArgs =
   WithdrawWithheldTokensFromAccountsForConfidentialTransferFeeInstructionDataArgs;
 
+// Instruction discriminator.
+export const withdrawWithheldTokensFromAccountsForConfidentialTransferFeeInstructionDiscriminator = 37;
+
 // Instruction.
 export function withdrawWithheldTokensFromAccountsForConfidentialTransferFee(
   context: Pick<Context, 'programs'>,

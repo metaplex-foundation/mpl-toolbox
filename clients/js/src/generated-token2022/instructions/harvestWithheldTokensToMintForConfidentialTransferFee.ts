@@ -69,6 +69,9 @@ export function getHarvestWithheldTokensToMintForConfidentialTransferFeeInstruct
   >;
 }
 
+// Instruction discriminator.
+export const harvestWithheldTokensToMintForConfidentialTransferFeeInstructionDiscriminator = 37;
+
 // Instruction.
 export function harvestWithheldTokensToMintForConfidentialTransferFee(
   context: Pick<Context, 'programs'>,

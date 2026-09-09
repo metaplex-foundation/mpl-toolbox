@@ -53,6 +53,9 @@ export function getFreezeLutInstructionDataSerializer(): Serializer<
   ) as Serializer<FreezeLutInstructionDataArgs, FreezeLutInstructionData>;
 }
 
+// Instruction discriminator.
+export const freezeLutInstructionDiscriminator = 1;
+
 // Instruction.
 export function freezeLut(
   context: Pick<Context, 'identity' | 'programs'>,

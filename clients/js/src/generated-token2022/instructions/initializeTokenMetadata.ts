@@ -87,6 +87,11 @@ export function getInitializeTokenMetadataInstructionDataSerializer(): Serialize
 export type InitializeTokenMetadataInstructionArgs =
   InitializeTokenMetadataInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeTokenMetadataInstructionDiscriminator = new Uint8Array([
+  210, 225, 30, 162, 88, 184, 77, 141,
+]);
+
 // Instruction.
 export function initializeTokenMetadata(
   context: Pick<Context, 'programs'>,

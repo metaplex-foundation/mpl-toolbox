@@ -62,6 +62,9 @@ export function getHarvestWithheldTokensToMintInstructionDataSerializer(): Seria
   >;
 }
 
+// Instruction discriminator.
+export const harvestWithheldTokensToMintInstructionDiscriminator = 26;
+
 // Instruction.
 export function harvestWithheldTokensToMint(
   context: Pick<Context, 'programs'>,

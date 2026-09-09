@@ -80,6 +80,9 @@ export function getConfigureConfidentialTransferAccountWithRegistryInstructionDa
   >;
 }
 
+// Instruction discriminator.
+export const configureConfidentialTransferAccountWithRegistryInstructionDiscriminator = 27;
+
 // Instruction.
 export function configureConfidentialTransferAccountWithRegistry(
   context: Pick<Context, 'programs'>,

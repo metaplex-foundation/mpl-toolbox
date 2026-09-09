@@ -80,6 +80,9 @@ export function getMintToCheckedInstructionDataSerializer(): Serializer<
 // Args.
 export type MintToCheckedInstructionArgs = MintToCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const mintToCheckedInstructionDiscriminator = 14;
+
 // Instruction.
 export function mintToChecked(
   context: Pick<Context, 'programs'>,

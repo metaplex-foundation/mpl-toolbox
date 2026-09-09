@@ -56,6 +56,9 @@ export function getDeactivateLutInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const deactivateLutInstructionDiscriminator = 3;
+
 // Instruction.
 export function deactivateLut(
   context: Pick<Context, 'identity' | 'programs'>,

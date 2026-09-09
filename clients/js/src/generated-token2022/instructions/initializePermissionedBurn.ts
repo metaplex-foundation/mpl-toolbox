@@ -77,6 +77,9 @@ export function getInitializePermissionedBurnInstructionDataSerializer(): Serial
 export type InitializePermissionedBurnInstructionArgs =
   InitializePermissionedBurnInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializePermissionedBurnInstructionDiscriminator = 46;
+
 // Instruction.
 export function initializePermissionedBurn(
   context: Pick<Context, 'programs'>,

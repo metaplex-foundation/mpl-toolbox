@@ -63,6 +63,9 @@ export function getSetComputeUnitPriceInstructionDataSerializer(): Serializer<
 export type SetComputeUnitPriceInstructionArgs =
   SetComputeUnitPriceInstructionDataArgs;
 
+// Instruction discriminator.
+export const setComputeUnitPriceInstructionDiscriminator = 3;
+
 // Instruction.
 export function setComputeUnitPrice(
   context: Pick<Context, 'programs'>,

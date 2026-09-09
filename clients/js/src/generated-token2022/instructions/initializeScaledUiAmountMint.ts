@@ -86,6 +86,9 @@ export function getInitializeScaledUiAmountMintInstructionDataSerializer(): Seri
 export type InitializeScaledUiAmountMintInstructionArgs =
   InitializeScaledUiAmountMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeScaledUiAmountMintInstructionDiscriminator = 43;
+
 // Instruction.
 export function initializeScaledUiAmountMint(
   context: Pick<Context, 'programs'>,

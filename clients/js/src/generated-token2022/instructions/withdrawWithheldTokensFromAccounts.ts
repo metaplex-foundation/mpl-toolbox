@@ -81,6 +81,9 @@ export function getWithdrawWithheldTokensFromAccountsInstructionDataSerializer()
 export type WithdrawWithheldTokensFromAccountsInstructionArgs =
   WithdrawWithheldTokensFromAccountsInstructionDataArgs;
 
+// Instruction discriminator.
+export const withdrawWithheldTokensFromAccountsInstructionDiscriminator = 26;
+
 // Instruction.
 export function withdrawWithheldTokensFromAccounts(
   context: Pick<Context, 'identity' | 'programs'>,

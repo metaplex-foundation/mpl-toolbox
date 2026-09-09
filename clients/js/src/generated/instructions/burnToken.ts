@@ -65,6 +65,9 @@ export function getBurnTokenInstructionDataSerializer(): Serializer<
 // Args.
 export type BurnTokenInstructionArgs = BurnTokenInstructionDataArgs;
 
+// Instruction discriminator.
+export const burnTokenInstructionDiscriminator = 8;
+
 // Instruction.
 export function burnToken(
   context: Pick<Context, 'identity' | 'programs'>,

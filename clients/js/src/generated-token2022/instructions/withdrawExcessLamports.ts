@@ -60,6 +60,9 @@ export function getWithdrawExcessLamportsInstructionDataSerializer(): Serializer
   >;
 }
 
+// Instruction discriminator.
+export const withdrawExcessLamportsInstructionDiscriminator = 38;
+
 // Instruction.
 export function withdrawExcessLamports(
   context: Pick<Context, 'programs'>,

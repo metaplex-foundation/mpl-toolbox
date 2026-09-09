@@ -161,6 +161,9 @@ export function getConfidentialTransferInstructionDataSerializer(): Serializer<
 export type ConfidentialTransferInstructionArgs =
   ConfidentialTransferInstructionDataArgs;
 
+// Instruction discriminator.
+export const confidentialTransferInstructionDiscriminator = 27;
+
 // Instruction.
 export function confidentialTransfer(
   context: Pick<Context, 'programs'>,

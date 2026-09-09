@@ -55,6 +55,9 @@ export function getSyncNativeInstructionDataSerializer(): Serializer<
   ) as Serializer<SyncNativeInstructionDataArgs, SyncNativeInstructionData>;
 }
 
+// Instruction discriminator.
+export const syncNativeInstructionDiscriminator = 17;
+
 // Instruction.
 export function syncNative(
   context: Pick<Context, 'programs'>,

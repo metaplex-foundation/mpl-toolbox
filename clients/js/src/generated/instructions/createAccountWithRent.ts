@@ -79,6 +79,9 @@ export function getCreateAccountWithRentInstructionDataSerializer(): Serializer<
 export type CreateAccountWithRentInstructionArgs =
   CreateAccountWithRentInstructionDataArgs;
 
+// Instruction discriminator.
+export const createAccountWithRentInstructionDiscriminator = 0;
+
 // Instruction.
 export function createAccountWithRent(
   context: Pick<Context, 'payer' | 'programs'>,

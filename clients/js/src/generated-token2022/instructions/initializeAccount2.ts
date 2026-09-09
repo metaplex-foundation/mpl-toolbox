@@ -76,6 +76,9 @@ export function getInitializeAccount2InstructionDataSerializer(): Serializer<
 export type InitializeAccount2InstructionArgs =
   InitializeAccount2InstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeAccount2InstructionDiscriminator = 16;
+
 // Instruction.
 export function initializeAccount2(
   context: Pick<Context, 'programs'>,

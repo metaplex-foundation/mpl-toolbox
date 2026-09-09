@@ -56,7 +56,7 @@ export function getUiAmountToAmountInstructionDataSerializer(): Serializer<
     struct<UiAmountToAmountInstructionData>(
       [
         ['discriminator', u8()],
-        ['uiAmount', string({ size: 'variable' })],
+        ['uiAmount', string()],
       ],
       { description: 'UiAmountToAmountInstructionData' }
     ),
@@ -70,6 +70,9 @@ export function getUiAmountToAmountInstructionDataSerializer(): Serializer<
 // Args.
 export type UiAmountToAmountInstructionArgs =
   UiAmountToAmountInstructionDataArgs;
+
+// Instruction discriminator.
+export const uiAmountToAmountInstructionDiscriminator = 24;
 
 // Instruction.
 export function uiAmountToAmount(

@@ -71,6 +71,9 @@ export function getApproveConfidentialTransferAccountInstructionDataSerializer()
   >;
 }
 
+// Instruction discriminator.
+export const approveConfidentialTransferAccountInstructionDiscriminator = 27;
+
 // Instruction.
 export function approveConfidentialTransferAccount(
   context: Pick<Context, 'programs'>,

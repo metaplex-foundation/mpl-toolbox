@@ -81,6 +81,9 @@ export function getInitializeDefaultAccountStateInstructionDataSerializer(): Ser
 export type InitializeDefaultAccountStateInstructionArgs =
   InitializeDefaultAccountStateInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeDefaultAccountStateInstructionDiscriminator = 28;
+
 // Instruction.
 export function initializeDefaultAccountState(
   context: Pick<Context, 'programs'>,

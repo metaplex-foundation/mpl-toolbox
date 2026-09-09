@@ -74,6 +74,9 @@ export function getMintTokensToCheckedInstructionDataSerializer(): Serializer<
 export type MintTokensToCheckedInstructionArgs =
   MintTokensToCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const mintTokensToCheckedInstructionDiscriminator = 14;
+
 // Instruction.
 export function mintTokensToChecked(
   context: Pick<Context, 'programs'>,

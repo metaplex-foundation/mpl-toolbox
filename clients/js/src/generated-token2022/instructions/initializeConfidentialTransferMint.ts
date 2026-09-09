@@ -103,6 +103,9 @@ export function getInitializeConfidentialTransferMintInstructionDataSerializer()
 export type InitializeConfidentialTransferMintInstructionArgs =
   InitializeConfidentialTransferMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeConfidentialTransferMintInstructionDiscriminator = 27;
+
 // Instruction.
 export function initializeConfidentialTransferMint(
   context: Pick<Context, 'programs'>,

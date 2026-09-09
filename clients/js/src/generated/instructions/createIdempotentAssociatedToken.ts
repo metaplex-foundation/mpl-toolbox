@@ -63,6 +63,9 @@ export function getCreateIdempotentAssociatedTokenInstructionDataSerializer(): S
   >;
 }
 
+// Instruction discriminator.
+export const createIdempotentAssociatedTokenInstructionDiscriminator = 1;
+
 // Instruction.
 export function createIdempotentAssociatedToken(
   context: Pick<Context, 'payer' | 'programs'>,

@@ -83,6 +83,9 @@ export function getUpdateGroupMemberPointerInstructionDataSerializer(): Serializ
 export type UpdateGroupMemberPointerInstructionArgs =
   UpdateGroupMemberPointerInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateGroupMemberPointerInstructionDiscriminator = 41;
+
 // Instruction.
 export function updateGroupMemberPointer(
   context: Pick<Context, 'programs'>,

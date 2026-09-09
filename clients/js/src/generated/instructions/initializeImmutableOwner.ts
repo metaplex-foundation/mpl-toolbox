@@ -54,6 +54,9 @@ export function getInitializeImmutableOwnerInstructionDataSerializer(): Serializ
   >;
 }
 
+// Instruction discriminator.
+export const initializeImmutableOwnerInstructionDiscriminator = 22;
+
 // Instruction.
 export function initializeImmutableOwner(
   context: Pick<Context, 'programs'>,

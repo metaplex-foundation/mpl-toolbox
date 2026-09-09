@@ -54,6 +54,9 @@ export function getCloseLutInstructionDataSerializer(): Serializer<
   ) as Serializer<CloseLutInstructionDataArgs, CloseLutInstructionData>;
 }
 
+// Instruction discriminator.
+export const closeLutInstructionDiscriminator = 4;
+
 // Instruction.
 export function closeLut(
   context: Pick<Context, 'identity' | 'programs'>,

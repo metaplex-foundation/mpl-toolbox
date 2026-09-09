@@ -54,6 +54,9 @@ export function getThawTokenInstructionDataSerializer(): Serializer<
   ) as Serializer<ThawTokenInstructionDataArgs, ThawTokenInstructionData>;
 }
 
+// Instruction discriminator.
+export const thawTokenInstructionDiscriminator = 11;
+
 // Instruction.
 export function thawToken(
   context: Pick<Context, 'programs'>,

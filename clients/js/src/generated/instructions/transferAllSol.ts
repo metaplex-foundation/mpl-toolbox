@@ -60,6 +60,9 @@ export function getTransferAllSolInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const transferAllSolInstructionDiscriminator = 1;
+
 // Instruction.
 export function transferAllSol(
   context: Pick<Context, 'identity' | 'programs'>,

@@ -55,6 +55,9 @@ export function getGetAccountDataSizeInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const getAccountDataSizeInstructionDiscriminator = 21;
+
 // Instruction.
 export function getAccountDataSize(
   context: Pick<Context, 'programs'>,

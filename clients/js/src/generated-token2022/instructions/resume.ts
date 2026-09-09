@@ -58,6 +58,9 @@ export function getResumeInstructionDataSerializer(): Serializer<
   ) as Serializer<ResumeInstructionDataArgs, ResumeInstructionData>;
 }
 
+// Instruction discriminator.
+export const resumeInstructionDiscriminator = 44;
+
 // Instruction.
 export function resume(
   context: Pick<Context, 'programs'>,

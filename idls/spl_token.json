@@ -681,6 +681,82 @@
         "type": "u8",
         "value": 24
       }
+    },
+    {
+      "name": "withdrawExcessLamports",
+      "accounts": [
+        {
+          "name": "source",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "destination",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 38
+      }
+    },
+    {
+      "name": "unwrapLamports",
+      "accounts": [
+        {
+          "name": "source",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "destination",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": {
+            "option": "u64"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 45
+      }
+    },
+    {
+      "name": "batchTokenInstructions",
+      "accounts": [],
+      "args": [
+        {
+          "name": "instructions",
+          "type": {
+            "vec": {
+              "defined": "BatchedTokenInstruction"
+            },
+            "size": "remainder"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 255
+      }
     }
   ],
   "accounts": [
@@ -825,6 +901,22 @@
           },
           {
             "name": "CloseAccount"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BatchedTokenInstruction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "numberOfAccounts",
+            "type": "u8"
+          },
+          {
+            "name": "instructionData",
+            "type": "bytes"
           }
         ]
       }

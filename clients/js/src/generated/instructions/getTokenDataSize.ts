@@ -54,6 +54,9 @@ export function getGetTokenDataSizeInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const getTokenDataSizeInstructionDiscriminator = 21;
+
 // Instruction.
 export function getTokenDataSize(
   context: Pick<Context, 'programs'>,

@@ -84,6 +84,11 @@ export function getEmitTokenMetadataInstructionDataSerializer(): Serializer<
 export type EmitTokenMetadataInstructionArgs =
   EmitTokenMetadataInstructionDataArgs;
 
+// Instruction discriminator.
+export const emitTokenMetadataInstructionDiscriminator = new Uint8Array([
+  250, 166, 180, 250, 13, 12, 184, 70,
+]);
+
 // Instruction.
 export function emitTokenMetadata(
   context: Pick<Context, 'programs'>,

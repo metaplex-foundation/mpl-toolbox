@@ -57,6 +57,9 @@ export function getThawAccountInstructionDataSerializer(): Serializer<
   ) as Serializer<ThawAccountInstructionDataArgs, ThawAccountInstructionData>;
 }
 
+// Instruction discriminator.
+export const thawAccountInstructionDiscriminator = 11;
+
 // Instruction.
 export function thawAccount(
   context: Pick<Context, 'programs'>,

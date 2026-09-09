@@ -88,6 +88,9 @@ export function getInitializeMint2InstructionDataSerializer(): Serializer<
 // Args.
 export type InitializeMint2InstructionArgs = InitializeMint2InstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeMint2InstructionDiscriminator = 20;
+
 // Instruction.
 export function initializeMint2(
   context: Pick<Context, 'programs'>,

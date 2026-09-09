@@ -88,6 +88,11 @@ export function getRemoveTokenMetadataKeyInstructionDataSerializer(): Serializer
 export type RemoveTokenMetadataKeyInstructionArgs =
   RemoveTokenMetadataKeyInstructionDataArgs;
 
+// Instruction discriminator.
+export const removeTokenMetadataKeyInstructionDiscriminator = new Uint8Array([
+  234, 18, 32, 56, 89, 141, 37, 181,
+]);
+
 // Instruction.
 export function removeTokenMetadataKey(
   context: Pick<Context, 'programs'>,

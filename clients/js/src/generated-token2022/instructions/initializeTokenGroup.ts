@@ -85,6 +85,11 @@ export function getInitializeTokenGroupInstructionDataSerializer(): Serializer<
 export type InitializeTokenGroupInstructionArgs =
   InitializeTokenGroupInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeTokenGroupInstructionDiscriminator = new Uint8Array([
+  121, 113, 108, 39, 54, 51, 0, 4,
+]);
+
 // Instruction.
 export function initializeTokenGroup(
   context: Pick<Context, 'programs'>,

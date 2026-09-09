@@ -68,6 +68,9 @@ export function getTransferTokensInstructionDataSerializer(): Serializer<
 // Args.
 export type TransferTokensInstructionArgs = TransferTokensInstructionDataArgs;
 
+// Instruction discriminator.
+export const transferTokensInstructionDiscriminator = 3;
+
 // Instruction.
 export function transferTokens(
   context: Pick<Context, 'identity' | 'programs'>,

@@ -65,6 +65,9 @@ export function getDisableMemoTransfersInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const disableMemoTransfersInstructionDiscriminator = 30;
+
 // Instruction.
 export function disableMemoTransfers(
   context: Pick<Context, 'programs'>,

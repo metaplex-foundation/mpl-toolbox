@@ -78,6 +78,9 @@ export function getUnwrapLamportsInstructionDataSerializer(): Serializer<
 // Args.
 export type UnwrapLamportsInstructionArgs = UnwrapLamportsInstructionDataArgs;
 
+// Instruction discriminator.
+export const unwrapLamportsInstructionDiscriminator = 45;
+
 // Instruction.
 export function unwrapLamports(
   context: Pick<Context, 'identity' | 'programs'>,

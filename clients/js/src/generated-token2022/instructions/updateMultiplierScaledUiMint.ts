@@ -86,6 +86,9 @@ export function getUpdateMultiplierScaledUiMintInstructionDataSerializer(): Seri
 export type UpdateMultiplierScaledUiMintInstructionArgs =
   UpdateMultiplierScaledUiMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateMultiplierScaledUiMintInstructionDiscriminator = 43;
+
 // Instruction.
 export function updateMultiplierScaledUiMint(
   context: Pick<Context, 'programs'>,

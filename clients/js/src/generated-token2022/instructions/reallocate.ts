@@ -83,6 +83,9 @@ export function getReallocateInstructionDataSerializer(): Serializer<
 // Args.
 export type ReallocateInstructionArgs = ReallocateInstructionDataArgs;
 
+// Instruction discriminator.
+export const reallocateInstructionDiscriminator = 29;
+
 // Instruction.
 export function reallocate(
   context: Pick<Context, 'programs'>,

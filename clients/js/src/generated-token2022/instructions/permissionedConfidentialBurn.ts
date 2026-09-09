@@ -172,6 +172,9 @@ export function getPermissionedConfidentialBurnInstructionDataSerializer(): Seri
 export type PermissionedConfidentialBurnInstructionArgs =
   PermissionedConfidentialBurnInstructionDataArgs;
 
+// Instruction discriminator.
+export const permissionedConfidentialBurnInstructionDiscriminator = 46;
+
 // Instruction.
 export function permissionedConfidentialBurn(
   context: Pick<Context, 'programs'>,

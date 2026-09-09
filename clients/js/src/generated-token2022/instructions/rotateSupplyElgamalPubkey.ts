@@ -107,6 +107,9 @@ export function getRotateSupplyElgamalPubkeyInstructionDataSerializer(): Seriali
 export type RotateSupplyElgamalPubkeyInstructionArgs =
   RotateSupplyElgamalPubkeyInstructionDataArgs;
 
+// Instruction discriminator.
+export const rotateSupplyElgamalPubkeyInstructionDiscriminator = 42;
+
 // Instruction.
 export function rotateSupplyElgamalPubkey(
   context: Pick<Context, 'programs'>,

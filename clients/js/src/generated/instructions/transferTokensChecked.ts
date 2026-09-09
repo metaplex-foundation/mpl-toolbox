@@ -75,6 +75,9 @@ export function getTransferTokensCheckedInstructionDataSerializer(): Serializer<
 export type TransferTokensCheckedInstructionArgs =
   TransferTokensCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const transferTokensCheckedInstructionDiscriminator = 12;
+
 // Instruction.
 export function transferTokensChecked(
   context: Pick<Context, 'identity' | 'programs'>,

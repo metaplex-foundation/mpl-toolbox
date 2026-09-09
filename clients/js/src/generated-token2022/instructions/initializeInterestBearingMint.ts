@@ -86,6 +86,9 @@ export function getInitializeInterestBearingMintInstructionDataSerializer(): Ser
 export type InitializeInterestBearingMintInstructionArgs =
   InitializeInterestBearingMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeInterestBearingMintInstructionDiscriminator = 33;
+
 // Instruction.
 export function initializeInterestBearingMint(
   context: Pick<Context, 'programs'>,

@@ -58,6 +58,9 @@ export function getPauseInstructionDataSerializer(): Serializer<
   ) as Serializer<PauseInstructionDataArgs, PauseInstructionData>;
 }
 
+// Instruction discriminator.
+export const pauseInstructionDiscriminator = 44;
+
 // Instruction.
 export function pause(
   context: Pick<Context, 'programs'>,

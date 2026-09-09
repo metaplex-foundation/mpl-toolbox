@@ -73,6 +73,9 @@ export function getCreateTokenIfMissingInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const createTokenIfMissingInstructionDiscriminator = 0;
+
 // Instruction.
 export function createTokenIfMissing(
   context: Pick<Context, 'eddsa' | 'identity' | 'payer' | 'programs'>,

@@ -78,6 +78,9 @@ export function getInitializeMintInstructionDataSerializer(): Serializer<
 // Args.
 export type InitializeMintInstructionArgs = InitializeMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeMintInstructionDiscriminator = 0;
+
 // Instruction.
 export function initializeMint(
   context: Pick<Context, 'programs'>,

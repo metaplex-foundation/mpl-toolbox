@@ -80,6 +80,9 @@ export function getUpdateRateInterestBearingMintInstructionDataSerializer(): Ser
 export type UpdateRateInterestBearingMintInstructionArgs =
   UpdateRateInterestBearingMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateRateInterestBearingMintInstructionDiscriminator = 33;
+
 // Instruction.
 export function updateRateInterestBearingMint(
   context: Pick<Context, 'programs'>,

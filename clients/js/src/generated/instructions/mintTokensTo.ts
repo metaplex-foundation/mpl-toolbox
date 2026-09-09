@@ -65,6 +65,9 @@ export function getMintTokensToInstructionDataSerializer(): Serializer<
 // Args.
 export type MintTokensToInstructionArgs = MintTokensToInstructionDataArgs;
 
+// Instruction discriminator.
+export const mintTokensToInstructionDiscriminator = 7;
+
 // Instruction.
 export function mintTokensTo(
   context: Pick<Context, 'identity' | 'programs'>,

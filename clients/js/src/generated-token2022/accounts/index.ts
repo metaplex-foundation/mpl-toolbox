@@ -10,3 +10,4 @@ export * from './mint';
 export * from './multisig';
 export * from './token';
 export * from './associatedToken';
+export * from './token2022Helpers';

@@ -69,6 +69,9 @@ export function getEnableConfidentialCreditsInstructionDataSerializer(): Seriali
   >;
 }
 
+// Instruction discriminator.
+export const enableConfidentialCreditsInstructionDiscriminator = 27;
+
 // Instruction.
 export function enableConfidentialCredits(
   context: Pick<Context, 'programs'>,

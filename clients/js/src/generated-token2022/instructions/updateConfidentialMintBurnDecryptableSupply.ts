@@ -87,6 +87,9 @@ export function getUpdateConfidentialMintBurnDecryptableSupplyInstructionDataSer
 export type UpdateConfidentialMintBurnDecryptableSupplyInstructionArgs =
   UpdateConfidentialMintBurnDecryptableSupplyInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateConfidentialMintBurnDecryptableSupplyInstructionDiscriminator = 42;
+
 // Instruction.
 export function updateConfidentialMintBurnDecryptableSupply(
   context: Pick<Context, 'programs'>,

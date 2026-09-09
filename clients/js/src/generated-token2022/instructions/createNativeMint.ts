@@ -61,6 +61,9 @@ export function getCreateNativeMintInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const createNativeMintInstructionDiscriminator = 31;
+
 // Instruction.
 export function createNativeMint(
   context: Pick<Context, 'programs'>,

@@ -81,6 +81,9 @@ export function getSetTransferFeeInstructionDataSerializer(): Serializer<
 // Args.
 export type SetTransferFeeInstructionArgs = SetTransferFeeInstructionDataArgs;
 
+// Instruction discriminator.
+export const setTransferFeeInstructionDiscriminator = 26;
+
 // Instruction.
 export function setTransferFee(
   context: Pick<Context, 'identity' | 'programs'>,

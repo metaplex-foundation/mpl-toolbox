@@ -95,6 +95,9 @@ export function getUpdateConfidentialTransferMintInstructionDataSerializer(): Se
 export type UpdateConfidentialTransferMintInstructionArgs =
   UpdateConfidentialTransferMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const updateConfidentialTransferMintInstructionDiscriminator = 27;
+
 // Instruction.
 export function updateConfidentialTransferMint(
   context: Pick<Context, 'programs'>,

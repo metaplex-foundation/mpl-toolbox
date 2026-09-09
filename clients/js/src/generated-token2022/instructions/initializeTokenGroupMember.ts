@@ -65,6 +65,10 @@ export function getInitializeTokenGroupMemberInstructionDataSerializer(): Serial
   >;
 }
 
+// Instruction discriminator.
+export const initializeTokenGroupMemberInstructionDiscriminator =
+  new Uint8Array([152, 32, 222, 176, 223, 237, 116, 134]);
+
 // Instruction.
 export function initializeTokenGroupMember(
   context: Pick<Context, 'programs'>,

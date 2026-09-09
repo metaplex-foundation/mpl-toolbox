@@ -82,6 +82,9 @@ export function getApproveCheckedInstructionDataSerializer(): Serializer<
 // Args.
 export type ApproveCheckedInstructionArgs = ApproveCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const approveCheckedInstructionDiscriminator = 13;
+
 // Instruction.
 export function approveChecked(
   context: Pick<Context, 'programs'>,

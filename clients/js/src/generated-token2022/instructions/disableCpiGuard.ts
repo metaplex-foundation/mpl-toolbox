@@ -65,6 +65,9 @@ export function getDisableCpiGuardInstructionDataSerializer(): Serializer<
   >;
 }
 
+// Instruction discriminator.
+export const disableCpiGuardInstructionDiscriminator = 34;
+
 // Instruction.
 export function disableCpiGuard(
   context: Pick<Context, 'programs'>,

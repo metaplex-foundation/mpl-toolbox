@@ -73,6 +73,9 @@ export function getInitializeMultisigInstructionDataSerializer(): Serializer<
 export type InitializeMultisigInstructionArgs =
   InitializeMultisigInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeMultisigInstructionDiscriminator = 2;
+
 // Instruction.
 export function initializeMultisig(
   context: Pick<Context, 'programs'>,

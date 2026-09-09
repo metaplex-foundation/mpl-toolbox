@@ -54,6 +54,9 @@ export function getFreezeTokenInstructionDataSerializer(): Serializer<
   ) as Serializer<FreezeTokenInstructionDataArgs, FreezeTokenInstructionData>;
 }
 
+// Instruction discriminator.
+export const freezeTokenInstructionDiscriminator = 10;
+
 // Instruction.
 export function freezeToken(
   context: Pick<Context, 'programs'>,

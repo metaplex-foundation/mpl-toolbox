@@ -69,6 +69,9 @@ export function getApplyConfidentialPendingBurnInstructionDataSerializer(): Seri
   >;
 }
 
+// Instruction discriminator.
+export const applyConfidentialPendingBurnInstructionDiscriminator = 42;
+
 // Instruction.
 export function applyConfidentialPendingBurn(
   context: Pick<Context, 'programs'>,

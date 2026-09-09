@@ -74,6 +74,9 @@ export function getInitializeMintCloseAuthorityInstructionDataSerializer(): Seri
 export type InitializeMintCloseAuthorityInstructionArgs =
   InitializeMintCloseAuthorityInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeMintCloseAuthorityInstructionDiscriminator = 25;
+
 // Instruction.
 export function initializeMintCloseAuthority(
   context: Pick<Context, 'programs'>,
