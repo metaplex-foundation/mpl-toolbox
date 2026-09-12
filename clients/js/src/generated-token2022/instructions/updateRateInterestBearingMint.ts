@@ -100,7 +100,7 @@ export function updateRateInterestBearingMint(
     mint: { index: 0, isWritable: true as boolean, value: input.mint ?? null },
     rateAuthority: {
       index: 1,
-      isWritable: true as boolean,
+      isWritable: false as boolean,
       value: input.rateAuthority ?? null,
     },
   } satisfies ResolvedAccountsWithIndices;

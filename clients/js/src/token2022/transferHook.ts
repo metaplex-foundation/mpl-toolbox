@@ -23,8 +23,14 @@ const EXTRA_ACCOUNT_METAS_SEED = new TextEncoder().encode(
 // discriminator and a 4-byte length precede the extra-account-meta list.
 const ACCOUNT_DATA_PREFIX_SIZE = 8 + 4;
 const ADDRESS_CONFIG_SIZE = 32;
+// A packed `ExtraAccountMeta` entry: 1 discriminator byte, a 32-byte address
+// config and two 1-byte bool flags (isSigner, isWritable).
+const EXTRA_ACCOUNT_META_SIZE = 1 + ADDRESS_CONFIG_SIZE + 2;
 // `ExtraAccountMeta` discriminator flagging a PDA derived off the hook program.
 const PROGRAM_PDA_DISCRIMINATOR = 1;
+// The default (all-zeros) public key, which a `TransferHook` extension uses to
+// mean "no hook program configured".
+const DEFAULT_PUBLIC_KEY = '11111111111111111111111111111111';
 // PDAs derived off a previously resolved account use `128 + accountIndex`.
 const ACCOUNT_PDA_DISCRIMINATOR_OFFSET = 128;
 // `spl-transfer-hook-interface:execute`, as `sha256(namespace)[0..8]`.
@@ -175,6 +181,19 @@ export function decodeExtraAccountMetas(data: Uint8Array): ExtraAccountMeta[] {
   let offset = ACCOUNT_DATA_PREFIX_SIZE;
   const [count, afterCount] = u32().deserialize(data, offset);
   offset = afterCount;
+  // `count` is attacker-controlled account data; make sure the buffer actually
+  // holds that many fixed-size entries before decoding, so a corrupt or
+  // truncated account fails clearly here rather than as an opaque error (e.g. a
+  // `NaN` index) deep inside seed resolution.
+  if (offset + count * EXTRA_ACCOUNT_META_SIZE > data.length) {
+    throw new Error(
+      `Invalid transfer hook validation account: header declares ${count} ` +
+        `extra-account-meta entries (${
+          count * EXTRA_ACCOUNT_META_SIZE
+        } bytes) ` +
+        `but only ${data.length - offset} bytes remain.`
+    );
+  }
   const metas: ExtraAccountMeta[] = [];
   for (let i = 0; i < count; i += 1) {
     const discriminator = data[offset];
@@ -415,7 +434,14 @@ export async function transferCheckedWithTransferHook(
   const transferHook = extensions.find(
     (extension) => extension.__kind === 'TransferHook'
   );
-  if (transferHook === undefined || transferHook.__kind !== 'TransferHook') {
+  // A `TransferHook` extension whose program is the default public key is a
+  // disabled hook (matching the on-chain SPL behavior): skip resolution and the
+  // wasted validation-account fetch, and just return the plain transfer.
+  if (
+    transferHook === undefined ||
+    transferHook.__kind !== 'TransferHook' ||
+    transferHook.programId === DEFAULT_PUBLIC_KEY
+  ) {
     return builder;
   }
 

@@ -138,14 +138,14 @@ nameToErrorMap.set(
   InvalidNumberOfRequiredSignersError
 );
 
-/** UninitializedState: State is unititialized */
+/** UninitializedState: State is uninitialized */
 export class UninitializedStateError extends ProgramError {
   override readonly name: string = 'UninitializedState';
 
   readonly code: number = 0x9; // 9
 
   constructor(program: Program, cause?: Error) {
-    super('State is unititialized', program, cause);
+    super('State is uninitialized', program, cause);
   }
 }
 codeToErrorMap.set(0x9, UninitializedStateError);

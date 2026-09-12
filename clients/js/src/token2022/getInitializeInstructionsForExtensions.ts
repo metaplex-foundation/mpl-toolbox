@@ -220,7 +220,13 @@ export function getPostInitializeInstructionsForMintExtensions(
     switch (extension.__kind) {
       case 'TokenMetadata': {
         const updateAuthority = toOption<PublicKey>(extension.updateAuthority);
-        if (isNone(updateAuthority)) break;
+        if (isNone(updateAuthority)) {
+          throw new Error(
+            'TokenMetadata extension requires an update authority: ' +
+              '`initializeTokenMetadata` needs one and the request would ' +
+              'otherwise be silently dropped.'
+          );
+        }
         builder = builder.add(
           initializeTokenMetadata(context, {
             metadata: mint,
@@ -245,6 +251,15 @@ export function getPostInitializeInstructionsForMintExtensions(
           })
         );
         break;
+      case 'TokenGroupMember':
+        // `initializeTokenGroupMember` needs the group account and a group
+        // update-authority signer, neither of which this mint-only API can
+        // supply. Fail loudly rather than silently dropping the request.
+        throw new Error(
+          'TokenGroupMember cannot be initialized by createMintWithExtensions: ' +
+            '`initializeTokenGroupMember` requires a group account and a group ' +
+            'update-authority signer. Initialize the group member separately.'
+        );
       default:
         break;
     }

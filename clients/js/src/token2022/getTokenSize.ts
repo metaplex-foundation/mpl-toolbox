@@ -7,6 +7,12 @@ import {
 } from '../generated-token2022';
 
 const TOKEN_BASE_SIZE = 165;
+// A `Multisig` account is 355 bytes. Token-2022 never lets an extension account
+// land on that exact length (it would be indistinguishable from a multisig), so
+// on-chain `try_calculate_account_len` pads such an account by the size of an
+// `ExtensionType` (a `u16`, i.e. 2 bytes). Mirror that here.
+const MULTISIG_LEN = 355;
+const EXTENSION_TYPE_SIZE = 2;
 
 /**
  * Returns the byte size of a Token-2022 token account, optionally including the
@@ -19,5 +25,6 @@ export function getTokenSize(extensions?: ExtensionArgs[]): number {
   const tlvSerializer = hiddenPrefix(remainderArray(getExtensionSerializer()), [
     u8().serialize(2),
   ]);
-  return TOKEN_BASE_SIZE + tlvSerializer.serialize(extensions).length;
+  const size = TOKEN_BASE_SIZE + tlvSerializer.serialize(extensions).length;
+  return size === MULTISIG_LEN ? size + EXTENSION_TYPE_SIZE : size;
 }
