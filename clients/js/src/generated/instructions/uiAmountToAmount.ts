@@ -66,6 +66,9 @@ export function getUiAmountToAmountInstructionDataSerializer(): Serializer<
 export type UiAmountToAmountInstructionArgs =
   UiAmountToAmountInstructionDataArgs;
 
+// Instruction discriminator.
+export const uiAmountToAmountInstructionDiscriminator = 24;
+
 // Instruction.
 export function uiAmountToAmount(
   context: Pick<Context, 'programs'>,
@@ -78,9 +81,9 @@ export function uiAmountToAmount(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    mint: { index: 0, isWritable: false, value: input.mint ?? null },
-  };
+  const resolvedAccounts = {
+    mint: { index: 0, isWritable: false as boolean, value: input.mint ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: UiAmountToAmountInstructionArgs = { ...input };

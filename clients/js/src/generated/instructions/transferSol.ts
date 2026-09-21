@@ -66,6 +66,9 @@ export function getTransferSolInstructionDataSerializer(): Serializer<
 // Args.
 export type TransferSolInstructionArgs = TransferSolInstructionDataArgs;
 
+// Instruction discriminator.
+export const transferSolInstructionDiscriminator = 2;
+
 // Instruction.
 export function transferSol(
   context: Pick<Context, 'identity' | 'programs'>,
@@ -78,14 +81,18 @@ export function transferSol(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    source: { index: 0, isWritable: true, value: input.source ?? null },
+  const resolvedAccounts = {
+    source: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.source ?? null,
+    },
     destination: {
       index: 1,
-      isWritable: true,
+      isWritable: true as boolean,
       value: input.destination ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: TransferSolInstructionArgs = { ...input };

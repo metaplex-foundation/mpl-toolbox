@@ -66,6 +66,9 @@ export function getInitializeMultisig2InstructionDataSerializer(): Serializer<
 export type InitializeMultisig2InstructionArgs =
   InitializeMultisig2InstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeMultisig2InstructionDiscriminator = 19;
+
 // Instruction.
 export function initializeMultisig2(
   context: Pick<Context, 'programs'>,
@@ -79,10 +82,18 @@ export function initializeMultisig2(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    multisig: { index: 0, isWritable: true, value: input.multisig ?? null },
-    signer: { index: 1, isWritable: false, value: input.signer ?? null },
-  };
+  const resolvedAccounts = {
+    multisig: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.multisig ?? null,
+    },
+    signer: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.signer ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: InitializeMultisig2InstructionArgs = { ...input };

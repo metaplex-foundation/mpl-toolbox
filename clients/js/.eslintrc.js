@@ -20,5 +20,10 @@ module.exports = {
     'no-param-reassign': 'off',
     'func-names': 'off',
   },
-  ignorePatterns: ['dist/**', '.eslintrc.js'],
+  ignorePatterns: [
+    'dist/**',
+    '.eslintrc.js',
+    'src/generated/**',
+    'src/generated-token2022/**',
+  ],
 };

@@ -63,6 +63,9 @@ export function getSetComputeUnitPriceInstructionDataSerializer(): Serializer<
 export type SetComputeUnitPriceInstructionArgs =
   SetComputeUnitPriceInstructionDataArgs;
 
+// Instruction discriminator.
+export const setComputeUnitPriceInstructionDiscriminator = 3;
+
 // Instruction.
 export function setComputeUnitPrice(
   context: Pick<Context, 'programs'>,
@@ -75,15 +78,15 @@ export function setComputeUnitPrice(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {};
+  const resolvedAccounts = {} satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: SetComputeUnitPriceInstructionArgs = { ...input };
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(
-    resolvedAccounts
-  ).sort((a, b) => a.index - b.index);
+    resolvedAccounts as ResolvedAccountsWithIndices
+  );
 
   // Keys and Signers.
   const [keys, signers] = getAccountMetasAndSigners(

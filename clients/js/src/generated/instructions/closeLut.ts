@@ -54,6 +54,9 @@ export function getCloseLutInstructionDataSerializer(): Serializer<
   ) as Serializer<CloseLutInstructionDataArgs, CloseLutInstructionData>;
 }
 
+// Instruction discriminator.
+export const closeLutInstructionDiscriminator = 4;
+
 // Instruction.
 export function closeLut(
   context: Pick<Context, 'identity' | 'programs'>,
@@ -66,11 +69,23 @@ export function closeLut(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    address: { index: 0, isWritable: true, value: input.address ?? null },
-    authority: { index: 1, isWritable: false, value: input.authority ?? null },
-    recipient: { index: 2, isWritable: true, value: input.recipient ?? null },
-  };
+  const resolvedAccounts = {
+    address: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.address ?? null,
+    },
+    authority: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.authority ?? null,
+    },
+    recipient: {
+      index: 2,
+      isWritable: true as boolean,
+      value: input.recipient ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Default values.
   if (!resolvedAccounts.authority.value) {

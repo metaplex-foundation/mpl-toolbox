@@ -17,7 +17,7 @@ const nameToErrorMap: Map<string, ProgramErrorConstructor> = new Map();
 
 /** InvalidOwner: Associated token account owner does not match address derivation */
 export class AtaInvalidOwnerError extends ProgramError {
-  readonly name: string = 'InvalidOwner';
+  override readonly name: string = 'InvalidOwner';
 
   readonly code: number = 0x0; // 0
 

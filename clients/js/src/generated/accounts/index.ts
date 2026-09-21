@@ -10,3 +10,5 @@ export * from './addressLookupTable';
 export * from './mint';
 export * from './multisig';
 export * from './token';
+export * from './splTokenHelpers';
+export * from './splAddressLookupTableHelpers';

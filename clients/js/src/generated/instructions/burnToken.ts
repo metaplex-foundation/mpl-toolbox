@@ -65,6 +65,9 @@ export function getBurnTokenInstructionDataSerializer(): Serializer<
 // Args.
 export type BurnTokenInstructionArgs = BurnTokenInstructionDataArgs;
 
+// Instruction discriminator.
+export const burnTokenInstructionDiscriminator = 8;
+
 // Instruction.
 export function burnToken(
   context: Pick<Context, 'identity' | 'programs'>,
@@ -77,11 +80,19 @@ export function burnToken(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
-    mint: { index: 1, isWritable: true, value: input.mint ?? null },
-    authority: { index: 2, isWritable: false, value: input.authority ?? null },
-  };
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
+    mint: { index: 1, isWritable: true as boolean, value: input.mint ?? null },
+    authority: {
+      index: 2,
+      isWritable: false as boolean,
+      value: input.authority ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: BurnTokenInstructionArgs = { ...input };

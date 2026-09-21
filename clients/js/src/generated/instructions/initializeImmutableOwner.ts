@@ -54,6 +54,9 @@ export function getInitializeImmutableOwnerInstructionDataSerializer(): Serializ
   >;
 }
 
+// Instruction discriminator.
+export const initializeImmutableOwnerInstructionDiscriminator = 22;
+
 // Instruction.
 export function initializeImmutableOwner(
   context: Pick<Context, 'programs'>,
@@ -66,9 +69,13 @@ export function initializeImmutableOwner(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
-  };
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(

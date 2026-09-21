@@ -46,22 +46,30 @@ export function createAssociatedToken(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    payer: { index: 0, isWritable: true, value: input.payer ?? null },
-    ata: { index: 1, isWritable: true, value: input.ata ?? null },
-    owner: { index: 2, isWritable: false, value: input.owner ?? null },
-    mint: { index: 3, isWritable: false, value: input.mint ?? null },
+  const resolvedAccounts = {
+    payer: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.payer ?? null,
+    },
+    ata: { index: 1, isWritable: true as boolean, value: input.ata ?? null },
+    owner: {
+      index: 2,
+      isWritable: false as boolean,
+      value: input.owner ?? null,
+    },
+    mint: { index: 3, isWritable: false as boolean, value: input.mint ?? null },
     systemProgram: {
       index: 4,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.systemProgram ?? null,
     },
     tokenProgram: {
       index: 5,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.tokenProgram ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Default values.
   if (!resolvedAccounts.payer.value) {

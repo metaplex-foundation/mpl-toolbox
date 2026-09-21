@@ -74,6 +74,9 @@ export function getBurnTokenCheckedInstructionDataSerializer(): Serializer<
 export type BurnTokenCheckedInstructionArgs =
   BurnTokenCheckedInstructionDataArgs;
 
+// Instruction discriminator.
+export const burnTokenCheckedInstructionDiscriminator = 15;
+
 // Instruction.
 export function burnTokenChecked(
   context: Pick<Context, 'identity' | 'programs'>,
@@ -86,11 +89,19 @@ export function burnTokenChecked(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    account: { index: 0, isWritable: true, value: input.account ?? null },
-    mint: { index: 1, isWritable: true, value: input.mint ?? null },
-    authority: { index: 2, isWritable: false, value: input.authority ?? null },
-  };
+  const resolvedAccounts = {
+    account: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.account ?? null,
+    },
+    mint: { index: 1, isWritable: true as boolean, value: input.mint ?? null },
+    authority: {
+      index: 2,
+      isWritable: false as boolean,
+      value: input.authority ?? null,
+    },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: BurnTokenCheckedInstructionArgs = { ...input };

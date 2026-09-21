@@ -65,6 +65,9 @@ export function getMintTokensToInstructionDataSerializer(): Serializer<
 // Args.
 export type MintTokensToInstructionArgs = MintTokensToInstructionDataArgs;
 
+// Instruction discriminator.
+export const mintTokensToInstructionDiscriminator = 7;
+
 // Instruction.
 export function mintTokensTo(
   context: Pick<Context, 'identity' | 'programs'>,
@@ -77,15 +80,19 @@ export function mintTokensTo(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    mint: { index: 0, isWritable: true, value: input.mint ?? null },
-    token: { index: 1, isWritable: true, value: input.token ?? null },
+  const resolvedAccounts = {
+    mint: { index: 0, isWritable: true as boolean, value: input.mint ?? null },
+    token: {
+      index: 1,
+      isWritable: true as boolean,
+      value: input.token ?? null,
+    },
     mintAuthority: {
       index: 2,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.mintAuthority ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: MintTokensToInstructionArgs = { ...input };

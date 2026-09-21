@@ -84,6 +84,9 @@ export type CreateEmptyLutInstructionArgs = PickPartial<
   'bump'
 >;
 
+// Instruction discriminator.
+export const createEmptyLutInstructionDiscriminator = 0;
+
 // Instruction.
 export function createEmptyLut(
   context: Pick<Context, 'eddsa' | 'identity' | 'payer' | 'programs'>,
@@ -96,16 +99,28 @@ export function createEmptyLut(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    address: { index: 0, isWritable: true, value: input.address ?? null },
-    authority: { index: 1, isWritable: false, value: input.authority ?? null },
-    payer: { index: 2, isWritable: true, value: input.payer ?? null },
+  const resolvedAccounts = {
+    address: {
+      index: 0,
+      isWritable: true as boolean,
+      value: input.address ?? null,
+    },
+    authority: {
+      index: 1,
+      isWritable: false as boolean,
+      value: input.authority ?? null,
+    },
+    payer: {
+      index: 2,
+      isWritable: true as boolean,
+      value: input.payer ?? null,
+    },
     systemProgram: {
       index: 3,
-      isWritable: false,
+      isWritable: false as boolean,
       value: input.systemProgram ?? null,
     },
-  };
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: CreateEmptyLutInstructionArgs = { ...input };

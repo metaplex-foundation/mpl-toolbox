@@ -78,6 +78,9 @@ export function getInitializeMintInstructionDataSerializer(): Serializer<
 // Args.
 export type InitializeMintInstructionArgs = InitializeMintInstructionDataArgs;
 
+// Instruction discriminator.
+export const initializeMintInstructionDiscriminator = 0;
+
 // Instruction.
 export function initializeMint(
   context: Pick<Context, 'programs'>,
@@ -90,10 +93,10 @@ export function initializeMint(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {
-    mint: { index: 0, isWritable: true, value: input.mint ?? null },
-    rent: { index: 1, isWritable: false, value: input.rent ?? null },
-  };
+  const resolvedAccounts = {
+    mint: { index: 0, isWritable: true as boolean, value: input.mint ?? null },
+    rent: { index: 1, isWritable: false as boolean, value: input.rent ?? null },
+  } satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
   const resolvedArgs: InitializeMintInstructionArgs = { ...input };

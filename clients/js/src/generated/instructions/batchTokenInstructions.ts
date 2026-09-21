@@ -12,23 +12,70 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import {
-  BatchTokenInstructionsInstructionDataArgs,
-  getBatchTokenInstructionsInstructionDataSerializer,
-} from '../../hooked';
+  Serializer,
+  mapSerializer,
+  struct,
+  u8,
+} from '@metaplex-foundation/umi/serializers';
 import {
   ResolvedAccount,
   ResolvedAccountsWithIndices,
   getAccountMetasAndSigners,
+  remainderArray,
 } from '../shared';
+import {
+  BatchedTokenInstruction,
+  BatchedTokenInstructionArgs,
+  getBatchedTokenInstructionSerializer,
+} from '../types';
+
+// Data.
+export type BatchTokenInstructionsInstructionData = {
+  discriminator: number;
+  instructions: Array<BatchedTokenInstruction>;
+};
+
+export type BatchTokenInstructionsInstructionDataArgs = {
+  instructions: Array<BatchedTokenInstructionArgs>;
+};
+
+export function getBatchTokenInstructionsInstructionDataSerializer(): Serializer<
+  BatchTokenInstructionsInstructionDataArgs,
+  BatchTokenInstructionsInstructionData
+> {
+  return mapSerializer<
+    BatchTokenInstructionsInstructionDataArgs,
+    any,
+    BatchTokenInstructionsInstructionData
+  >(
+    struct<BatchTokenInstructionsInstructionData>(
+      [
+        ['discriminator', u8()],
+        [
+          'instructions',
+          remainderArray(getBatchedTokenInstructionSerializer()),
+        ],
+      ],
+      { description: 'BatchTokenInstructionsInstructionData' }
+    ),
+    (value) => ({ ...value, discriminator: 255 })
+  ) as Serializer<
+    BatchTokenInstructionsInstructionDataArgs,
+    BatchTokenInstructionsInstructionData
+  >;
+}
 
 // Args.
 export type BatchTokenInstructionsInstructionArgs =
   BatchTokenInstructionsInstructionDataArgs;
 
+// Instruction discriminator.
+export const batchTokenInstructionsInstructionDiscriminator = 255;
+
 // Instruction.
 export function batchTokenInstructions(
   context: Pick<Context, 'programs'>,
-  args: BatchTokenInstructionsInstructionArgs
+  input: BatchTokenInstructionsInstructionArgs
 ): TransactionBuilder {
   // Program ID.
   const programId = context.programs.getPublicKey(
@@ -37,15 +84,15 @@ export function batchTokenInstructions(
   );
 
   // Accounts.
-  const resolvedAccounts: ResolvedAccountsWithIndices = {};
+  const resolvedAccounts = {} satisfies ResolvedAccountsWithIndices;
 
   // Arguments.
-  const resolvedArgs: BatchTokenInstructionsInstructionArgs = { ...args };
+  const resolvedArgs: BatchTokenInstructionsInstructionArgs = { ...input };
 
   // Accounts in order.
   const orderedAccounts: ResolvedAccount[] = Object.values(
-    resolvedAccounts
-  ).sort((a, b) => a.index - b.index);
+    resolvedAccounts as ResolvedAccountsWithIndices
+  );
 
   // Keys and Signers.
   const [keys, signers] = getAccountMetasAndSigners(
