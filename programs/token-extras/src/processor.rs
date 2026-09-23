@@ -1,4 +1,5 @@
 use crate::error::TokenExtrasError;
+use crate::ParsedTokenFields;
 use borsh::BorshDeserialize;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -8,7 +9,7 @@ use solana_program::{
     pubkey::Pubkey,
     system_program,
 };
-use spl_associated_token_account::get_associated_token_address;
+use spl_associated_token_account::get_associated_token_address_with_program_id;
 
 use crate::instruction::TokenExtrasInstruction;
 
@@ -39,13 +40,15 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     let system_program = next_account_info(account_info_iter)?;
     let token_program = next_account_info(account_info_iter)?;
     let ata_program = next_account_info(account_info_iter)?;
-    let computed_ata = get_associated_token_address(owner.key, mint.key);
+
+    let computed_ata =
+        get_associated_token_address_with_program_id(owner.key, mint.key, token_program.key);
 
     // Guards.
     if *system_program.key != system_program::id() {
         return Err(TokenExtrasError::InvalidSystemProgram.into());
     }
-    if *token_program.key != spl_token::id() {
+    if !(*token_program.key == spl_token::id() || *token_program.key == spl_token_2022::id()) {
         return Err(TokenExtrasError::InvalidTokenProgram.into());
     }
     if *ata_program.key != spl_associated_token_account::id() {
@@ -56,7 +59,23 @@ fn create_token_if_missing(accounts: &[AccountInfo]) -> ProgramResult {
     }
 
     if !token.data_is_empty() {
-        let parsed_token = spl_token::state::Account::unpack(&token.data.borrow())?;
+        let parsed_token = if *token_program.key == spl_token::id() {
+            let token_data = &token.data.borrow();
+            let token_acc = spl_token::state::Account::unpack(token_data)?;
+            ParsedTokenFields {
+                mint: token_acc.mint,
+                owner: token_acc.owner,
+            }
+        } else {
+            let token_data = &token.data.borrow();
+            let token_acc = spl_token_2022::extension::StateWithExtensions::<
+                spl_token_2022::state::Account,
+            >::unpack(token_data)?;
+            ParsedTokenFields {
+                mint: token_acc.base.mint,
+                owner: token_acc.base.owner,
+            }
+        };
         if *token.owner != *token_program.key {
             return Err(TokenExtrasError::InvalidProgramOwner.into());
         }

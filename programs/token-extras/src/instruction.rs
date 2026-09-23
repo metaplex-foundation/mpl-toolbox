@@ -42,6 +42,7 @@ pub fn create_token_if_missing_instruction(
     mint: &Pubkey,
     owner: &Pubkey,
     ata: &Pubkey,
+    token_program: &Pubkey,
 ) -> Instruction {
     Instruction {
         program_id: crate::ID,
@@ -52,7 +53,7 @@ pub fn create_token_if_missing_instruction(
             AccountMeta::new_readonly(*owner, false),
             AccountMeta::new(*ata, false),
             AccountMeta::new_readonly(system_program::id(), false),
-            AccountMeta::new_readonly(spl_token::id(), false),
+            AccountMeta::new_readonly(*token_program, false),
             AccountMeta::new_readonly(spl_associated_token_account::id(), false),
         ],
         data: TokenExtrasInstruction::CreateTokenIfMissing
