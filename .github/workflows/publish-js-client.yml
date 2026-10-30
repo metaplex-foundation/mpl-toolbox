@@ -37,7 +37,7 @@ jobs:
     name: Check tag
     runs-on: ubuntu-latest
     permissions:
-      # Confirms the release tag exists and resolves the ref to a commit.
+      # Resolves the ref to a commit.
       contents: read
     outputs:
       type: ${{ steps.set_type.outputs.type }}
@@ -49,22 +49,10 @@ jobs:
           GIT_REF: ${{ inputs.git_ref }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # A program release tag was already built and tested when it was cut.
-          case "$GIT_REF" in
-            release/system-extras@*|release/token-extras@*) TYPE=release ;;
-            release/*@*) echo "::error::'$GIT_REF' is not a release tag of this repository (expected release/system-extras@<version>, release/token-extras@<version>)"; exit 1 ;;
-            *) TYPE=ref ;;
-          esac
-          if [ "$TYPE" = release ]; then
-            # Only an existing tag skips build and test; a branch named like one does not.
-            OBJ="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${GIT_REF}" --jq '.object.type + " " + .object.sha')" \
-              || { echo "::error::'$GIT_REF' is not an existing tag of this repository"; exit 1; }
-            read -r OBJ_TYPE SHA <<< "$OBJ"
-            if [ "$OBJ_TYPE" = tag ]; then
-              # Annotated tag: follow it to the commit.
-              SHA="$(gh api "repos/${GITHUB_REPOSITORY}/git/tags/${SHA}" --jq .object.sha)"
-            fi
-          elif [ -z "$GIT_REF" ]; then
+          # This repository cuts no program releases, so no tag has been
+          # tested by CI: every ref is built and tested before publishing.
+          TYPE=ref
+          if [ -z "$GIT_REF" ]; then
             SHA="$GITHUB_SHA"
           else
             SHA="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GIT_REF}" --jq .sha)" \
@@ -78,7 +66,7 @@ jobs:
     name: Programs
     if: needs.check_tag.outputs.type == 'ref'
     needs: check_tag
-    uses: metaplex-foundation/actions/.github/workflows/build-programs.yml@782403d54939dc66861d8d7c036d6a313d5da37d # v2.0.0
+    uses: metaplex-foundation/actions/.github/workflows/build-programs.yml@759f332a0e956a796b6823d81ede32f76f71853d # v2.0.0
     permissions:
       contents: read
     with:
@@ -88,7 +76,7 @@ jobs:
     name: JS client
     if: needs.check_tag.outputs.type == 'ref'
     needs: [check_tag, build_programs]
-    uses: metaplex-foundation/actions/.github/workflows/test-js-client.yml@782403d54939dc66861d8d7c036d6a313d5da37d # v2.0.0
+    uses: metaplex-foundation/actions/.github/workflows/test-js-client.yml@759f332a0e956a796b6823d81ede32f76f71853d # v2.0.0
     permissions:
       contents: read
     with:
@@ -104,7 +92,7 @@ jobs:
           || (needs.build_programs.result == 'success'
           && needs.test_js.result == 'success'))
     needs: [check_tag, build_programs, test_js]
-    uses: metaplex-foundation/actions/.github/workflows/publish-js-client.yml@782403d54939dc66861d8d7c036d6a313d5da37d # v2.0.0
+    uses: metaplex-foundation/actions/.github/workflows/publish-js-client.yml@759f332a0e956a796b6823d81ede32f76f71853d # v2.0.0
     permissions:
       contents: write
       pull-requests: write
