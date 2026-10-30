@@ -1,0 +1,17 @@
+{
+  "$comment": "Program descriptors for the shared CI in metaplex-foundation/actions. Toolchain pins live in .github/.env.",
+  "programs": [
+    {
+      "name": "system-extras",
+      "package": "mpl-system-extras",
+      "library": "mpl_system_extras",
+      "build": "sbf"
+    },
+    {
+      "name": "token-extras",
+      "package": "mpl-token-extras",
+      "library": "mpl_token_extras",
+      "build": "sbf"
+    }
+  ]
+}
