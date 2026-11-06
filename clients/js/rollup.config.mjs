@@ -7,7 +7,7 @@
 // Run after `tsc -p tsconfig.json`, which emits the per-file declarations
 // into dist/types that the declaration bundle starts from.
 //
-// Tests (test/tsconfig.json) import the package by name: Node resolves that
+// Tests (tsconfig.test.json) import the package by name: Node resolves that
 // to dist/cjs through the package's own `exports`, so the suite runs against
 // the published output, and `paths` type-checks it against dist/types.
 import { readFileSync } from 'node:fs';

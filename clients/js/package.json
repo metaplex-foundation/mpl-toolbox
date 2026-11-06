@@ -20,7 +20,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "rimraf dist && tsc -p tsconfig.json && rollup -c && tsc -p test/tsconfig.json",
+    "build": "rimraf dist && tsc -p tsconfig.json && rollup -c && tsc -p tsconfig.test.json",
     "build:docs": "typedoc",
     "test": "ava",
     "lint": "eslint --ext js,ts,tsx src",
