@@ -1,6 +1,6 @@
 import { generateSigner } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { getTokenGpaBuilder } from '../src';
+import { getTokenGpaBuilder } from '@metaplex-foundation/mpl-toolbox';
 import { createUmi, createMint, createToken } from './_setup';
 
 test('it can fetch token accounts by owner', async (t) => {

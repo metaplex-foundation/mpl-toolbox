@@ -14,7 +14,7 @@ import {
   extendLut,
   fetchAddressLookupTable,
   findAddressLookupTablePda,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can add addresses to an empty LUT', async (t) => {

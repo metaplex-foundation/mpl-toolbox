@@ -13,7 +13,7 @@ import {
   findAddressLookupTablePda,
   findAssociatedTokenPda,
   transferSol,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it generates LUT builders for a given transaction builder', async (t) => {

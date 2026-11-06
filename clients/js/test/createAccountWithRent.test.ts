@@ -7,7 +7,7 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { createAccountWithRent } from '../src';
+import { createAccountWithRent } from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can create new accounts at the current rent-exemption price', async (t) => {

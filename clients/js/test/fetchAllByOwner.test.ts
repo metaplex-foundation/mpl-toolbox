@@ -5,7 +5,7 @@ import {
   fetchAllMintPublicKeyByOwner,
   fetchAllTokenByOwner,
   fetchAllTokenByOwnerAndMint,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import {
   createUmi,
   createMint,

@@ -12,7 +12,7 @@ import {
   fetchAddressLookupTable,
   findAddressLookupTablePda,
   freezeLut,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can freeze a LUT', async (t) => {

@@ -16,7 +16,7 @@ import {
 } from '@metaplex-foundation/umi/serializers';
 import { fetchMint, transferChecked } from '../generated-token2022';
 
-const EXTRA_ACCOUNT_METAS_SEED = new TextEncoder().encode(
+const EXTRA_ACCOUNT_METAS_SEED = /* #__PURE__ */ new TextEncoder().encode(
   'extra-account-metas'
 );
 // A transfer hook validation account is a TLV account: an 8-byte type

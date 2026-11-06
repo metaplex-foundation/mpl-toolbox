@@ -6,7 +6,7 @@ import {
   getBatchTokenInstructionsInstructionDataSerializer,
   SPL_TOKEN_PROGRAM_ID,
   transferTokens,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createOfflineUmi } from './_setup';
 
 test('it builds a batch of token instructions', (t) => {

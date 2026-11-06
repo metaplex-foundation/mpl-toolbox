@@ -7,7 +7,7 @@ import {
 } from '@metaplex-foundation/umi';
 import { base64 } from '@metaplex-foundation/umi/serializers';
 import test from 'ava';
-import { token2022 } from '../src';
+import { token2022 } from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 // A real Token-2022 mint created on a local validator with the metadata-pointer,

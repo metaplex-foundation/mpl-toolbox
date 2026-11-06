@@ -22,7 +22,7 @@ import {
   TokExInvalidTokenMintError,
   TokExInvalidTokenOwnerError,
   TokExInvalidTokenProgramError,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createMint, createUmi } from './_setup';
 
 test('it creates a new associated token if missing', async (t) => {

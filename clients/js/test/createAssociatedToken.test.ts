@@ -13,7 +13,7 @@ import {
   getTokenSize,
   Token,
   TokenState,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can create new associated token accounts with minimum configuration', async (t) => {

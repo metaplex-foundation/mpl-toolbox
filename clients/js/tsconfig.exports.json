@@ -1,0 +1,31 @@
+{
+  // Type-checks test/exports/*.mts and *.cts as a consumer would: with
+  // node16 resolution, @metaplex-foundation/mpl-toolbox resolves through
+  // package.json `exports` (index.d.mts for import, index.d.ts for require).
+  //
+  // Only umi is mapped. umi 0.8.x (the dev dependency) has no `types`
+  // condition in its `exports`, so node16 resolution cannot type it; these
+  // paths point at its declaration files directly (umi's own sub-packages
+  // via pnpm's hoisted node_modules/.pnpm/node_modules).
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": false,
+    "types": [],
+    "paths": {
+      "@metaplex-foundation/umi": [
+        "./node_modules/@metaplex-foundation/umi/dist/types/index.d.ts"
+      ],
+      "@metaplex-foundation/umi/serializers": [
+        "./node_modules/@metaplex-foundation/umi/dist/types/serializers.d.ts"
+      ],
+      "@metaplex-foundation/umi-*": [
+        "./node_modules/.pnpm/node_modules/@metaplex-foundation/umi-*/dist/types/index.d.ts"
+      ]
+    }
+  },
+  "include": ["test/exports"]
+}

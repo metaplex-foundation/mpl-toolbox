@@ -7,7 +7,12 @@ import {
   subtractAmounts,
 } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { createMint, fetchMint, getMintSize, Mint } from '../src';
+import {
+  createMint,
+  fetchMint,
+  getMintSize,
+  Mint,
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can create new mint accounts with minimum configuration', async (t) => {

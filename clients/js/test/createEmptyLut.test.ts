@@ -10,7 +10,7 @@ import {
   createEmptyLut,
   fetchAddressLookupTable,
   findAddressLookupTablePda,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can create a new empty LUT with minimum configuration', async (t) => {

@@ -17,7 +17,7 @@ import {
   createToken as baseCreateToken,
   mintTokensTo,
   mplToolbox,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 
 export const createUmi = async () => (await basecreateUmi()).use(mplToolbox());
 

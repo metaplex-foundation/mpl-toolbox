@@ -1,6 +1,11 @@
 import { generateSigner, transactionBuilder } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { createMint, createToken, fetchToken, mintTokensTo } from '../src';
+import {
+  createMint,
+  createToken,
+  fetchToken,
+  mintTokensTo,
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can mint tokens to an existing token account', async (t) => {

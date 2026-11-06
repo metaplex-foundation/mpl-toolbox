@@ -4,7 +4,7 @@ import {
   getUnwrapLamportsInstructionDataSerializer,
   SPL_TOKEN_PROGRAM_ID,
   unwrapLamports,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createOfflineUmi } from './_setup';
 
 test('it builds an unwrap lamports instruction with an amount', (t) => {
