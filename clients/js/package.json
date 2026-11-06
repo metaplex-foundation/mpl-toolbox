@@ -22,7 +22,7 @@
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.json && rollup -c && tsc -p tsconfig.test.json",
     "build:docs": "typedoc",
-    "test": "ava",
+    "test": "tsc -p tsconfig.exports.json && ava",
     "lint": "eslint --ext js,ts,tsx src",
     "lint:fix": "eslint --fix --ext js,ts,tsx src",
     "format": "prettier --check src test",

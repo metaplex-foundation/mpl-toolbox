@@ -8,8 +8,15 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@metaplex-foundation/mpl-toolbox": ["./dist/types/index.d.ts"]
+      "@metaplex-foundation/mpl-toolbox": [
+        "./dist/types/index.d.ts"
+      ]
     }
   },
-  "include": ["test"]
+  "include": [
+    "test"
+  ],
+  "exclude": [
+    "test/exports"
+  ]
 }
