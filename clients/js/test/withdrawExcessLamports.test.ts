@@ -1,6 +1,9 @@
 import { generateSigner } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { SPL_TOKEN_PROGRAM_ID, withdrawExcessLamports } from '../src';
+import {
+  SPL_TOKEN_PROGRAM_ID,
+  withdrawExcessLamports,
+} from '@metaplex-foundation/mpl-toolbox';
 import { createOfflineUmi } from './_setup';
 
 test('it builds a withdraw excess lamports instruction', (t) => {

@@ -16,7 +16,7 @@ import {
   createLut,
   fetchAddressLookupTable,
   transferSol,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can create a LUT with addresses', async (t) => {

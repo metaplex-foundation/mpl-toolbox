@@ -5,7 +5,7 @@ import {
   createEmptyLut,
   deactivateLut,
   findAddressLookupTablePda,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it cannot close a LUT that is not deactivated', async (t) => {

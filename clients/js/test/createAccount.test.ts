@@ -7,7 +7,7 @@ import {
   transactionBuilder,
 } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { createAccount } from '../src';
+import { createAccount } from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can create new accounts', async (t) => {

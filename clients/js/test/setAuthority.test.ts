@@ -5,7 +5,11 @@ import {
   some,
 } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { AuthorityType, fetchToken, setAuthority } from '../src';
+import {
+  AuthorityType,
+  fetchToken,
+  setAuthority,
+} from '@metaplex-foundation/mpl-toolbox';
 import { createMintAndToken, createUmi } from './_setup';
 
 test('it can set the close authority of a token account', async (t) => {

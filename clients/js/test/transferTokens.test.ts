@@ -1,6 +1,11 @@
 import { generateSigner, transactionBuilder } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { createToken, fetchToken, mintTokensTo, transferTokens } from '../src';
+import {
+  createToken,
+  fetchToken,
+  mintTokensTo,
+  transferTokens,
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi, createMint } from './_setup';
 
 test('it can transfer tokens from one account to another', async (t) => {

@@ -1,5 +1,5 @@
 import test from 'ava';
-import { addMemo } from '../src';
+import { addMemo } from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can add a memo to a transaction', async (t) => {

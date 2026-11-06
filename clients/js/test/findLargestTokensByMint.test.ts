@@ -1,6 +1,6 @@
 import { tokenAmount } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { findLargestTokensByMint } from '../src';
+import { findLargestTokensByMint } from '@metaplex-foundation/mpl-toolbox';
 import { createUmi, createMint, createToken } from './_setup';
 
 test('it gets all token accounts ordered by descending amounts', async (t) => {

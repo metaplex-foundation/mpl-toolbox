@@ -1,6 +1,6 @@
 import { generateSigner, some } from '@metaplex-foundation/umi';
 import test from 'ava';
-import { getMintGpaBuilder } from '../src';
+import { getMintGpaBuilder } from '@metaplex-foundation/mpl-toolbox';
 import { createUmi, createMint } from './_setup';
 
 test('it can fetch mint accounts by mint authority', async (t) => {

@@ -13,7 +13,7 @@ import {
   Mint,
   Token,
   TokenState,
-} from '../src';
+} from '@metaplex-foundation/mpl-toolbox';
 import { createUmi } from './_setup';
 
 test('it can create a new mint and token account with no tokens', async (t) => {
